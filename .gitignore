@@ -1,6 +1,6 @@
-/*.db
-/lib
-/include
-/local
-/bin
+/admin_site/*.db
+/admin_site/lib
+/admin_site/include
+/admin_site/local
+/admin_site/bin
 *.pyc
