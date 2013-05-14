@@ -12,13 +12,23 @@ class Script(models.Model):
     # script OR a single extractable .zip or .tar.gz file with all necessary
     # data.
     executable_code = models.FileField(_('executable code'),
-                                       upload_to='script_uploads')
+                                       upload_to='site_media/script_uploads')
+
+    def __unicode__(self):
+        return self.name
 
 
 class Batch(models.Model):
     """A batch of jobs to be performed on a number of computers."""
+
+    # TODO: The name should probably be generated automatically from ID and
+    # script and date, etc.
+    name = models.CharField(_('name'), max_length=255)
     targets = models.ManyToManyField(PC, related_name='targets', blank=True)
     script = models.ForeignKey(Script)
+
+    def __unicode__(self):
+        return self.name
 
 
 class Job(models.Model):
@@ -41,19 +51,23 @@ class Job(models.Model):
     # Use built-in ID field for ID.
     status = models.CharField(max_length=10, choices=STATUS_CHOICES,
                               default=NEW)
-    log_output = models.CharField(_('log output'), max_length=4096)
+    log_output = models.CharField(_('log output'), max_length=4096, blank=True)
     started = models.DateTimeField(_('started'))
     finished = models.DateTimeField(_('finished'))
+    batch = models.ForeignKey(Batch)
+    
+    def __unicode__(self):
+        return '_'.join(map(unicode, [self.batch, self.id]))
 
 
 class Input(models.Model):
     """Input for a script"""
 
     # Value types
-    STRING = 0
-    INT = 1
-    DATE = 2
-    FILE = 3
+    STRING = 'STRING'
+    INT = 'INT'
+    DATE = 'DATE'
+    FILE = 'FILE'
 
     VALUE_CHOICES = (
         (STRING, _('String')),
@@ -62,11 +76,15 @@ class Input(models.Model):
         (FILE, _('File'))
     )
 
+    name = models.CharField(_('name'), max_length=255, unique=True)
     value_type = models.CharField(_('value type'), choices=VALUE_CHOICES,
                                   max_length=10)
     position = models.IntegerField(_('position'))
     mandatory = models.BooleanField(_('mandatory'), default=True)
     script = models.ForeignKey(Script)
+
+    def __unicode__(self):
+        return self.name
 
 
 class Parameter(models.Model):
@@ -75,7 +93,7 @@ class Parameter(models.Model):
     string_value = models.CharField(max_length=4096)
     integer_value = models.IntegerField()
     date_value = models.DateTimeField()
-    file_value = models.FileField(upload_to='parameter_uploads')
+    file_value = models.FileField(upload_to='site_media/parameter_uploads')
     # TODO: This field is redundant, replace with lookup on input
     value_type = models.CharField(_('value type'), choices=Input.VALUE_CHOICES,
                                  max_length=10)
