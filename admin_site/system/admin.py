@@ -6,6 +6,7 @@ from models import Site, Distribution, PCGroup, PC
 
 ar = admin.site.register
 
+
 class ConfigurationEntryInline(admin.TabularInline):
     model = ConfigurationEntry
     extra = 3

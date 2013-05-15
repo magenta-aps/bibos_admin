@@ -4,7 +4,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
 
-
 class Configuration(models.Model):
     """This class contains/represents the configuration of a Site, a
     Distribution, a PC Group or a PC."""
@@ -22,10 +21,11 @@ class ConfigurationEntry(models.Model):
     key = models.CharField(max_length=15)
     value = models.CharField(max_length=255)
     owner_configuration = models.ForeignKey(
-        Configuration, 
+        Configuration,
         related_name='owner',
         verbose_name=_('owner configuration')
     )
+
 
 class PackageList(models.Model):
     """A list of packages to be installed on a PC or to be included in a
@@ -40,7 +40,7 @@ class PackageList(models.Model):
 class Site(models.Model):
     """A site which we wish to admin"""
     name = models.CharField(_('name'), max_length=255)
-    uid = models.CharField(_('uid'), max_length=255, unique=True)  # Unique ID, not editable
+    uid = models.CharField(_('uid'), max_length=255, unique=True)
     users = models.ManyToManyField(User,
                                    related_name='site_users',
                                    verbose_name=_('Site Users'),
@@ -58,7 +58,7 @@ class Distribution(models.Model):
     configuration = models.ForeignKey(Configuration)
     package_list = models.ForeignKey(PackageList)
 
-    def __unicode__(self): 
+    def __unicode__(self):
         return self.name
 
 
@@ -67,7 +67,7 @@ class Package(models.Model):
     name = models.CharField(_('name'), max_length=255)
     uid = models.CharField(_('uid'), max_length=255)
     version = models.CharField(_('version'), max_length=255)
-    package_list = models.ForeignKey(PackageList, 
+    package_list = models.ForeignKey(PackageList,
                                      related_name='package_list',
                                      verbose_name=_('package list'))
 
@@ -94,7 +94,3 @@ class PC(models.Model):
 
     def __unicode__(self):
         return self.name
-
-
-
-

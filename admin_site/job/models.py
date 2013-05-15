@@ -55,7 +55,7 @@ class Job(models.Model):
     started = models.DateTimeField(_('started'))
     finished = models.DateTimeField(_('finished'))
     batch = models.ForeignKey(Batch)
-    
+
     def __unicode__(self):
         return '_'.join(map(unicode, [self.batch, self.id]))
 
@@ -89,7 +89,7 @@ class Input(models.Model):
 
 class Parameter(models.Model):
     """An input parameter for a job, a script, etc."""
-    
+
     string_value = models.CharField(max_length=4096)
     integer_value = models.IntegerField()
     date_value = models.DateTimeField()
@@ -101,4 +101,3 @@ class Parameter(models.Model):
     input = models.ForeignKey(Input)
     # and which batch are we running?
     batch = models.ForeignKey(Batch)
-
