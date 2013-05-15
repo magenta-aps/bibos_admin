@@ -1,6 +1,7 @@
-import yaml;
+import yaml
 
 DEFAULT_CONFIG_FILE = "/etc/bibos/bibos.conf"
+
 
 def get_config(key, filename=DEFAULT_CONFIG_FILE):
     conf = BibOSConfig(filename)
@@ -8,6 +9,7 @@ def get_config(key, filename=DEFAULT_CONFIG_FILE):
         return conf.get_value(key)
     except:
         return None
+
 
 def set_config(key, value, filename=DEFAULT_CONFIG_FILE):
     conf = BibOSConfig(filename)
@@ -17,7 +19,7 @@ def set_config(key, value, filename=DEFAULT_CONFIG_FILE):
         return val
     except:
         return None
-    
+
 
 class BibOSConfig():
     def __init__(self, filename=DEFAULT_CONFIG_FILE):
@@ -56,7 +58,7 @@ class BibOSConfig():
             except KeyError:
                 current[subkey] = {}
                 current = current[subkey]
-            key = key[i+1:]
+            key = key[i + 1:]
             i = key.find(".")
 
         current[key] = value
@@ -70,7 +72,7 @@ class BibOSConfig():
         while (i != -1):
             subkey = key[:i]
             current = current[subkey]
-            key = key[i+1:]
+            key = key[i + 1:]
             i = key.find(".")
 
         return current[key]

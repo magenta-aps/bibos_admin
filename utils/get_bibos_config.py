@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-sys.path.append("/usr/share/bibos/bibos_admin");
+sys.path.append("/usr/share/bibos/bibos_admin")
 
 from utils.bibos_config import get_config
 
@@ -18,4 +18,3 @@ except:
 
 if val is not None:
     print val
-

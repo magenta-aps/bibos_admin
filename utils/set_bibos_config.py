@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-sys.path.append("/usr/share/bibos/bibos_admin");
+sys.path.append("/usr/share/bibos/bibos_admin")
 
 from utils.bibos_config import set_config
 
@@ -16,4 +16,3 @@ else:
     else:
         sys.stderr.write("Too few arguments\n")
         sys.exit(1)
-

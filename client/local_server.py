@@ -1,5 +1,7 @@
-import sys, time, re
-from socket import *
+import sys
+import time
+import re
+from socket import *  # TODO: * imports are strongly discouraged.
 import commands
 
 PORT = 42420
@@ -10,6 +12,7 @@ REPLY_MESSAGE = "BibOS-server:"
 #  Use config instead of discovery
 #  Make it possible to get full server-config from the local server
 
+
 def find_lan_addresses():
     get_ip = False
     for line in commands.getoutput("/sbin/ifconfig").split("\n"):
@@ -19,20 +22,21 @@ def find_lan_addresses():
             if get_ip:
                 m = re.search('addr:(\d+.\d+.\d+.\d+)\s*' +
                               'Bcast:(\d+.\d+.\d+.\d+)',
-                              line);
+                              line)
                 if m is not None:
                     return (m.group(1), m.group(2))
                 get_ip = False
     return (None, None)
 
+
 def run_server(args=[]):
     server_ip = None
-    
+
     if(len(args) > 0):
         server_ip = args[0]
     else:
         server_ip = find_lan_addresses()[0]
-    
+
     if not server_ip:
         sys.stderr.write("Could not find LAN ip or no LAN ip specified\n")
         sys.exit(1)
@@ -41,30 +45,31 @@ def run_server(args=[]):
 
     sock = socket(AF_INET, SOCK_DGRAM)
     sock.bind(('', PORT))
-    
+
     while 1:
         data, addr = sock.recvfrom(1024)
         print "Got", data, "from", addr
         sock.sendto(REPLY_MESSAGE + server_ip, addr)
 
+
 def find_local_server(args=[]):
     lan_ip = None
     broadcast_addr = None
-    
+
     if len(args) > 0:
         lan_ip = args[0]
         broadcast_addr = re.replace(".\d+$", lan_ip)
     else:
         (lan_ip, broadcast_addr) = find_lan_addresses()
-    
+
     if not broadcast_addr:
         sys.stderr.write("Could not find broadcast address and " +
                          "address not specified\n")
         sys.exit(1)
 
     try:
-        sock = socket(AF_INET, # Internet
-                      SOCK_DGRAM) # UDP
+        sock = socket(AF_INET,  # Internet
+                      SOCK_DGRAM)  # UDP
         sock.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
         sock.sendto(MESSAGE, (broadcast_addr, PORT))
         sock.settimeout(5)
@@ -75,7 +80,7 @@ def find_local_server(args=[]):
         else:
             return None
     except Exception as inst:
-        print "Exception: ", inst 
+        print "Exception: ", inst
         return None
 
 if __name__ == '__main__':
@@ -88,16 +93,14 @@ if __name__ == '__main__':
             result = find_local_server(sys.argv)
             if result is not None:
                 print result
-            sys.exit();
+            sys.exit()
 
         # if first argument is 'server' remove it
         if arg == 'runserver':
             run_server(sys.argv)
-            sys.exit();
+            sys.exit()
 
     sys.stderr.write("Invalid arguments\n")
     sys.stderr.write(" Usage: " + script + " (runserver|findserver) " +
                      "[LAN_IP_ADDRESS]\n")
     sys.exit(1)
-    
-

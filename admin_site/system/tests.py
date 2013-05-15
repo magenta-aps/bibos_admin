@@ -38,6 +38,9 @@ class Pep8Test(TestCase):
     """Test that the template system a well as the default clients and plugins
     are PEP8-compliant."""
     j = lambda dir: os.path.join(parent_directory, dir)
+
     test_system = pep8_test(j('system'))
     test_job = pep8_test(j('job'))
     test_admin = pep8_test(j('admin'))
+    test_client = pep8_test(j('../client'))
+    test_utils = pep8_test(j('../utils'))
