@@ -7,5 +7,6 @@
 virtualenv .
 source bin/activate
 pip install django
+pip install pep8==1.2
 
 
