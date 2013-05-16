@@ -19,10 +19,22 @@ class UserProfile(models.Model):
         (SITE_ADMIN, _("Site Admin"))
     )
     type = models.IntegerField(choices=type_choices, default=SITE_USER)
-    site = models.ForeignKey(Site)
+    site = models.ForeignKey(Site, null=True, blank=True)
     # TODO: Add more fields/user options as needed.
     # TODO: Make before_save integrity check that SITE_USER and 
     # SITE_ADMIN users MUST be associated with a site.
    
     def __unicode__(self):
         return self.user.username
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+
+        if self.type != UserProfile.SUPER_ADMIN and self.site is None:
+            raise ValidationError(_(
+                'Non-admin users MUST be attached to a site'
+            ))
+        if self.type == UserProfile.SUPER_ADMIN and self.site is not None:
+            raise ValidationError(_(
+                'BibOS admins may not be attached to a site'
+            ))
