@@ -127,6 +127,7 @@ TEMPLATE_DIRS = (
 INSTALLED_APPS = (
     'system',
     'job',
+    'account',
     # Add new, local apps above this line.
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -168,3 +169,5 @@ LOGGING = {
         },
     }
 }
+
+AUTH_PROFILE_MODULE = 'account.UserProfile'
