@@ -1,7 +1,6 @@
-import yaml
+import yaml, sys
 
 DEFAULT_CONFIG_FILE = "/etc/bibos/bibos.conf"
-
 
 def get_config(key, filename=DEFAULT_CONFIG_FILE):
     conf = BibOSConfig(filename)
@@ -17,14 +16,18 @@ def set_config(key, value, filename=DEFAULT_CONFIG_FILE):
         val = conf.set_value(key, value)
         conf.save()
         return val
-    except:
+    except Exception as inst:
+        print >> sys.stderr, "Error: ", str(inst)
         return None
 
 
 class BibOSConfig():
     def __init__(self, filename=DEFAULT_CONFIG_FILE):
-        self.filename = filename
-        self.load()
+        try:
+            self.filename = filename
+            self.load()
+        except Exception as inst:
+            print sys.stderr, "Error loading BibOSConfig: ", str(inst)
 
     def load(self, filename=None):
         if filename is None:
@@ -35,6 +38,9 @@ class BibOSConfig():
         else:
             stream = file(filename, "r")
             self.yamldata = yaml.load(stream)
+            # Empty file gives None, replace it with empty dict
+            if self.yamldata is None:
+                self.yamldata = {}
 
         return self
 
