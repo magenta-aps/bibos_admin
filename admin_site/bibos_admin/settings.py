@@ -124,11 +124,17 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
-INSTALLED_APPS = (
+LOCAL_APPS = (
     'system',
     'job',
     'account',
-    # Add new, local apps above this line.
+)
+
+THIRD_PARTY_APPS = (
+    'django_xmlrpc',
+)
+
+DJANGO_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -141,6 +147,12 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
 )
 
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+
+XMLRPC_METHODS = (
+    ('system.views.register_new_computer', 'register_new_computer'),
+    ('system.views.send_status_info', 'send_status_info')
+)
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.
