@@ -1,6 +1,8 @@
-import yaml, sys
+import yaml
+import sys
 
 DEFAULT_CONFIG_FILE = "/etc/bibos/bibos.conf"
+
 
 def get_config(key, filename=DEFAULT_CONFIG_FILE):
     conf = BibOSConfig(filename)

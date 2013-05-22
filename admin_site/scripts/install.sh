@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # Setup virtualenv, install packages necessary to run BibOS Admin.
-# System requirements, installed packages etc. should be checked 
-# in a separate Dependencies script which should be combined with this one.
+# System requirements, installed packages etc. are checked 
+# in a separate dependencies file. 
 
 if [ -e ./bin/activate ]
 then
@@ -13,7 +13,8 @@ fi
 virtualenv .
 source bin/activate
 
-PYTHON_PACKAGES=$(cat PYTHON_DEPENDENCIES)
+DIR=$(dirname ${BASH_SOURCE[0]})
+PYTHON_PACKAGES=$(cat "$DIR/PYTHON_DEPENDENCIES")
 
 for  package in "${PYTHON_PACKAGES[@]}"
 do

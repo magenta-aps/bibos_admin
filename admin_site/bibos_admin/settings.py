@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 # Django settings for bibos_admin project.
 
 import os
@@ -9,7 +10,8 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    ('Carsten Agger', 'agger@magenta-aps.dk'),
+    ('Jørgen Ulrik B. Kragh', 'jubk@magenta-aps.dk'),
 )
 
 MANAGERS = ADMINS
@@ -150,8 +152,9 @@ DJANGO_APPS = (
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 XMLRPC_METHODS = (
-    ('system.views.register_new_computer', 'register_new_computer'),
-    ('system.views.send_status_info', 'send_status_info')
+    ('system.xmlrpc.register_new_computer', 'register_new_computer'),
+    ('system.xmlrpc.send_status_info', 'send_status_info'),
+    ('system.xmlrpc.get_instructions', 'get_instructions')
 )
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

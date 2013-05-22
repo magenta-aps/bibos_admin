@@ -1,0 +1,8 @@
+In *this* directory enter:
+
+.scripts/install.sh
+
+If a virtualenv from a previous installation already exists, the install script
+will abort. Please clean this up first by doing a
+
+rm -rf bin/ lib/ local/ include/

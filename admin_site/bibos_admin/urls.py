@@ -8,7 +8,7 @@ urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'bibos_admin.views.home', name='home'),
     # url(r'^bibos_admin/', include('bibos_admin.foo.urls')),
-
+    url(r'^admin-xml/$', 'django_xmlrpc.views.handle_xmlrpc'),
     # Uncomment the admin/doc line below to enable admin documentation:
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

@@ -1,9 +1,13 @@
-import sys, re, socket, commands
+import sys
+import re
+import socket
+import commands
 from socket import AF_INET, SOCK_DGRAM, SOL_SOCKET, SO_BROADCAST
 
-MESSAGE="Hello"
+MESSAGE = "Hello"
 REPLY_MESSAGE = "BibOS-server:"
 PORT = 42420
+
 
 def find_lan_addresses():
     get_ip = False
@@ -19,6 +23,7 @@ def find_lan_addresses():
                     return (m.group(1), m.group(2))
                 get_ip = False
     return (None, None)
+
 
 def find_local_server():
     lan_ip = None
