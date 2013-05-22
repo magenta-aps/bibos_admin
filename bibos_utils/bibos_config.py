@@ -5,6 +5,7 @@ DEFAULT_CONFIG_FILE = "/etc/bibos/bibos.conf"
 
 
 def get_config(key, filename=DEFAULT_CONFIG_FILE):
+    """Get value of a known config key."""
     conf = BibOSConfig(filename)
     try:
         return conf.get_value(key)
@@ -13,6 +14,7 @@ def get_config(key, filename=DEFAULT_CONFIG_FILE):
 
 
 def set_config(key, value, filename=DEFAULT_CONFIG_FILE):
+    """Set value of a config key."""
     conf = BibOSConfig(filename)
     try:
         val = conf.set_value(key, value)
@@ -25,32 +27,36 @@ def set_config(key, value, filename=DEFAULT_CONFIG_FILE):
 
 class BibOSConfig():
     def __init__(self, filename=DEFAULT_CONFIG_FILE):
+        """Create new configuration object. Each configuration object is
+        defined by its ownership of exactly one configuration file."""
+        self.filename = filename
+        self.yamldata = {}
+        # Do not catch exceptions here, let them pass from load function
+        self.load()
+
+    def load(self):
+        """Load a configuration - initialize to empty configuration if file
+        does not exist."""
         try:
-            self.filename = filename
-            self.load()
-        except Exception as inst:
-            print sys.stderr, "Error loading BibOSConfig: ", str(inst)
-
-    def load(self, filename=None):
-        if filename is None:
-            filename = self.filename
-
-        if filename is None:
-            self.yamldata = {}
-        else:
-            stream = file(filename, "r")
+            stream = open(self.filename, "r")
             self.yamldata = yaml.load(stream)
-            # Empty file gives None, replace it with empty dict
-            if self.yamldata is None:
+        except IOError as e:
+            if e.errno == 2:
+                # File does not exist -> empty YAML dictionary.
                 self.yamldata = {}
-
+            else:
+                # Something else is wrong, e.g. errno 13 = permission denied.
+                # Pass the buck.
+                raise
         return self
 
-    def save(self, filename=None):
-        if filename is None:
-            filename = self.filename
 
-        stream = file(filename, "w")
+    def save(self):
+        try:
+            stream = open(self.filename, "w")
+        except IOError as e: 
+            print "Error opening BibOSConfig file for writing: ", str(e)
+
         yaml.dump(self.yamldata, stream, default_flow_style=False)
 
         return self

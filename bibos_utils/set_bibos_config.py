@@ -1,9 +1,7 @@
-#!/usr/bin/env python
 
 import sys
-sys.path.append("/usr/share/bibos/bibos_admin")
 
-from utils.bibos_config import set_config
+from bibos_config import set_config
 
 args = len(sys.argv)
 val = None
