@@ -91,6 +91,11 @@ class PC(models.Model):
     configuration = models.ForeignKey(Configuration)
     pc_groups = models.ManyToManyField(PCGroup, related_name='pcs', blank=True)
     package_list = models.ForeignKey(PackageList)
+    site = models.ForeignKey(Site)
+    is_active = models.BooleanField(_('active'), default=False)
+    creation_time = models.DateTimeField(_('creation time'),
+        auto_now_add=True)
+    last_seen = models.DateTimeField(_('last seen'), null=True, blank=True)
 
     def __unicode__(self):
         return self.name
