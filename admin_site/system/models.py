@@ -90,7 +90,7 @@ class PC(models.Model):
     distribution = models.ForeignKey(Distribution)
     configuration = models.ForeignKey(Configuration)
     pc_groups = models.ManyToManyField(PCGroup, related_name='pcs', blank=True)
-    package_list = models.ForeignKey(PackageList)
+    package_list = models.ForeignKey(PackageList, null=True, blank=True)
     site = models.ForeignKey(Site)
     is_active = models.BooleanField(_('active'), default=False)
     creation_time = models.DateTimeField(_('creation time'),

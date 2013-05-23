@@ -12,9 +12,10 @@ class BibOSAdmin(object):
         self._rpc_srv = xmlrpclib.ServerProxy(self._url, verbose=verbose,
                                               allow_none=True)
 
-    def register_new_computer(self, name, uid, distribution, site):
+    def register_new_computer(self, name, uid, distribution, site,
+                              configuration):
         return self._rpc_srv.register_new_computer(
-            name, uid, distribution, site
+            name, uid, distribution, site, configuration
         )
 
     def send_status_info(self, pc_uid, package_data, job_data):
@@ -25,11 +26,26 @@ class BibOSAdmin(object):
 
 if __name__ == '__main__':
     """Simple test suite."""
+    import netifaces
+    from bibos_utils.bibos_config import BibOSConfig
+
+
     admin_url = 'http://localhost:8080/admin-xml/'
+    bibos_config_file = '/etc/bibos/bibos.conf'
+    bibos_config = BibOSConfig(bibos_config_file)
 
     admin = BibOSAdmin(admin_url)
-
-    print admin.register_new_computer('pip', 'pop', 'BibOS', 'AAKB')
+    
+    # Find HW address to use as UID
+    try:
+        addrs = netifaces.ifaddresses('eth0')
+        mac = netifaces.ifaddresses('eth0')[netifaces.AF_LINK][0]['addr']
+        uid = mac
+    except: 
+        # Don't use mac address, generate random number instead
+        uid = 'pop'
+    print admin.register_new_computer('pip', uid, 'BIBOS', 'AAKB',
+                                      bibos_config.get_data())
 
     print admin.send_status_info('pop', None, None)
 

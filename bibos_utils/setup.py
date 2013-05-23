@@ -1,11 +1,15 @@
 from setuptools import setup
 
+def readme():
+    with open('README') as f:
+        return f.read()
+
+
 setup(
     name='bibos_utils',
-    version='0.0.2',
+    version='0.0.2.1',
     description='Utilities for the BibOS system',
-    long_description="""
-    Shared Python library for the BibOS admin and client systems""",
+    long_description=readme(),
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
