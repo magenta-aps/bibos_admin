@@ -1,0 +1,7 @@
+bibos_utils
+-----------
+
+This package contains a number of Python libraries which are shared between the
+Bibos client image and admin system.
+
+TODO: Document the different modules.

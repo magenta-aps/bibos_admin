@@ -1,28 +1,23 @@
+import os
 import yaml
 import sys
 
 DEFAULT_CONFIG_FILE = "/etc/bibos/bibos.conf"
 
+DEBUG = True  # TODO: Get from settings file.
+
 
 def get_config(key, filename=DEFAULT_CONFIG_FILE):
     """Get value of a known config key."""
     conf = BibOSConfig(filename)
-    try:
-        return conf.get_value(key)
-    except:
-        return None
+    return conf.get_value(key)
 
 
 def set_config(key, value, filename=DEFAULT_CONFIG_FILE):
     """Set value of a config key."""
     conf = BibOSConfig(filename)
-    try:
-        val = conf.set_value(key, value)
-        conf.save()
-        return val
-    except Exception as inst:
-        print >> sys.stderr, "Error: ", str(inst)
-        return None
+    val = conf.set_value(key, value)
+    conf.save()
 
 
 class BibOSConfig():
@@ -48,18 +43,20 @@ class BibOSConfig():
                 # Something else is wrong, e.g. errno 13 = permission denied.
                 # Pass the buck.
                 raise
-        return self
 
 
     def save(self):
         try:
+            # Check config directory exists, create if not.
+            d = os.path.dirname(self.filename)
+            if len(d) > 0 and not os.path.exists(d):
+                os.makedirs(d)
             stream = open(self.filename, "w")
         except IOError as e: 
             print "Error opening BibOSConfig file for writing: ", str(e)
 
         yaml.dump(self.yamldata, stream, default_flow_style=False)
 
-        return self
 
     def set_value(self, key, value):
         current = self.yamldata
@@ -77,19 +74,21 @@ class BibOSConfig():
 
         current[key] = value
 
-        return self
 
     def get_value(self, key):
         current = self.yamldata
-
-        i = key.find(".")
-        while (i != -1):
-            subkey = key[:i]
-            current = current[subkey]
-            key = key[i + 1:]
+        try:
             i = key.find(".")
+            while (i != -1):
+                subkey = key[:i]
+                current = current[subkey]
+                key = key[i + 1:]
+                i = key.find(".")
+        except:
+            raise
 
         return current[key]
+
 
     def get_data(self):
         return self.yamldata

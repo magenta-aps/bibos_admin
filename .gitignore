@@ -5,4 +5,11 @@
 /admin_site/bin
 /admin_site/site_media/script_uploads
 /admin_site/site_media/parameter_uploads
+/bibos_utils/bibos_utils.egg-info/
+/bibos_utils/build/
+/bibos_utils/dist/
+/bibos_client/bibos_client.egg-info/
+/bibos_client/build/
+/bibos_client/dist/
+
 *.pyc
