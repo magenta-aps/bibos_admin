@@ -42,5 +42,5 @@ class Pep8Test(TestCase):
     test_system = pep8_test(j('system'))
     test_job = pep8_test(j('job'))
     test_admin = pep8_test(j('admin'))
-    test_client = pep8_test(j('../client'))
-    test_utils = pep8_test(j('../utils'))
+    test_client = pep8_test(j('../bibos_client'))
+    test_utils = pep8_test(j('../bibos_utils'))

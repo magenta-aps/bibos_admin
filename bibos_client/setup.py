@@ -9,6 +9,6 @@ setup(
     author_email='carstena@magenta-aps.dk',
     license='GPLv3',
     packages=['bibos_client'],
-    install_requires=['netifaces'],
+    install_requires=['netifaces', 'bibos_utils'],
     zip_safe=False
 )

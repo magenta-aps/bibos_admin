@@ -1,9 +1,9 @@
 from setuptools import setup
 
+
 def readme():
     with open('README') as f:
         return f.read()
-
 
 setup(
     name='bibos_utils',
@@ -12,7 +12,6 @@ setup(
     long_description=readme(),
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
-        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python :: 2.7',
     ],
@@ -21,7 +20,8 @@ setup(
     author_email='info@magenta-aps.dk',
     license='GPLv3',
     packages=['bibos_utils'],
-    install_requires=['PyYAML',],
-    scripts=['bin/get_bibos_config', 'bin/set_bibos_config'],
+    install_requires=['PyYAML'],
+    scripts=['bin/get_bibos_config', 'bin/set_bibos_config',
+             'bin/get_package_data'],
     zip_safe=False
 )

@@ -44,7 +44,6 @@ class BibOSConfig():
                 # Pass the buck.
                 raise
 
-
     def save(self):
         try:
             # Check config directory exists, create if not.
@@ -52,11 +51,10 @@ class BibOSConfig():
             if len(d) > 0 and not os.path.exists(d):
                 os.makedirs(d)
             stream = open(self.filename, "w")
-        except IOError as e: 
+        except IOError as e:
             print "Error opening BibOSConfig file for writing: ", str(e)
 
         yaml.dump(self.yamldata, stream, default_flow_style=False)
-
 
     def set_value(self, key, value):
         current = self.yamldata
@@ -74,7 +72,6 @@ class BibOSConfig():
 
         current[key] = value
 
-
     def get_value(self, key):
         current = self.yamldata
         try:
@@ -88,7 +85,6 @@ class BibOSConfig():
             raise
 
         return current[key]
-
 
     def get_data(self):
         return self.yamldata

@@ -65,8 +65,10 @@ class Distribution(models.Model):
 class Package(models.Model):
     """This class represents a single Debian package to be installed."""
     name = models.CharField(_('name'), max_length=255)
-    uid = models.CharField(_('uid'), max_length=255)
     version = models.CharField(_('version'), max_length=255)
+    description = models.CharField(_('description'), max_length=255)
+    status = models.CharField(_('status'), max_length=255)
+
     package_list = models.ForeignKey(PackageList,
                                      related_name='package_list',
                                      verbose_name=_('package list'))

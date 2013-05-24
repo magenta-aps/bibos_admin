@@ -1,23 +1,26 @@
 # This module contains the implementation of the XML-RPC API used by the
 # client.
 
+import datetime
+
 from models import PC, Site, Distribution, Configuration, ConfigurationEntry
+from models import PackageList, Package
 
 
 def register_new_computer(name, uid, distribution, site, configuration):
     """Register a new computer with the admin system - after registration, the
     computer will be submitted for approval."""
 
-    new_pc = PC.objects.get(uid=uid)
+    try:
+        new_pc = PC.objects.get(uid=uid)
+        package_list = new_pc.package_list
+    except PC.DoesNotExist:
+        new_pc = PC(name=name, uid=uid)
+        new_pc.site = Site.objects.get(uid=site)
+        # TODO: Better to enforce existence of package list in constructor.
+        package_list = PackageList(name=name, uid=uid)
 
-    if not new_pc:
-        new_pc = PC()
-        # Assume PCs are never reused on another site
-        new_pc.site = Site.objects.get(uid=site)  
-    new_pc.name = name
-    new_pc.uid = uid
-    
-    new_pc.distribution = Distribution.objects.get(uid=distribution)  
+    new_pc.distribution = Distribution.objects.get(uid=distribution)
     new_pc.is_active = False
     # Create new configuration, populate with data from computer's config.
     # If a configuration with the same ID is hanging, reuse.
@@ -38,8 +41,10 @@ def register_new_computer(name, uid, distribution, site, configuration):
         entry = ConfigurationEntry(key=k, value=v,
                                    owner_configuration=my_config)
         entry.save()
-    # Set and save PC.
+    # Set and save PmC.
     new_pc.configuration = my_config
+    package_list.save()
+    new_pc.package_list = package_list
     new_pc.save()
     return 0
 
@@ -51,8 +56,24 @@ def send_status_info(pc_uid, package_data, job_data):
 
     # TODO: Code this
 
-    # 1. Lookup PC, update "last_see" field
+    # 1. Lookup PC, update "last_seen" field
+    pc = PC.objects.get(uid=pc_uid)
+    pc.last_seen = datetime.datetime.now()
+    pc.save()
     # 2. Update package lists with package data
+    # Clear existing packages
+    Package.objects.filter(package_list=pc.package_list).delete()
+    print Package.objects.filter(package_list=pc.package_list)
+
+    # Insert new ones
+    for (name, status, version, description) in package_data:
+        new_package = Package(name=name,
+                              status=status,
+                              version=version,
+                              description=description,
+                              package_list=pc.package_list)
+        new_package.save()
+
     # 3. Update jobs with job data
 
     return 0
