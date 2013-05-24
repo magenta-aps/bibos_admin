@@ -7,7 +7,7 @@ def readme():
 
 setup(
     name='bibos_utils',
-    version='0.0.2.1',
+    version='0.0.2.2',
     description='Utilities for the BibOS system',
     long_description=readme(),
     classifiers=[
