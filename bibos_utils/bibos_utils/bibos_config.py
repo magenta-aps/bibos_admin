@@ -53,6 +53,7 @@ class BibOSConfig():
             stream = open(self.filename, "w")
         except IOError as e:
             print "Error opening BibOSConfig file for writing: ", str(e)
+            raise
 
         yaml.dump(self.yamldata, stream, default_flow_style=False)
 

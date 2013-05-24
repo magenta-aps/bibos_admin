@@ -10,5 +10,6 @@ setup(
     license='GPLv3',
     packages=['bibos_client'],
     install_requires=['netifaces', 'bibos_utils'],
+    scripts=['bin/register_in_bibos_admin'],
     zip_safe=False
 )

@@ -25,11 +25,12 @@ def register_new_computer(name, uid, distribution, site, configuration):
     # Create new configuration, populate with data from computer's config.
     # If a configuration with the same ID is hanging, reuse.
     config_name = '_'.join([site, name, uid])
-    my_config = Configuration.objects.get(name=config_name)
-    if not my_config:
+    try:
+        my_config = Configuration.objects.get(name=config_name)
+    except Configuration.DoesNotExist:
         my_config = Configuration()
         my_config.name = config_name
-    else:
+    finally:
         # Delete pre-existing entries
         entries = ConfigurationEntry.objects.filter(
             owner_configuration=my_config)

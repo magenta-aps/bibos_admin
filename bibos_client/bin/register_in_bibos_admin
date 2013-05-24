@@ -1,0 +1,59 @@
+#!/usr/bin/env python
+
+import hashlib
+import uuid
+import netifaces
+import os
+import sys
+import csv
+
+from bibos_utils.bibos_config import BibOSConfig
+from bibos_client.admin_client import BibOSAdmin
+
+
+config = BibOSConfig()
+data = config.get_data()
+
+hostname = data['hostname']
+site = data['site']
+distribution = data['distribution']
+admin_url = data['admin_url']
+
+admin = BibOSAdmin(admin_url)
+
+if not data.has_key('uid'):
+    # Calculate UID and add to configuration
+    try:
+        addrs = netifaces.ifaddresses('eth0')
+        mac = netifaces.ifaddresses('eth0')[netifaces.AF_LINK][0]['addr']
+        uid = mac
+    except:
+        # Don't use mac address, generate random number instead
+        uid = str(uuid.uuid1())
+    uid = hashlib.md5(uid).hexdigest()
+    config.set_value('uid', uid)
+    config.save()
+else:
+    uid = data['uid']
+
+# Data collected, now register computer.
+
+try:
+    admin.register_new_computer(hostname, uid, distribution, site, data)
+except Exception as e:
+    print >> sys.stderr, 'Error:', str(e)
+    sys.exit(1)
+
+# Computer created, now upload package data.
+
+os.system('get_package_data /tmp/packages.csv')
+
+with open('/tmp/packages.csv') as f:
+    package_reader = csv.reader(f, delimiter=';')
+    package_data = [p for p in package_reader]
+
+try:
+    admin.send_status_info(uid, package_data, None)
+except Exception as e:
+    print >> sys.stderr, 'Error:', str(e)
+    sys.exit(1)
