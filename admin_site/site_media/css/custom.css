@@ -1,0 +1,57 @@
+
+body {background: #ddd;}
+header {padding: 20px; margin: 0 0 20px; background: #444; color: #ccc;}
+header.detailpage {padding: 20px 0; margin-left: 250px;}
+header.detailpage h1 {font-size: 24px; line-height: 24px; margin: 0;}
+header h1 em {color: #fff; font-style: normal;}
+.itemlist .btn-group {margin: 0 10px 10px 0;} 
+.utils {background: #444; box-shadow: none; border-radius: 0 0 10px 10px; padding: 10px 20px; margin: -30px 0 0;}
+.nav.utils>li>a {color: #fff; text-shadow: none;}
+.nav.utils>li>a:hover, .nav.utils>li>a:focus {background: #666; border-radius: 5px;}
+.nav-list.utils .nav-header {text-shadow: none; color: #ccc;}
+.listutils a {background: #444; color: #fff; padding: 10px; display: block;}
+.profile {font-size: 14px;}
+.profile a.dropdown-toggle {color: #fff;}
+.dark a.dropdown-toggle {color: #000;}
+.nav-list.utils .divider {border: none; background: #666;}
+.utils-global {position: absolute; top: 0; bottom: 0; left: 0; width: 210px; margin: 0; border-radius: 0; box-shadow: -5px -5px 20px #111 inset;}
+.main {position: absolute; top: 64px; bottom: 0; left: 250px; right: 0; overflow-x: hidden; overflow-y: auto;}
+.sublevelnav {position: absolute; top: 64px; left: 250px; bottom: 0; width: 250px; background: #fff; overflow-x: hidden; overflow-y: auto; margin: 0;}
+.sublevelnav li a {border-top: solid 1px #ddd; display: block; padding: 10px;}
+.sublevelnav li:first-child a {border: none;}
+.sublevelnav li.active a, .sublevelnav li a:hover {background: #08c; color: #fff; text-decoration: none;}
+.sublevelmain {left: 500px;}
+.inertnav {background: #ccc; border-radius: 5px; padding: 15px 20px;}
+.inertnav li {padding: 2px 0; color: #666;}
+.inertnav li:hover {background: #ddd;}
+.divideheader {background: #444; color: #ddd; padding: 0 20px; margin-top: 40px; font-size: 21px;}
+.divideheader em {color: #fff; font-style: normal;}
+h2.divideheader {margin-top: 20px;}
+.searchfilter .btn {display: block; text-align: left;}
+.well .table {margin-bottom: 0;}
+.table th {border-top: none;}
+.main > * {margin-top: 20px;}
+.collapsing {display: block; text-align: left;}
+h3.nav-header {margin: 0; padding: 0;}
+.table-striped tbody>tr:nth-child(odd)>th {background: #444; color: #fff;}
+.popover {max-width: 40em;}
+.popover.bottom .arrow {left: auto; right: 30px;}
+.popover.bottom {margin: 5px 20px 0 0;}
+.popover.top .arrow {left: auto; right: 30px;}
+.popover.top {margin: 0 20px 5px 0;}
+.jobtable .popover-content a {margin-bottom: 10px; display: inline-block;}
+.jobtable tr {cursor: pointer;}
+.jobtable tr td {border-top: solid 1px #ccc;}
+.jobtable tr.marked td, .jobtable tr.marked:hover td {background: #08c; color: #fff;}
+.scripttabs {margin: 0; background: #444; padding: 10px 10px 0; border: none;}
+.scripttabs>li {margin: 0;}
+.scripttabs>li>a, .scripttabs>.active>a, .scripttabs>.active>a:hover, .scripttabs>.active>a:focus {border: none; margin: 0; padding: 10px;}
+.scripttabs>li>a {color: #fff;}
+.scripttabs>li>a:hover, .scripttabs>li>a:focus {background: #08c;}
+.scripttabs>.active>a {background: #fff !important; color: #444 !important;}
+.actionlist {padding: 5px;}
+.actionlist a {border-top: solid 1px #ddd; padding: 10px; display: block;}
+.actionlist li:first-child a {border: none;}
+.actionlist .btn-group {display: block;}
+.actionlist a:hover {background: #08c; color: #fff; text-decoration: none; border-radius: 5px;}
+
