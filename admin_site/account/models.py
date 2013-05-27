@@ -34,7 +34,7 @@ class UserProfile(models.Model):
             raise ValidationError(_(
                 'Non-admin users MUST be attached to a site'
             ))
-        if self.type == UserProfile.SUPER_ADMIN and self.site is not None:
-            raise ValidationError(_(
-                'BibOS admins may not be attached to a site'
-            ))
+        #if self.type == UserProfile.SUPER_ADMIN and self.site is not None:
+        #    raise ValidationError(_(
+        #        'BibOS admins may not be attached to a site'
+        #    ))

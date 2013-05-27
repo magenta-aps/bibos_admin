@@ -1,0 +1,180 @@
+{% extends "site_with_navigation.html" %}
+
+{% block specific_title %}
+Jobs
+{% endblock %}
+
+{% block specific_content %}
+
+
+  <div class="container-fluid main">
+    <div class="row-fluid">
+      <div class="span2">
+        <div class="well">
+          <h3 class="nav-header">Filtrér:</h3>
+          <hr>
+          <label>
+            <input type="checkbox">
+            <span class="label label-success">Færdig</span>
+          </label>
+          <label>
+            <input type="checkbox">
+            <span class="label label-warning">Arbejder</span>
+          </label>
+          <label>
+            <input type="checkbox">
+            <span class="label">Venter</span>
+          </label>
+          <label>
+            <input type="checkbox">
+            <span class="label label-important">Fejl</span>
+          </label>
+          <hr>
+          <a href="#" class="btn collapsing" data-toggle="collapse" data-target="#demo1"><i class="icon-chevron-down"></i> Batches</a>
+          <div id="demo1" class="collapse out">
+            <ul class="unstyled">
+              <li><a href="#">UpdatePackage_20130515</a></li>
+              <li><a href="#">UpdatePackage_20130514</a></li>
+              <li><a href="#">UpdatePackage_20130510</a></li>
+              <li><a href="#">UpdatePackage_20130504</a></li>
+              <li><a href="#">UpdatePackage_20130503</a></li>
+              <li><a href="#">UpdatePackage_20130502</a></li>
+              <li><a href="#">UpdatePackage_20130501</a></li>
+            </ul>
+          </div>
+          <a href="#" class="btn collapsing" data-toggle="collapse" data-target="#demo2"><i class="icon-chevron-down"></i> PCs</a>
+          <div id="demo2" class="collapse out">
+            <ul class="unstyled">
+              <li><a href="#"><i class="icon-hdd"></i> Computer A</a></li>
+              <li><a href="#"><i class="icon-hdd"></i> Computer B</a></li>
+              <li><a href="#"><i class="icon-hdd"></i> Computer C</a></li>
+              <li><a href="#"><i class="icon-hdd"></i> Computer D</a></li>
+              <li><a href="#"><i class="icon-hdd"></i> Computer E</a></li>
+              <li><a href="#"><i class="icon-hdd"></i> Computer F</a></li>
+              <li><a href="#"><i class="icon-hdd"></i> Computer G</a></li>
+              <li><a href="#"><i class="icon-hdd"></i> Computer H</a></li>
+              <li><a href="#"><i class="icon-hdd"></i> Computer I</a></li>
+              <li><a href="#"><i class="icon-hdd"></i> Computer J</a></li>
+              <li><a href="#"><i class="icon-hdd"></i> Computer K</a></li>
+              <li><a href="#"><i class="icon-hdd"></i> Computer L</a></li>
+              <li><a href="#"><i class="icon-hdd"></i> Computer M</a></li>
+              <li><a href="#"><i class="icon-hdd"></i> Computer N</a></li>
+              <li><a href="#"><i class="icon-hdd"></i> Computer O</a></li>
+              <li><a href="#"><i class="icon-hdd"></i> Computer P</a></li>
+              <li><a href="#"><i class="icon-hdd"></i> Computer Q</a></li>
+              <li><a href="#"><i class="icon-hdd"></i> Computer R</a></li>
+              <li><a href="#"><i class="icon-hdd"></i> Computer S</a></li>
+              <li><a href="#"><i class="icon-hdd"></i> Computer T</a></li>
+              <li><a href="#"><i class="icon-hdd"></i> Computer U</a></li>
+              <li><a href="#"><i class="icon-hdd"></i> Computer V</a></li>
+            </ul>
+          </div>
+          <a href="#" class="btn collapsing" data-toggle="collapse" data-target="#demo3"><i class="icon-chevron-down"></i> Grupper</a>
+          <div id="demo3" class="collapse out">
+            <ul class="unstyled">
+              <li><a href="#"><i class="icon-tags"></i> Gruppe A</a></li>
+              <li><a href="#"><i class="icon-tags"></i> Gruppe B</a></li>
+              <li><a href="#"><i class="icon-tags"></i> Gruppe C</a></li>
+              <li><a href="#"><i class="icon-tags"></i> Gruppe D</a></li>
+              <li><a href="#"><i class="icon-tags"></i> Gruppe E</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="span10">
+        <table class="table table-hover jobtable">
+          <tr>
+            <th></th>
+            <th>Script</th>
+            <th>Startet</th>
+            <th>Sluttet</th>
+            <th>Status</th>
+            <th>Maskine</th>
+            <th>Batch</th>
+            <th></th>
+          </tr>
+          <tr class="muted">
+            <td><input type="checkbox"></td>
+            <td>Opdatér pakker</td>
+            <td>2013-05-15 08:00</td>
+            <td>2013-05-15 09:00</td>
+            <td><span class="label label-warning">Arbejder</span></td>
+            <td>PC23 (stuen)</td>
+            <td>UpdatePackage_20130515</td>
+            <td><button class="btn" data-toggle="popover" title="Log" data-original-title="Log" data-html="true" data-placement="bottom" data-content="<a href='#'><i class='icon-refresh'></i> Genstart job</a><pre>feglih eæglih selæfihaslehf læasiehf læsaijef læaishjef læiashje flæijas elfihjas leæfijas læefiha slæeifh</pre>"><i class="icon-info-sign"></i></button></td>
+          </tr>
+          <tr class="muted">
+            <td><input type="checkbox"></td>
+            <td>Opdatér pakker</td>
+            <td>2013-05-15 08:00</td>
+            <td>2013-05-15 09:00</td>
+            <td><span class="label">Venter</span></td>
+            <td>PC23 (stuen)</td>
+            <td>UpdatePackage_20130515</td>
+            <td><button class="btn" data-toggle="popover" title="Log" data-original-title="Log" data-html="true" data-placement="bottom" data-content="<a href='#'><i class='icon-refresh'></i> Genstart job</a><pre>feglih eæglih selæfihaslehf læasiehf læsaijef læaishjef læiashje flæijas elfihjas leæfijas læefiha slæeifh</pre>"><i class="icon-info-sign"></i></button></td>
+          </tr>
+          <tr class="muted">
+            <td><input type="checkbox"></td>
+            <td>Opdatér pakker</td>
+            <td>2013-05-15 08:00</td>
+            <td>2013-05-15 09:00</td>
+            <td><span class="label label-success">Færdig</span></td>
+            <td>PC23 (stuen)</td>
+            <td>UpdatePackage_20130515</td>
+            <td><button class="btn" data-toggle="popover" title="Log" data-original-title="Log" data-html="true" data-placement="bottom" data-content="<a href='#'><i class='icon-refresh'></i> Genstart job</a><pre>feglih eæglih selæfihaslehf læasiehf læsaijef læaishjef læiashje flæijas elfihjas leæfijas læefiha slæeifh</pre>"><i class="icon-info-sign"></i></button></td>
+          </tr>
+          <tr class="muted">
+            <td><input type="checkbox"></td>
+            <td>Opdatér pakker</td>
+            <td>2013-05-15 08:00</td>
+            <td>2013-05-15 09:00</td>
+            <td><span class="label label-important">Fejl</span></td>
+            <td>PC23 (stuen)</td>
+            <td>UpdatePackage_20130515</td>
+            <td><button class="btn" data-toggle="popover" title="Log" data-original-title="Log" data-html="true" data-placement="bottom" data-content="<a href='#'><i class='icon-refresh'></i> Genstart job</a><pre>feglih eæglih selæfihaslehf læasiehf læsaijef læaishjef læiashje flæijas elfihjas leæfijas læefiha slæeifh</pre>"><i class="icon-info-sign"></i></button></td>
+          </tr>
+          <tr class="muted">
+            <td><input type="checkbox"></td>
+            <td>Opdatér pakker</td>
+            <td>2013-05-15 08:00</td>
+            <td>2013-05-15 09:00</td>
+            <td><span class="label label-success">Færdig</span></td>
+            <td>PC23 (stuen)</td>
+            <td>UpdatePackage_20130515</td>
+            <td><button class="btn" data-toggle="popover" title="Log" data-original-title="Log" data-html="true" data-placement="bottom" data-content="<a href='#'><i class='icon-refresh'></i> Genstart job</a><pre>feglih eæglih selæfihaslehf læasiehf læsaijef læaishjef læiashje flæijas elfihjas leæfijas læefiha slæeifh</pre>"><i class="icon-info-sign"></i></button></td>
+          </tr>
+          <tr class="muted">
+            <td><input type="checkbox"></td>
+            <td>Opdatér pakker</td>
+            <td>2013-05-15 08:00</td>
+            <td>2013-05-15 09:00</td>
+            <td><span class="label label-success">Færdig</span></td>
+            <td>PC23 (stuen)</td>
+            <td>UpdatePackage_20130515</td>
+            <td><button class="btn" data-toggle="popover" title="Log" data-original-title="Log" data-html="true" data-placement="bottom" data-content="<a href='#'><i class='icon-refresh'></i> Genstart job</a><pre>feglih eæglih selæfihaslehf læasiehf læsaijef læaishjef læiashje flæijas elfihjas leæfijas læefiha slæeifh</pre>"><i class="icon-info-sign"></i></button></td>
+          </tr>
+          <tr class="muted">
+            <td><input type="checkbox"></td>
+            <td>Opdatér pakker</td>
+            <td>2013-05-15 08:00</td>
+            <td>2013-05-15 09:00</td>
+            <td><span class="label label-success">Færdig</span></td>
+            <td>PC23 (stuen)</td>
+            <td>UpdatePackage_20130515</td>
+            <td><button class="btn" data-toggle="popover" title="Log" data-original-title="Log" data-html="true" data-placement="bottom" data-content="<a href='#'><i class='icon-refresh'></i> Genstart job</a><pre>feglih eæglih selæfihaslehf læasiehf læsaijef læaishjef læiashje flæijas elfihjas leæfijas læefiha slæeifh</pre>"><i class="icon-info-sign"></i></button></td>
+          </tr>
+          <tr class="muted">
+            <td><input type="checkbox"></td>
+            <td>Opdatér pakker</td>
+            <td>2013-05-15 08:00</td>
+            <td>2013-05-15 09:00</td>
+            <td><span class="label label-success">Færdig</span></td>
+            <td>PC23 (stuen)</td>
+            <td>UpdatePackage_20130515</td>
+            <td><button class="btn" data-toggle="popover" title="Log" data-original-title="Log" data-html="true" data-placement="bottom" data-content="<a href='#'><i class='icon-refresh'></i> Genstart job</a><pre>feglih eæglih selæfihaslehf læasiehf læsaijef læaishjef læiashje flæijas elfihjas leæfijas læefiha slæeifh</pre>"><i class="icon-info-sign"></i></button></td>
+          </tr>
+        </table> 
+      </div>
+    </div>
+  </div>
+{% endblock %}

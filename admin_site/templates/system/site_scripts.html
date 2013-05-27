@@ -1,0 +1,238 @@
+{% extends "site_with_navigation.html" %}
+
+{% block specific_title %}
+Scripts
+{% endblock %}
+
+{% block specific_content %}
+
+  <div class="sublevelnav">
+    
+    <div class="listutils"><a href="#" title="Tilføj nyt script"><i class="icon-plus icon-white"></i> tilføj nyt script</a></div>
+
+    <ul class="nav nav-tabs scripttabs">
+      <li class="active"><a href="#localscripts" data-toggle="tab">Lokale scripts</a></li>
+      <li><a href="#globalscripts" data-toggle="tab">Globale scripts</a></li>
+    </ul>
+    <div class="tab-content">
+      <div class="tab-pane active" id="localscripts">
+        <ul class="unstyled" >
+          <li><a href="#"><i class="icon-list"></i> ChangeBrowserStartPage</a></li>
+          <li class="active"><a href="#"><i class="icon-list"></i> ChangeBrowserBookmarks</a></li>
+          <li><a href="#"><i class="icon-list"></i> UpdataJava</a></li>
+          <li><a href="#"><i class="icon-list"></i> ChangeDesktopBackground</a></li>
+          <li><a href="#"><i class="icon-list"></i> ActivateScrrenSaver</a></li>
+        </ul>
+      </div>
+      <div class="tab-pane" id="globalscripts">
+        <ul class="unstyled">
+          <li><a href="#"><i class="icon-list"></i> GlobalScript1</a></li>
+          <li><a href="#"><i class="icon-list"></i> GlobalScript2</a></li>
+          <li><a href="#"><i class="icon-list"></i> GlobalScript3</a></li>
+          <li><a href="#"><i class="icon-list"></i> GlobalScript4</a></li>
+          <li><a href="#"><i class="icon-list"></i> GlobalScript5</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <div class="container-fluid main sublevelmain">
+    <h2 class="divideheader">Detaljer om script: <em>ChangeBrowserBookmarks</em></h2>
+    <form>
+      
+      <button class="btn btn-primary">Gem ændringer</button>
+      <button class="btn">Annuller</button>
+      <a href="#myModal" role="button" class="btn btn-warning pull-right" data-toggle="modal">Kør script</a>
+      
+      <hr>
+      
+      <div class="row-fluid">
+        <div class="span6">
+          <fieldset>  
+            <label>Navn:</label>
+            <input type="text" value="ChangeBrowserBookmarks">
+            <label>Beskrivelse:</label>
+            <textarea>Ændre bogmærker i browser</textarea>
+            <label>
+              <input type="checkbox">
+              Globalt script
+            </label>
+            
+          </fieldset>
+        </div>
+        
+        <div class="span6">
+          <fieldset>
+            <label>Kode:</label>
+            <textarea rows="10" class="span11">
+              <pre>
+                
+                 /* ALERT PLUGIN DEFINITION
+                  * ======================= */
+                
+                  var old = $.fn.alert
+                
+                  $.fn.alert = function (option) {
+                    return this.each(function () {
+                      var $this = $(this)
+                        , data = $this.data('alert')
+                      if (!data) $this.data('alert', (data = new Alert(this)))
+                      if (typeof option == 'string') data[option].call($this)
+                    })
+                  }
+                
+                  $.fn.alert.Constructor = Alert
+                
+                 /* ALERT NO CONFLICT
+                  * ================= */
+                
+                  $.fn.alert.noConflict = function () {
+                    $.fn.alert = old
+                    return this
+                  }
+    
+              </pre>
+            </textarea>
+            <label>Upload scriptkode:</label>
+            <input type="file">
+          </fieldset>
+        </div>
+      
+      </div>
+        
+      <hr>
+      
+      <fieldset>
+        <label>Input-parametre:</label>
+        <div class="well">
+          <table class="table table-condensed">
+            <tr>
+              <th>Navn</th>
+              <th>Type</th>
+            </tr>
+            <tr>
+              <td><input type="text" value="Parameter 1"></td>
+              <td><select><option>Text</option><option>------</option><option>Text</option><option>Dato</option><option>Fil</option></select></td>
+            </tr>
+            <tr>
+              <td><input type="text" value="Parameter 2"></td>
+              <td><select><option>Dato</option><option>------</option><option>Text</option><option>Dato</option><option>Fil</option></select></td>
+            </tr>
+            <tr>
+              <td><input type="text" value="Parameter 3"></td>
+              <td><select><option>Fil</option><option>------</option><option>Text</option><option>Dato</option><option>Fil</option></select></td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <a href="#" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj parameter</a>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </fieldset>
+  
+    </form>
+      
+      
+    <!-- Modal 1 -->
+    <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+       <div class="modal-header">
+         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+         <h3 id="myModalLabel">Kør script: <em>Vælg maskine eller grupper</em></h3>
+       </div>
+       <div class="modal-body">
+         <div class="row-fluid">
+           <div class="span6">
+             <label>Maskiner:</label>
+             <ul class="unstyled">
+               <li><a href="#"><i class="icon-hdd"></i> Computer A</a></li>
+               <li><a href="#"><i class="icon-hdd"></i> Computer B</a></li>
+               <li><a href="#"><i class="icon-hdd"></i> Computer C</a></li>
+               <li><a href="#"><i class="icon-hdd"></i> Computer D</a></li>
+               <li><a href="#"><i class="icon-hdd"></i> Computer E</a></li>
+               <li><a href="#"><i class="icon-hdd"></i> Computer F</a></li>
+               <li><a href="#"><i class="icon-hdd"></i> Computer G</a></li>
+               <li><a href="#"><i class="icon-hdd"></i> Computer H</a></li>
+               <li><a href="#"><i class="icon-hdd"></i> Computer I</a></li>
+               <li><a href="#"><i class="icon-hdd"></i> Computer J</a></li>
+               <li><a href="#"><i class="icon-hdd"></i> Computer K</a></li>
+               <li><a href="#"><i class="icon-hdd"></i> Computer L</a></li>
+               <li><a href="#"><i class="icon-hdd"></i> Computer M</a></li>
+               <li><a href="#"><i class="icon-hdd"></i> Computer N</a></li>
+               <li><a href="#"><i class="icon-hdd"></i> Computer O</a></li>
+               <li><a href="#"><i class="icon-hdd"></i> Computer P</a></li>
+               <li><a href="#"><i class="icon-hdd"></i> Computer Q</a></li>
+               <li><a href="#"><i class="icon-hdd"></i> Computer R</a></li>
+               <li><a href="#"><i class="icon-hdd"></i> Computer S</a></li>
+               <li><a href="#"><i class="icon-hdd"></i> Computer T</a></li>
+               <li><a href="#"><i class="icon-hdd"></i> Computer U</a></li>
+               <li><a href="#"><i class="icon-hdd"></i> Computer V</a></li>
+             </ul>
+           </div>
+           <div class="span6">
+             <label>Grupper:</label>
+             <ul class="unstyled">
+               <li><a href="#">Gruppe A</a></li>
+               <li><a href="#">Gruppe B</a></li>
+               <li><a href="#">Gruppe C</a></li>
+               <li><a href="#">Gruppe D</a></li>
+               <li><a href="#">Gruppe E</a></li>
+             </ul>
+           </div>
+         </div>
+       </div>
+       <div class="modal-footer">
+         <a href="#myModal2" role="button" class="btn" data-toggle="modal" data-dismiss="modal">Næste <i class="icon-chevron-right"></i></a>
+       </div>
+     </div>
+     
+     <!-- Modal 2 -->
+     <div id="myModal2" class="modal hide fade" tabindex="-2" role="dialog" aria-labelledby="myModalLabel2" aria-hidden="true">
+       <div class="modal-header">
+         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+         <h3 id="myModalLabel2">Kør script: <em>Angiv parametre</em></h3>
+       </div>
+       <div class="modal-body">
+         <form class="form-horizontal">
+           <div class="control-group">
+             <label class="control-label">Parameter 1</label>
+             <div class="controls">
+               <input type="text" placeholder="text">
+             </div>
+           </div>
+           <div class="control-group">
+             <label class="control-label">Parameter 21</label>
+             <div class="controls">
+               <input type="text" placeholder="13-05-25 08:00">
+             </div>
+           </div>
+           <div class="control-group">
+             <label class="control-label">Parameter 3</label>
+             <div class="controls">
+               <input type="file">
+             </div>
+           </div>
+         </form>
+       </div>
+       <div class="modal-footer">
+         <a href="#myModal3" role="button" class="btn btn-primary" data-toggle="modal" data-dismiss="modal">Kør <i class="icon-chevron-right icon-white"></i></a>
+       </div>
+     </div>
+     
+     <!-- Modal 3 -->
+     <div id="myModal3" class="modal hide fade" tabindex="-3" role="dialog" aria-labelledby="myModalLabel3" aria-hidden="true">
+       <div class="modal-header">
+         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+         <h3 id="myModalLabel3">Job startet!</h3>
+       </div>
+       <div class="modal-body">
+         <p>Job er startet med script <em>ChangeBrowserBookmarks</em> på maskine: <em>Computer B</em></p>
+         <p><a href="#">Du kan følge jobbet her</a></p>
+       </div>
+       <div class="modal-footer">
+         <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Luk</button>
+       </div>
+     </div>
+   </div>  
+
+{% endblock %}
