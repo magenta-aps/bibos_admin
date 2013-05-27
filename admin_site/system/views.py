@@ -16,10 +16,11 @@ def index(request):
 
     if profile.type == UserProfile.SUPER_ADMIN:
         # Redirect to list of sites
-        return redirect('sites/')
+        return redirect('/sites/')
     else:
         # User belongs to one site only; redirect to that site
-        return HttpResponse('To be specified!')
+        site_url = profile.site.uid.lower()
+        return redirect('site/{0}/'.format(site_url))
 
 
 @login_required

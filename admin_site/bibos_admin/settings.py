@@ -126,7 +126,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '/home/agger/src/bibos/bibos_admin/admin_site/templates',
+    os.path.join(install_dir, 'templates'),
 )
 
 LOCAL_APPS = (
