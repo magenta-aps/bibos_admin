@@ -35,6 +35,9 @@ class BibOSConfig():
         try:
             stream = open(self.filename, "r")
             self.yamldata = yaml.load(stream)
+            # Load returns None when the file is empty, but we need a dict
+            if self.yamldata is None:
+                self.yamldata = {}
         except IOError as e:
             if e.errno == 2:
                 # File does not exist -> empty YAML dictionary.
