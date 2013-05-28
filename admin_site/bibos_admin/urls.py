@@ -15,7 +15,7 @@ urlpatterns = patterns('',
     url(r'^accounts/login/', 'django.contrib.auth.views.login', 
         { 'template_name': 'login.html'}, name='login'),
     url(r'^accounts/logout/', 'django.contrib.auth.views.logout', 
-        { 'template_name': 'login.html'}, name='logout'),
+        { 'template_name': 'logout.html'}, name='logout'),
     url(r'^', include('system.urls')),
     url(r'^admin-xml/$', 'django_xmlrpc.views.handle_xmlrpc'),
     # Uncomment the admin/doc line below to enable admin documentation:

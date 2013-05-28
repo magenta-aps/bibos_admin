@@ -1,10 +1,11 @@
 {% extends "sitebase.html" %}
 
 {% block header_title %}
-<h1>Log <em>ind</em></h1>
+Log <em>ind</em>
 {% endblock %}
 
 {% block content %}
+<div class="container">
       <form method="post" action="{% url 'django.contrib.auth.views.login' %}">
           {% csrf_token %}
           <label>Brugernavn:</label>
@@ -15,5 +16,5 @@
       <input class="btn btn-primary" type="submit" value="Log ind">
       <input type="hidden" name="next" value="{{ next }}" />
     </form>
-
+</div>
 {% endblock %}
