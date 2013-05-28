@@ -1,8 +1,7 @@
-# Create your views here.
-
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.template import Context
 
 from account.models import UserProfile
 
@@ -25,11 +24,12 @@ def index(request):
 
 @login_required
 def sites_overview(request):
-    # TODO: Load site list into context and pass to render
-    return render(request, 'system/sites.html')
+    site_list = Site.objects.all()
+    context = Context({'site_list': site_list})
+    return render(request, 'system/sites.html', context)
 
 
-simple_context = lambda s: {'site': s.name, 'site_url': s.uid.lower()}
+simple_context = lambda s: {'site': s, 'site_url': s.uid.lower()}
 
 
 def site_view(template, get_context=simple_context):

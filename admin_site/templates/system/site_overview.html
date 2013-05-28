@@ -7,31 +7,11 @@ Overblik
 {% block specific_content %}
 
 <ul class="sublevelnav">
-    <li><a href="#"><i class="icon-hdd"></i> <span class="label label-info">New</span> Computer X</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> <span class="label label-info">New</span> Computer Y</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> <span class="label label-info">New</span> Computer Z</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> <span class="label label-warning">Update</span> Computer C</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> <span class="label label-warning">Update</span> Computer K</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> <span class="label label-warning">Update</span> Computer L</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> <span class="label label-warning">Update</span> Computer M</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> <span class="label label-warning">Update</span> Computer N</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> <span class="label label-warning">Update</span> Computer O</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> Computer A</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> Computer B</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> Computer D</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> Computer E</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> Computer F</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> Computer G</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> Computer H</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> Computer I</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> Computer J</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> Computer P</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> Computer Q</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> Computer R</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> Computer S</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> Computer T</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> Computer U</a></li>
-    <li><a href="#"><i class="icon-hdd"></i> Computer V</a></li>
+    
+    {% for pc in site.pcs.all %}
+    <li><a href="#"><i class="icon-hdd"></i> <span class="label
+            label-info">New</span> {{ pc.name }} </a></li>
+    {% endfor %}
   </ul>
   
   <div class="container-fluid main sublevelmain">
