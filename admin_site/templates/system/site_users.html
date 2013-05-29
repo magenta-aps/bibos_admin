@@ -7,15 +7,16 @@ Brugere
 {% block specific_content %}
 
   <ul class="sublevelnav">
-    <li class="listutils"><a href="#" title="Tilføj nyt bibliotek"><i class="icon-plus icon-white"></i> tilføj ny bruger</a></li>
-    <li><a href="#"><i class="icon-user"></i> Admin</a></li>
-    <li class="active"><a href="#"><i class="icon-user"></i> Sherlock Holmes</a></li>
-    <li><a href="#"><i class="icon-user"></i> Dr. Watson</a></li>
-    <li><a href="#"><i class="icon-user"></i> Irene Adler</a></li>
+      <li class="listutils"><a href="#" title="Tilføj nyt bibliotek"><i class="icon-plus icon-white"></i> tilføj ny bruger</a></li>
+
+      {% for user in site.users %}
+      <li {% ifequal user selected_user %}class="active"{% endifequal %}><a
+          href="/site/{{ site.url }}/users/{{ user.username }}"><i class="icon-user"></i> {{ user.username }}</a></li>
+      {% endfor %}
   </ul>
   
   <div class="container-fluid main sublevelmain">
-      <h2 class="divideheader">Profil: <em>Sherlock Holmes</em></h2>
+      <h2 class="divideheader">Profil: <em>{{ selected_user.username }}</em></h2>
       
       <button class="btn btn-primary">Gem ændringer</button>
       <button class="btn">Annuller</button>
@@ -28,16 +29,14 @@ Brugere
             <div class="row-fluid">
               <div class="span6">
                 <label>Navn:</label>
-                <input type="text" value="Sherlock Holmes">
+                <input type="text" value="{{ selected_user.username }}">
               </div>
               <div class="span6">
                 <label>Rettighedsgruppe:</label>
                 <select>
-                  <option>Administrator</option>
-                  <option>------</option>
-                  <option>Administrator</option>
-                  <option>Superadministrator</option>
-                  <option>Gæst</option>
+                    {% for c in choices %}
+                    <option value="{{ c.id }}" {% ifequal c.id 1 %} selected{% endifequal %}>{{ c.val }}</option>
+                    {% endfor %}
                 </select>
               </div>
             </div>

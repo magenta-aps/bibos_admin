@@ -4,6 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
 
+
 """The following variables define states of objects like jobs or PCs. It is
 used for labeling in the GUI."""
 
@@ -57,11 +58,16 @@ class Site(models.Model):
     """A site which we wish to admin"""
     name = models.CharField(_('name'), max_length=255)
     uid = models.CharField(_('uid'), max_length=255, unique=True)
-    users = models.ManyToManyField(User,
-                                   related_name='site_users',
-                                   verbose_name=_('Site Users'),
-                                   blank=True)
     configuration = models.ForeignKey(Configuration)
+
+    @property
+    def users(self):
+        profiles = [
+            u.get_profile() for u in User.objects.all() 
+                if u.get_profile().site == self 
+                and u.get_profile().type != 0
+        ]
+        return [ p.user for p in profiles ]
 
     @property
     def url(self):
