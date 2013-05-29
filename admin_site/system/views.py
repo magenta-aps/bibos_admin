@@ -5,7 +5,7 @@ from django.template import Context
 
 from account.models import UserProfile
 
-from models import Site, PC
+from models import Site, PC, PCGroup
 
 
 @login_required
@@ -18,7 +18,7 @@ def index(request):
         return redirect('/sites/')
     else:
         # User belongs to one site only; redirect to that site
-        site_url = profile.site.uid.lower()
+        site_url = profile.site.url
         return redirect('site/{0}/'.format(site_url))
 
 
@@ -29,7 +29,7 @@ def sites_overview(request):
     return render(request, 'system/sites.html', context)
 
 
-simple_context = lambda s: {'site': s, 'site_url': s.uid.lower()}
+simple_context = lambda s: {'site': s}
 
 
 def site_view(template, get_context=simple_context):
@@ -50,15 +50,13 @@ def site_view(template, get_context=simple_context):
 
 site = site_view('system/site_overview.html')
 configuration = site_view('system/site_configuration.html')
-groups = site_view('system/site_groups.html')
 jobs = site_view('system/site_jobs.html')
 scripts = site_view('system/site_scripts.html')
 users = site_view('system/site_users.html')
 
-# Special handling of computers view.
 
 def computers(request, site_uid, computer_uid=None):
-
+    """Special handling of computers view."""
     def get_computers_context(site):
         if not computer_uid and site.pcs.count() >= 1:
             selected = site.pcs.all()[0]
@@ -72,5 +70,25 @@ def computers(request, site_uid, computer_uid=None):
         return context
 
     view =  site_view('system/site_computers.html', get_computers_context)
+
+    return view(request, site_uid)
+
+
+def groups(request, site_uid, group_uid=None):
+    """Special handling of groups view."""
+    def get_groups_context(site):
+        if not group_uid and site.groups.count() >= 1:
+            selected = site.groups.all()[0]
+        elif not group_uid:
+            selected = None
+        else:
+            uid = group_uid.upper()
+            selected = get_object_or_404(PCGroup, uid=uid)
+        
+        context = simple_context(site)
+        context['selected_group'] = selected
+        return context
+
+    view =  site_view('system/site_groups.html', get_groups_context)
 
     return view(request, site_uid)

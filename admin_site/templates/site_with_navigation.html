@@ -11,17 +11,17 @@ class="detailpage"
 {% block content %}
 
 <ul class="nav nav-list utils utils-global">
-    <li class="active"><a href="/site/{{ site_url }}"><i class="icon-info-sign icon-white"></i> Overblik</a></li>
+    <li class="active"><a href="/site/{{ site.url }}"><i class="icon-info-sign icon-white"></i> Overblik</a></li>
     <li class="divider"></li>
     <li class="nav-header">Maskiner</li>
-    <li><a href="/site/{{ site_url }}/configuration/"><i class="icon-wrench icon-white"></i> Global konfiguration</a></li>
-<li><a href="/site/{{ site_url }}/computers/"><i class="icon-hdd icon-white"></i> Maskiner</a></li>
-<li><a href="/site/{{ site_url }}/groups/"><i class="icon-tags icon-white"></i> Grupper</a></li>
+    <li><a href="/site/{{ site.url }}/configuration/"><i class="icon-wrench icon-white"></i> Global konfiguration</a></li>
+<li><a href="/site/{{ site.url }}/computers/"><i class="icon-hdd icon-white"></i> Maskiner</a></li>
+<li><a href="/site/{{ site.url }}/groups/"><i class="icon-tags icon-white"></i> Grupper</a></li>
     <li class="nav-header">Scripting</li>
-    <li><a href="/site/{{ site_url }}/jobs/"><i class="icon-list-alt icon-white"></i> Jobs</a></li>
-    <li><a href="/site/{{ site_url }}/scripts/"><i class="icon-list icon-white"></i> Scripts</a></li>
+    <li><a href="/site/{{ site.url }}/jobs/"><i class="icon-list-alt icon-white"></i> Jobs</a></li>
+    <li><a href="/site/{{ site.url }}/scripts/"><i class="icon-list icon-white"></i> Scripts</a></li>
     <li class="divider"></li>
-    <li><a href="/site/{{site_url}}/users/"><i class="icon-user icon-white"></i> Brugere</a></li>
+    <li><a href="/site/{{site.url}}/users/"><i class="icon-user icon-white"></i> Brugere</a></li>
   </ul>
 
   {% block specific_content %}

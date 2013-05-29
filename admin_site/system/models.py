@@ -63,6 +63,10 @@ class Site(models.Model):
                                    blank=True)
     configuration = models.ForeignKey(Configuration)
 
+    @property
+    def url(self):
+        return self.uid.lower()
+
     def __unicode__(self):
         return self.name
 
@@ -105,9 +109,28 @@ class PCGroup(models.Model):
     """Groups of PCs. Each PC may be in zero or many groups."""
     name = models.CharField(_('name'), max_length=255)
     uid = models.CharField(_('id'), max_length=255)
+    site = models.ForeignKey(Site, related_name='groups')
+    configuration = models.ForeignKey(Configuration)
+    package_list = models.ForeignKey(PackageList)
+    
+    @property
+    def url(self):
+        return self.uid.lower()
 
     def __unicode__(self):
         return self.name
+    
+    def save(self, *args, **kwargs):
+        """Customize behaviour when saving a group object."""
+        # Before actual save
+        self.uid = self.uid.upper()
+        
+        # Perform save
+        super(PCGroup, self).save(*args, **kwargs)
+
+        # After save
+        pass
+
 
 
 class PC(models.Model):

@@ -8,18 +8,16 @@ Grupper
 
 
   <ul class="sublevelnav">
-    <li class="listutils"><a href="#" title=""><i class="icon-plus icon-white"></i> tilføj ny gruppe</a></li>
-    <li><a href="#"><i class="icon-tags"></i> Gruppe A</a></li>
-    <li class="active"><a href="#"><i class="icon-tags"></i> Gruppe B</a></li>
-    <li><a href="#"><i class="icon-tags"></i> Gruppe C</a></li>
-    <li><a href="#"><i class="icon-tags"></i> Gruppe D</a></li>
-    <li><a href="#"><i class="icon-tags"></i> Gruppe E</a></li>
-    <li><a href="#"><i class="icon-tags"></i> Gruppe F</a></li>
+      <li class="listutils"><a href="#" title=""><i class="icon-plus icon-white"></i> tilføj ny gruppe</a></li>
+      {% for group in site.groups.all %}
+      <li {% ifequal group selected_group %}class="active"{% endifequal %}><a
+          href="/site/{{ site.url }}/groups/{{ group.url }}/"><i class="icon-tags"></i> {{ group.name }}</a></li>
+      {% endfor %}
   </ul>
   
   <div class="container-fluid main sublevelmain">
     
-    <h2 class="divideheader">Detaljer om <em>Gruppe B</em></h2>
+      <h2 class="divideheader">Detaljer om <em>{{ selected_group.name }}</em></h2>
     
     <button class="btn btn-primary">Gem ændringer</button>
     <button class="btn">Annuller</button>
@@ -30,49 +28,27 @@ Grupper
       <fieldset class="span6">
         
         <label>Navn:</label>
-        <input type="text" value="Gruppe B">
+        <input type="text" value="{{ selected_group.name }}">
         
         <label>Beskrivelse:</label>
-        <textarea>Gruppe af PCere i afd. for børnelitteratur</textarea>
+        <textarea>{{ selected_group.description }}</textarea>
         
       </fieldset>
       <fieldset class="span6">
         
         <label>Maskiner i denne gruppe:</label>
         <ul class="unstyled well actionlist">
+            {% for pc in selected_group.pcs.all %}
           <li>
             <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-hdd"></i> Computer A</a>
+              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i
+                      class="icon-hdd"></i> {{ pc.name }}</a>
               <ul class="dropdown-menu">
                 <li><a href="#"><i class="icon-remove"></i> Fjern maskine</a></li>
               </ul>
             </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-hdd"></i> Computer Z</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-hdd"></i> Computer D</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-hdd"></i> Computer E</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li><a href="#" title="Tilføj maskine"><i class="icon-plus"></i> tilføj maskiner</a></li>
+            {% endfor %}
+            <li><a href="#" title="Tilføj maskine"><i class="icon-plus"></i> tilføj maskiner</a></li>
         </ul>
         
       </fieldset>
@@ -87,31 +63,22 @@ Grupper
             <tr>
               <th>Nøgle</th>
               <th>Værdi</th>
-            </tr>
+          </tr>
+          {% for entry in selected_group.configuration.entries.all %}
             <tr class="muted">
-              <td>Automatic update</td>
+                <td>{{ entry.key }}</td>
               <td>
                 <div class="btn-group profile dark">
-                  <a class="dropdown-toggle btn" data-toggle="dropdown" href="#">false</a>
+                  <a class="dropdown-toggle btn" data-toggle="dropdown"
+                      href="#">{{ entry.value }}</a>
                   <ul class="dropdown-menu">
                     <li><a href="#"><i class="icon-edit"></i> Redigér</a></li>
                     <li><a href="#"><i class="icon-remove"></i> Slet konfiguration</a></li>
                   </ul>
                 </div>
               </td>
-            </tr>
-            <tr class="muted">
-              <td>Logout timeout</td>
-              <td>
-                <div class="btn-group profile dark">
-                  <a class="dropdown-toggle btn" data-toggle="dropdown" href="#">180 min</a>
-                  <ul class="dropdown-menu">
-                    <li><a href="#"><i class="icon-edit"></i> Redigér</a></li>
-                    <li><a href="#"><i class="icon-remove"></i> Slet konfiguration</a></li>
-                  </ul>
-                </div>
-              </td>
-            </tr>
+          </tr>
+          {% endfor %}
             <tr>
               <td colspan="2">
                 <a href="#" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj konfiguration</a>
@@ -125,102 +92,17 @@ Grupper
         
         <label>Pakker:</label>
         <ul class="unstyled well actionlist">
+            {% for package in selected_group.package_list.packages.all %}
           <li>
             <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="label label-success">libvar64</span></a>
+              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span
+                      class="label label-success">{{ package.name }}</span></a>
               <ul class="dropdown-menu">
                 <li><a href="#"><i class="icon-remove"></i> Fjern pakke</a></li>
               </ul>
             </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="label label-success">Danish-language-files</span></a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern pakke</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="label label-success">dist-patch-3.0.236</span></a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern pakke</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#">Distribution-upgrade-3.0</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern pakke for denne maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#">libmoghills</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern pakke for denne maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#">dist-patch-3.0.234</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern pakke for denne maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="label label-important">MS-font-faces</span></a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-plus"></i> Acceptér pakke for denne maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#">dist-patch-3.0.233</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern pakke for denne maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="label label-important">Ubuntu-font-faces</span></a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-plus"></i> Acceptér pakke for denne maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#">libdipvip32</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern pakke for denne maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#">MS-font-faces-arabic</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern pakke for denne maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#">dist-patch-3.0.0</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern pakke for denne maskine</a></li>
-              </ul>
-            </div>
-          </li>
+            </li>
+            {% endfor %}
           <li><a href="#" title="Tilføj pakke"><i class="icon-plus"></i> tilføj pakker</a></li>
         </ul>
         
