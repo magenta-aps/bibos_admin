@@ -1,5 +1,5 @@
 from django.http import HttpResponse, Http404
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import Context
 
@@ -38,10 +38,7 @@ def site_view(template, get_context=simple_context):
     @login_required
     def _site_view(request, site_uid):
         uid = site_uid.upper()
-        try:
-            site = Site.objects.get(uid=uid)
-        except Site.NotFound:
-            raise Http404
+        site = get_object_or_404(Site, uid=uid)
         context = get_context(site)
         return render(request, template, context)
 

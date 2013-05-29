@@ -50,6 +50,17 @@ class Site(models.Model):
     def __unicode__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        """Customize behaviour when saving a site object."""
+        # Before actual save
+        self.uid = self.uid.upper()
+        
+        # Perform save
+        super(Site, self).save(*args, **kwargs)
+
+        # After save
+        pass
+
 
 class Distribution(models.Model):
     """This represents a GNU/Linux distribution managed by us."""
