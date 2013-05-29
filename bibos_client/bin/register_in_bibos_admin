@@ -46,6 +46,8 @@ except Exception as e:
 
 # Computer created, now upload package data.
 
+# TODO: Do NOT do this. Factor to new program.
+"""
 os.system('get_package_data /tmp/packages.csv')
 
 with open('/tmp/packages.csv') as f:
@@ -57,3 +59,5 @@ try:
 except Exception as e:
     print >> sys.stderr, 'Error:', str(e)
     sys.exit(1)
+"""
+

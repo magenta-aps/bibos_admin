@@ -110,5 +110,18 @@ class PC(models.Model):
         auto_now_add=True)
     last_seen = models.DateTimeField(_('last seen'), null=True, blank=True)
 
+    @property 
+    def status(self):
+        if not self.is_active:
+            return "NEW"
+        elif False:  
+            # If packages require update
+            return "FAIL"
+        elif False:
+            # If it has failed jobs
+            return "UPPDATE"
+        else:
+            return "OK"
+
     def __unicode__(self):
         return self.name
