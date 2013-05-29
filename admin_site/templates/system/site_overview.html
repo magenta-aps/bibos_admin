@@ -9,8 +9,8 @@ Overblik
 <ul class="sublevelnav">
     
     {% for pc in site.pcs.all %}
-    <li><a href="#"><i class="icon-hdd"></i> <span class="label
-            label-info">New</span> {{ pc.name }} </a></li>
+    <li><a href="#"><i class="icon-hdd"></i>{% if pc.status.state %}<span class="label
+            label-{{ pc.status.priority }}">{{ pc.status.state }}</span>{% endif %} {{ pc.name }} </a></li>
     {% endfor %}
   </ul>
   

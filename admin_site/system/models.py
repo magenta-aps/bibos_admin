@@ -4,6 +4,22 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
 
+"""The following variables define states of objects like jobs or PCs. It is
+used for labeling in the GUI."""
+
+# States
+NEW = _("New")
+FAIL = _("Fail")
+UPDATE = _("Update")
+OK = ''
+
+# Priorities
+INFO = 'info'
+WARNING = 'warning'
+IMPORTANT = 'important'
+NONE = ''
+
+
 class Configuration(models.Model):
     """This class contains/represents the configuration of a Site, a
     Distribution, a PC Group or a PC."""
@@ -22,7 +38,7 @@ class ConfigurationEntry(models.Model):
     value = models.CharField(max_length=255)
     owner_configuration = models.ForeignKey(
         Configuration,
-        related_name='owner',
+        related_name='entries',
         verbose_name=_('owner configuration')
     )
 
@@ -81,7 +97,7 @@ class Package(models.Model):
     status = models.CharField(_('status'), max_length=255)
 
     package_list = models.ForeignKey(PackageList,
-                                     related_name='package_list',
+                                     related_name='packages',
                                      verbose_name=_('package list'))
 
 
@@ -110,18 +126,26 @@ class PC(models.Model):
         auto_now_add=True)
     last_seen = models.DateTimeField(_('last seen'), null=True, blank=True)
 
+    class Status:
+        """This class represents the status of af PC. We may want to do
+        something similar for jobs."""
+
+        def __init__(self, state, priority):
+            self.state = state
+            self.priority = priority
+
     @property 
     def status(self):
         if not self.is_active:
-            return "NEW"
+            return self.Status(NEW, INFO)
         elif False:  
             # If packages require update
-            return "FAIL"
-        elif False:
+            return self.Status(UPDATE, WARNING)
+        elif not self.last_seen:
             # If it has failed jobs
-            return "UPPDATE"
+            return self.Status(FAIL, IMPORTANT)
         else:
-            return "OK"
+            return self.Status(OK, None)
 
     def __unicode__(self):
         return self.name

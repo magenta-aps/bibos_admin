@@ -5,7 +5,7 @@ from django.template import Context
 
 from account.models import UserProfile
 
-from models import Site
+from models import Site, PC
 
 
 @login_required
@@ -50,8 +50,27 @@ def site_view(template, get_context=simple_context):
 
 site = site_view('system/site_overview.html')
 configuration = site_view('system/site_configuration.html')
-computers = site_view('system/site_computers.html')
 groups = site_view('system/site_groups.html')
 jobs = site_view('system/site_jobs.html')
 scripts = site_view('system/site_scripts.html')
 users = site_view('system/site_users.html')
+
+# Special handling of computers view.
+
+def computers(request, site_uid, computer_uid=None):
+
+    def get_computers_context(site):
+        if not computer_uid and site.pcs.count() >= 1:
+            selected = site.pcs.all()[0]
+        elif not computer_uid:
+            selected = None
+        else: 
+            selected = get_object_or_404(PC, uid=computer_uid)
+        
+        context = simple_context(site)
+        context['selected_pc'] = selected
+        return context
+
+    view =  site_view('system/site_computers.html', get_computers_context)
+
+    return view(request, site_uid)
