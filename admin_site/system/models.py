@@ -4,7 +4,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
 
-
 """The following variables define states of objects like jobs or PCs. It is
 used for labeling in the GUI."""
 
@@ -63,11 +62,11 @@ class Site(models.Model):
     @property
     def users(self):
         profiles = [
-            u.get_profile() for u in User.objects.all() 
-                if u.get_profile().site == self 
+            u.get_profile() for u in User.objects.all()
+                if u.get_profile().site == self
                 and u.get_profile().type != 0
         ]
-        return [ p.user for p in profiles ]
+        return [p.user for p in profiles]
 
     @property
     def url(self):
@@ -80,7 +79,7 @@ class Site(models.Model):
         """Customize behaviour when saving a site object."""
         # Before actual save
         self.uid = self.uid.upper()
-        
+
         # Perform save
         super(Site, self).save(*args, **kwargs)
 
@@ -118,25 +117,24 @@ class PCGroup(models.Model):
     site = models.ForeignKey(Site, related_name='groups')
     configuration = models.ForeignKey(Configuration)
     package_list = models.ForeignKey(PackageList)
-    
+
     @property
     def url(self):
         return self.uid.lower()
 
     def __unicode__(self):
         return self.name
-    
+
     def save(self, *args, **kwargs):
         """Customize behaviour when saving a group object."""
         # Before actual save
         self.uid = self.uid.upper()
-        
+
         # Perform save
         super(PCGroup, self).save(*args, **kwargs)
 
         # After save
         pass
-
 
 
 class PC(models.Model):
@@ -163,11 +161,11 @@ class PC(models.Model):
             self.state = state
             self.priority = priority
 
-    @property 
+    @property
     def status(self):
         if not self.is_active:
             return self.Status(NEW, INFO)
-        elif False:  
+        elif False:
             # If packages require update
             return self.Status(UPDATE, WARNING)
         elif not self.last_seen:

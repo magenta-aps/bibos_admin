@@ -62,14 +62,14 @@ def computers(request, site_uid, uid=None):
             selected = site.pcs.all()[0]
         elif not uid:
             selected = None
-        else: 
+        else:
             selected = get_object_or_404(PC, uid=uid)
-        
+
         context = simple_context(site)
         context['selected_pc'] = selected
         return context
 
-    view =  site_view('system/site_computers.html', get_computers_context)
+    view = site_view('system/site_computers.html', get_computers_context)
 
     return view(request, site_uid)
 
@@ -84,12 +84,12 @@ def groups(request, site_uid, uid=None):
         else:
             uid = uid.upper()
             selected = get_object_or_404(PCGroup, uid=uid)
-        
+
         context = simple_context(site)
         context['selected_group'] = selected
         return context
 
-    view =  site_view('system/site_groups.html', get_groups_context)
+    view = site_view('system/site_groups.html', get_groups_context)
 
     return view(request, site_uid)
 
@@ -103,12 +103,12 @@ def users(request, site_uid, uid=None):
             selected = None
         else:
             selected = get_object_or_404(User, username=uid)
-        
+
         context = simple_context(site)
         context['selected_user'] = selected
 
         choices = selected.get_profile().type_choices
-        choices_dict =[{'id': k, 'val': v} for (k, v) in choices] 
+        choices_dict = [{'id': k, 'val': v} for (k, v) in choices]
 
         context['choices'] = choices_dict
 
