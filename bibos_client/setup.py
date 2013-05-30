@@ -5,7 +5,7 @@ setup(
     version='0.0.1.2',
     description='Clients for the BibOS system',
     url='https://github.com/magenta-aps/',
-    author='C. Agger and J.U.B. Kragh, Magenta ApS',
+    author='C. Agger and J.U.B. Krag, Magenta ApS',
     author_email='carstena@magenta-aps.dk',
     license='GPLv3',
     packages=['bibos_client'],
