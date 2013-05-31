@@ -43,11 +43,27 @@ class ConfigurationEntry(models.Model):
     )
 
 
+class Package(models.Model):
+    """This class represents a single Debian package to be installed."""
+    name = models.CharField(_('name'), max_length=255)
+    version = models.CharField(_('version'), max_length=255)
+    description = models.CharField(_('description'), max_length=255)
+    status = models.CharField(_('status'), max_length=255)
+
+    def __unicode__(self):
+        return ' '.join([self.name, self.version])
+
+    class Meta:
+        unique_together = ('name', 'version')
+
+
 class PackageList(models.Model):
     """A list of packages to be installed on a PC or to be included in a
     distribution."""
     name = models.CharField(_('name'), max_length=255)
     uid = models.CharField(_('id'), max_length=255)
+    packages = models.ManyToManyField(Package, related_name='package_lists',
+                                      blank=True)
 
     def __unicode__(self):
         return self.name
@@ -96,18 +112,6 @@ class Distribution(models.Model):
 
     def __unicode__(self):
         return self.name
-
-
-class Package(models.Model):
-    """This class represents a single Debian package to be installed."""
-    name = models.CharField(_('name'), max_length=255)
-    version = models.CharField(_('version'), max_length=255)
-    description = models.CharField(_('description'), max_length=255)
-    status = models.CharField(_('status'), max_length=255)
-
-    package_list = models.ForeignKey(PackageList,
-                                     related_name='packages',
-                                     verbose_name=_('package list'))
 
 
 class PCGroup(models.Model):

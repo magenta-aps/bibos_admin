@@ -63,17 +63,22 @@ def send_status_info(pc_uid, package_data, job_data):
     pc.save()
     # 2. Update package lists with package data
     # Clear existing packages
-    Package.objects.filter(package_list=pc.package_list).delete()
-    print Package.objects.filter(package_list=pc.package_list)
+    pc.package_list.packages.clear()
 
     # Insert new ones
-    for (name, status, version, description) in package_data:
-        new_package = Package(name=name,
-                              status=status,
-                              version=version,
-                              description=description,
-                              package_list=pc.package_list)
-        new_package.save()
+    # package_data is a list of dicts with the correct field names.
+    for pd in package_data:
+        # First, assume package & version already exists.
+        try:
+            p = Package.objects.get(name=pd['name'], version=pd['version'])
+            pc.package_list.packages.add(p)
+        except Package.DoesNotExist:
+            p = pc.package_list.packages.create(
+                name=pd['name'],
+                version=pd['version'],
+                status=pd['status'],
+                description=pd['description']
+            )
 
     # 3. Update jobs with job data
 
