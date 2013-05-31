@@ -155,9 +155,9 @@ DJANGO_APPS = (
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 XMLRPC_METHODS = (
-    ('system.xmlrpc.register_new_computer', 'register_new_computer'),
-    ('system.xmlrpc.send_status_info', 'send_status_info'),
-    ('system.xmlrpc.get_instructions', 'get_instructions')
+    ('system.rpc.register_new_computer', 'register_new_computer'),
+    ('system.rpc.send_status_info', 'send_status_info'),
+    ('system.rpc.get_instructions', 'get_instructions')
 )
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

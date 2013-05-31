@@ -13,7 +13,7 @@ class ConfigurationEntryInline(admin.TabularInline):
 
 
 class PackageInline(admin.TabularInline):
-    model = Package
+    model = PackageList.packages.through
     # Don't include a lot of extras, the intention is not that these lists
     # should be updated manually.
     extra = 1
