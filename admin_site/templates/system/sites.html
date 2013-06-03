@@ -12,14 +12,14 @@
       <div class="span8 itemlist">
         {% for site in site_list %}     
             <div class="btn-group">
-                <a href="/site/{{site.uid|lower}}" class="btn btn-large"><i
+                <a href="/site/{{site.url}}" class="btn btn-large"><i
                         class="icon-home"></i>{{site.name}}</a>
               <button class="btn btn-large dropdown-toggle" data-toggle="dropdown">
                 <span class="caret"></span>
               </button>
               <ul class="dropdown-menu pull-right">
-                  <li><a href="/site/{{site.uid|lower}}"><i class="icon-home"></i> Gå til</a></li>
-                <li><a href="#"><i class="icon-edit"></i> Redigér</a></li>
+                  <li><a href="/site/{{site.url}}/"><i class="icon-home"></i> Gå til</a></li>
+                  <li><a href="/sites/{{ site.pk }}/edit/"><i class="icon-edit"></i> Redigér</a></li>
                 <li><a href="#" title="Slet bibliotek"><i class="icon-remove"></i> Slet</a></li>
               </ul>
             </div>
