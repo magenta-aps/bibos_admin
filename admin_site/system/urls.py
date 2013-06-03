@@ -1,12 +1,17 @@
 from django.conf.urls import patterns, url
 
-from system import views
+import views
+
+from views import SiteCreate, SiteUpdate
 
 
 urlpatterns = patterns(
     '',
     url(r'^$', views.index, name='index'),
-    url(r'^sites/', views.sites_overview, name='sites'),
+    url(r'^sites/$', views.sites_overview, name='sites'),
+    url(r'^sites/new/$', SiteCreate.as_view(), name='new_site'),
+    url(r'^sites/(?P<site_uid>\w+)/edit/$',
+        SiteUpdate.as_view(), name='edit_site'),
     url(r'^site/(?P<site_uid>\w+)/$', views.site, name='site'),
     url(r'^site/(?P<site_uid>\w+)/configuration/', views.configuration,
         name='configuration'),
