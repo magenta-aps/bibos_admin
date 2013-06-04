@@ -5,6 +5,8 @@ import datetime
 
 from models import PC, Site, Distribution, Configuration, ConfigurationEntry
 from models import PackageList, Package
+from job.models import Job
+from django.db.models import Q
 
 
 def register_new_computer(name, uid, distribution, site, configuration):
@@ -61,38 +63,76 @@ def send_status_info(pc_uid, package_data, job_data):
     pc = PC.objects.get(uid=pc_uid)
     pc.last_seen = datetime.datetime.now()
     pc.save()
-    # 2. Update package lists with package data
-    # Clear existing packages
-    pc.package_list.packages.clear()
 
-    # Insert new ones
-    # package_data is a list of dicts with the correct field names.
-    for pd in package_data:
-        # First, assume package & version already exists.
-        try:
-            p = Package.objects.get(name=pd['name'], version=pd['version'])
-            pc.package_list.packages.add(p)
-        except Package.DoesNotExist:
-            p = pc.package_list.packages.create(
-                name=pd['name'],
-                version=pd['version'],
-                status=pd['status'],
-                description=pd['description']
-            )
+    if package_data is not None:
+        # 2. Update package lists with package data
+        # Clear existing packages
+        pc.package_list.packages.clear()
+    
+        # Insert new ones
+        # package_data is a list of dicts with the correct field names.
+        for pd in package_data:
+            # First, assume package & version already exists.
+            try:
+                p = Package.objects.get(name=pd['name'], version=pd['version'])
+                pc.package_list.packages.add(p)
+            except Package.DoesNotExist:
+                p = pc.package_list.packages.create(
+                    name=pd['name'],
+                    version=pd['version'],
+                    status=pd['status'],
+                    description=pd['description']
+                )
 
     # 3. Update jobs with job data
+    if job_data is not None:
+        print >>os.sys.stderr, job_data
+        for jd in job_data:
+            job = Job.objects.get(pk=jd['id'])
+            job.status = jd['status'];
+            job.started = jd['started'];
+            job.finished = jd['finished'];
+            job.log_output = jd['log_output']
+            job.save()
 
     return 0
 
+
+import os
 
 def get_instructions(pc_uid):
     """This function will ask for new instructions in the form of a list of
     jobs, which will be scheduled for execution and executed upon receipt.
     These jobs will generally take the form of bash scripts."""
 
+    pc = PC.objects.get(uid=pc_uid)
+    pc.last_seen = datetime.datetime.now()
+    pc.save()
+    print >>os.sys.stderr, pc.jobs.all()
+
     jobs = []
 
     # TODO: Retrieve non-submitted jobs, mark them as subitted and send to the
     # client denoted by UID.
 
+    for job in pc.jobs.filter(status=Job.NEW):
+        parameters = []
+
+        for param in job.batch.parameters.order_by("input__position"):
+            parameters.append({
+                'type': param.input.value_type,
+                'value': param.transfer_value
+            })
+
+        job.status = Job.SUBMITTED
+        job.save()
+
+        jobs.append({
+            'id': job.pk,
+            'status': job.status,
+            'parameters': parameters,
+            'executable_code': job.batch.script.executable_code.read()
+        })
+
+    print >>os.sys.stderr, jobs
     return jobs

@@ -24,7 +24,6 @@ class Batch(models.Model):
     # TODO: The name should probably be generated automatically from ID and
     # script and date, etc.
     name = models.CharField(_('name'), max_length=255)
-    targets = models.ManyToManyField(PC, related_name='targets', blank=True)
     script = models.ForeignKey(Script)
 
     def __unicode__(self):
@@ -52,9 +51,10 @@ class Job(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES,
                               default=NEW)
     log_output = models.CharField(_('log output'), max_length=4096, blank=True)
-    started = models.DateTimeField(_('started'))
-    finished = models.DateTimeField(_('finished'))
-    batch = models.ForeignKey(Batch)
+    started = models.DateTimeField(_('started'), null=True)
+    finished = models.DateTimeField(_('finished'), null=True)
+    batch = models.ForeignKey(Batch, related_name='jobs')
+    pc = models.ForeignKey(PC, related_name='jobs')
 
     def __unicode__(self):
         return '_'.join(map(unicode, [self.batch, self.id]))
@@ -90,14 +90,19 @@ class Input(models.Model):
 class Parameter(models.Model):
     """An input parameter for a job, a script, etc."""
 
-    string_value = models.CharField(max_length=4096)
-    integer_value = models.IntegerField()
-    date_value = models.DateTimeField()
-    file_value = models.FileField(upload_to='site_media/parameter_uploads')
-    # TODO: This field is redundant, replace with lookup on input
-    value_type = models.CharField(_('value type'), choices=Input.VALUE_CHOICES,
-                                 max_length=10)
+    string_value = models.CharField(max_length=4096, null=True, blank=True)
+    file_value = models.FileField(upload_to='site_media/parameter_uploads',
+                                  null=True,
+                                  blank=True)
     # which input does this belong to?
     input = models.ForeignKey(Input)
     # and which batch are we running?
-    batch = models.ForeignKey(Batch)
+    batch = models.ForeignKey(Batch, related_name='parameters')
+
+    @property
+    def transfer_value(self):
+        input_type = self.input.value_type
+        if input_type == Input.FILE:
+            return self.file_value.url
+        else:
+            return self.string_value
