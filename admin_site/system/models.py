@@ -94,13 +94,28 @@ class Site(models.Model):
     def save(self, *args, **kwargs):
         """Customize behaviour when saving a site object."""
         # Before actual save
+        # 1. uid should consist of uppercase letters.
         self.uid = self.uid.upper()
+        # 2. Create related configuration object if necessary.
+        is_new = self.id is None
+        if is_new:
+            try:
+                self.configuration = Configuration.objects.get(
+                    name=self.uid
+                )
+            except Configuration.DoesNotExist:
+                self.configuration = Configuration.objects.create(
+                    name=self.uid
+                )
 
         # Perform save
         super(Site, self).save(*args, **kwargs)
 
         # After save
         pass
+
+    def get_absolute_url(self):
+        return '/site/{0}/'.format(self.url)
 
 
 class Distribution(models.Model):

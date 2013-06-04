@@ -4,9 +4,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.template import Context
 
+from django.views.generic.edit import CreateView, UpdateView
+
 from account.models import UserProfile
 
 from models import Site, PC, PCGroup
+from forms import SiteForm
 
 
 @login_required
@@ -30,6 +33,19 @@ def sites_overview(request):
     return render(request, 'system/sites.html', context)
 
 
+# TODO: @login_required doesn't work for classes, find out how to do
+# this.
+class SiteCreate(CreateView):
+    model = Site
+    form_class = SiteForm
+
+
+# TODO: @login_required, see above.
+class SiteUpdate(UpdateView):
+    model = Site
+    form_class = SiteForm
+
+         
 simple_context = lambda s: {'site': s}
 
 
@@ -77,18 +93,24 @@ def computers(request, site_uid, uid=None):
 def groups(request, site_uid, uid=None):
     """Special handling of groups view."""
     def get_groups_context(site):
+        try:
+            # TODO: WTF is this shit?
+            x = uid
+        except:
+            uid = None
         if not uid and site.groups.count() >= 1:
             selected = site.groups.all()[0]
         elif not uid:
             selected = None
         else:
             uid = uid.upper()
-            selected = get_object_or_404(PCGroup, uid=uid)
+            selected = get_object_or_404(PCGroup, uid=guid)
 
         context = simple_context(site)
         context['selected_group'] = selected
         return context
 
+    guid = uid
     view = site_view('system/site_groups.html', get_groups_context)
 
     return view(request, site_uid)
@@ -107,7 +129,7 @@ def users(request, site_uid, uid=None):
         context = simple_context(site)
         context['selected_user'] = selected
 
-        choices = selected.get_profile().type_choices
+        choices = UserProfile.type_choices
         choices_dict = [{'id': k, 'val': v} for (k, v) in choices]
 
         context['choices'] = choices_dict

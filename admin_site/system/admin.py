@@ -12,18 +12,6 @@ class ConfigurationEntryInline(admin.TabularInline):
     extra = 3
 
 
-class PackageInline(admin.TabularInline):
-    model = PackageList.packages.through
-    # Don't include a lot of extras, the intention is not that these lists
-    # should be updated manually.
-    extra = 1
-
-
-class PackageListAdmin(admin.ModelAdmin):
-    fields = ['name', 'uid']
-    inlines = [PackageInline]
-
-
 class ConfigurationAdmin(admin.ModelAdmin):
     fields = ['name']
     inlines = [ConfigurationEntryInline]
@@ -39,7 +27,7 @@ class PCGroupAdmin(admin.ModelAdmin):
 
 
 ar(Configuration, ConfigurationAdmin)
-ar(PackageList, PackageListAdmin)
+ar(PackageList)
 ar(Site)
 ar(Distribution)
 ar(PCGroup, PCGroupAdmin)
