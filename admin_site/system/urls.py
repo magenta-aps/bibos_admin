@@ -1,30 +1,41 @@
 from django.conf.urls import patterns, url
+from django.contrib.auth.decorators import login_required
+from django.views.generic import ListView
 
-import views
+from models import Site
 
-from views import SiteCreate, SiteUpdate
+from views import SiteView, SiteCreate, SiteUpdate, index
+from views import ComputersView, GroupsView, UsersView, JobsView, ScriptsView
 
 
 urlpatterns = patterns(
     '',
-    url(r'^$', views.index, name='index'),
-    url(r'^sites/$', views.sites_overview, name='sites'),
+    url(r'^$', index, name='index'),
+    url(r'^sites/$',
+        login_required(
+            ListView.as_view(model=Site,
+                             context_object_name='site_list')
+        ), name='sites'
+       ),
     url(r'^sites/new/$', SiteCreate.as_view(), name='new_site'),
     url(r'^sites/(?P<pk>\d+)/edit/$', SiteUpdate.as_view(), name='edit_site'),
-    url(r'^site/(?P<site_uid>\w+)/$', views.site, name='site'),
-    url(r'^site/(?P<site_uid>\w+)/configuration/', views.configuration,
+    url(r'^site/(?P<slug>\w+)/$', SiteView.as_view(), name='site'),
+    url(r'^site/(?P<slug>\w+)/configuration/',
+        SiteView.as_view(template_name='system/site_configuration.html'),
         name='configuration'),
-    url(r'^site/(?P<site_uid>\w+)/computers/$', views.computers,
+    url(r'^site/(?P<slug>\w+)/computers/$', ComputersView.as_view(),
         name='computers'),
-    url(r'^site/(?P<site_uid>\w+)/computers/(?P<uid>\w+)/$',
-        views.computers, name='computer'),
-    url(r'^site/(?P<site_uid>\w+)/groups/$', views.groups,
+    url(r'^site/(?P<slug>\w+)/computers/(?P<uid>\w+)/$',
+        ComputersView.as_view(), name='computer'),
+    url(r'^site/(?P<slug>\w+)/groups/$', GroupsView.as_view(),
         name='groups'),
-    url(r'^site/(?P<site_uid>\w+)/groups/(?P<uid>\w+)/$',
-        views.groups, name='group'),
-    url(r'^site/(?P<site_uid>\w+)/jobs/', views.jobs, name='jobs'),
-    url(r'^site/(?P<site_uid>\w+)/scripts/', views.scripts, name='scripts'),
-    url(r'^site/(?P<site_uid>\w+)/users/$', views.users, name='users'),
-    url(r'^site/(?P<site_uid>\w+)/users/(?P<uid>\w+)/$',
-        views.users, name='user'),
+    url(r'^site/(?P<slug>\w+)/groups/(?P<uid>\w+)/$',
+        GroupsView.as_view(), name='group'),
+    url(r'^site/(?P<slug>\w+)/jobs/', JobsView.as_view(), name='jobs'),
+    url(r'^site/(?P<slug>\w+)/scripts/',
+        ScriptsView.as_view(),
+        name='scripts'),
+    url(r'^site/(?P<slug>\w+)/users/$', UsersView.as_view(), name='users'),
+    url(r'^site/(?P<slug>\w+)/users/(?P<uid>\w+)/$',
+        UsersView.as_view(), name='user'),
 )

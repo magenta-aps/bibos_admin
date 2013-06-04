@@ -86,7 +86,7 @@ class Site(models.Model):
 
     @property
     def url(self):
-        return self.uid.lower()
+        return self.uid
 
     def __unicode__(self):
         return self.name
@@ -139,7 +139,7 @@ class PCGroup(models.Model):
 
     @property
     def url(self):
-        return self.uid.lower()
+        return self.uid
 
     def __unicode__(self):
         return self.name
