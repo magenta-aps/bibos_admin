@@ -63,7 +63,7 @@ class ComputersView(SiteView):
             uid = self.kwargs['uid']
             pc = get_object_or_404(PC, uid=uid)
         else:
-            pc = site.pcs.all()[0]
+            pc = site.pcs.all()[0] if site.pcs.all() else None
         context['selected_pc'] = pc
 
         return context
@@ -82,7 +82,7 @@ class GroupsView(SiteView):
             uid = self.kwargs['uid']
             group = get_object_or_404(PCGroup, uid=uid)
         else:
-            group = site.groups.all()[0]
+            group = site.groups.all()[0] if site.groups.all() else None
         context['selected_group'] = group
 
         return context
