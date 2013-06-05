@@ -94,8 +94,8 @@ class Site(models.Model):
     def save(self, *args, **kwargs):
         """Customize behaviour when saving a site object."""
         # Before actual save
-        # 1. uid should consist of uppercase letters.
-        self.uid = self.uid.upper()
+        # 1. uid should consist of lowercase letters.
+        self.uid = self.uid.lower()
         # 2. Create related configuration object if necessary.
         is_new = self.id is None
         if is_new:
@@ -147,7 +147,7 @@ class PCGroup(models.Model):
     def save(self, *args, **kwargs):
         """Customize behaviour when saving a group object."""
         # Before actual save
-        self.uid = self.uid.upper()
+        self.uid = self.uid.lower()
 
         # Perform save
         super(PCGroup, self).save(*args, **kwargs)

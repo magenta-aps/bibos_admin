@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.template import Context
 
 from django.views.generic.edit import CreateView, UpdateView
-from django.views.generic import DetailView
+from django.views.generic import View, ListView, DetailView, RedirectView
 
 from account.models import UserProfile
 
@@ -14,30 +14,46 @@ from models import Site, PC, PCGroup
 from forms import SiteForm
 
 
-@login_required
-def index(request):
-    user = request.user
-    profile = user.get_profile()
-
-    if profile.type == UserProfile.SUPER_ADMIN:
-        # Redirect to list of sites
-        return redirect('/sites/')
-    else:
-        # User belongs to one site only; redirect to that site
-        site_url = profile.site.url
-        return redirect('site/{0}/'.format(site_url))
-
-
-# Site-based passive (non-form) views
-
-class SiteView(DetailView):
-    """Base class for all views based on a single site."""
-    model = Site
-    slug_field = 'uid'
+# Mixin class to require login
+class LoginRequiredMixin(View):
+    """Subclass in all views where login is required."""
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(SiteView, self).dispatch(*args, **kwargs)
+        return super(LoginRequiredMixin, self).dispatch(*args, **kwargs)
+
+
+# Main index/site root view
+class AdminIndex(RedirectView, LoginRequiredMixin):
+    """Redirects to admin overview (sites list) or site main page."""
+    def get_redirect_url(self, **kwargs):
+        """Redirect based on user. This view will use the RequireLogin mixin,
+        so we'll always have a logged-in user."""
+        user = self.request.user
+        profile = user.get_profile()
+
+        if profile.type == UserProfile.SUPER_ADMIN:
+            # Redirect to list of sites
+            url = '/sites/'
+        else:
+            # User belongs to one site only; redirect to that site
+            site_url = profile.site.url
+            url = '/site/{0}/'.format(site_url)
+        return url
+
+
+# Site overview list to be displayed for super user
+class SiteList(ListView, LoginRequiredMixin):
+    """Displays list of sites."""
+    model = Site
+    context_object_name = 'site_list'
+
+
+# Base class for Site-based passive (non-form) views
+class SiteView(DetailView, LoginRequiredMixin):
+    """Base class for all views based on a single site."""
+    model = Site
+    slug_field = 'uid'
 
 
 # Now follows all site-based views, i.e. subclasses
@@ -111,11 +127,11 @@ class UsersView(SiteView):
         return context
 
 
-class SiteCreate(CreateView):
+class SiteCreate(CreateView, LoginRequiredMixin):
     model = Site
     form_class = SiteForm
 
 
-class SiteUpdate(UpdateView):
+class SiteUpdate(UpdateView, LoginRequiredMixin):
     model = Site
     form_class = SiteForm

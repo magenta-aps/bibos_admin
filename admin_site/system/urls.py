@@ -4,19 +4,14 @@ from django.views.generic import ListView
 
 from models import Site
 
-from views import SiteView, SiteCreate, SiteUpdate, index
+from views import SiteList, SiteView, SiteCreate, SiteUpdate, AdminIndex
 from views import ComputersView, GroupsView, UsersView, JobsView, ScriptsView
 
 
 urlpatterns = patterns(
     '',
-    url(r'^$', index, name='index'),
-    url(r'^sites/$',
-        login_required(
-            ListView.as_view(model=Site,
-                             context_object_name='site_list')
-        ), name='sites'
-       ),
+    url(r'^$', AdminIndex.as_view(), name='index'),
+    url(r'^sites/$', SiteList.as_view(), name='sites'),
     url(r'^sites/new/$', SiteCreate.as_view(), name='new_site'),
     url(r'^sites/(?P<pk>\d+)/edit/$', SiteUpdate.as_view(), name='edit_site'),
     url(r'^site/(?P<slug>\w+)/$', SiteView.as_view(), name='site'),
