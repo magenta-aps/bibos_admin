@@ -1,14 +1,15 @@
-This directory contains the BibOS Admin system, which is a remote administration 
-system for Debian-based GNU/Linux-systems, especially Ubuntu systems.
+This directory contains the BibOS Admin system, which is a remote
+administration system for Debian-based GNU/Linux-systems, especially
+Ubuntu systems.
 
-The system is developed for a number of public libraries in Denmark and was
-specifically designed to manage their BibOS systems for audience PC. Its
-functionality aims to be similar to that of Canonical's Landscape product, but less
-ambitious.
+The system is developed for a number of public libraries in Denmark and
+was specifically designed to manage their BibOS systems for audience PC.
+Its functionality aims to be similar to that of Canonical's Landscape
+product, but less ambitious.
 
 The system was prepared by Magenta Aps: See http://www.magenta-aps.dk
 
-All code is made available under Version 3 of the GNU General Public License -
-see the LICENSE and COPYRIGHT files for details.
+All code is made available under Version 3 of the GNU General Public
+License - see the LICENSE and COPYRIGHT files for details.
 
 
