@@ -2,6 +2,7 @@ from django.conf.urls import patterns, url
 
 from views import SiteList, SiteView, SiteCreate, SiteUpdate, AdminIndex
 from views import ComputersView, GroupsView, UsersView, JobsView, ScriptsView
+from views import GroupCreate, GroupUpdate
 
 
 urlpatterns = patterns(
@@ -20,8 +21,12 @@ urlpatterns = patterns(
         ComputersView.as_view(), name='computer'),
     url(r'^site/(?P<slug>\w+)/groups/$', GroupsView.as_view(),
         name='groups'),
+    url(r'^site/(?P<site_uid>\w+)/groups/new/$', GroupCreate.as_view(),
+        name='new_group'),
     url(r'^site/(?P<slug>\w+)/groups/(?P<uid>\w+)/$',
         GroupsView.as_view(), name='group'),
+    url(r'^site/(?P<site_uid>\w+)/groups/(?P<slug>\w+)/save/$',
+        GroupUpdate.as_view(), name='save_group'),
     url(r'^site/(?P<slug>\w+)/jobs/', JobsView.as_view(), name='jobs'),
     url(r'^site/(?P<slug>\w+)/scripts/',
         ScriptsView.as_view(),

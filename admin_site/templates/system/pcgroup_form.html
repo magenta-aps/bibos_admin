@@ -1,0 +1,16 @@
+
+{% extends "site_with_navigation.html" %}
+
+{% block specific_title %}
+Ny gruppe
+{% endblock %}
+
+{% block specific_content %}
+
+  <div class="container-fluid main sublevelmain">
+<form action="" method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Submit" />
+</div>
+</form>
+{% endblock %}

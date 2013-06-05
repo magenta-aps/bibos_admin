@@ -11,7 +11,7 @@ from django.views.generic import View, ListView, DetailView, RedirectView
 from account.models import UserProfile
 
 from models import Site, PC, PCGroup
-from forms import SiteForm
+from forms import SiteForm, GroupForm
 
 
 # Mixin class to require login
@@ -23,6 +23,7 @@ class LoginRequiredMixin(View):
         return super(LoginRequiredMixin, self).dispatch(*args, **kwargs)
 
 
+# Mixin class for list selection (single select).
 class SelectionMixin(View):
     """This supplies the ability to highlight a selected object of a given
     class. This is useful if a Detail view contains a list of children which
@@ -148,4 +149,28 @@ class SiteCreate(CreateView, LoginRequiredMixin):
 class SiteUpdate(UpdateView, LoginRequiredMixin):
     model = Site
     form_class = SiteForm
+    slug_field = 'uid'
+
+# TODO: This does NOT work yet!
+# See
+# https://docs.djangoproject.com/en/1.5/topics/class-based-views/mixins/#an-alternative-better-solution
+# for hints on how to do this.
+# TODO TODO TODO
+
+class GroupCreate(CreateView, LoginRequiredMixin):
+    model = PCGroup
+    form_class = GroupForm
+    slug_field = 'uid'
+
+    def get_context_data(self, **kwargs):
+        context = super(GroupCreate, self).get_context_data(**kwargs)
+        site = Site.objects.get(uid=self.kwargs['site_uid'])
+        context['site'] = site
+        
+        return context
+
+
+
+class GroupUpdate(CreateView, LoginRequiredMixin):
+    model = PCGroup
     slug_field = 'uid'

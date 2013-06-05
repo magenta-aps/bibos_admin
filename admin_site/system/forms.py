@@ -1,7 +1,7 @@
 
 from django import forms
 
-from models import Site
+from models import Site, PCGroup
 
 
 class SiteForm(forms.ModelForm):
@@ -14,3 +14,9 @@ class SiteForm(forms.ModelForm):
     class Meta:
         model = Site
         exclude = ['configuration']
+
+
+class GroupForm(forms.ModelForm):
+    class Meta:
+        model = PCGroup
+        exclude = ['site', 'configuration', 'package_list']
