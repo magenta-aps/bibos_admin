@@ -28,14 +28,14 @@ class SelectionMixin(View):
     class. This is useful if a Detail view contains a list of children which
     the user is allowed to select."""
     # The Python class of the Django model corresponding to the objects you
-    # want to be able to select.
+    # want to be able to select. MUST be specified in subclass.
     selection_class = None
     # A callable which will return a list of objects which SHOULD belong to the
-    # class specified by selection_class.
+    # class specified by selection_class. MUST be specified in subclass.
     get_list = None
     # The field which is used to look up the selected object.
     lookup_field = 'uid'
-    # Overrides the default class name in contect
+    # Overrides the default class name in context.
     class_display_name = None
 
     def get_context_data(self, **kwargs):
@@ -142,8 +142,10 @@ class UsersView(SelectionMixin, SiteView):
 class SiteCreate(CreateView, LoginRequiredMixin):
     model = Site
     form_class = SiteForm
+    slug_field = 'uid'
 
 
 class SiteUpdate(UpdateView, LoginRequiredMixin):
     model = Site
     form_class = SiteForm
+    slug_field = 'uid'
