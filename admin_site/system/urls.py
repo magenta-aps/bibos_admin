@@ -1,8 +1,4 @@
 from django.conf.urls import patterns, url
-from django.contrib.auth.decorators import login_required
-from django.views.generic import ListView
-
-from models import Site
 
 from views import SiteList, SiteView, SiteCreate, SiteUpdate, AdminIndex
 from views import ComputersView, GroupsView, UsersView, JobsView, ScriptsView
