@@ -27,7 +27,7 @@ class SelectionMixin(View):
     """This supplies the ability to highlight a selected object of a given
     class. This is useful if a Detail view contains a list of children which
     the user is allowed to select."""
-    # The Python class of the Django model corresponding to the objects you 
+    # The Python class of the Django model corresponding to the objects you
     # want to be able to select.
     selection_class = None
     # A callable which will return a list of objects which SHOULD belong to the
@@ -44,9 +44,9 @@ class SelectionMixin(View):
         # Then get selected object, if any
         if self.lookup_field in self.kwargs:
             lookup_val = self.kwargs[self.lookup_field]
-            lookup_params = { self.lookup_field: lookup_val }
+            lookup_params = {self.lookup_field: lookup_val}
             selected = get_object_or_404(self.selection_class, **lookup_params)
-        else: 
+        else:
             selected = self.get_list()[0] if self.get_list() else None
 
         display_name = (self.class_display_name if self.class_display_name else
@@ -114,7 +114,7 @@ class GroupsView(SelectionMixin, SiteView):
     template_name = 'system/site_groups.html'
     selection_class = PCGroup
     class_display_name = 'group'
-    
+
     def get_list(self):
         return self.object.groups.all()
 
@@ -124,7 +124,7 @@ class UsersView(SelectionMixin, SiteView):
     template_name = 'system/site_users.html'
     selection_class = User
     lookup_field = 'username'
-    
+
     def get_list(self):
         return self.object.users
 
