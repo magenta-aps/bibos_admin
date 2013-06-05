@@ -23,6 +23,39 @@ class LoginRequiredMixin(View):
         return super(LoginRequiredMixin, self).dispatch(*args, **kwargs)
 
 
+class SelectionMixin(View):
+    """This supplies the ability to highlight a selected object of a given
+    class. This is useful if a Detail view contains a list of children which
+    the user is allowed to select."""
+    # The Python class of the Django model corresponding to the objects you 
+    # want to be able to select.
+    selection_class = None
+    # A callable which will return a list of objects which SHOULD belong to the
+    # class specified by selection_class.
+    get_list = None
+    # The field which is used to look up the selected object.
+    lookup_field = 'uid'
+    # Overrides the default class name in contect
+    class_display_name = None
+
+    def get_context_data(self, **kwargs):
+        # First, call superclass
+        context = super(SelectionMixin, self).get_context_data(**kwargs)
+        # Then get selected object, if any
+        if self.lookup_field in self.kwargs:
+            lookup_val = self.kwargs[self.lookup_field]
+            lookup_params = { self.lookup_field: lookup_val }
+            selected = get_object_or_404(self.selection_class, **lookup_params)
+        else: 
+            selected = self.get_list()[0] if self.get_list() else None
+
+        display_name = (self.class_display_name if self.class_display_name else
+                        self.selection_class.__name__.lower())
+        context['selected_{0}'.format(display_name)] = selected
+
+        return context
+
+
 # Main index/site root view
 class AdminIndex(RedirectView, LoginRequiredMixin):
     """Redirects to admin overview (sites list) or site main page."""
@@ -67,58 +100,37 @@ class ScriptsView(SiteView):
     template_name = 'system/site_scripts.html'
 
 
-class ComputersView(SiteView):
+class ComputersView(SelectionMixin, SiteView):
 
     template_name = 'system/site_computers.html'
+    selection_class = PC
 
-    def get_context_data(self, **kwargs):
-        # First, get basic context from superclass
-        context = super(ComputersView, self).get_context_data(**kwargs)
-        site = context['site']
-        if 'uid' in self.kwargs:
-            uid = self.kwargs['uid']
-            pc = get_object_or_404(PC, uid=uid)
-        else:
-            pc = site.pcs.all()[0] if site.pcs.all() else None
-        context['selected_pc'] = pc
-
-        return context
+    def get_list(self):
+        return self.object.pcs.all()
 
 
-class GroupsView(SiteView):
+class GroupsView(SelectionMixin, SiteView):
 
     template_name = 'system/site_groups.html'
-
-    def get_context_data(self, **kwargs):
-        # First, get basic context from superclass
-        context = super(GroupsView, self).get_context_data(**kwargs)
-        # Then get selected group, if any
-        site = context['site']
-        if 'uid' in self.kwargs:
-            uid = self.kwargs['uid']
-            group = get_object_or_404(PCGroup, uid=uid)
-        else:
-            group = site.groups.all()[0] if site.groups.all() else None
-        context['selected_group'] = group
-
-        return context
+    selection_class = PCGroup
+    class_display_name = 'group'
+    
+    def get_list(self):
+        return self.object.groups.all()
 
 
-class UsersView(SiteView):
+class UsersView(SelectionMixin, SiteView):
 
     template_name = 'system/site_users.html'
+    selection_class = User
+    lookup_field = 'username'
+    
+    def get_list(self):
+        return self.object.users
 
     def get_context_data(self, **kwargs):
         # First, get basic context from superclass
         context = super(UsersView, self).get_context_data(**kwargs)
-        # Then get selected group, if any
-        site = context['site']
-        if 'uid' in self.kwargs:
-            uid = self.kwargs['uid']
-            user = get_object_or_404(User, username=uid)
-        else:
-            user = site.users[0] if len(site.users) > 1 else None
-        context['selected_user'] = user
         # Add choices for UserProfile type
         choices = UserProfile.type_choices
         choices_dict = [{'id': k, 'val': v} for (k, v) in choices]

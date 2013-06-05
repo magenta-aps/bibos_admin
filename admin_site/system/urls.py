@@ -31,6 +31,6 @@ urlpatterns = patterns(
         ScriptsView.as_view(),
         name='scripts'),
     url(r'^site/(?P<slug>\w+)/users/$', UsersView.as_view(), name='users'),
-    url(r'^site/(?P<slug>\w+)/users/(?P<uid>\w+)/$',
+    url(r'^site/(?P<slug>\w+)/users/(?P<username>\w+)/$',
         UsersView.as_view(), name='user'),
 )
