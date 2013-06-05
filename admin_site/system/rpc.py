@@ -68,7 +68,7 @@ def send_status_info(pc_uid, package_data, job_data):
         # 2. Update package lists with package data
         # Clear existing packages
         pc.package_list.packages.clear()
-    
+
         # Insert new ones
         # package_data is a list of dicts with the correct field names.
         for pd in package_data:
@@ -89,9 +89,9 @@ def send_status_info(pc_uid, package_data, job_data):
         print >>os.sys.stderr, job_data
         for jd in job_data:
             job = Job.objects.get(pk=jd['id'])
-            job.status = jd['status'];
-            job.started = jd['started'];
-            job.finished = jd['finished'];
+            job.status = jd['status']
+            job.started = jd['started']
+            job.finished = jd['finished']
             job.log_output = jd['log_output']
             job.save()
 
@@ -99,6 +99,7 @@ def send_status_info(pc_uid, package_data, job_data):
 
 
 import os
+
 
 def get_instructions(pc_uid):
     """This function will ask for new instructions in the form of a list of

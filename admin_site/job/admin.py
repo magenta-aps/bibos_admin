@@ -11,9 +11,11 @@ class JobInline(admin.TabularInline):
     model = Job
     extra = 1
 
+
 class ParameterInline(admin.TabularInline):
     model = Parameter
     extra = 1
+
 
 class BatchAdmin(admin.ModelAdmin):
     fields = ['name', 'script']

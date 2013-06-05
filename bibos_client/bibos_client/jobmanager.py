@@ -28,9 +28,10 @@ Directory structure for storing BibOS jobs:
 JOBS_DIR = '/var/lib/bibos/jobs'
 LOCK = FileLock(JOBS_DIR + '/running')
 
+
 class LocalJob(dict):
     def __init__(self, id=None, path=None, data=None):
-        if id is None and data is not None and data.has_key('id'):
+        if id is None and data is not None and 'id' in data:
             id = data['id']
             del data['id']
 
@@ -62,14 +63,14 @@ class LocalJob(dict):
     @property
     def path(self):
         return JOBS_DIR + '/' + str(self.id)
-    
+
     @property
     def attachments_path(self):
         return self.path + '/attachments'
 
     @property
     def executable_path(self):
-        return self.path  + '/executable'
+        return self.path + '/executable'
 
     @property
     def parameters_path(self):
@@ -94,7 +95,7 @@ class LocalJob(dict):
     @property
     def report_data(self):
         self.load_from_path()
-        result = { 'id': self.id }
+        result = {'id': self.id}
         for k in ['status', 'started', 'finished', 'log_output']:
             result[k] = self[k]
         return result
@@ -114,7 +115,7 @@ class LocalJob(dict):
     def load_local_parameters(self):
         self.read_property_from_file('json_params',
                                      self.parameters_path)
-        if self.has_key('json_params'):
+        if 'json_params' in self:
             self['local_parameters'] = json.loads(self['json_params'])
             del self['json_params']
         else:
@@ -143,7 +144,7 @@ class LocalJob(dict):
             pass
 
     def save_property_to_file(self, prop, file_path):
-        if(self.has_key(prop)):
+        if(prop in self):
             fh = open(file_path, 'w')
             fh.write(self[prop])
             fh.close()
@@ -161,15 +162,15 @@ class LocalJob(dict):
         # Make sure executable is executable
         if os.path.exists(self.executable_path):
             os.chmod(self.executable_path, stat.S_IRWXU)
-    
+
         self.translate_parameters()
-        if self.has_key('local_parameters'):
+        if 'local_parameters' in self:
             param_fh = open(self.parameters_path, 'w')
             param_fh.write(json.dumps(self['local_parameters']))
             param_fh.close()
 
     def translate_parameters(self):
-        if not self.has_key('parameters'):
+        if not 'parameters' in self:
             return
 
         config = BibOSConfig()
@@ -247,6 +248,7 @@ class LocalJob(dict):
         else:
             print >>os.sys.stderr, "Will not run job without aquired lock"
 
+
 def get_url_and_uid():
     config = BibOSConfig()
     uid = config.get_value('uid')
@@ -255,6 +257,7 @@ def get_url_and_uid():
     xml_rpc_url = config_data.get('xml_rpc_url', '/admin-xml/')
     rpc_url = urlparse.urljoin(admin_url, xml_rpc_url)
     return(rpc_url, uid)
+
 
 def import_new_jobs():
     (remote_url, uid) = get_url_and_uid()
@@ -266,12 +269,14 @@ def import_new_jobs():
         local_job.save()
         local_job.logline("Job imported at %s" % datetime.datetime.now())
 
+
 def report_job_results(joblist):
     if len(joblist) < 1:
         return
     (remote_url, uid) = get_url_and_uid()
     remote = BibOSAdmin(remote_url)
     remote.send_status_info(uid, None, joblist)
+
 
 def get_pending_job_dirs():
     result = []
@@ -280,6 +285,7 @@ def get_pending_job_dirs():
         if fh.read() == 'SUBMITTED':
             result.append(filename[:filename.rindex('/')])
     return result
+
 
 def run_pending_jobs():
     dirs = get_pending_job_dirs()
@@ -298,6 +304,7 @@ def run_pending_jobs():
     else:
         print >>os.sys.stderr, "Aquire the lock before running jobs"
 
+
 def update_and_run():
     try:
         LOCK.acquire(0)
@@ -308,6 +315,7 @@ def update_and_run():
             LOCK.release()
     except AlreadyLocked:
         print "Couldn't get lock"
+
 
 if __name__ == '__main__':
     update_and_run()
