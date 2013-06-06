@@ -115,7 +115,7 @@ class Site(models.Model):
         pass
 
     def get_absolute_url(self):
-        return '/site/{0}/'.format(self.url)
+        return '/site/{0}'.format(self.url)
 
 
 class Distribution(models.Model):
@@ -133,6 +133,7 @@ class PCGroup(models.Model):
     """Groups of PCs. Each PC may be in zero or many groups."""
     name = models.CharField(_('name'), max_length=255)
     uid = models.CharField(_('id'), max_length=255)
+    description = models.TextField(_('description'), max_length=1024)
     site = models.ForeignKey(Site, related_name='groups')
     configuration = models.ForeignKey(Configuration)
     package_list = models.ForeignKey(PackageList)
@@ -147,13 +148,29 @@ class PCGroup(models.Model):
     def save(self, *args, **kwargs):
         """Customize behaviour when saving a group object."""
         # Before actual save
-        self.uid = self.uid.lower()
+        is_new = self.id is None
+        if is_new and self.name:
+            self.uid = self.uid.lower()
+            related_name = 'Group: ' + self.name
+            self.configuration, new = Configuration.objects.get_or_create(
+                name=related_name
+            )
+            self.package_list, new = PackageList.objects.get_or_create(
+                name=related_name
+            )
 
         # Perform save
         super(PCGroup, self).save(*args, **kwargs)
 
         # After save
         pass
+
+    def get_absolute_url(self):
+        site_url = self.site.get_absolute_url()
+        return '{0}/groups/{1}'.format(site_url, self.url)
+
+    class Meta:
+        unique_together = ('uid', 'site')
 
 
 class PC(models.Model):

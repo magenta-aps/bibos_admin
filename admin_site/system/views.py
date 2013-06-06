@@ -151,11 +151,6 @@ class SiteUpdate(UpdateView, LoginRequiredMixin):
     form_class = SiteForm
     slug_field = 'uid'
 
-# TODO: This does NOT work yet!
-# See
-# https://docs.djangoproject.com/en/1.5/topics/class-based-views/mixins/#an-alternative-better-solution
-# for hints on how to do this.
-# TODO TODO TODO
 
 class GroupCreate(CreateView, LoginRequiredMixin):
     model = PCGroup
@@ -166,9 +161,15 @@ class GroupCreate(CreateView, LoginRequiredMixin):
         context = super(GroupCreate, self).get_context_data(**kwargs)
         site = Site.objects.get(uid=self.kwargs['site_uid'])
         context['site'] = site
-        
+
         return context
 
+    def form_valid(self, form):
+        site = Site.objects.get(uid=self.kwargs['site_uid'])
+        self.object = form.save(commit=False)
+        self.object.site = site
+
+        return super(GroupCreate, self).form_valid(form)
 
 
 class GroupUpdate(CreateView, LoginRequiredMixin):
