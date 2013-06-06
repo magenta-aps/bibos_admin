@@ -18,7 +18,7 @@ class ParameterInline(admin.TabularInline):
 
 
 class BatchAdmin(admin.ModelAdmin):
-    fields = ['name', 'script']
+    fields = ['site', 'name', 'script']
     inlines = [JobInline, ParameterInline]
 
 

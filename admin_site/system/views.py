@@ -8,10 +8,15 @@ from django.template import Context
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import View, ListView, DetailView, RedirectView
 
+from django.db.models import Q
+
 from account.models import UserProfile
 
 from models import Site, PC, PCGroup
 from forms import SiteForm, GroupForm
+from job.models import Job, Script
+
+import json
 
 
 # Mixin class to require login
@@ -57,6 +62,26 @@ class SelectionMixin(View):
         return context
 
 
+class JSONResponseMixin(object):
+    def render_to_response(self, context):
+        "Returns a JSON response containing 'context' as payload"
+        return self.get_json_response(self.convert_context_to_json(context))
+
+    def get_json_response(self, content, **httpresponse_kwargs):
+        "Construct an `HttpResponse` object."
+        return HttpResponse(content,
+                            content_type='application/json',
+                            **httpresponse_kwargs)
+
+    def convert_context_to_json(self, context):
+        "Convert the context dictionary into a JSON object"
+        # Note: This is *EXTREMELY* naive; in reality, you'll need
+        # to do much more complex handling to ensure that arbitrary
+        # objects -- such as Django model instances or querysets
+        # -- can be serialized as JSON.
+        return json.dumps(context)
+
+
 # Main index/site root view
 class AdminIndex(RedirectView, LoginRequiredMixin):
     """Redirects to admin overview (sites list) or site main page."""
@@ -96,9 +121,96 @@ class SiteView(DetailView, LoginRequiredMixin):
 class JobsView(SiteView):
     template_name = 'system/site_jobs.html'
 
+    def get_context_data(self, **kwargs):
+        # First, get basic context from superclass
+        context = super(JobsView, self).get_context_data(**kwargs)
+        context['batches'] = self.object.batches.all()
+        context['pcs'] = self.object.pcs.all()
+        context['groups'] = self.object.groups.all()
+        context['status_choices'] = [
+            (name, value, Job.STATUS_TO_LABEL[value])
+            for (value, name) in Job.STATUS_CHOICES
+        ]
 
-class ScriptsView(SiteView):
+        return context
+
+
+class JobSearch(JSONResponseMixin, SiteView):
+    http_method_names = ['get', 'post']
+
+    VALID_ORDER_BY = []
+    for i in ['pk', 'batch__script__name', 'started', 'finished', 'status',
+              'pc__name', 'batch__name']:
+        VALID_ORDER_BY.append(i)
+        VALID_ORDER_BY.append('-' + i)
+
+    def post(self, request, *args, **kwargs):
+        return self.get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        # First, get basic context from superclass
+        context = super(JobSearch, self).get_context_data(**kwargs)
+        params = self.request.GET or self.request.POST
+        query = {'batch__site': context['site']}
+
+        if 'status' in params:
+            query['status__in'] = params.getlist('status')
+
+        for k in ['pc', 'batch']:
+            v = params.get(k, '')
+            if v != '':
+                query[k] = v
+
+        group = params.get('group', '')
+        if group != '':
+            query['pc__group'] = group
+
+        orderby = params.get('orderby', '-pk')
+        if not orderby in JobSearch.VALID_ORDER_BY:
+            orderby = '-pk'
+
+        context['job_list'] = Job.objects.filter(**query).order_by(orderby)
+        return context
+
+    def convert_context_to_json(self, context):
+        result = []
+        for job in context['job_list']:
+            result.append({
+                'script_name': job.batch.script.name,
+                'started': str(job.started) if job.started else None,
+                'finished': str(job.finished) if job.started else None,
+                'status': job.status,
+                'label': Job.STATUS_TO_LABEL[job.status],
+                'pc_name': job.pc.name,
+                'batch_name': job.batch.name
+            })
+        return json.dumps(result)
+
+
+class ScriptsView(SelectionMixin, SiteView):
     template_name = 'system/site_scripts.html'
+
+    selection_class = Script
+    lookup_field = 'pk'
+    class_display_name = 'script'
+
+    def get_list(self):
+        self.scripts = Script.objects.filter(
+            Q(site=self.object) | Q(site=None)
+        )
+        return self.scripts
+
+    def get_context_data(self, **kwargs):
+        context = super(ScriptsView, self).get_context_data(**kwargs)
+
+        context['local_scripts'] = self.scripts.filter(site=self.object)
+        context['global_scripts'] = self.scripts.filter(site=None)
+
+        if 'selected_scripts' in context:
+            if context['selected_scripts'] is None:
+                context['global_selected'] = True
+
+        return context
 
 
 class ComputersView(SelectionMixin, SiteView):

@@ -1,13 +1,15 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from system.models import PC
+from system.models import PC, Site
 
 
 class Script(models.Model):
     """A script to be performed on a registered client computer."""
     name = models.CharField(_('name'), max_length=255)
     description = models.CharField(_('description'), max_length=1024)
+    site = models.ForeignKey(Site, related_name='scripts',
+                             null=True, blank=True)
     # The executable_code field should contain a single executable (e.g. a Bash
     # script OR a single extractable .zip or .tar.gz file with all necessary
     # data.
@@ -25,6 +27,7 @@ class Batch(models.Model):
     # script and date, etc.
     name = models.CharField(_('name'), max_length=255)
     script = models.ForeignKey(Script)
+    site = models.ForeignKey(Site, related_name='batches')
 
     def __unicode__(self):
         return self.name
@@ -46,6 +49,15 @@ class Job(models.Model):
         (DONE, _('Done')),
         (FAILED, _('Failed'))
     )
+
+    STATUS_TO_LABEL = {
+        NEW: '',
+        SUBMITTED: 'label-info',
+        RUNNING: 'label-warning',
+        DONE: 'label-success',
+        FAILED: 'label-important'
+    }
+
     # Fields
     # Use built-in ID field for ID.
     status = models.CharField(max_length=10, choices=STATUS_CHOICES,
