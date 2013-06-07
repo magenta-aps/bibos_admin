@@ -54,4 +54,4 @@ h3.nav-header {margin: 0; padding: 0;}
 .actionlist li:first-child a {border: none;}
 .actionlist .btn-group {display: block;}
 .actionlist a:hover {background: #08c; color: #fff; text-decoration: none; border-radius: 5px;}
-
+.template-container {display: none;}
