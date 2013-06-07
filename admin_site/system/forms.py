@@ -2,7 +2,7 @@
 from django import forms
 from django.forms.models import inlineformset_factory
 
-from models import Site, PCGroup
+from models import Site, PCGroup, ConfigurationEntry
 from job.models import Script
 
 
@@ -33,3 +33,9 @@ class ScriptForm(forms.ModelForm):
 
     class Meta:
         model = Script
+
+
+class ConfigurationEntryForm(forms.ModelForm):
+    class Meta:
+        model = ConfigurationEntry
+        exclude = ['owner_configuration']
