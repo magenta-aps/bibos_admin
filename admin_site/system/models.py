@@ -133,7 +133,8 @@ class PCGroup(models.Model):
     """Groups of PCs. Each PC may be in zero or many groups."""
     name = models.CharField(_('name'), max_length=255)
     uid = models.CharField(_('id'), max_length=255)
-    description = models.TextField(_('description'), max_length=1024)
+    description = models.TextField(_('description'), max_length=1024,
+                                   null=True, blank=True)
     site = models.ForeignKey(Site, related_name='groups')
     configuration = models.ForeignKey(Configuration)
     package_list = models.ForeignKey(PackageList)

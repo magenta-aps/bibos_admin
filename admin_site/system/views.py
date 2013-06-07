@@ -4,7 +4,6 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth.models import User
 from django.template import Context
-from django.core.urlresolvers import reverse_lazy
 
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import View, ListView, DetailView, RedirectView
@@ -283,6 +282,9 @@ class ConfigurationEntryCreate(CreateView, LoginRequiredMixin):
 class ConfigurationEntryUpdate(UpdateView, LoginRequiredMixin):
     model = ConfigurationEntry
     form_class = ConfigurationEntryForm
+
+    def get_success_url(self):
+        return '/site/{0}/configuration/'.format(self.kwargs['site_uid'])
 
 
 class ConfigurationEntryDelete(DeleteView, LoginRequiredMixin):
