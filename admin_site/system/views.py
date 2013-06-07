@@ -4,14 +4,15 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth.models import User
 from django.template import Context
+from django.core.urlresolvers import reverse_lazy
 
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import View, ListView, DetailView, RedirectView
 
 from account.models import UserProfile
 
-from models import Site, PC, PCGroup
-from forms import SiteForm, GroupForm
+from models import Site, PC, PCGroup, ConfigurationEntry
+from forms import SiteForm, GroupForm, ConfigurationEntryForm
 
 
 # Mixin class to require login
@@ -152,6 +153,33 @@ class SiteUpdate(UpdateView, LoginRequiredMixin):
     slug_field = 'uid'
 
 
+class ConfigurationEntryCreate(CreateView, LoginRequiredMixin):
+    model = ConfigurationEntry
+    form_class = ConfigurationEntryForm
+
+    def form_valid(self, form):
+        site = get_object_or_404(Site, uid=self.kwargs['site_uid'])
+        self.object = form.save(commit=False)
+        self.object.owner_configuration = site.configuration
+
+        return super(ConfigurationEntryCreate, self).form_valid(form)
+
+    def get_success_url(self):
+        return '/site/{0}/configuration/'.format(self.kwargs['site_uid'])
+
+
+class ConfigurationEntryUpdate(UpdateView, LoginRequiredMixin):
+    model = ConfigurationEntry
+    form_class = ConfigurationEntryForm
+
+
+class ConfigurationEntryDelete(DeleteView, LoginRequiredMixin):
+    model = ConfigurationEntry
+
+    def get_success_url(self):
+        return '/site/{0}/configuration/'.format(self.kwargs['site_uid'])
+
+
 class GroupCreate(CreateView, LoginRequiredMixin):
     model = PCGroup
     form_class = GroupForm
@@ -159,13 +187,13 @@ class GroupCreate(CreateView, LoginRequiredMixin):
 
     def get_context_data(self, **kwargs):
         context = super(GroupCreate, self).get_context_data(**kwargs)
-        site = Site.objects.get(uid=self.kwargs['site_uid'])
+        site = get_object_or_404(Site, uid=self.kwargs['site_uid'])
         context['site'] = site
 
         return context
 
     def form_valid(self, form):
-        site = Site.objects.get(uid=self.kwargs['site_uid'])
+        site = get_object_or_404(Site, uid=self.kwargs['site_uid'])
         self.object = form.save(commit=False)
         self.object.site = site
 

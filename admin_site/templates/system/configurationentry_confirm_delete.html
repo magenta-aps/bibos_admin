@@ -1,0 +1,17 @@
+
+{% extends "site_with_navigation.html" %}
+
+{% block specific_title %}
+Slet parameter
+{% endblock %}
+
+{% block specific_content %}
+
+<div class="container-fluid main sublevelmain">
+    Ønsker du virkelig at slette?
+<form action="" method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Ja" />
+</div>
+</form>
+{% endblock %}

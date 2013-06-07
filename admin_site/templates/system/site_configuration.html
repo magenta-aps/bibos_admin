@@ -9,9 +9,6 @@ Global konfiguration
 
   <div class="container-fluid main">
     
-    <button class="btn btn-primary">Gem ændringer</button>
-    <button class="btn">Annuller</button>
-          
         <div class="well" style="margin-top: 20px;">
           <table class="table table-condensed table-hover">
             <tr class="welledth">
@@ -26,8 +23,8 @@ Global konfiguration
                   <a class="dropdown-toggle btn" data-toggle="dropdown"
                       href="#">{{ c.value }}</a>
                   <ul class="dropdown-menu">
-                    <li><a href="#"><i class="icon-edit"></i> Redigér</a></li>
-                    <li><a href="#"><i class="icon-remove"></i> Slet konfiguration</a></li>
+                      <li><a href="edit/{{c.pk}}/"><i class="icon-edit"></i> Redigér</a></li>
+                      <li><a href="delete/{{c.pk}}"><i class="icon-remove"></i> Slet konfiguration</a></li>
                   </ul>
                 </div>
               </td>
@@ -35,10 +32,11 @@ Global konfiguration
           {% endfor %}
             <tr>
               <td colspan="2">
-                <a href="#" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj konfiguration</a>
+                <a href="new/" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj konfiguration</a>
               </td>
             </tr>
-          </table>
+        </table>
+        {{ form.as_table }}
         </div>
     
   </div>
