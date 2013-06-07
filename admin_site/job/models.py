@@ -16,6 +16,10 @@ class Script(models.Model):
     executable_code = models.FileField(_('executable code'),
                                        upload_to='site_media/script_uploads')
 
+    @property
+    def is_global(self):
+        return self.site is None
+
     def __unicode__(self):
         return self.name
 
@@ -93,7 +97,7 @@ class Input(models.Model):
                                   max_length=10)
     position = models.IntegerField(_('position'))
     mandatory = models.BooleanField(_('mandatory'), default=True)
-    script = models.ForeignKey(Script)
+    script = models.ForeignKey(Script, related_name='inputs')
 
     def __unicode__(self):
         return self.name

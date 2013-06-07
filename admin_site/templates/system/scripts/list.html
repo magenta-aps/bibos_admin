@@ -8,7 +8,7 @@ Scripts
 
   <div class="sublevelnav">
     
-    <div class="listutils"><a href="#" title="Tilføj nyt script"><i class="icon-plus icon-white"></i> tilføj nyt script</a></div>
+    <div class="listutils"><a href="{% url 'new_script' site.uid %}" title="Tilføj nyt script"><i class="icon-plus icon-white"></i> tilføj nyt script</a></div>
 
     <ul class="nav nav-tabs scripttabs">
       {% if global_selected %}
@@ -28,9 +28,9 @@ Scripts
         <ul class="unstyled" >
         {% for script in local_scripts %}
           {% ifequal script selected_script %}
-          <li class="active"><a href="{% url 'scripts' site.uid script.pk %}"><i class="icon-list"></i> {{ script.name }}</a></li>
+          <li class="active"><a href="{% url 'script' site.uid script.pk %}"><i class="icon-list"></i> {{ script.name }}</a></li>
           {% else %}
-          <li><a href="{% url 'scripts' site.uid script.pk %}" class= ><i class="icon-list"></i> {{ script.name }}</a></li>
+          <li><a href="{% url 'script' site.uid script.pk %}" class= ><i class="icon-list"></i> {{ script.name }}</a></li>
           {% endifequal %}
         {% endfor %}
         </ul>
@@ -43,9 +43,9 @@ Scripts
         <ul class="unstyled">
         {% for script in global_scripts %}
           {% ifequal script selected_script %}
-          <li class="active"><a href="{% url 'scripts' site.uid script.pk %}"><i class="icon-list"></i> {{ script.name }}</a></li>
+          <li class="active"><a href="{% url 'script' site.uid script.pk %}"><i class="icon-list"></i> {{ script.name }}</a></li>
           {% else %}
-          <li><a href="{% url 'scripts' site.uid script.pk %}" class= ><i class="icon-list"></i> {{ script.name }}</a></li>
+          <li><a href="{% url 'script' site.uid script.pk %}" class= ><i class="icon-list"></i> {{ script.name }}</a></li>
           {% endifequal %}
         {% endfor %}
         </ul>
@@ -54,106 +54,9 @@ Scripts
   </div>
   
   <div class="container-fluid main sublevelmain">
-    {% if selected_script %}
-    <h2 class="divideheader">Detaljer om script: <em>{{ selected_script.name }}</em></h2>
-    <form>
-      
-      <button class="btn btn-primary">Gem ændringer</button>
-      <button class="btn">Annuller</button>
-      <a href="#myModal" role="button" class="btn btn-warning pull-right" data-toggle="modal">Kør script</a>
-      
-      <hr>
-      
-      <div class="row-fluid">
-        <div class="span6">
-          <fieldset>  
-            <label>Navn:</label>
-            <input type="text" value="ChangeBrowserBookmarks">
-            <label>Beskrivelse:</label>
-            <textarea>Ændre bogmærker i browser</textarea>
-            <label>
-              <input type="checkbox">
-              Globalt script
-            </label>
-            
-          </fieldset>
-        </div>
-        
-        <div class="span6">
-          <fieldset>
-            <label>Kode:</label>
-            <textarea rows="10" class="span11">
-              <pre>
-                
-                 /* ALERT PLUGIN DEFINITION
-                  * ======================= */
-                
-                  var old = $.fn.alert
-                
-                  $.fn.alert = function (option) {
-                    return this.each(function () {
-                      var $this = $(this)
-                        , data = $this.data('alert')
-                      if (!data) $this.data('alert', (data = new Alert(this)))
-                      if (typeof option == 'string') data[option].call($this)
-                    })
-                  }
-                
-                  $.fn.alert.Constructor = Alert
-                
-                 /* ALERT NO CONFLICT
-                  * ================= */
-                
-                  $.fn.alert.noConflict = function () {
-                    $.fn.alert = old
-                    return this
-                  }
-    
-              </pre>
-            </textarea>
-            <label>Upload scriptkode:</label>
-            <input type="file">
-          </fieldset>
-        </div>
-      
-      </div>
-        
-      <hr>
-      
-      <fieldset>
-        <label>Input-parametre:</label>
-        <div class="well">
-          <table class="table table-condensed">
-            <tr>
-              <th>Navn</th>
-              <th>Type</th>
-            </tr>
-            <tr>
-              <td><input type="text" value="Parameter 1"></td>
-              <td><select><option>Text</option><option>------</option><option>Text</option><option>Dato</option><option>Fil</option></select></td>
-            </tr>
-            <tr>
-              <td><input type="text" value="Parameter 2"></td>
-              <td><select><option>Dato</option><option>------</option><option>Text</option><option>Dato</option><option>Fil</option></select></td>
-            </tr>
-            <tr>
-              <td><input type="text" value="Parameter 3"></td>
-              <td><select><option>Fil</option><option>------</option><option>Text</option><option>Dato</option><option>Fil</option></select></td>
-            </tr>
-            <tr>
-              <td colspan="2">
-                <a href="#" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj parameter</a>
-              </td>
-            </tr>
-          </table>
-        </div>
-      </fieldset>
-  
-    </form>
-    {% else %}
+    {% block script_specific_content %}
       <h2>Vælg et script til venstre eller opret et nyt</h2>
-    {% endif %}
-      
+    {% endblock %}
 
     <!-- Modal 1 -->
     <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

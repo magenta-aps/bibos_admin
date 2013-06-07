@@ -5,7 +5,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.models import User
 from django.template import Context
 
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import View, ListView, DetailView, RedirectView
 
 from django.db.models import Q
@@ -13,10 +13,11 @@ from django.db.models import Q
 from account.models import UserProfile
 
 from models import Site, PC, PCGroup
-from forms import SiteForm, GroupForm
-from job.models import Job, Script
+from forms import SiteForm, GroupForm, ScriptForm
+from job.models import Job, Script, Input
 
 import json
+import os
 
 
 # Mixin class to require login
@@ -187,30 +188,65 @@ class JobSearch(JSONResponseMixin, SiteView):
         return json.dumps(result)
 
 
-class ScriptsView(SelectionMixin, SiteView):
-    template_name = 'system/site_scripts.html'
+class ScriptMixin(object):
+    script = None
 
-    selection_class = Script
-    lookup_field = 'pk'
-    class_display_name = 'script'
-
-    def get_list(self):
+    def get(self, request, *args, **kwargs):
+        # Get site
+        self.site = get_object_or_404(Site, uid=kwargs['slug'])
+        # Add the global and local script lists
         self.scripts = Script.objects.filter(
-            Q(site=self.object) | Q(site=None)
+            Q(site=self.site) | Q(site=None)
         )
-        return self.scripts
+        if 'pk' in kwargs:
+            self.script = get_object_or_404(Script, pk=kwargs['pk'])
+        return super(ScriptMixin, self).get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(ScriptsView, self).get_context_data(**kwargs)
-
-        context['local_scripts'] = self.scripts.filter(site=self.object)
+        # Get context from super class
+        context = super(ScriptMixin, self).get_context_data(**kwargs)
+        context['site'] = self.site
+        context['local_scripts'] = self.scripts.filter(site=self.site)
         context['global_scripts'] = self.scripts.filter(site=None)
 
-        if 'selected_scripts' in context:
-            if context['selected_scripts'] is None:
+        # If we selected a script add it to context
+        if self.script is not None:
+            context['selected_script'] = self.script
+            if self.script.site is None:
                 context['global_selected'] = True
-
+            context['script_inputs'] = self.script.inputs.all()
+        else:
+            context['script_inputs'] = []
         return context
+
+
+class ScriptList(ScriptMixin, SiteView):
+    template_name = 'system/scripts/list.html'
+
+
+class ScriptCreate(ScriptMixin, CreateView):
+    template_name = 'system/scripts/create.html'
+    form_class = ScriptForm
+
+
+class ScriptUpdate(ScriptMixin, UpdateView):
+    template_name = 'system/scripts/update.html'
+    form_class = ScriptForm
+
+    def get_context_data(self, **kwargs):
+        # Get context from super class
+        context = super(ScriptUpdate, self).get_context_data(**kwargs)
+        if self.script is not None and self.script.executable_code is not None:
+            context['script_preview'] = self.script.executable_code.read()
+        context['type_choices'] = Input.VALUE_CHOICES
+        return context
+
+    def get_object(self, queryset=None):
+        return self.script
+
+
+class ScriptDelete(ScriptMixin, DeleteView):
+    pass
 
 
 class ComputersView(SelectionMixin, SiteView):

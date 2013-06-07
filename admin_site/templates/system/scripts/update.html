@@ -1,0 +1,11 @@
+{% extends "system/scripts/form.html" %}
+
+{% block script_form_heading %}
+Redigér script: <em>{{ selected_script.name }}</em>
+{% endblock %}
+
+{% block script_code_preview %}
+Kode-preview:
+<pre>{{script_preview |escape}}</pre>
+{% endblock %}
+

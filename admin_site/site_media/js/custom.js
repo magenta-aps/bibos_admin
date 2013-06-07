@@ -22,7 +22,7 @@ var BibOS;
       var html = this.templates[templateName] || '';
       var expander = function(fullmatch, key) {
           k = key.toLowerCase()
-          return k in data ? (data[k] || '') : fullmatch;
+          return k in data ? data[k] : fullmatch;
       }
       html = html.replace(/<!--#([^#]+)#-->/g, expander);
       return html.replace(/#([^#]+)#/g, expander);

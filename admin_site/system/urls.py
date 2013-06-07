@@ -1,8 +1,9 @@
 from django.conf.urls import patterns, url
 
 from views import SiteList, SiteView, SiteCreate, SiteUpdate, AdminIndex
-from views import ComputersView, GroupsView, UsersView, JobsView, ScriptsView
+from views import ComputersView, GroupsView, UsersView, JobsView
 from views import GroupCreate, GroupUpdate, JobSearch
+from views import ScriptList, ScriptUpdate, ScriptCreate, ScriptDelete
 
 urlpatterns = patterns(
     '',
@@ -32,12 +33,20 @@ urlpatterns = patterns(
         JobSearch.as_view(),
         name='jobsearch'),
     url(r'^site/(?P<slug>\w+)/jobs/', JobsView.as_view(), name='jobs'),
+    # Scripts
+    url(r'^site/(?P<slug>\w+)/scripts/(?P<pk>\d+)/delete/',
+        ScriptDelete.as_view(),
+        name='delete_script'),
+    url(r'^site/(?P<slug>\w+)/scripts/(?P<pk>\d+)/',
+        ScriptUpdate.as_view(),
+        name='script'),
+    url(r'^site/(?P<slug>\w+)/scripts/new/',
+        ScriptCreate.as_view(),
+        name='new_script'),
     url(r'^site/(?P<slug>\w+)/scripts/',
-        ScriptsView.as_view(),
+        ScriptList.as_view(),
         name='scripts'),
-    url(r'^site/(?P<slug>\w+)/scripts/(?P<pk>\d+)?',
-        ScriptsView.as_view(),
-        name='scripts'),
+    # Users
     url(r'^site/(?P<slug>\w+)/users/$', UsersView.as_view(), name='users'),
     url(r'^site/(?P<slug>\w+)/users/(?P<username>\w+)/$',
         UsersView.as_view(), name='user'),

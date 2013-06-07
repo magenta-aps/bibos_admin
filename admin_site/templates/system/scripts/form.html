@@ -1,0 +1,104 @@
+{% extends "system/scripts/list.html" %}
+
+{% block javascripts %}
+<script type="text/javascript" src="/media/js/script_edit.js"></script>
+<script type="text/javascript">
+$(function() {
+{% for input in script_inputs %}
+BibOS.ScriptEdit.addInput({
+  name: '{{input.name}}',
+  value_type: '{{input.value_type}}'
+});
+{% endfor %}
+})
+</script>
+{% endblock %}
+
+{% block script_specific_content %}
+<div class="template-container">
+  <table>
+    <tbody id="script-input-template">
+      <tr class="script-input">
+        <td>
+          <input type="text" name="script-input-#POSITION#-name" value="#NAME#">
+        </td>
+        <td>
+          <select name="script-input-#POSITION#-type">
+            {% for value, name in type_choices %}
+            <option value="{{value}}">{{name}}</option>
+            {% endfor %}
+          </select>
+          <input type="hidden" name="script-input-#POSITION#-position" value="#POSITION#" />
+        </td>
+      </tr>
+    </tbody>
+  </table>  
+</div>
+  
+<h2 class="divideheader">
+{% block script_form_heading %}
+Detaljer om script: <em>{{ selected_script.name }}</em>
+{% endblock %}
+</h2>
+<form>
+  
+  <button class="btn btn-primary">Gem ændringer</button>
+  <button class="btn">Annuller</button>
+  <a href="#myModal" role="button" class="btn btn-warning pull-right" data-toggle="modal">Kør script</a>
+  
+  <hr>
+  
+  <div class="row-fluid">
+    <div class="span6">
+      <fieldset>
+        {{ form.name.errors }}
+        <label for="name">Navn:</label>
+        {{ form.name }}        
+        {{ form.description.errors }}
+        <label for="description">Beskrivelse:</label>
+        {{ form.description }}
+        <label for="site">
+          <input type="checkbox" id="site" name="site" value="{{ site.id }}" {% if script.is_global %}checked="checked"{% endif %}>
+          Globalt script
+        </label>
+        
+      </fieldset>
+    </div>
+    
+    <div class="span6">
+      <fieldset>
+        {% block script_code_preview %}
+        {% endblock %}
+        {{ form.executable_code.errors }}
+        <label for="executable_code">Upload scriptkode:</label>
+        {{ form.executable_code }}
+      </fieldset>
+    </div>
+  
+  </div>
+    
+  <hr>
+  
+  <fieldset>
+    <label>Input-parametre:</label>
+    <input type="hidden" name="script-number-of-inputs" id="script-number-of-inputs" value="0" />
+    <div class="well">
+      <table class="table table-condensed">
+        <thead>
+          <tr>
+            <th>Navn</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody id="script-input-container">
+          <tr id="script-input-add">
+            <td colspan="2">
+              <a href="javascript:void(0)" onclick="BibOS.ScriptEdit.addInput({})" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj parameter</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </fieldset>
+</form>
+{% endblock %}
