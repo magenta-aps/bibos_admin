@@ -54,61 +54,55 @@ Grupper
       </fieldset>
     </form>
     <hr>
-    <div class="row-fluid">
-      <div class="span6">
+
           
-        <label>Konfigurationer for maskiner i denne gruppe:</label>
-        <div class="well">
-          <table class="table table-condensed table-hover">
-            <tr>
-              <th>Nøgle</th>
-              <th>Værdi</th>
-          </tr>
-          {% for entry in selected_group.configuration.entries.all %}
-            <tr class="muted">
-                <td>{{ entry.key }}</td>
-              <td>
-                <div class="btn-group profile dark">
-                  <a class="dropdown-toggle btn" data-toggle="dropdown"
-                      href="#">{{ entry.value }}</a>
-                  <ul class="dropdown-menu">
-                    <li><a href="#"><i class="icon-edit"></i> Redigér</a></li>
-                    <li><a href="#"><i class="icon-remove"></i> Slet konfiguration</a></li>
-                  </ul>
-                </div>
-              </td>
-          </tr>
-          {% endfor %}
-            <tr>
-              <td colspan="2">
-                <a href="#" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj konfiguration</a>
-              </td>
-            </tr>
-          </table>
-        </div>
-        
-      </div>
-      <div class="span6">
-        
-        <label>Pakker:</label>
-        <ul class="unstyled well actionlist">
-            {% for package in selected_group.package_list.packages.all %}
-          <li>
+    <label>Konfigurationer for maskiner i denne gruppe:</label>
+    <div class="well">
+      <table class="table table-condensed table-hover">
+        <tr>
+          <th>Nøgle</th>
+          <th>Værdi</th>
+      </tr>
+      {% for entry in selected_group.configuration.entries.all %}
+        <tr class="muted">
+            <td>{{ entry.key }}</td>
+          <td>
             <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span
-                      class="label label-success">{{ package.name }}</span></a>
+              <a class="dropdown-toggle btn" data-toggle="dropdown"
+                  href="#">{{ entry.value }}</a>
               <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern pakke</a></li>
+                <li><a href="#"><i class="icon-edit"></i> Redigér</a></li>
+                <li><a href="#"><i class="icon-remove"></i> Slet konfiguration</a></li>
               </ul>
             </div>
-            </li>
-            {% endfor %}
-          <li><a href="#" title="Tilføj pakke"><i class="icon-plus"></i> tilføj pakker</a></li>
-        </ul>
-        
-      </div>
-      
+          </td>
+      </tr>
+      {% endfor %}
+        <tr>
+          <td colspan="2">
+            <a href="#" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj konfiguration</a>
+          </td>
+        </tr>
+      </table>
     </div>
+    
+    <hr>
+      
+    <label>Pakker:</label>
+    <ul class="unstyled well actionlist packagelist">
+      {% for package in selected_group.package_list.packages.all %}
+      <li>
+        <div class="btn-group profile dark">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span
+                  class="label label-success">{{ package.name }}</span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#"><i class="icon-remove"></i> Fjern pakke</a></li>
+          </ul>
+        </div>
+        </li>
+        {% endfor %}
+      <li><a href="#" title="Tilføj pakke"><i class="icon-plus"></i> tilføj pakker</a></li>
+    </ul>
     
   </div>
 {% endblock %}

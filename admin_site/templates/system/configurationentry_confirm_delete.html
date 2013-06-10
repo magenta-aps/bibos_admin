@@ -6,12 +6,12 @@ Slet parameter
 {% endblock %}
 
 {% block specific_content %}
-
-<div class="container-fluid main sublevelmain">
-    Ønsker du virkelig at slette?
-<form action="" method="post">{% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Ja" />
-</div>
-</form>
+  <div class="container-fluid main">
+    <p>Ønsker du virkelig at slette?</p>
+    <form action="" method="post">{% csrf_token %}
+      {{ form.as_p }}
+      <input class="btn btn-primary" type="submit" value="Ja" />
+      <a href="#" class="btn disabled">Nej</a>
+    </form>
+  </div>
 {% endblock %}

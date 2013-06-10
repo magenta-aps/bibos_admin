@@ -6,13 +6,15 @@ Maskiner
 
 {% block specific_content %}
 
-
   <ul class="sublevelnav">
-      <li class="listutils">Alle maskiner</li>
-      {% for pc in site.pcs.all %}
-      <li {% ifequal pc selected_pc %}class="active" %}{% endifequal %}><a
-          href="/site/{{ site.url }}/computers/{{ pc.uid }}"><i class="icon-hdd"></i> {{ pc.name }}</a></li>
-      {% endfor %}
+    {% if not site.pcs.all%}
+      <li>Der er ingen maskiner</li>
+    {% endif %}
+    {% for pc in site.pcs.all %}
+      <li {% ifequal pc selected_pc %}class="active" %}{% endifequal %}>
+        <a href="/site/{{ site.url }}/computers/{{ pc.uid }}"><i class="icon-hdd"></i> {{ pc.name }}</a>
+      </li>
+    {% endfor %}
   </ul>
   
   <div class="container-fluid main sublevelmain">
@@ -76,28 +78,8 @@ Maskiner
       
       <hr>
         
-      <div class="row-fluid">
-        
-        <fieldset class="span6">        
-          <label>Pakker:</label>
-          <ul class="unstyled well actionlist">
-              {% for package in selected_pc.package_list.packages.all %}
-            <li>
-              <div class="btn-group profile dark">
-                <a class="dropdown-toggle" data-toggle="dropdown"
-                    href="#"><span class="label label-success">{{ package.name }}</span></a>
-                <ul class="dropdown-menu">
-                  <li><a href="#"><i class="icon-remove"></i> Fjern pakke</a></li>
-                </ul>
-              </div>
-              </li>
-              {% endfor %}
-            <li><a href="#" title="Tilføj pakke"><i class="icon-plus"></i> tilføj pakker</a></li>
-          </ul>
-        </fieldset>
-        
-        <fieldset class="span6">
-          
+      <div>
+        <fieldset>
           <label>Grupper:</label>
           <ul class="unstyled well actionlist">
               {% for group in selected_pc.pc_groups.all %}
@@ -114,8 +96,25 @@ Maskiner
             <li><a href="#" title="Tilføj ny gruppe"><i class="icon-plus"></i> tilføj ny gruppe</a></li>
           </ul>
         </fieldset>
-      
       </div>
+      
+      <hr>
+      
+      <label>Pakker:</label>
+      <ul class="unstyled well actionlist packagelist">
+          {% for package in selected_pc.package_list.packages.all %}
+        <li>
+          <div class="btn-group profile dark">
+            <a class="dropdown-toggle" data-toggle="dropdown"
+                href="#"><span class="label label-success">{{ package.name }}</span></a>
+            <ul class="dropdown-menu">
+              <li><a href="#"><i class="icon-remove"></i> Fjern pakke</a></li>
+            </ul>
+          </div>
+          </li>
+          {% endfor %}
+        <li><a href="#" title="Tilføj pakke"><i class="icon-plus"></i> tilføj pakker</a></li>
+      </ul>
       
     </form>
     

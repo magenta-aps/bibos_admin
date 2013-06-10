@@ -1,38 +1,26 @@
 {% extends "sitebase.html" %}
 
 {% block header_title %}
-<h1>Administrér <em>Sites</em></h1>
+<div class="container">Administrér <em>Sites</em></div>
 {% endblock %}
 
 {% block content %}
-
-<div class="container">
-
-    <div class="row">
-      <div class="span8 itemlist">
-        {% for site in site_list %}     
-            <div class="btn-group">
-                <a href="/site/{{site.url}}" class="btn btn-large"><i
-                        class="icon-home"></i>{{site.name}}</a>
-              <button class="btn btn-large dropdown-toggle" data-toggle="dropdown">
-                <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu pull-right">
-                  <li><a href="/site/{{site.url}}/"><i class="icon-home"></i> Gå til</a></li>
-                  <li><a href="/sites/{{ site.url }}/edit/"><i class="icon-edit"></i> Redigér</a></li>
-                <li><a href="#" title="Slet bibliotek"><i class="icon-remove"></i> Slet</a></li>
-              </ul>
-            </div>
-            {% endfor %}      
-      </div>
-      <div class="span4">
-        
-        <ul class="nav nav-list utils">
-          <li><a href="/sites/new/" title="Tilføj nyt site"><i class="icon-plus icon-white"></i> tilføj nyt site</a></li>
-        </ul>
-        
+  <div class="container">
+    <div class="itemlist">
+      {% for site in site_list %}     
+        <div class="btn-group">
+          <a href="/site/{{site.url}}" class="btn btn-large"><i class="icon-home"></i>{{site.name}}</a>
+          <button class="btn btn-large dropdown-toggle" data-toggle="dropdown">
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu pull-right">
+              <li><a href="/site/{{site.url}}/"><i class="icon-home"></i> Gå til</a></li>
+              <li><a href="/sites/{{ site.url }}/edit/"><i class="icon-edit"></i> Redigér</a></li>
+            <li><a href="#" title="Slet bibliotek"><i class="icon-remove"></i> Slet</a></li>
+          </ul>
         </div>
-      </div>
+      {% endfor %}      
     </div>
-</div>
+    <div><a href="/sites/new/" title="Tilføj nyt site"><i class="icon-plus"></i> tilføj nyt site</a></div>
+  </div>
 {% endblock %}
