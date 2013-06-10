@@ -4,3 +4,7 @@
 Opret script
 {% endblock %}
 
+{% block script_edit_controls %}
+<input type="submit" class="btn btn-primary" value="Opret script" />
+<button class="btn" onclick="location.href='{% url 'scripts' site.uid %}'; return false">Annuller</button>
+{% endblock %}

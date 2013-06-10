@@ -1,7 +1,8 @@
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.template import Context
 
@@ -189,8 +190,9 @@ class JobSearch(JSONResponseMixin, SiteView):
 
 class ScriptMixin(object):
     script = None
+    script_inputs = None
 
-    def get(self, request, *args, **kwargs):
+    def setup_script_editing(self, **kwargs):
         # Get site
         self.site = get_object_or_404(Site, uid=kwargs['slug'])
         # Add the global and local script lists
@@ -199,7 +201,14 @@ class ScriptMixin(object):
         )
         if 'pk' in kwargs:
             self.script = get_object_or_404(Script, pk=kwargs['pk'])
+
+    def get(self, request, *args, **kwargs):
+        self.setup_script_editing(**kwargs)
         return super(ScriptMixin, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.setup_script_editing(**kwargs)
+        return super(ScriptMixin, self).post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         # Get context from super class
@@ -208,15 +217,76 @@ class ScriptMixin(object):
         context['local_scripts'] = self.scripts.filter(site=self.site)
         context['global_scripts'] = self.scripts.filter(site=None)
 
+        context['script_inputs'] = self.script_inputs
+
         # If we selected a script add it to context
         if self.script is not None:
             context['selected_script'] = self.script
             if self.script.site is None:
                 context['global_selected'] = True
-            context['script_inputs'] = self.script.inputs.all()
+            if context['script_inputs'] is None:
+                context['script_inputs'] = [{
+                    'pk': input.pk,
+                    'name': input.name,
+                    'value_type': input.value_type
+                } for input in self.script.inputs.all()]
         else:
             context['script_inputs'] = []
+
+        context['script_inputs_json'] = json.dumps(context['script_inputs'])
+
         return context
+
+    def validate_script_inputs(self):
+        params = self.request.POST
+        num_inputs = params.get('script-number-of-inputs', 0)
+        inputs = []
+        success = True
+        if num_inputs > 0:
+            for i in range(int(num_inputs)):
+                data = {
+                    'pk': params.get('script-input-%d-pk' % i, None),
+                    'name': params.get('script-input-%d-name' % i, ''),
+                    'value_type': params.get('script-input-%d-type' % i, ''),
+                    'position': i,
+                }
+
+                if data['name'] is None or data['name'] == '':
+                    data['name_error'] = 'Fejl: Du skal angive et navn'
+                    success = False
+
+                if data['value_type'] not in [value for (value, name)
+                                              in Input.VALUE_CHOICES]:
+                    data['type_error'] = 'Fejl: Du skal angive en korrekt type'
+                    success = False
+
+                inputs.append(data)
+
+            self.script_inputs = inputs
+
+        return success
+
+    def save_script_inputs(self):
+        seen = []
+        for input_data in self.script_inputs:
+            input_data['script'] = self.script
+
+            pk = None
+            if 'pk' in input_data:
+                pk = input_data['pk'] or None
+                del input_data['pk']
+
+            if pk is None or pk == '':
+                script_input = Input.objects.create(**input_data)
+                script_input.save()
+                seen.append(script_input.pk)
+            else:
+                Input.objects.filter(pk=pk).update(**input_data)
+                seen.append(int(pk))
+
+        for inp in self.script.inputs.all():
+            if inp.pk not in seen:
+                inp.delete()
 
 
 class ScriptList(ScriptMixin, SiteView):
@@ -226,6 +296,29 @@ class ScriptList(ScriptMixin, SiteView):
 class ScriptCreate(ScriptMixin, CreateView):
     template_name = 'system/scripts/create.html'
     form_class = ScriptForm
+
+    def get_context_data(self, **kwargs):
+        context = super(ScriptCreate, self).get_context_data(**kwargs)
+        context['type_choices'] = Input.VALUE_CHOICES
+        return context
+
+    def form_valid(self, form):
+        if self.validate_script_inputs():
+            self.object = form.save()
+            self.script = self.object
+            self.save_script_inputs()
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            return self.form_invalid(form, transfer_inputs=False)
+
+    def form_invalid(self, form, transfer_inputs=True):
+        if transfer_inputs:
+            self.validate_script_inputs()
+
+        return super(ScriptCreate, self).form_invalid(form)
+
+    def get_success_url(self):
+        return '/site/%s/scripts/%s/' % (self.site.uid, self.script.pk)
 
 
 class ScriptUpdate(ScriptMixin, UpdateView):
@@ -242,6 +335,22 @@ class ScriptUpdate(ScriptMixin, UpdateView):
 
     def get_object(self, queryset=None):
         return self.script
+
+    def form_valid(self, form):
+        if self.validate_script_inputs():
+            self.save_script_inputs()
+            return super(ScriptUpdate, self).form_valid(form)
+        else:
+            return self.form_invalid(form, transfer_inputs=False)
+
+    def form_invalid(self, form, transfer_inputs=True):
+        if transfer_inputs:
+            self.validate_script_inputs()
+
+        return super(ScriptUpdate, self).form_invalid(form)
+
+    def get_success_url(self):
+        return '/site/%s/scripts/%s/' % (self.site.uid, self.script.pk)
 
 
 class ScriptDelete(ScriptMixin, DeleteView):
