@@ -4,12 +4,8 @@
 <script type="text/javascript" src="/media/js/script_edit.js"></script>
 <script type="text/javascript">
 $(function() {
-{% for input in script_inputs %}
-BibOS.ScriptEdit.addInput({
-  name: '{{input.name}}',
-  value_type: '{{input.value_type}}'
-});
-{% endfor %}
+var inputs = {{ script_inputs_json|safe }}
+$.each(inputs, function() {BibOS.ScriptEdit.addInput(this)})
 })
 </script>
 {% endblock %}
@@ -20,16 +16,19 @@ BibOS.ScriptEdit.addInput({
     <tbody id="script-input-template">
       <tr class="script-input">
         <td>
-          <input type="text" name="script-input-#POSITION#-name" value="#NAME#">
+          <input type="hidden" name="script-input-pk" value="#PK#" class="pk-input" />
+          <div class="error">#NAME_ERROR#</div>
+          <input type="text" name="script-input-name" value="#NAME#" class="name-input">
         </td>
         <td>
-          <select name="script-input-#POSITION#-type">
+          <div class="error">#TYPE_ERROR#</div>
+          <select name="script-input-type" class="type-input">
             {% for value, name in type_choices %}
             <option value="{{value}}">{{name}}</option>
             {% endfor %}
           </select>
-          <input type="hidden" name="script-input-#POSITION#-position" value="#POSITION#" />
         </td>
+        <td><a href="javascript:void(0)" onclick="BibOS.ScriptEdit.removeInput($(this).parent().parent())">Fjern</a></td>
       </tr>
     </tbody>
   </table>  
@@ -40,12 +39,20 @@ BibOS.ScriptEdit.addInput({
 Detaljer om script: <em>{{ selected_script.name }}</em>
 {% endblock %}
 </h2>
-<form>
-  
-  <button class="btn btn-primary">Gem ændringer</button>
-  <button class="btn">Annuller</button>
-  <a href="#myModal" role="button" class="btn btn-warning pull-right" data-toggle="modal">Kør script</a>
-  
+<form
+    method="post"
+    name="scriptform"
+    id="scriptform"
+    {% if selected_script %}
+    action="{% url 'script' site.uid selected_script.pk %}"
+    {% else %}
+    action="{% url 'new_script' site.uid %}"
+    {% endif %}
+    enctype="multipart/form-data"
+>
+  {% csrf_token %}
+  {% block script_edit_controls %}
+  {% endblock %}
   <hr>
   
   <div class="row-fluid">
@@ -58,8 +65,8 @@ Detaljer om script: <em>{{ selected_script.name }}</em>
         <label for="description">Beskrivelse:</label>
         {{ form.description }}
         <label for="site">
-          <input type="checkbox" id="site" name="site" value="{{ site.id }}" {% if script.is_global %}checked="checked"{% endif %}>
-          Globalt script
+          <input type="checkbox" id="site" name="site" value="{{ site.id }}" {% if not script.is_global %}checked="checked"{% endif %}>
+          Lokalt script for {{ site.uid }}
         </label>
         
       </fieldset>
@@ -92,7 +99,7 @@ Detaljer om script: <em>{{ selected_script.name }}</em>
         </thead>
         <tbody id="script-input-container">
           <tr id="script-input-add">
-            <td colspan="2">
+            <td colspan="3">
               <a href="javascript:void(0)" onclick="BibOS.ScriptEdit.addInput({})" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj parameter</a>
             </td>
           </tr>
