@@ -6,11 +6,11 @@ Rediger parameter
 {% endblock %}
 
 {% block specific_content %}
-
-  <div class="container-fluid main sublevelmain">
-<form action="" method="post">{% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Submit" />
-</div>
-</form>
+  <div class="container-fluid main">
+    <form action="" method="post">{% csrf_token %}
+      {{ form.as_p }}
+      <input class="btn btn-primary" type="submit" value="Gem" />
+      <a href="#" class="btn disabled">Annuller</a>
+    </form>
+  </div>
 {% endblock %}
