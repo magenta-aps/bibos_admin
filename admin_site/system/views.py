@@ -14,6 +14,7 @@ from account.models import UserProfile
 
 from models import Site, PC, PCGroup, ConfigurationEntry
 from forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
+from forms import UserForm
 from job.models import Job, Script, Input
 
 import json
@@ -285,6 +286,45 @@ class UsersView(SelectionMixin, SiteView):
         context['choices'] = choices_dict
 
         return context
+
+
+class UserCreate(CreateView, LoginRequiredMixin):
+    model = User
+    form_class = UserForm
+    lookup_field = 'username'
+    template_name = 'system/site_users.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(UserCreate, self).get_context_data(**kwargs)
+        # Add choices for UserProfile type
+        choices = UserProfile.type_choices
+        choices_dict = [{'id': k, 'val': v} for (k, v) in choices]
+        context['choices'] = choices_dict
+        # Add site
+        site = get_object_or_404(Site, uid=self.kwargs['slug'])
+        context['site'] = site
+
+        return context
+
+    def form_valid(self, form):
+        site = get_object_or_404(Site, uid=self.kwargs['slug'])
+        self.object = form.save()
+        profile = self.object.bibos_profile.create(
+            user=self.object, 
+            type=self.request.POST['type'],
+            site=site
+        )
+        result = super(UserCreate, self).form_valid(form)
+        return result
+   
+    def get_success_url(self):
+        return '/site/{0}/users/'.format(self.kwargs['slug'])
+
+
+class UserUpdate(UpdateView, LoginRequiredMixin):
+    model = User
+    form_class = UserForm
+    lookup_field = 'username'
 
 
 class SiteCreate(CreateView, LoginRequiredMixin):

@@ -1,6 +1,7 @@
 
 from django import forms
 from django.forms.models import inlineformset_factory
+from django.contrib.auth.models import User
 
 from models import Site, PCGroup, ConfigurationEntry
 from job.models import Script
@@ -39,3 +40,10 @@ class ConfigurationEntryForm(forms.ModelForm):
     class Meta:
         model = ConfigurationEntry
         exclude = ['owner_configuration']
+
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        exclude = ('groups', 'user_permissions', 'first_name', 'last_name',
+                   'is_staff', 'is_active', 'is_superuser', 'date_joined')

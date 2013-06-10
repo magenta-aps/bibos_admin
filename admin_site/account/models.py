@@ -8,7 +8,7 @@ from system.models import Site
 class UserProfile(models.Model):
     """BibOS Admin specific user profile."""
     # This is the user to which the profile belongs
-    user = models.ForeignKey(User, unique=True)
+    user = models.ForeignKey(User, unique=True, related_name='bibos_profile')
 
     SUPER_ADMIN = 0
     SITE_USER = 1
