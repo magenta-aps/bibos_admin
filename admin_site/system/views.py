@@ -419,13 +419,13 @@ class UserCreate(CreateView, LoginRequiredMixin):
         site = get_object_or_404(Site, uid=self.kwargs['slug'])
         self.object = form.save()
         profile = self.object.bibos_profile.create(
-            user=self.object, 
+            user=self.object,
             type=self.request.POST['type'],
             site=site
         )
         result = super(UserCreate, self).form_valid(form)
         return result
-   
+
     def get_success_url(self):
         return '/site/{0}/users/'.format(self.kwargs['slug'])
 
