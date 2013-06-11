@@ -18,7 +18,7 @@ data = config.get_data()
 hostname = data['hostname']
 site = data['site']
 distribution = data['distribution']
-admin_url = data.get('admin_url'], 'http://bibos.magenta-aps.dk/')
+admin_url = data.get('admin_url', 'http://bibos.magenta-aps.dk/')
 xml_rpc_url = data.get('xml_rpc_url', '/admin-xml/')
 urlparse.urljoin(admin_url, xml_rpc_url)
 
