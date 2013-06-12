@@ -1,0 +1,36 @@
+{% extends 'system/scripts/run_base.html' %}
+
+{% block run_dialog_heading %}
+Kør script: <em>Vælg maskine eller grupper</em>
+{% endblock %}
+
+{% block run_dialog_content %}
+<div class="row-fluid">
+  <div class="span6">
+    <label>Maskiner:</label>
+    <ul class="unstyled">
+      {% for pc in pcs %}
+      <li onclick="BibOS.ScriptEdit.selectGroupOrPC(this)">
+        <input type="checkbox" name="pcs" style="display: none" value="{{pc.pk}}"/>
+        <a href="javascript:void(0)"><i class="icon-hdd"></i> {{pc.name}}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="span6">
+    <label>Grupper:</label>
+    <ul class="unstyled">
+      {% for group in groups %}
+      <li onclick="BibOS.ScriptEdit.selectGroupOrPC(this)">
+        <input type="checkbox" name="groups" style="display: none" value="{{group.pk}}"/>
+        <a href="javascript:void(0)"><i class="icon-hdd"></i> {{group.name}}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}
+
+{% block run_dialog_footer %}
+<a href="javascript:void(0)" onclick="BibOS.ScriptEdit.submitForm()" role="button" class="btn">Næste <i class="icon-chevron-right"></i></a>
+{% endblock %}

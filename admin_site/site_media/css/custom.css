@@ -58,3 +58,5 @@ header.detailpage h1.siteheader {margin-left: 20px;}
 .packagelist > li {display: inline-block;}
 .packagelist > li > .btn-group {margin: 0;}
 .packagelist > li > .btn-group > a {border: none; padding: 5px;}
+div.runscriptdialogheader {display: none;}
+li.selected {background-color: #D5D5D5;}

@@ -1,0 +1,25 @@
+{% extends 'system/scripts/run_base.html' %}
+
+
+{% block run_dialog_heading %}
+  <h3>Kør script: <em>Angiv parametre</em></h3>
+{% endblock %}
+
+{% block run_dialog_content %}
+{% for pk in pcs %}
+  <input type="hidden" name="pcs" value="{{ pk }}" />
+{% endfor %}
+{% for field in form %}
+  <div class="control-group">
+    <label class="control-label">{{field.label}}</label>
+    <div class="controls">
+      {{field.errors}}
+      {{field}}
+    </div>
+  </div>
+{%endfor%}
+{% endblock %}
+
+{% block run_dialog_footer %}
+  <a href="javascript:void(0)" onclick="BibOS.ScriptEdit.submitForm()" role="button" class="btn btn-primary">Kør <i class="icon-chevron-right icon-white"></i></a>
+{% endblock %}

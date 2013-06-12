@@ -34,12 +34,12 @@ $(function(){
 
         selectFilter: function(field, elem, val) {
             var e = $(elem)
-            if(e.hasClass('active')) {
-                e.removeClass('active');
+            if(e.hasClass('selected')) {
+                e.removeClass('selected');
                 val = ''
             } else {
-                e.parent().find('li').removeClass('active');
-                e.addClass('active');
+                e.parent().find('li').removeClass('selected');
+                e.addClass('selected');
             }
             $('#jobsearch-filterform input[name=' + field + ']').val(val)
             this.search()
@@ -54,7 +54,7 @@ $(function(){
         },
 
         selectGroup: function(elem, val) {
-            this.selectFilter('batch', elem, val)
+            this.selectFilter('group', elem, val)
         },
 
         orderby: function(order) {

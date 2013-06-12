@@ -58,105 +58,20 @@ Scripts
       <h2>Vælg et script til venstre eller opret et nyt</h2>
     {% endblock %}
 
-    <!-- Modal 1 -->
-    <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-       <div class="modal-header">
-         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-         <h3 id="myModalLabel">Kør script: <em>Vælg maskine eller grupper</em></h3>
-       </div>
-       <div class="modal-body">
-         <div class="row-fluid">
-           <div class="span6">
-             <label>Maskiner:</label>
-             <ul class="unstyled">
-               <li><a href="#"><i class="icon-hdd"></i> Computer A</a></li>
-               <li><a href="#"><i class="icon-hdd"></i> Computer B</a></li>
-               <li><a href="#"><i class="icon-hdd"></i> Computer C</a></li>
-               <li><a href="#"><i class="icon-hdd"></i> Computer D</a></li>
-               <li><a href="#"><i class="icon-hdd"></i> Computer E</a></li>
-               <li><a href="#"><i class="icon-hdd"></i> Computer F</a></li>
-               <li><a href="#"><i class="icon-hdd"></i> Computer G</a></li>
-               <li><a href="#"><i class="icon-hdd"></i> Computer H</a></li>
-               <li><a href="#"><i class="icon-hdd"></i> Computer I</a></li>
-               <li><a href="#"><i class="icon-hdd"></i> Computer J</a></li>
-               <li><a href="#"><i class="icon-hdd"></i> Computer K</a></li>
-               <li><a href="#"><i class="icon-hdd"></i> Computer L</a></li>
-               <li><a href="#"><i class="icon-hdd"></i> Computer M</a></li>
-               <li><a href="#"><i class="icon-hdd"></i> Computer N</a></li>
-               <li><a href="#"><i class="icon-hdd"></i> Computer O</a></li>
-               <li><a href="#"><i class="icon-hdd"></i> Computer P</a></li>
-               <li><a href="#"><i class="icon-hdd"></i> Computer Q</a></li>
-               <li><a href="#"><i class="icon-hdd"></i> Computer R</a></li>
-               <li><a href="#"><i class="icon-hdd"></i> Computer S</a></li>
-               <li><a href="#"><i class="icon-hdd"></i> Computer T</a></li>
-               <li><a href="#"><i class="icon-hdd"></i> Computer U</a></li>
-               <li><a href="#"><i class="icon-hdd"></i> Computer V</a></li>
-             </ul>
-           </div>
-           <div class="span6">
-             <label>Grupper:</label>
-             <ul class="unstyled">
-               <li><a href="#">Gruppe A</a></li>
-               <li><a href="#">Gruppe B</a></li>
-               <li><a href="#">Gruppe C</a></li>
-               <li><a href="#">Gruppe D</a></li>
-               <li><a href="#">Gruppe E</a></li>
-             </ul>
-           </div>
-         </div>
-       </div>
-       <div class="modal-footer">
-         <a href="#myModal2" role="button" class="btn" data-toggle="modal" data-dismiss="modal">Næste <i class="icon-chevron-right"></i></a>
-       </div>
-     </div>
-     
-     <!-- Modal 2 -->
-     <div id="myModal2" class="modal hide fade" tabindex="-2" role="dialog" aria-labelledby="myModalLabel2" aria-hidden="true">
-       <div class="modal-header">
-         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-         <h3 id="myModalLabel2">Kør script: <em>Angiv parametre</em></h3>
-       </div>
-       <div class="modal-body">
-         <form class="form-horizontal">
-           <div class="control-group">
-             <label class="control-label">Parameter 1</label>
-             <div class="controls">
-               <input type="text" placeholder="text">
-             </div>
-           </div>
-           <div class="control-group">
-             <label class="control-label">Parameter 21</label>
-             <div class="controls">
-               <input type="text" placeholder="13-05-25 08:00">
-             </div>
-           </div>
-           <div class="control-group">
-             <label class="control-label">Parameter 3</label>
-             <div class="controls">
-               <input type="file">
-             </div>
-           </div>
-         </form>
-       </div>
-       <div class="modal-footer">
-         <a href="#myModal3" role="button" class="btn btn-primary" data-toggle="modal" data-dismiss="modal">Kør <i class="icon-chevron-right icon-white"></i></a>
-       </div>
-     </div>
-     
-     <!-- Modal 3 -->
-     <div id="myModal3" class="modal hide fade" tabindex="-3" role="dialog" aria-labelledby="myModalLabel3" aria-hidden="true">
-       <div class="modal-header">
-         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-         <h3 id="myModalLabel3">Job startet!</h3>
-       </div>
-       <div class="modal-body">
-         <p>Job er startet med script <em>ChangeBrowserBookmarks</em> på maskine: <em>Computer B</em></p>
-         <p><a href="#">Du kan følge jobbet her</a></p>
-       </div>
-       <div class="modal-footer">
-         <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Luk</button>
-       </div>
-     </div>
+    {% if script %}
+    <div id="runscriptmodal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">×</button>
+          <div id="runscriptmodalheader"><h3>Kør script</h3></div>
+	</div>
+	<div class="modal-body">
+            <iframe id="runscriptmodaliframe" src="{% url 'run_script' site.uid script.pk %}" style="border: 0; width: 100%; height: 250px;"></iframe>
+	</div>
+	<div id="runscriptmodalfooter" class="modal-footer">
+          <button class="btn" data-dismiss="modal">OK</button>
+	</div>
+    </div>
+    {% endif %}
    </div>  
 
 {% endblock %}

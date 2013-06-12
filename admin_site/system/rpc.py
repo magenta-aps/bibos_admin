@@ -86,7 +86,6 @@ def send_status_info(pc_uid, package_data, job_data):
 
     # 3. Update jobs with job data
     if job_data is not None:
-        print >>os.sys.stderr, job_data
         for jd in job_data:
             job = Job.objects.get(pk=jd['id'])
             job.status = jd['status']
@@ -109,7 +108,6 @@ def get_instructions(pc_uid):
     pc = PC.objects.get(uid=pc_uid)
     pc.last_seen = datetime.datetime.now()
     pc.save()
-    print >>os.sys.stderr, pc.jobs.all()
 
     jobs = []
 
@@ -135,5 +133,4 @@ def get_instructions(pc_uid):
             'executable_code': job.batch.script.executable_code.read()
         })
 
-    print >>os.sys.stderr, jobs
     return jobs
