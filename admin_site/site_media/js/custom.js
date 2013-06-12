@@ -59,6 +59,17 @@ var BibOS;
             (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
             // or any other URL that isn't scheme relative or absolute i.e relative.
             !(/^(\/\/|http:|https:).*/.test(url));
+    },
+    getOrderBy: function(old_order, new_order) {
+      var desc = false,
+          old_desc = false;
+      if (old_order.match(/^\-/)) {
+          old_order = old_order.replace(/^\-/, '')
+          old_desc = true;
+      }
+      if (new_order == old_order)
+          desc = !old_desc;
+      return (desc ? '-' : '') + new_order;
     }
   })
   window.BibOS = window.BibOS || new BibOS();

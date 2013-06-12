@@ -4,6 +4,16 @@
 Overblik
 {% endblock %}
 
+{% block javascripts %}
+<script type="text/javascript">
+    var current_sorting = '{{orderby}}';
+    function joblist_orderby(key) {
+        var new_order = BibOS.getOrderBy(current_sorting, key)
+        location.href = './?orderby=' + new_order
+    }
+</script>
+{% endblock %}
+
 {% block specific_content %}
 
 <ul class="sublevelnav">
@@ -18,41 +28,29 @@ Overblik
     
     <table class="table jobtable">
           <tr>
-            <th>Script</th>
-            <th>Startet</th>
-            <th>Sluttet</th>
-            <th>Status</th>
-            <th>Maskine</th>
-            <th>Batch</th>
+            <th><a href="javascript:void(0)" onclick="joblist_orderby('batch__script__name')">Script</a></th>
+            <th><a href="javascript:void(0)" onclick="joblist_orderby('started')">Startet</a></th>
+            <th><a href="javascript:void(0)" onclick="joblist_orderby('finished')">Sluttet</a></th>
+            <th><a href="javascript:void(0)" onclick="joblist_orderby('status')">Status</a></th>
+            <th><a href="javascript:void(0)" onclick="joblist_orderby('pc__name')">Maskine</a></th>
+            <th><a href="javascript:void(0)" onclick="joblist_orderby('batch__name')">Batch</a></th>
             <th></th>
           </tr>
+          {% if jobs %}
+          {% for job in jobs %}
           <tr class="muted">
-            <td>Opdatér pakker</td>
-            <td>2013-05-15 08:00</td>
-            <td>2013-05-15 09:00</td>
-            <td><span class="label label-important">Fejl</span></td>
-            <td>PC23 (stuen)</td>
-            <td>UpdatePackage_20130515</td>
+            <td>{{job.script_name}}</td>
+            <td>{{job.started}}</td>
+            <td>{{job.finished}}</td>
+            <td><span class="label >{{job.label}}">{{job.status}}</span></td>
+            <td>{{job.pc_name}}</td>
+            <td>{{job.batch_name}}</td>
             <td><button class="btn" data-toggle="popover" title="Log" data-original-title="Log" data-html="true" data-placement="bottom" data-content="<a href='#'><i class='icon-refresh'></i> Genstart job</a><pre>feglih eæglih selæfihaslehf læasiehf læsaijef læaishjef læiashje flæijas elfihjas leæfijas læefiha slæeifh</pre>"><i class="icon-info-sign"></i></button></td>
           </tr>
-          <tr class="muted">
-            <td>Opdatér pakker</td>
-            <td>2013-05-15 08:00</td>
-            <td>2013-05-15 09:00</td>
-            <td><span class="label label-important">Fejl</span></td>
-            <td>PC23 (stuen)</td>
-            <td>UpdatePackage_20130515</td>
-            <td><button class="btn" data-toggle="popover" title="Log" data-original-title="Log" data-html="true" data-placement="bottom" data-content="<a href='#'><i class='icon-refresh'></i> Genstart job</a><pre>feglih eæglih selæfihaslehf læasiehf læsaijef læaishjef læiashje flæijas elfihjas leæfijas læefiha slæeifh</pre>"><i class="icon-info-sign"></i></button></td>
-          </tr>
-          <tr class="muted">
-            <td>Opdatér pakker</td>
-            <td>2013-05-15 08:00</td>
-            <td>2013-05-15 09:00</td>
-            <td><span class="label label-important">Fejl</span></td>
-            <td>PC23 (stuen)</td>
-            <td>UpdatePackage_20130515</td>
-            <td><button class="btn" data-toggle="popover" title="Log" data-original-title="Log" data-html="true" data-placement="bottom" data-content="<a href='#'><i class='icon-refresh'></i> Genstart job</a><pre>feglih eæglih selæfihaslehf læasiehf læsaijef læaishjef læiashje flæijas elfihjas leæfijas læefiha slæeifh</pre>"><i class="icon-info-sign"></i></button></td>
-          </tr>
+          {% endfor %}
+          {% else %}
+            <tr><td colspan="7">Der blev ikke fundet nogen fejlede jobs</td></tr>
+          {% endif %}
         </table> 
         
   </div>

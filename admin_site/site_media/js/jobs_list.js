@@ -58,17 +58,8 @@ $(function(){
         },
 
         orderby: function(order) {
-            var input = $('#jobsearch-filterform input[name=orderby]'),
-                current = input.val(),
-                desc = false,
-                current_desc = false;
-            if (current.match(/^\-/)) {
-                current = current.replace(/^\-/, '')
-                current_desc = true;
-            }
-            if (current == order)
-                desc = !current_desc;
-            input.val((desc ? '-' : '') + order)
+            var input = $('#jobsearch-filterform input[name=orderby]');
+            input.val(BibOS.getOrderBy(input.val(), order))
             this.search()
         },
 
