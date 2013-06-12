@@ -100,9 +100,9 @@ Maskiner
       
       <hr>
       
-      <label>Pakker:</label>
+      <label>Tilføjede pakker:</label>
       <ul class="unstyled well actionlist packagelist">
-          {% for package in selected_pc.package_list.packages.all %}
+          {% for package in selected_pc.added_packages %}
         <li>
           <div class="btn-group profile dark">
             <a class="dropdown-toggle" data-toggle="dropdown"
@@ -114,6 +114,19 @@ Maskiner
           </li>
           {% endfor %}
         <li><a href="#" title="Tilføj pakke"><i class="icon-plus"></i> tilføj pakker</a></li>
+      </ul>
+      
+      
+      <label>Fjernede pakker:</label>
+      <ul class="unstyled well actionlist packagelist">
+          {% for package in selected_pc.removed_packages %}
+        <li>
+          <div class="btn-group profile dark">
+            <a class="dropdown-toggle" data-toggle="dropdown"
+                href="#"><span class="label label-important">{{ package.name }}</span></a>
+          </div>
+          </li>
+          {% endfor %}
       </ul>
       
     </form>

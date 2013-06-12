@@ -52,6 +52,31 @@ def register_new_computer(name, uid, distribution, site, configuration):
     return 0
 
 
+def upload_dist_packages(distribution_uid, package_data):
+    """This will upload the packages and package versions for a given
+    BibOS distribution. A BibOS distribution is here defined as a completely
+    fresh install of a stanardized Debian-like system which is to be supported
+    by the BibOS admin."""
+
+    distribution = Distribution.objects.get(uid=distribution_uid)
+
+    if package_data is not None:
+        distribution.package_list.packages.clear()
+
+        for pd in package_data:
+            # First, assume package & version already exists.
+            try:
+                p = Package.objects.get(name=pd['name'], version=pd['version'])
+                distribution.package_list.packages.add(p)
+            except Package.DoesNotExist:
+                p = distribution.package_list.packages.create(
+                    name=pd['name'],
+                    version=pd['version'],
+                    status=pd['status'],
+                    description=pd['description']
+                )
+
+
 def send_status_info(pc_uid, package_data, job_data):
     """Update package lists as well as the status of outstanding jobs.
     If no updates of package or job data, these will be None. In that

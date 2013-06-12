@@ -190,6 +190,18 @@ class PC(models.Model):
         auto_now_add=True)
     last_seen = models.DateTimeField(_('last seen'), null=True, blank=True)
 
+    @property
+    def added_packages(self):
+        dist_packages = set(self.distribution.package_list.packages.all())
+        my_packages = set(self.package_list.packages.all())
+        return my_packages.difference(dist_packages)
+
+    @property
+    def removed_packages(self):
+        dist_packages = set(self.distribution.package_list.packages.all())
+        my_packages = set(self.package_list.packages.all())
+        return dist_packages.difference(my_packages)
+
     class Status:
         """This class represents the status of af PC. We may want to do
         something similar for jobs."""
