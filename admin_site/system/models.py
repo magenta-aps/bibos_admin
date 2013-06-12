@@ -57,16 +57,48 @@ class Package(models.Model):
         unique_together = ('name', 'version')
 
 
+class CustomPackages(models.Model):
+    """A list of packages to be installed on a PC or to be included in a
+    distribution."""
+    name = models.CharField(_('name'), max_length=255)
+    uid = models.CharField(_('id'), max_length=255)
+    packages = models.ManyToManyField(Package,
+                                      through='PackageInstallInfo',
+                                      blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+
+class PackageInstallInfo(models.Model):
+    do_add = models.BooleanField(default=True)
+    package = models.ForeignKey(Package)
+    package_list = models.ForeignKey(CustomPackages)
+
+    def __unicode__(self):
+        return self.status
+
+
 class PackageList(models.Model):
     """A list of packages to be installed on a PC or to be included in a
     distribution."""
     name = models.CharField(_('name'), max_length=255)
     uid = models.CharField(_('id'), max_length=255)
-    packages = models.ManyToManyField(Package, related_name='package_lists',
+    packages = models.ManyToManyField(Package,
+                                      through='PackageStatus',
                                       blank=True)
 
     def __unicode__(self):
         return self.name
+
+
+class PackageStatus(models.Model):
+    status = models.CharField(max_length=200)
+    package = models.ForeignKey(Package)
+    package_list = models.ForeignKey(PackageList)
+
+    def __unicode__(self):
+        return self.status
 
 
 class Site(models.Model):
