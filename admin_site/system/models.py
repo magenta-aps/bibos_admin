@@ -155,7 +155,9 @@ class Distribution(models.Model):
     name = models.CharField(_('name'), max_length=255)
     uid = models.CharField(_('uid'), max_length=255)
     configuration = models.ForeignKey(Configuration)
-    package_list = models.ForeignKey(PackageList)
+    # CustomPackages is preferrable here.
+    # Maybe we'd like one distribution to inherit from another.
+    package_list = models.ForeignKey(CustomPackages)
 
     def __unicode__(self):
         return self.name
@@ -169,7 +171,7 @@ class PCGroup(models.Model):
                                    null=True, blank=True)
     site = models.ForeignKey(Site, related_name='groups')
     configuration = models.ForeignKey(Configuration)
-    package_list = models.ForeignKey(PackageList)
+    package_list = models.ForeignKey(CustomPackages)
 
     @property
     def url(self):
@@ -188,7 +190,7 @@ class PCGroup(models.Model):
             self.configuration, new = Configuration.objects.get_or_create(
                 name=related_name
             )
-            self.package_list, new = PackageList.objects.get_or_create(
+            self.package_list, new = CustomPackages.objects.get_or_create(
                 name=related_name
             )
 
