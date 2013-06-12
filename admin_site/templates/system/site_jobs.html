@@ -34,9 +34,9 @@ Jobs
       <div class="span2">
         <div class="well">
           <form id="jobsearch-filterform" name="filterform" action="./" method="post">
-            <input type="hidden" name="batch" value="" />
-            <input type="hidden" name="pc" value="" />
-            <input type="hidden" name="group" value="" />
+            <input type="hidden" name="batch" value="{{ selected_batch }}" />
+            <input type="hidden" name="pc" value="{{ selected_pc }}" />
+            <input type="hidden" name="group" value="{{ selected_group }}" />
             <input type="hidden" name="orderby" value="-pk" />
             <h3 class="nav-header">Filtrér:</h3>
             <hr>
@@ -49,31 +49,33 @@ Jobs
             {% endfor %}
             </div>
             <hr>
-            <a href="#" class="btn collapsing" data-toggle="collapse" data-target="#demo1"><i class="icon-chevron-down"></i> Batches</a>
-            <div id="demo1" class="collapse out">
+            <a href="javascript:void(0)" class="btn collapsing" data-toggle="collapse" data-target="#demo1"><i class="icon-chevron-down"></i> Batches</a>
+            <div id="demo1" class="collapse out{% if selected_batch %} in{% endif %}">
               <ul class="unstyled">
                 {% for batch in batches %}
-                <li onclick="BibOS.JobList.selectBatch(this, '{{ batch.pk }}')">
+                <li onclick="BibOS.JobList.selectBatch(this, '{{ batch.pk }}')" {% ifequal batch.pk selected_batch %}class="selected"{% endifequal %}>
                   <a href="javascript:void(0)">{{ batch.name }}</a>
                 </li>
                 {% endfor %}
               </ul>
             </div>
-            <a href="#" class="btn collapsing" data-toggle="collapse" data-target="#demo2"><i class="icon-chevron-down"></i> PCs</a>
-            <div id="demo2" class="collapse out">
+            <a href="javascript:void(0)" class="btn collapsing" data-toggle="collapse" data-target="#demo2"><i class="icon-chevron-down"></i> PCs</a>
+            <div id="demo2" class="collapse out{% if selected_pc %} in{% endif %}">
               <ul class="unstyled">
                 {% for pc in pcs %}
-                <li onclick="BibOS.JobList.selectPC(this, '{{ pc.pk }}')">
+                <li onclick="BibOS.JobList.selectPC(this, '{{ pc.pk }}')" {% ifequal pc.pk selected_pc %}class="selected"{% endifequal %}>
                   <a href="javascript:void(0)"><i class="icon-hdd"></i> {{ pc.name }}</a>
                 </li>
                 {% endfor %}
               </ul>
             </div>
-            <a href="#" class="btn collapsing" data-toggle="collapse" data-target="#demo3"><i class="icon-chevron-down"></i> Grupper</a>
-            <div id="demo3" class="collapse out">
+            <a href="javascript:void(0)" class="btn collapsing" data-toggle="collapse" data-target="#demo3"><i class="icon-chevron-down"></i> Grupper</a>
+            <div id="demo3" class="collapse out{% if selected_group %} in{% endif %}">
               <ul class="unstyled">
                 {% for group in groups %}
-                <li onclick="BibOS.JobList.selectPC(this, '{{ group.pk }}')"><a  href="javascript:void(0)"><i class="icon-tags"></i> {{ group.name }}</a></li>
+                <li onclick="BibOS.JobList.selectGroup(this, '{{ group.pk }}')" {% ifequal group.pk selected_group %}class="selected"{% endifequal %}>
+                  <a  href="javascript:void(0)"><i class="icon-tags"></i> {{ group.name }}</a>
+                </li>
                 {% endfor %}
               </ul>
             </div>

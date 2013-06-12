@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block stylesheets %}
+<style type="text/css">
+  body { background-color: transparent; }
+</style>
+{% endblock %}
+{% block body %}
+
+<div id="dialogiframeheader" style="display: none">
+{% block run_dialog_heading %}<h3>Kør script</h3>{% endblock %}
+</div>
+
+<script type="text/javascript">
+  $(function() {
+    if(window.parent && window.parent.BibOS &&
+       window.parent.BibOS.ScriptEdit) {
+      window.BibOS = window.BibOS || window.parent.BibOS;
+      window.BibOS.ScriptEdit = window.BibOS.ScriptEdit ||
+                                window.parent.BibOS.ScriptEdit;
+      window.parent.BibOS.ScriptEdit.updateDialog(
+        $('#run_script_form'),
+        $('#dialogiframeheader').html(),
+        $('#dialogiframefooter').html(),
+        $('body').first().height()
+      )
+    }
+  })
+</script>
+
+<form name="run_script_form" id="run_script_form"
+      action="{% url 'run_script' site.uid script.pk %}"
+      method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="{{ action }}" />
+  {% if message %}
+    <ps class="message">{{message}}</p>
+  {% endif %}
+  {% block run_dialog_content %}
+    Loading...
+  {% endblock %}
+</form>
+<div id="dialogiframefooter" style="display: none;">
+{% block run_dialog_footer %}
+  <a href="javascript:void(0)" onclick="$('#run_script_form').submit()" role="button" class="btn btn-primary">Kør <i class="icon-chevron-right icon-white"></i></a>
+{% endblock %}
+</div>
+{% endblock %}

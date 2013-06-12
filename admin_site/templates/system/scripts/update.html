@@ -7,7 +7,7 @@ Redigér script: <em>{{ selected_script.name }}</em>
 {% block script_edit_controls %}
 <input type="submit" class="btn btn-primary" value="Gem ændringer" />
 <button class="btn" onclick="location.href='{% url 'script' site.uid selected_script.pk %}'; return false">Annuller</button>
-<a href="#myModal" role="button" class="btn btn-warning pull-right" data-toggle="modal">Kør script</a>
+<a href="#runscriptmodal" role="button" class="btn btn-warning pull-right" data-toggle="modal">Kør script</a>
 {% endblock %}
 
 {% block script_code_preview %}

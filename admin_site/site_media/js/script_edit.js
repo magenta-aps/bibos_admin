@@ -2,8 +2,36 @@
     BibOS.addTemplate('script-input', '#script-input-template');
     
     ScriptEdit = function() {
+        this.reload = false
+        this.iframeCount = 0;
     }
     $.extend(ScriptEdit.prototype, {
+        init: function() {
+            this.modal = $('#runscriptmodal')
+            this.modalHeader = $('#runscriptmodalheader');
+            this.modalFooter = $('#runscriptmodalfooter');
+            this.modalIframe = $('#runscriptmodaliframe');
+            var b = this;
+            this.modal.on('show', function() {
+                if(b.reload) {
+                    b.modalIframe.attr('src', b.defaultIframeSrc)
+                } else {
+                    b.defaultIframeSrc = b.modalIframe.attr('src');
+                    b.reload = true;
+                }
+            })
+        },
+        setModalLoading: function() {
+            var modal = $('#runscriptmodal');
+            if(this.modalDefaultHTML) {
+                modal.html(this.modalDefaultHTML);
+            } else {
+                this.modalDefaultHTML = modal.html()
+            }
+        },
+        setModalContent: function(html) {
+            $('#runscriptmodal').html(html);
+        },
         addInput: function (data_in) {
             if (!data_in)
                 data_in = {}
@@ -40,7 +68,42 @@
                 elem.find('select.type-input').attr('name', 'script-input-' + i + '-type')
             })
             $('#script-number-of-inputs').val(inputs.length);
+        },
+        selectGroupOrPC: function(htmlElem) {
+            elem = $(htmlElem);
+            input = elem.find('input[type=checkbox]').first()
+            if(input.is(':checked')) {
+                elem.removeClass('selected')
+                input.removeAttr('checked')
+            } else {
+                elem.addClass('selected')
+                input.attr('checked', 'checked')
+            }
+            
+        },
+        updateDialog: function(form, header, footer, height) {
+            this.form = form;
+            this.modalHeader.html(header);
+            this.modalFooter.html(footer);
+            this.modalIframe.height(height + 100);
+        },
+        submitForm: function() {
+            this.form.submit();
+        },
+        submitStep2: function(button) {
+            form = $(button).parent().parent()
+            this.iframeCount++
+            name = 'run_script_step2_iframe' + this.iframeCount
+            $('<iframe></iframe>', {
+                id: name,
+                name: name,
+                src: 'about:blank'
+            }).appendTo($('body').first());
+            form.attr('target', name);
+            form.submit();
         }
     })
+
     BibOS.ScriptEdit = new ScriptEdit()
+    $(function() { BibOS.ScriptEdit.init() })
 })(BibOS, $);

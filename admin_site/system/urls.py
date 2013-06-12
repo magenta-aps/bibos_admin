@@ -5,6 +5,7 @@ from views import ComputersView, GroupsView, UsersView, JobsView
 from views import GroupCreate, GroupUpdate, JobSearch
 from views import UserCreate
 from views import ScriptList, ScriptUpdate, ScriptCreate, ScriptDelete
+from views import ScriptRun
 from views import ConfigurationEntryCreate, ConfigurationEntryUpdate
 from views import ConfigurationEntryDelete
 
@@ -43,10 +44,13 @@ urlpatterns = patterns(
         name='jobsearch'),
     url(r'^site/(?P<slug>\w+)/jobs/', JobsView.as_view(), name='jobs'),
     # Scripts
-    url(r'^site/(?P<slug>\w+)/scripts/(?P<pk>\d+)/delete/',
+    url(r'^site/(?P<slug>\w+)/scripts/(?P<script_pk>\d+)/delete/',
         ScriptDelete.as_view(),
         name='delete_script'),
-    url(r'^site/(?P<slug>\w+)/scripts/(?P<pk>\d+)/',
+    url(r'^site/(?P<slug>\w+)/scripts/(?P<script_pk>\d+)/run/',
+        ScriptRun.as_view(),
+        name='run_script'),
+    url(r'^site/(?P<slug>\w+)/scripts/(?P<script_pk>\d+)/',
         ScriptUpdate.as_view(),
         name='script'),
     url(r'^site/(?P<slug>\w+)/scripts/new/',

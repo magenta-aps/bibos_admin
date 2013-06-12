@@ -15,10 +15,11 @@ from account.models import UserProfile
 
 from models import Site, PC, PCGroup, ConfigurationEntry
 from forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
-from forms import UserForm
-from job.models import Job, Script, Input
+from forms import UserForm, ParameterForm
+from job.models import Job, Script, Input, Batch, Parameter
 
 import json
+import datetime
 
 
 # Mixin class to require login
@@ -133,6 +134,12 @@ class JobsView(SiteView):
             (name, value, Job.STATUS_TO_LABEL[value])
             for (value, name) in Job.STATUS_CHOICES
         ]
+        params = self.request.GET or self.request.POST
+
+        for k in ['batch', 'pc', 'group']:
+            v = params.get(k, None)
+            if v is not None and v.isdigit():
+                context['selected_%s' % k] = int(v)
 
         return context
 
@@ -165,7 +172,7 @@ class JobSearch(JSONResponseMixin, SiteView):
 
         group = params.get('group', '')
         if group != '':
-            query['pc__group'] = group
+            query['pc__pc_groups'] = group
 
         orderby = params.get('orderby', '-pk')
         if not orderby in JobSearch.VALID_ORDER_BY:
@@ -200,8 +207,8 @@ class ScriptMixin(object):
         self.scripts = Script.objects.filter(
             Q(site=self.site) | Q(site=None)
         )
-        if 'pk' in kwargs:
-            self.script = get_object_or_404(Script, pk=kwargs['pk'])
+        if 'script_pk' in kwargs:
+            self.script = get_object_or_404(Script, pk=kwargs['script_pk'])
 
     def get(self, request, *args, **kwargs):
         self.setup_script_editing(**kwargs)
@@ -354,6 +361,106 @@ class ScriptUpdate(ScriptMixin, UpdateView):
         return '/site/%s/scripts/%s/' % (self.site.uid, self.script.pk)
 
 
+class ScriptRun(SiteView):
+    action = None
+    form = None
+    STEP1 = 'choose_pcs_and_groups'
+    STEP2 = 'choose_parameters'
+    STEP3 = 'run_script'
+
+    def post(self, request, *args, **kwargs):
+        return super(ScriptRun, self).get(request, *args, **kwargs)
+
+    def step1(self, context):
+        self.template_name = 'system/scripts/run_step1.html'
+        context['pcs'] = self.object.pcs.all().order_by('name')
+        context['groups'] = self.object.groups.all().order_by('name')
+        context['action'] = ScriptRun.STEP2
+
+    def step2(self, context):
+        self.template_name = 'system/scripts/run_step2.html'
+        if 'pcs' not in context:
+            # Transfer chosen groups and PCs as PC pks
+            pcs = [int(pk) for pk in self.request.POST.getlist('pcs', [])]
+            for group_pk in self.request.POST.getlist('groups', []):
+                group = PCGroup.objects.get(pk=group_pk)
+                for pc in group.pcs.all():
+                    pcs.append(int(pc.pk))
+            # Uniquify
+            context['pcs'] = list(set(pcs))
+
+        if len(context['pcs']) == 0:
+            context['message'] = _('Du skal angive mindst en PC eller gruppe')
+            self.step1(context)
+            return
+
+        # Set up the form
+        if 'form' not in context:
+            context['form'] = ParameterForm(script=context['script'])
+
+        # Go to step3 on submit
+        context['action'] = ScriptRun.STEP3
+
+    def step3(self, context):
+        self.template_name = 'system/scripts/run_step3.html'
+        form = ParameterForm(self.request.POST,
+                             self.request.FILES,
+                             script=context['script'])
+        context['form'] = form
+        pcs = self.request.POST.getlist('pcs', [])
+
+        context['num_pcs'] = len(pcs)
+        if context['num_pcs'] == 0:
+            context['message'] = _('Du skal angive mindst en PC eller gruppe')
+            self.step1(context)
+            return
+
+        if not form.is_valid():
+            self.step2(context)
+        else:
+            # Create batch
+            now_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            batch = Batch(site=context['site'], script=context['script'],
+                          name=' '.join([context['script'].name, now_str]))
+            batch.save()
+            context['batch'] = batch
+
+            # Add parameters
+            for i, inp in enumerate(
+                context['script'].inputs.all().order_by('position')
+            ):
+                value = form.cleaned_data['parameter_%s' % i]
+                if(inp.value_type == Input.FILE):
+                    p = Parameter(input=inp, batch=batch, file_value=value)
+                else:
+                    p = Parameter(input=inp, batch=batch, string_value=value)
+                p.save()
+
+            # Create a job ofr each pc
+            for pc_pk in pcs:
+                job = Job(batch=batch, pc=PC.objects.get(pk=pc_pk))
+                job.save()
+
+    def get_context_data(self, **kwargs):
+        context = super(ScriptRun, self).get_context_data(**kwargs)
+        context['script'] = get_object_or_404(Script,
+                                              pk=self.kwargs['script_pk'])
+
+        action = self.request.POST.get('action', 'choose_pcs_and_groups')
+        if action == ScriptRun.STEP1:
+            self.step1(context)
+        elif action == ScriptRun.STEP2:
+            self.step2(context)
+        elif action == ScriptRun.STEP3:
+            self.step3(context)
+        else:
+            raise Exception(
+                "POST to ScriptRun with wrong action %s" % self.action
+            )
+
+        return context
+
+
 class ScriptDelete(ScriptMixin, DeleteView):
     pass
 
@@ -419,13 +526,13 @@ class UserCreate(CreateView, LoginRequiredMixin):
         site = get_object_or_404(Site, uid=self.kwargs['slug'])
         self.object = form.save()
         profile = self.object.bibos_profile.create(
-            user=self.object, 
+            user=self.object,
             type=self.request.POST['type'],
             site=site
         )
         result = super(UserCreate, self).form_valid(form)
         return result
-   
+
     def get_success_url(self):
         return '/site/{0}/users/'.format(self.kwargs['slug'])
 

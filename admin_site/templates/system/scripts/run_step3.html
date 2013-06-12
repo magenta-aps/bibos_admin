@@ -1,0 +1,14 @@
+{% extends 'system/scripts/run_base.html' %}
+
+{% block run_dialog_heading %}
+  <h3 id="myModalLabel3">Job startet!</h3>
+{% endblock %}
+
+{% block run_dialog_content %}
+  <p>Job baseret på script <em>{{ script.name }}</em> er startet på <em>{{ num_pcs }}</em> maskine(r)</p>
+  <p><a href="{% url 'jobs' site.uid %}?batch={{batch.pk}}" onclick="this.target='_top'">Du kan følge de oprettede jobs her</a></p>
+{% endblock %}
+
+{% block run_dialog_footer %}
+  <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Luk</button>
+{% endblock %}

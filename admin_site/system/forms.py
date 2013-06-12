@@ -1,10 +1,11 @@
+import datetime
 
 from django import forms
 from django.forms.models import inlineformset_factory
 from django.contrib.auth.models import User
 
 from models import Site, PCGroup, ConfigurationEntry
-from job.models import Script
+from job.models import Script, Input
 
 
 class SiteForm(forms.ModelForm):
@@ -47,3 +48,26 @@ class UserForm(forms.ModelForm):
         model = User
         exclude = ('groups', 'user_permissions', 'first_name', 'last_name',
                    'is_staff', 'is_active', 'is_superuser', 'date_joined')
+
+
+class ParameterForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        script = kwargs.pop('script')
+        super(ParameterForm, self).__init__(*args, **kwargs)
+
+        for i, inp in enumerate(script.inputs.all().order_by('position')):
+            name = 'parameter_%s' % i
+            field_data = {
+                'label': "Parameter %s" % (i + 1),
+                'required': True if inp.mandatory else False
+            }
+            if inp.value_type == Input.FILE:
+                self.fields[name] = forms.FileField(**field_data)
+            elif inp.value_type == Input.DATE:
+                field_data['initial'] = datetime.datetime.now
+                field_data['widget'] = forms.DateTimeInput(
+                    attrs={'class': 'dateinput'}
+                )
+                self.fields[name] = forms.DateTimeField(**field_data)
+            else:
+                self.fields[name] = forms.CharField(**field_data)
