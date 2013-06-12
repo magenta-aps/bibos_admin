@@ -75,6 +75,13 @@ class Job(models.Model):
     def __unicode__(self):
         return '_'.join(map(unicode, [self.batch, self.id]))
 
+    @property
+    def status_label(self):
+        if self.status is None:
+            return ''
+        else:
+            return Job.STATUS_TO_LABEL[self.status]
+
 
 class Input(models.Model):
     """Input for a script"""

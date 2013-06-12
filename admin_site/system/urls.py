@@ -2,7 +2,7 @@ from django.conf.urls import patterns, url
 
 from views import SiteList, SiteView, SiteCreate, SiteUpdate, AdminIndex
 from views import ComputersView, GroupsView, UsersView, JobsView
-from views import GroupCreate, GroupUpdate, JobSearch
+from views import GroupCreate, GroupUpdate, JobSearch, SiteDetailView
 from views import UserCreate
 from views import ScriptList, ScriptUpdate, ScriptCreate, ScriptDelete
 from views import ScriptRun
@@ -17,7 +17,7 @@ urlpatterns = patterns(
     url(r'^sites/(?P<slug>\w+)/edit/$',
         SiteUpdate.as_view(),
         name='edit_site'),
-    url(r'^site/(?P<slug>\w+)/$', SiteView.as_view(), name='site'),
+    url(r'^site/(?P<slug>\w+)/$', SiteDetailView.as_view(), name='site'),
     url(r'^site/(?P<slug>\w+)/configuration/$',
         SiteView.as_view(template_name='system/site_configuration.html'),
         name='configuration'),

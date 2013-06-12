@@ -118,9 +118,34 @@ class SiteView(DetailView, LoginRequiredMixin):
     slug_field = 'uid'
 
 
+class SiteDetailView(SiteView):
+    """Class for showing the overview that is displayed when entering a site"""
+
+    def get_context_data(self, **kwargs):
+        context = super(SiteDetailView, self).get_context_data(**kwargs)
+        # For now, show only not-yet-activated PCs
+        context['pcs'] = self.object.pcs.filter(is_active=False)
+        query = {
+            'batch__site': context['site'],
+            'status': Job.FAILED
+        }
+        params = self.request.GET or self.request.POST
+        orderby = params.get('orderby', '-pk')
+        if not orderby in JobSearch.VALID_ORDER_BY:
+            orderby = '-pk'
+        context['orderby'] = orderby
+
+        jobs = JobSearch.get_jobs_display_data(
+            Job.objects.filter(**query).order_by(orderby, 'pk')
+        )
+        if len(jobs) > 0:
+            context['jobs'] = jobs
+
+        return context
+
+
 # Now follows all site-based views, i.e. subclasses
 # of SiteView.
-
 class JobsView(SiteView):
     template_name = 'system/site_jobs.html'
 
@@ -153,6 +178,18 @@ class JobSearch(JSONResponseMixin, SiteView):
         VALID_ORDER_BY.append(i)
         VALID_ORDER_BY.append('-' + i)
 
+    @staticmethod
+    def get_jobs_display_data(joblist):
+        return [{
+            'script_name': job.batch.script.name,
+            'started': str(job.started) if job.started else None,
+            'finished': str(job.finished) if job.started else None,
+            'status': job.status,
+            'label': job.status_label,
+            'pc_name': job.pc.name,
+            'batch_name': job.batch.name
+        } for job in joblist]
+
     def post(self, request, *args, **kwargs):
         return self.get(request, *args, **kwargs)
 
@@ -178,21 +215,14 @@ class JobSearch(JSONResponseMixin, SiteView):
         if not orderby in JobSearch.VALID_ORDER_BY:
             orderby = '-pk'
 
-        context['job_list'] = Job.objects.filter(**query).order_by(orderby)
+        context['job_list'] = Job.objects.filter(**query).order_by(
+            orderby,
+            'pk'
+        )
         return context
 
     def convert_context_to_json(self, context):
-        result = []
-        for job in context['job_list']:
-            result.append({
-                'script_name': job.batch.script.name,
-                'started': str(job.started) if job.started else None,
-                'finished': str(job.finished) if job.started else None,
-                'status': job.status,
-                'label': Job.STATUS_TO_LABEL[job.status],
-                'pc_name': job.pc.name,
-                'batch_name': job.batch.name
-            })
+        result = JobSearch.get_jobs_display_data(context['job_list'])
         return json.dumps(result)
 
 
