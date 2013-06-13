@@ -48,7 +48,6 @@ class Package(models.Model):
     name = models.CharField(_('name'), max_length=255)
     version = models.CharField(_('version'), max_length=255)
     description = models.CharField(_('description'), max_length=255)
-    status = models.CharField(_('status'), max_length=255)
 
     def __unicode__(self):
         return ' '.join([self.name, self.version])
@@ -61,7 +60,6 @@ class CustomPackages(models.Model):
     """A list of packages to be installed on a PC or to be included in a
     distribution."""
     name = models.CharField(_('name'), max_length=255)
-    uid = models.CharField(_('id'), max_length=255)
     packages = models.ManyToManyField(Package,
                                       through='PackageInstallInfo',
                                       blank=True)
@@ -73,17 +71,17 @@ class CustomPackages(models.Model):
 class PackageInstallInfo(models.Model):
     do_add = models.BooleanField(default=True)
     package = models.ForeignKey(Package)
-    package_list = models.ForeignKey(CustomPackages)
+    custom_packages = models.ForeignKey(CustomPackages,
+                                     related_name='install_infos')
 
     def __unicode__(self):
-        return self.status
+        return self.package.name
 
 
 class PackageList(models.Model):
     """A list of packages to be installed on a PC or to be included in a
     distribution."""
     name = models.CharField(_('name'), max_length=255)
-    uid = models.CharField(_('id'), max_length=255)
     packages = models.ManyToManyField(Package,
                                       through='PackageStatus',
                                       blank=True)
@@ -93,12 +91,13 @@ class PackageList(models.Model):
 
 
 class PackageStatus(models.Model):
-    status = models.CharField(max_length=200)
+    status = models.CharField(max_length=255)
     package = models.ForeignKey(Package)
-    package_list = models.ForeignKey(PackageList)
+    package_list = models.ForeignKey(PackageList,
+                                    related_name='statuses')
 
     def __unicode__(self):
-        return self.status
+        return self.package.name + u': ' + self.status
 
 
 class Site(models.Model):
@@ -157,7 +156,7 @@ class Distribution(models.Model):
     configuration = models.ForeignKey(Configuration)
     # CustomPackages is preferrable here.
     # Maybe we'd like one distribution to inherit from another.
-    package_list = models.ForeignKey(CustomPackages)
+    package_list = models.ForeignKey(PackageList)
 
     def __unicode__(self):
         return self.name
@@ -166,12 +165,12 @@ class Distribution(models.Model):
 class PCGroup(models.Model):
     """Groups of PCs. Each PC may be in zero or many groups."""
     name = models.CharField(_('name'), max_length=255)
-    uid = models.CharField(_('id'), max_length=255)
+    uid = models.CharField(_('id'), max_length=255, unique=True)
     description = models.TextField(_('description'), max_length=1024,
                                    null=True, blank=True)
     site = models.ForeignKey(Site, related_name='groups')
     configuration = models.ForeignKey(Configuration)
-    package_list = models.ForeignKey(CustomPackages)
+    custom_packages = models.ForeignKey(CustomPackages)
 
     @property
     def url(self):
@@ -190,10 +189,9 @@ class PCGroup(models.Model):
             self.configuration, new = Configuration.objects.get_or_create(
                 name=related_name
             )
-            self.package_list, new = CustomPackages.objects.get_or_create(
+            self.custom_packages, new = CustomPackages.objects.get_or_create(
                 name=related_name
             )
-
         # Perform save
         super(PCGroup, self).save(*args, **kwargs)
 
@@ -202,10 +200,11 @@ class PCGroup(models.Model):
 
     def get_absolute_url(self):
         site_url = self.site.get_absolute_url()
-        return '{0}/groups/{1}'.format(site_url, self.url)
+        return u'{0}/groups/{1}'.format(site_url, self.url)
 
     class Meta:
         unique_together = ('uid', 'site')
+        ordering = ['name']
 
 
 class PC(models.Model):
@@ -259,3 +258,6 @@ class PC(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    class Meta:
+        ordering = ['name']

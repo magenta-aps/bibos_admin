@@ -90,11 +90,11 @@ Grupper
       
     <label>Pakker:</label>
     <ul class="unstyled well actionlist packagelist">
-      {% for package in selected_group.package_list.packages.all %}
-      <li>
+      {% for install_info in selected_group.custom_packages.install_infos.all %}
+      <li> 
         <div class="btn-group profile dark">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span
-                  class="label label-success">{{ package.name }}</span></a>
+                  class="label {% if install_info.do_add %}label-success{% else %}label-important{% endif %}">{{ install_info.package.name }}</span></a>
           <ul class="dropdown-menu">
             <li><a href="#"><i class="icon-remove"></i> Fjern pakke</a></li>
           </ul>

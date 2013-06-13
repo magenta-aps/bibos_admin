@@ -23,7 +23,7 @@ class SiteForm(forms.ModelForm):
 class GroupForm(forms.ModelForm):
     class Meta:
         model = PCGroup
-        exclude = ['site', 'configuration', 'package_list']
+        exclude = ['site', 'configuration', 'custom_packages']
 
 
 class ScriptForm(forms.ModelForm):

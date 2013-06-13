@@ -4,7 +4,7 @@
 import datetime
 
 from models import PC, Site, Distribution, Configuration, ConfigurationEntry
-from models import PackageList, Package
+from models import PackageList, Package, PackageStatus
 from job.models import Job
 from django.db.models import Q
 
@@ -20,7 +20,7 @@ def register_new_computer(name, uid, distribution, site, configuration):
         new_pc = PC(name=name, uid=uid)
         new_pc.site = Site.objects.get(uid=site)
         # TODO: Better to enforce existence of package list in constructor.
-        package_list = PackageList(name=name, uid=uid)
+        package_list = PackageList(name=name)
 
     new_pc.distribution = Distribution.objects.get(uid=distribution)
     new_pc.is_active = False
@@ -55,7 +55,7 @@ def register_new_computer(name, uid, distribution, site, configuration):
 def upload_dist_packages(distribution_uid, package_data):
     """This will upload the packages and package versions for a given
     BibOS distribution. A BibOS distribution is here defined as a completely
-    fresh install of a stanardized Debian-like system which is to be supported
+    fresh install of a standardized Debian-like system which is to be supported
     by the BibOS admin."""
 
     distribution = Distribution.objects.get(uid=distribution_uid)
@@ -67,13 +67,17 @@ def upload_dist_packages(distribution_uid, package_data):
             # First, assume package & version already exists.
             try:
                 p = Package.objects.get(name=pd['name'], version=pd['version'])
-                distribution.package_list.packages.add(p)
             except Package.DoesNotExist:
-                p = distribution.package_list.packages.create(
+                p = Package.objects.create(
                     name=pd['name'],
                     version=pd['version'],
-                    status=pd['status'],
                     description=pd['description']
+                )
+            finally:
+                status = PackageStatus.objects.create(
+                    package=p,
+                    package_list=distribution.package_list,
+                    status = pd['status']
                 )
 
 
@@ -100,13 +104,17 @@ def send_status_info(pc_uid, package_data, job_data):
             # First, assume package & version already exists.
             try:
                 p = Package.objects.get(name=pd['name'], version=pd['version'])
-                pc.package_list.packages.add(p)
             except Package.DoesNotExist:
-                p = pc.package_list.packages.create(
+                p = Package.objects.create(
                     name=pd['name'],
                     version=pd['version'],
-                    status=pd['status'],
                     description=pd['description']
+                )
+            finally:
+                status = PackageStatus.objects.create(
+                    package=p,
+                    package_list=pc.package_list,
+                    status = pd['status']
                 )
 
     # 3. Update jobs with job data

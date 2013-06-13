@@ -18,8 +18,8 @@ uid = data['uid']
 
 admin = BibOSAdmin(admin_url, verbose=False)
 
-
-# os.system('get_package_data /tmp/packages.csv')
+# TODO: Make option to turn off/avoid repeating this.
+os.system('get_package_data /tmp/packages.csv')
 
 with open('/tmp/packages.csv') as f:
     package_reader = csv.reader(f, delimiter=';')
