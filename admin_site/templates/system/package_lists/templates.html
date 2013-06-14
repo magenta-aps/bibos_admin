@@ -1,0 +1,18 @@
+<div id="packagelist-templates">
+    <ul id="packagelist_item" class="template-container">
+    {% include 'system/package_lists/item.html' with pk='#PK#' name='#NAME#' label='#LABEL#' %}
+    </ul>
+    
+    <div id="removepackagedialog" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">×</button>
+          <div class="modaltitle"><h3>Fjern pakke</h3></div>
+        </div>
+        <div class="modal-body">
+            Dialog content goes here
+        </div>
+        <div class="modal-footer">
+          <button class="btn" data-dismiss="modal">Fjern pakke</button>
+        </div>
+    </div>
+</div>
