@@ -601,11 +601,17 @@ class SiteCreate(CreateView, LoginRequiredMixin):
     form_class = SiteForm
     slug_field = 'uid'
 
+    def get_success_url(self):
+        return '/sites/'
+
 
 class SiteUpdate(UpdateView, LoginRequiredMixin):
     model = Site
     form_class = SiteForm
     slug_field = 'uid'
+
+    def get_success_url(self):
+        return '/sites/'
 
 
 class ConfigurationEntryCreate(SiteMixin, CreateView, LoginRequiredMixin):
