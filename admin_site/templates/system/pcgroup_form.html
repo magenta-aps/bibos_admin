@@ -10,7 +10,7 @@ Ny gruppe
     <form action="" method="post">{% csrf_token %}
       {{ form.as_p }}
       <input class="btn btn-primary" type="submit" value="Gem" />
-      <a href="#" class="btn disabled">Annuller</a>
+      <a class="btn" href="javascript:history.go(-1)">Annuller</a> 
     </form>
   </div>
 {% endblock %}

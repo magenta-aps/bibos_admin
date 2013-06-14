@@ -11,7 +11,7 @@ Slet parameter
     <form action="" method="post">{% csrf_token %}
       {{ form.as_p }}
       <input class="btn btn-primary" type="submit" value="Ja" />
-      <a href="#" class="btn disabled" onclick="window.history.back()">Nej</a>
+      <a class="btn" href="javascript:history.go(-1)">Nej</a>
     </form>
   </div>
 {% endblock %}
