@@ -14,7 +14,7 @@ class="active"
     {% if not site.pcs.all%}
       <li>Der er ingen maskiner</li>
     {% endif %}
-    {% for pc in site.pcs.all %}
+    {% for pc in pc_list %}
       <li {% ifequal pc selected_pc %}class="active" %}{% endifequal %}>
         <a href="/site/{{ site.url }}/computers/{{ pc.uid }}"><i class="icon-hdd"></i> {{ pc.name }}</a>
       </li>

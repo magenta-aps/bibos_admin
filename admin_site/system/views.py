@@ -61,6 +61,7 @@ class SelectionMixin(View):
         display_name = (self.class_display_name if self.class_display_name else
                         self.selection_class.__name__.lower())
         context['selected_{0}'.format(display_name)] = selected
+        context['{0}_list'.format(display_name)] = self.get_list()
 
         return context
 
@@ -516,7 +517,9 @@ class ComputersView(SelectionMixin, SiteView):
     selection_class = PC
 
     def get_list(self):
-        return self.object.pcs.all()
+        return self.object.pcs.all().extra(
+            select={'lower_name': 'lower(name)'}
+        ).order_by('lower_name')
 
 
 class GroupsView(SelectionMixin, SiteView):
