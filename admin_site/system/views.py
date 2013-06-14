@@ -13,7 +13,7 @@ from django.db.models import Q
 
 from account.models import UserProfile
 
-from models import Site, PC, PCGroup, ConfigurationEntry
+from models import Site, PC, PCGroup, ConfigurationEntry, Package
 from forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
 from forms import UserForm, ParameterForm
 from job.models import Job, Script, Input, Batch, Parameter
@@ -513,6 +513,14 @@ class GroupsView(SelectionMixin, SiteView):
     def get_list(self):
         return self.object.groups.all()
 
+    def get_context_data(self, **kwargs):
+        context = super(GroupsView, self).get_context_data(**kwargs)
+        if 'selected_group' in context:
+            group = context['selected_group']
+            ii = group.custom_packages.install_infos
+            context['package_infos'] = ii.order_by('package__name')
+        return context
+
 
 class UsersView(SelectionMixin, SiteView):
 
@@ -638,3 +646,52 @@ class GroupCreate(CreateView, LoginRequiredMixin):
 class GroupUpdate(CreateView, LoginRequiredMixin):
     model = PCGroup
     slug_field = 'uid'
+
+
+class PackageSearch(JSONResponseMixin, ListView):
+    raw_result = False
+
+    def get_queryset(self):
+        params = self.request.GET or self.request.POST
+
+        by_name = params.get('get_by_name', None)
+        if by_name:
+            return Package.objects.filter(name=by_name)[:1]
+
+        q = params.get('q', None)
+        conditions = []
+        if q is not None:
+            conditions.append(
+                Q(name__icontains=q) |
+                Q(description__icontains=q)
+            )
+
+        qs = Package.objects.filter(*conditions)
+
+        if params.get('distinct_by_name', None):
+            self.raw_result = True
+            qs = qs.values('name', 'description').annotate()
+            qs = qs.order_by('name', 'description')
+        else:
+            qs = qs.order_by('name', 'version')
+
+        try:
+            limit = int(params.get('limit', 20))
+        except:
+            limit = 10
+
+        if limit == 'all':
+            return qs
+        else:
+            return qs[:limit]
+
+    def convert_context_to_json(self, context):
+        if(self.raw_result):
+            return json.dumps([i for i in self.object_list])
+        else:
+            return json.dumps([{
+                'pk': p.pk,
+                'name': p.name,
+                'description': p.description,
+                'version': p.version
+            } for p in self.object_list])

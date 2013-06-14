@@ -1,0 +1,29 @@
+{% if pl_id %}
+<div
+  id="{{ pl_id  }}"
+  {% if base_package_ids %}
+  data-base-packages="{{ base_package_ids|join:',' }}"
+  {% endif %}
+>
+    <label>Pakker:</label>
+    
+    <input type="hidden" id="removeable-package-ids" value="" disabled="disabled" />
+    <ul class="unstyled well actionlist packagelist">
+      {% for ii in packages %}
+        {% if ii.do_add %}
+        {% include 'system/package_lists/item.html' with pk=ii.package.pk name=ii.package.name %}
+        {% else %}
+        {% include 'system/package_lists/item.html' with pk=ii.package.pk name=ii.package.name label='label-important' form_name='remove_packages'%}
+        {% endif %}
+      {% endfor %}
+      <li class="addpackagecontrol">
+        <label for="{{ pl_id }}_addremovepackagename">Tilføj/fjern pakke:</label>
+        <input type="text" name="addpackagename" id="{{ pl_id }}_addremovepackagename" value=""/>
+        <a href="javascript:void(0)" onclick="BibOS.PackageList.addPackage('{{ pl_id }}')" title="Tilføj pakke"><i class="icon-plus"></i> Tilføj</a>
+        <a href="javascript:void(0)" onclick="BibOS.PackageList.removePackage('{{ pl_id }}')" title="Fjern pakke"><i class="icon-plus"></i> fjern pakke</a>
+      </li>
+    </ul>
+</div>
+{% else %}
+<p>You must specify a <em>pl_id</em> when loading the package_list template</p>
+{% endif %}

@@ -4,9 +4,12 @@
 Grupper
 {% endblock %}
 
+{% block javascripts %}
+<script type="text/javascript" src="/media/js/package_lists.js"></script>
+{% endblock %}
+
+
 {% block specific_content %}
-
-
   <ul class="sublevelnav">
       <li class="listutils"><a href="/site/{{ site.url }}/groups/new/" title=""><i class="icon-plus icon-white"></i> tilføj ny gruppe</a></li>
       {% for group in site.groups.all %}
@@ -87,22 +90,7 @@ Grupper
     </div>
     
     <hr>
-      
-    <label>Pakker:</label>
-    <ul class="unstyled well actionlist packagelist">
-      {% for install_info in selected_group.custom_packages.install_infos.all %}
-      <li> 
-        <div class="btn-group profile dark">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span
-                  class="label {% if install_info.do_add %}label-success{% else %}label-important{% endif %}">{{ install_info.package.name }}</span></a>
-          <ul class="dropdown-menu">
-            <li><a href="#"><i class="icon-remove"></i> Fjern pakke</a></li>
-          </ul>
-        </div>
-        </li>
-        {% endfor %}
-      <li><a href="#" title="Tilføj pakke"><i class="icon-plus"></i> tilføj pakker</a></li>
-    </ul>
-    
+    {% include 'system/package_lists/templates.html' %}
+    {% include 'system/package_lists/list.html' with packages=package_infos pl_id='group_packages'%}
   </div>
 {% endblock %}

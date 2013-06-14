@@ -62,3 +62,5 @@ div.runscriptdialogheader {display: none;}
 li.selected {background-color: #D5D5D5;}
 .table th.orderby {cursor: pointer; text-align: center;}
 .orderby.active {background: #08c; color: #fff;}
+li.addpackagecontrol {display: block;}
+li.addpackagecontrol label, li.addpackagecontrol a {display: inline} 

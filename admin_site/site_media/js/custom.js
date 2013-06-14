@@ -3,6 +3,10 @@ var BibOS;
 (function($) {
   function BibOS(args) {
     this.templates = {};
+    this.documentReady = false
+    this.loadedItems = {}
+    this.scriptsToLoad = []
+    this.cssToLoad = []
   }
 
   $.extend(BibOS.prototype, {
@@ -10,8 +14,75 @@ var BibOS;
     },
 
     onDOMReady: function() {
+      var t = this;
+      t.documentReady = true;
+
+      // Mark what we have already loaded
+      $('script').each(function() {
+        t.loadedItems[$(this).attr('src') || ''] = true
+      })
+      $.each(this.scriptsToLoad, function() {
+        t.loadScript(this)
+      })
+      $('link').each(function() {
+        t.loadedItems[$(this).attr('href') || ''] = true
+      })
+      $.each(this.cssToLoad, function() {
+        t.loadStylesheet(this)
+      })
     },
 
+    loadResource: function(type, src) {
+      if(this.documentReady) {
+        var item;
+        if(this.loadedItems[src])
+          return
+        if(type == 'css' || type == 'stylesheet') {
+          var css = $('<link>', {
+            'href': src,
+            'type': 'text/css',
+            'rel': 'stylesheet'
+          });
+          css.appendTo($('head'));
+        } else if(type == 'script' || type == 'javascript') {
+          var script = $('<script>', {'src': src, 'type':'text/javascript'});
+          script.appendTo($('body'));
+        } else {
+          alert("Don't know how to load item of type " + type);
+          return
+        }
+        this.loadedItems[src] = true;
+      } else {
+        if (type == 'css' || type == 'stylesheet') {
+          this.cssToLoad.push(src)
+        } else if(type == 'script') {
+          this.scriptsToLoad.push(src)
+        } else {
+          alert("Don't know how to load item of type " + type + ' once')
+        }
+      }
+    },
+
+    loadScript: function(src) {
+      this.loadResource('script', src);
+    },
+    
+    loadStylesheet: function(src) {
+      this.loadResource('css', src);
+    },
+
+    translate: function() {
+      // TODO: implement actual translation, this is just poor man's sprintf
+      var args = arguments, arg_idx = 1, key = arguments[0] || '';
+      if (arguments.length > 1) {
+        key = key.replace(/\%s/g, function(m) {
+          var v = args[arg_idx++]; 
+          return v == undefined ? '' : v;
+        })
+      }
+      return key
+    },
+    
     // Load a template from innerHTML of element specified by id
     addTemplate: function(name, id) {
       this.templates[name] = $(id).html()
