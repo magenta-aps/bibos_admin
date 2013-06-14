@@ -85,6 +85,21 @@ class JSONResponseMixin(object):
         return json.dumps(context)
 
 
+# Mixin class for CRUD views that use site_uid in URL
+# The "site_uid" slug is configurable, but please avoid clashes
+class SiteMixin(View):
+    """Mixin class to extract site UID from URL"""
+
+    site_uid = 'site_uid'
+
+    def get_context_data(self, **kwargs):
+        context = super(SiteMixin, self).get_context_data(**kwargs)
+        site = get_object_or_404(Site, uid=self.kwargs[self.site_uid])
+        context['site'] = site
+
+        return context
+
+
 # Main index/site root view
 class AdminIndex(RedirectView, LoginRequiredMixin):
     """Redirects to admin overview (sites list) or site main page."""
@@ -593,7 +608,7 @@ class SiteUpdate(UpdateView, LoginRequiredMixin):
     slug_field = 'uid'
 
 
-class ConfigurationEntryCreate(CreateView, LoginRequiredMixin):
+class ConfigurationEntryCreate(SiteMixin, CreateView, LoginRequiredMixin):
     model = ConfigurationEntry
     form_class = ConfigurationEntryForm
 
@@ -608,7 +623,7 @@ class ConfigurationEntryCreate(CreateView, LoginRequiredMixin):
         return '/site/{0}/configuration/'.format(self.kwargs['site_uid'])
 
 
-class ConfigurationEntryUpdate(UpdateView, LoginRequiredMixin):
+class ConfigurationEntryUpdate(SiteMixin, UpdateView, LoginRequiredMixin):
     model = ConfigurationEntry
     form_class = ConfigurationEntryForm
 
@@ -616,24 +631,17 @@ class ConfigurationEntryUpdate(UpdateView, LoginRequiredMixin):
         return '/site/{0}/configuration/'.format(self.kwargs['site_uid'])
 
 
-class ConfigurationEntryDelete(DeleteView, LoginRequiredMixin):
+class ConfigurationEntryDelete(SiteMixin, DeleteView, LoginRequiredMixin):
     model = ConfigurationEntry
 
     def get_success_url(self):
         return '/site/{0}/configuration/'.format(self.kwargs['site_uid'])
 
 
-class GroupCreate(CreateView, LoginRequiredMixin):
+class GroupCreate(SiteMixin, CreateView, LoginRequiredMixin):
     model = PCGroup
     form_class = GroupForm
     slug_field = 'uid'
-
-    def get_context_data(self, **kwargs):
-        context = super(GroupCreate, self).get_context_data(**kwargs)
-        site = get_object_or_404(Site, uid=self.kwargs['site_uid'])
-        context['site'] = site
-
-        return context
 
     def form_valid(self, form):
         site = get_object_or_404(Site, uid=self.kwargs['site_uid'])
@@ -643,7 +651,7 @@ class GroupCreate(CreateView, LoginRequiredMixin):
         return super(GroupCreate, self).form_valid(form)
 
 
-class GroupUpdate(CreateView, LoginRequiredMixin):
+class GroupUpdate(SiteMixin, UpdateView, LoginRequiredMixin):
     model = PCGroup
     slug_field = 'uid'
 
