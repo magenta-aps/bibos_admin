@@ -11,9 +11,10 @@ class="detailpage"
 {% block content %}
 
   <ul class="nav nav-list utils utils-global">
-   {% ifequal user.get_profile.type 0 %}
-    <li><a href="/"><i class="icon-info-sign icon-white"></i>Til site-oversigt</a></li>
-{% endifequal %}
+    {% ifequal user.get_profile.type 0 %}
+      <li><a href="/"><i class="icon-arrow-left icon-white"></i> Sites</a></li>
+      <li class="divider"></li>
+    {% endifequal %}
     <li class="active"><a href="/site/{{ site.url }}"><i class="icon-info-sign icon-white"></i> Overblik</a></li>
     <li class="divider"></li>
     <li class="nav-header">Maskiner</li>
