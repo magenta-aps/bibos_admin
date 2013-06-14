@@ -5,6 +5,7 @@ import uuid
 import os
 import sys
 import csv
+import urlparse
 
 from bibos_utils.bibos_config import BibOSConfig
 from bibos_client.admin_client import BibOSAdmin
@@ -13,9 +14,10 @@ config = BibOSConfig()
 data = config.get_data()
 
 admin_url = data['admin_url']
+xml_rpc_url = data.get('xml_rpc_url', '/admin-xml/')
 distribution = data['distribution']
 
-admin = BibOSAdmin(admin_url, verbose=False)
+admin = BibOSAdmin(urlparse.urljoin(admin_url, xml_rpc_url))
 
 
 # TODO: Make option to turn off/avoid repeating this.
