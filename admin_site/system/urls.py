@@ -8,6 +8,7 @@ from views import ScriptList, ScriptUpdate, ScriptCreate, ScriptDelete
 from views import ScriptRun
 from views import ConfigurationEntryCreate, ConfigurationEntryUpdate
 from views import ConfigurationEntryDelete
+from views import PackageSearch
 
 urlpatterns = patterns(
     '',
@@ -59,10 +60,17 @@ urlpatterns = patterns(
     url(r'^site/(?P<slug>\w+)/scripts/',
         ScriptList.as_view(),
         name='scripts'),
+
     # Users
     url(r'^site/(?P<slug>\w+)/users/$', UsersView.as_view(), name='users'),
     url(r'^site/(?P<slug>\w+)/users/new/$',
         UserCreate.as_view(), name='new_user'),
     url(r'^site/(?P<slug>\w+)/users/(?P<username>\w+)/$',
         UsersView.as_view(), name='user'),
+
+    # Packages
+    url(r'^packages/',
+        PackageSearch.as_view(),
+        name='packages'),
+
 )

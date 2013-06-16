@@ -77,7 +77,7 @@ def upload_dist_packages(distribution_uid, package_data):
                 status = PackageStatus.objects.create(
                     package=p,
                     package_list=distribution.package_list,
-                    status = pd['status']
+                    status=pd['status']
                 )
 
 
@@ -114,7 +114,7 @@ def send_status_info(pc_uid, package_data, job_data):
                 status = PackageStatus.objects.create(
                     package=p,
                     package_list=pc.package_list,
-                    status = pd['status']
+                    status=pd['status']
                 )
 
     # 3. Update jobs with job data

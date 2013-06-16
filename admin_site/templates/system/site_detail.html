@@ -1,7 +1,7 @@
 {% extends "site_with_navigation.html" %}
 
 {% block specific_title %}
-Overblik
+Status
 {% endblock %}
 
 {% block javascripts %}
@@ -12,6 +12,10 @@ Overblik
         location.href = './?orderby=' + new_order
     }
 </script>
+{% endblock %}
+
+{% block site_active %}
+class="active"
 {% endblock %}
 
 {% block specific_content %}
@@ -28,12 +32,12 @@ Overblik
     
     <table class="table jobtable">
           <tr>
-            <th><a href="javascript:void(0)" onclick="joblist_orderby('batch__script__name')">Script</a></th>
-            <th><a href="javascript:void(0)" onclick="joblist_orderby('started')">Startet</a></th>
-            <th><a href="javascript:void(0)" onclick="joblist_orderby('finished')">Sluttet</a></th>
-            <th><a href="javascript:void(0)" onclick="joblist_orderby('status')">Status</a></th>
-            <th><a href="javascript:void(0)" onclick="joblist_orderby('pc__name')">Maskine</a></th>
-            <th><a href="javascript:void(0)" onclick="joblist_orderby('batch__name')">Batch</a></th>
+            <th class="orderby order-pk desc"><a href="javascript:void(0)" onclick="joblist_orderby('batch__script__name')">Script <i class="icon icon-chevron-down"></i></a></th>
+            <th class="orderby order-started desc"><a href="javascript:void(0)" onclick="joblist_orderby('started')">Startet <i class="icon icon-chevron-down"></i></a></th>
+            <th class="orderby order-finished desc"><a href="javascript:void(0)" onclick="joblist_orderby('finished')">Sluttet <i class="icon icon-chevron-down"></i></a></th>
+            <th class="orderby order-status desc"><a href="javascript:void(0)" onclick="joblist_orderby('status')">Status <i class="icon icon-chevron-down"></i></a></th>
+            <th class="orderby order-pc__name desc" onclick="joblist_orderby('pc__name')">Maskine <i class="icon icon-chevron-down"></i></a></th>
+            <th class="orderby order-batch__name desc" onclick="joblist_orderby('batch__name')">Batch <i class="icon icon-chevron-down"></i></a></th>
             <th></th>
           </tr>
           {% if jobs %}
