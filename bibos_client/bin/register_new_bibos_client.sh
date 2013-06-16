@@ -4,7 +4,7 @@
     # The following config parameters are needed to finalize the
     # installation:
     # - hostname
-    #   TODO: Prompt user for new host name
+    #   Prompt user for new host name
     echo "Indtast venligst et nyt navn for denne computer:"
     read NEWHOSTNAME
 
@@ -32,7 +32,7 @@
     fi
 
     # - distribution
-    #   TODO: Use preinstalled default if any, otherwise prompt user
+    #   Use preinstalled default if any, otherwise prompt user
     
     DISTRO=$(get_bibos_config distribution)
     echo $DISTRO
