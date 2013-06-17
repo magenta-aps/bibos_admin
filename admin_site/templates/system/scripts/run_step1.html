@@ -1,13 +1,13 @@
 {% extends 'system/scripts/run_base.html' %}
 
 {% block run_dialog_heading %}
-Kør script: <em>Vælg maskine eller grupper</em>
+Kør script: <em>Vælg computer eller grupper</em>
 {% endblock %}
 
 {% block run_dialog_content %}
 <div class="row-fluid">
   <div class="span6">
-    <label>Maskiner:</label>
+    <label>Computere:</label>
     <ul class="unstyled">
       {% for pc in pcs %}
       <li onclick="BibOS.ScriptEdit.selectGroupOrPC(this)">

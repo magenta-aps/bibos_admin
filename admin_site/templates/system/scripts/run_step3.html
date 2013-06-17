@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block run_dialog_content %}
-  <p>Job baseret på script <em>{{ script.name }}</em> er startet på <em>{{ num_pcs }}</em> maskine(r)</p>
+  <p>Job baseret på script <em>{{ script.name }}</em> er startet på <em>{{ num_pcs }}</em> computer(e)</p>
   <p><a href="{% url 'jobs' site.uid %}?batch={{batch.pk}}" onclick="this.target='_top'">Du kan følge de oprettede jobs her</a></p>
 {% endblock %}
 

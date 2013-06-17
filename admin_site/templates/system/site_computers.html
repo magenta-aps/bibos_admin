@@ -1,7 +1,23 @@
 {% extends "site_with_navigation.html" %}
 
 {% block specific_title %}
-Maskiner
+Computere
+{% endblock %}
+
+{% block head_javascripts %}
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('.accordion-group:first-child').find('i').toggleClass('icon-chevron-up icon-chevron-down');
+      $('.accordion-toggle').click(function(event){
+        $(this).find('i').toggleClass('icon-chevron-up icon-chevron-down');
+        $('.accordion-group').each(function() {
+          if ($(this).find('.accordion-body').hasClass('in')) {
+            $(this).find('i').removeClass('icon-chevron-up').addClass('icon-chevron-down');
+          };
+        });
+      });
+    });
+  </script>
 {% endblock %}
 
 {% block computers_active %}
@@ -12,7 +28,7 @@ class="active"
 
   <ul class="sublevelnav">
     {% if not site.pcs.all%}
-      <li>Der er ingen maskiner</li>
+      <li>Der er ingen computere</li>
     {% endif %}
     {% for pc in pc_list %}
       <li {% ifequal pc selected_pc %}class="active" %}{% endifequal %}>
@@ -23,164 +39,208 @@ class="active"
   
   <div class="container-fluid main sublevelmain">
     
-      <h2 class="divideheader">Detaljer om <em>{{ selected_pc.name }}</em></h2>
-    
-    <button class="btn btn-primary">Gem ændringer</button>
-    <button class="btn">Annuller</button>
-          
-    <hr>
+    <h2 class="divideheader">Detaljer om <em>{{ selected_pc.name }}</em></h2>
     
     <form>
       
-      <div class="row-fluid">
+      <button class="btn btn-primary">Gem ændringer</button>
+      <button class="btn">Annuller</button>
+    
+      <div class="accordion" id="accordion2">
         
-        <fieldset class="span6">
-          <label>Navn:</label>
-          <input type="text" value="{{ selected_pc.name }}">
-          
-          <label>Beskrivelse:</label>
-          <textarea>{{ selected_pc.description }}</textarea>
-          
-          <label>Distribution:</label>
-          <input type="text" value="{{ selected_pc.distribution }}">
-        </fieldset>
-        
-        <fieldset class="span6">
-          
-          <label>Konfigurationer:</label>
-          <div class="well">
-            <table class="table table-condensed table-hover">
-              <tr>
-                <th>Nøgle</th>
-                <th>Værdi</th>
-            </tr>
-            {% for entry in selected_pc.configuration.entries.all %}
-              <tr class="muted">
-                  <td>{{ entry.key }}</td>
-                <td>
-                  <div class="btn-group profile dark">
-                    <a class="dropdown-toggle btn" data-toggle="dropdown"
-                        href="#">{{ entry.value }}</a>
-                    <ul class="dropdown-menu">
-                      <li><a href="#"><i class="icon-edit"></i> Redigér</a></li>
-                      <li><a href="#"><i class="icon-remove"></i> Slet konfiguration</a></li>
-                    </ul>
-                  </div>
-                </td>
-            </tr>
-            {% endfor %}
-              <tr>
-                <td colspan="2">
-                  <a href="#" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj konfiguration</a>
-                </td>
-              </tr>
-            </table>
+        <div class="accordion-group">
+          <div class="accordion-heading">
+            <a class="accordion-toggle btn" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+              Detaljer <i class="icon-chevron-down pull-right"></i>
+            </a>
           </div>
-        </fieldset>
-        
-      </div>
-      
-      <hr>
-        
-      <div>
-        <fieldset>
-          <label>Grupper:</label>
-          <ul class="unstyled well actionlist">
-              {% for group in selected_pc.pc_groups.all %}
-            <li>
-              <div class="btn-group profile dark">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i
-                        class="icon icon-tags"></i> {{ group.name }}</a>
-                <ul class="dropdown-menu">
-                  <li><a href="#"><i class="icon-remove"></i> Fjern gruppe</a></li>
-                </ul>
+          <div id="collapseOne" class="accordion-body collapse in">
+            <div class="accordion-inner">
+              <div class="row-fluid">
+                <fieldset class="span6">
+                  <label>Navn:</label>
+                  <input type="text" value="{{ selected_pc.name }}">
+                  
+                  <label>Beskrivelse:</label>
+                  <textarea>{{ selected_pc.description }}</textarea>
+                  
+                  <label>Distribution:</label>
+                  <input type="text" value="{{ selected_pc.distribution }}">
+                </fieldset>
+                <fieldset class="span6">
+                  <label>Grupper:</label>
+                  <ul class="unstyled well actionlist">
+                      {% for group in selected_pc.pc_groups.all %}
+                    <li>
+                      <div class="btn-group profile dark">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i
+                                class="icon icon-tags"></i> {{ group.name }}</a>
+                        <ul class="dropdown-menu">
+                          <li><a href="#"><i class="icon-remove"></i> Fjern gruppe</a></li>
+                        </ul>
+                      </div>
+                      </li>  
+                      {% endfor %}
+                    <li><a href="#" title="Tilføj ny gruppe"><i class="icon-plus"></i> tilføj ny gruppe</a></li>
+                  </ul>
+                </fieldset>
               </div>
-              </li>  
-              {% endfor %}
-            <li><a href="#" title="Tilføj ny gruppe"><i class="icon-plus"></i> tilføj ny gruppe</a></li>
-          </ul>
-        </fieldset>
+            </div>
+          </div>
+        </div>
+        
+        <div class="accordion-group">
+          <div class="accordion-heading">
+            <a class="accordion-toggle btn" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+              Konfigurationer <i class="icon-chevron-down pull-right"></i>
+            </a>
+          </div>
+          <div id="collapseTwo" class="accordion-body collapse">
+            <div class="accordion-inner">
+              <fieldset>
+                <div class="well">
+                  <table class="table table-condensed table-hover">
+                    <tr>
+                      <th>Nøgle</th>
+                      <th>Værdi</th>
+                  </tr>
+                  {% for entry in selected_pc.configuration.entries.all %}
+                    <tr class="muted">
+                        <td>{{ entry.key }}</td>
+                      <td>
+                        <div class="btn-group profile dark">
+                          <a class="dropdown-toggle btn" data-toggle="dropdown"
+                              href="#">{{ entry.value }}</a>
+                          <ul class="dropdown-menu">
+                            <li><a href="#"><i class="icon-edit"></i> Redigér</a></li>
+                            <li><a href="#"><i class="icon-remove"></i> Slet konfiguration</a></li>
+                          </ul>
+                        </div>
+                      </td>
+                  </tr>
+                  {% endfor %}
+                    <tr>
+                      <td colspan="2">
+                        <a href="#" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj konfiguration</a>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+        
+        <div class="accordion-group">
+          <div class="accordion-heading">
+            <a class="accordion-toggle btn" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">
+              Tilføjede pakker <i class="icon-chevron-down pull-right"></i>
+            </a>
+          </div>
+          <div id="collapseThree" class="accordion-body collapse">
+            <div class="accordion-inner">
+              <fieldset>
+                <ul class="unstyled well actionlist packagelist">
+                    {% for package in selected_pc.added_packages %}
+                  <li>
+                    <div class="btn-group profile dark">
+                      <a class="dropdown-toggle" data-toggle="dropdown"
+                          href="#"><span class="label label-success">{{ package.name }}</span></a>
+                      <ul class="dropdown-menu">
+                        <li><a href="#"><i class="icon-remove"></i> Fjern pakke</a></li>
+                      </ul>
+                    </div>
+                    </li>
+                    {% endfor %}
+                  <li><a href="#" title="Tilføj pakke"><i class="icon-plus"></i> tilføj pakker</a></li>
+                </ul>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+        
+        <div class="accordion-group">
+          <div class="accordion-heading">
+            <a class="accordion-toggle btn" data-toggle="collapse" data-parent="#accordion2" href="#collapseFour">
+              Fjernede pakker <i class="icon-chevron-down pull-right"></i>
+            </a>
+          </div>
+          <div id="collapseFour" class="accordion-body collapse">
+            <div class="accordion-inner">
+              <fieldset>
+                <ul class="unstyled well actionlist packagelist">
+                    {% for package in selected_pc.removed_packages %}
+                  <li>
+                    <div class="btn-group profile dark">
+                      <a class="dropdown-toggle" data-toggle="dropdown"
+                          href="#"><span class="label label-important">{{ package.name }}</span></a>
+                    </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+        
+        <div class="accordion-group">
+          <div class="accordion-heading">
+            <a class="accordion-toggle btn" data-toggle="collapse" data-parent="#accordion2" href="#collapseFive">
+              Jobhistorik <i class="icon-chevron-down pull-right"></i>
+            </a>
+          </div>
+          <div id="collapseFive" class="accordion-body collapse">
+            <div class="accordion-inner">
+              <table class="table jobtable">
+                <tr>
+                  <th>Script</th>
+                  <th>Startet</th>
+                  <th>Sluttet</th>
+                  <th>Status</th>
+                  <th>Batch</th>
+                  <th></th>
+                </tr>
+                <tr class="muted">
+                  <td>Opdatér pakker</td>
+                  <td>2013-05-15 08:00</td>
+                  <td>2013-05-15 09:00</td>
+                  <td><span class="label label-warning">Arbejder</span></td>
+                  <td>UpdatePackage_20130515</td>
+                  <td><button class="btn" data-toggle="popover" title="Log" data-original-title="Log" data-html="true" data-placement="top" data-content="<a href='#'><i class='icon-refresh'></i> Genstart job</a><pre>feglih eæglih selæfihaslehf læasiehf læsaijef læaishjef læiashje flæijas elfihjas leæfijas læefiha slæeifh</pre>"><i class="icon-info-sign"></i></button></td>
+                </tr>
+                <tr class="muted">
+                  <td>Opdatér pakker</td>
+                  <td>2013-05-15 08:00</td>
+                  <td>2013-05-15 09:00</td>
+                  <td><span class="label">Venter</span></td>
+                  <td>UpdatePackage_20130515</td>
+                  <td><button class="btn" data-toggle="popover" title="Log" data-original-title="Log" data-html="true" data-placement="top" data-content="<a href='#'><i class='icon-refresh'></i> Genstart job</a><pre>feglih eæglih selæfihaslehf læasiehf læsaijef læaishjef læiashje flæijas elfihjas leæfijas læefiha slæeifh</pre>"><i class="icon-info-sign"></i></button></td>
+                </tr>
+                <tr class="muted">
+                  <td>Opdatér pakker</td>
+                  <td>2013-05-15 08:00</td>
+                  <td>2013-05-15 09:00</td>
+                  <td><span class="label label-success">Færdig</span></td>
+                  <td>UpdatePackage_20130515</td>
+                  <td><button class="btn" data-toggle="popover" title="Log" data-original-title="Log" data-html="true" data-placement="top" data-content="<a href='#'><i class='icon-refresh'></i> Genstart job</a><pre>feglih eæglih selæfihaslehf læasiehf læsaijef læaishjef læiashje flæijas elfihjas leæfijas læefiha slæeifh</pre>"><i class="icon-info-sign"></i></button></td>
+                </tr>
+                <tr class="muted">
+                  <td>Opdatér pakker</td>
+                  <td>2013-05-15 08:00</td>
+                  <td>2013-05-15 09:00</td>
+                  <td><span class="label label-important">Fejl</span></td>
+                  <td>UpdatePackage_20130515</td>
+                  <td><button class="btn" data-toggle="popover" title="Log" data-original-title="Log" data-html="true" data-placement="top" data-content="<a href='#'><i class='icon-refresh'></i> Genstart job</a><pre>feglih eæglih selæfihaslehf læasiehf læsaijef læaishjef læiashje flæijas elfihjas leæfijas læefiha slæeifh</pre>"><i class="icon-info-sign"></i></button></td>
+                </tr>
+                
+              </table>
+            </div>
+          </div>
+        </div>
+        
       </div>
-      
-      <hr>
-      
-      <label>Tilføjede pakker:</label>
-      <ul class="unstyled well actionlist packagelist">
-          {% for package in selected_pc.added_packages %}
-        <li>
-          <div class="btn-group profile dark">
-            <a class="dropdown-toggle" data-toggle="dropdown"
-                href="#"><span class="label label-success">{{ package.name }}</span></a>
-            <ul class="dropdown-menu">
-              <li><a href="#"><i class="icon-remove"></i> Fjern pakke</a></li>
-            </ul>
-          </div>
-          </li>
-          {% endfor %}
-        <li><a href="#" title="Tilføj pakke"><i class="icon-plus"></i> tilføj pakker</a></li>
-      </ul>
-      
-      
-      <label>Fjernede pakker:</label>
-      <ul class="unstyled well actionlist packagelist">
-          {% for package in selected_pc.removed_packages %}
-        <li>
-          <div class="btn-group profile dark">
-            <a class="dropdown-toggle" data-toggle="dropdown"
-                href="#"><span class="label label-important">{{ package.name }}</span></a>
-          </div>
-          </li>
-          {% endfor %}
-      </ul>
       
     </form>
-    
-    <div class="row-fluid">
-      <h3 class="divideheader">Jobhistorik:</h3>  
-      <table class="table jobtable">
-        <tr>
-          <th>Script</th>
-          <th>Startet</th>
-          <th>Sluttet</th>
-          <th>Status</th>
-          <th>Batch</th>
-          <th></th>
-        </tr>
-        <tr class="muted">
-          <td>Opdatér pakker</td>
-          <td>2013-05-15 08:00</td>
-          <td>2013-05-15 09:00</td>
-          <td><span class="label label-warning">Arbejder</span></td>
-          <td>UpdatePackage_20130515</td>
-          <td><button class="btn" data-toggle="popover" title="Log" data-original-title="Log" data-html="true" data-placement="top" data-content="<a href='#'><i class='icon-refresh'></i> Genstart job</a><pre>feglih eæglih selæfihaslehf læasiehf læsaijef læaishjef læiashje flæijas elfihjas leæfijas læefiha slæeifh</pre>"><i class="icon-info-sign"></i></button></td>
-        </tr>
-        <tr class="muted">
-          <td>Opdatér pakker</td>
-          <td>2013-05-15 08:00</td>
-          <td>2013-05-15 09:00</td>
-          <td><span class="label">Venter</span></td>
-          <td>UpdatePackage_20130515</td>
-          <td><button class="btn" data-toggle="popover" title="Log" data-original-title="Log" data-html="true" data-placement="top" data-content="<a href='#'><i class='icon-refresh'></i> Genstart job</a><pre>feglih eæglih selæfihaslehf læasiehf læsaijef læaishjef læiashje flæijas elfihjas leæfijas læefiha slæeifh</pre>"><i class="icon-info-sign"></i></button></td>
-        </tr>
-        <tr class="muted">
-          <td>Opdatér pakker</td>
-          <td>2013-05-15 08:00</td>
-          <td>2013-05-15 09:00</td>
-          <td><span class="label label-success">Færdig</span></td>
-          <td>UpdatePackage_20130515</td>
-          <td><button class="btn" data-toggle="popover" title="Log" data-original-title="Log" data-html="true" data-placement="top" data-content="<a href='#'><i class='icon-refresh'></i> Genstart job</a><pre>feglih eæglih selæfihaslehf læasiehf læsaijef læaishjef læiashje flæijas elfihjas leæfijas læefiha slæeifh</pre>"><i class="icon-info-sign"></i></button></td>
-        </tr>
-        <tr class="muted">
-          <td>Opdatér pakker</td>
-          <td>2013-05-15 08:00</td>
-          <td>2013-05-15 09:00</td>
-          <td><span class="label label-important">Fejl</span></td>
-          <td>UpdatePackage_20130515</td>
-          <td><button class="btn" data-toggle="popover" title="Log" data-original-title="Log" data-html="true" data-placement="top" data-content="<a href='#'><i class='icon-refresh'></i> Genstart job</a><pre>feglih eæglih selæfihaslehf læasiehf læsaijef læaishjef læiashje flæijas elfihjas leæfijas læefiha slæeifh</pre>"><i class="icon-info-sign"></i></button></td>
-        </tr>
-        
-      </table>
-    </div>
     
   </div>
 {% endblock %}

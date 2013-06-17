@@ -4,6 +4,24 @@
 Grupper
 {% endblock %}
 
+{% block head_javascripts %}
+  <!--
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('.accordion-group:first-child').find('i').toggleClass('icon-chevron-up icon-chevron-down');
+      $('.accordion-toggle').click(function(event){
+        $(this).find('i').toggleClass('icon-chevron-up icon-chevron-down');
+        $('.accordion-group').each(function() {
+          if ($(this).find('.accordion-body').hasClass('in')) {
+            $(this).find('i').removeClass('icon-chevron-up').addClass('icon-chevron-down');
+          };
+        });
+      });
+    });
+  </script>
+  -->
+{% endblock %}
+
 {% block javascripts %}
 <script type="text/javascript" src="/media/js/package_lists.js"></script>
 {% endblock %}
@@ -23,77 +41,108 @@ class="active"
   
   <div class="container-fluid main sublevelmain">
     
-      <h2 class="divideheader">Detaljer om <em>{{ selected_group.name }}</em></h2>
+    <h2 class="divideheader">Detaljer om <em>{{ selected_group.name }}</em></h2>
     
-    <button class="btn btn-primary">Gem ændringer</button>
-    <button class="btn">Annuller</button>
-          
-    <hr>
+    <form>
     
-    <form class="row-fluid">
-      <fieldset class="span6">
+      <button class="btn btn-primary">Gem ændringer</button>
+      <button class="btn">Annuller</button>
+      
+      <div class="accordion" id="accordion2">
         
-        <label>Navn:</label>
-        <input type="text" value="{{ selected_group.name }}">
-        
-        <label>Beskrivelse:</label>
-        <textarea>{{ selected_group.description }}</textarea>
-        
-      </fieldset>
-      <fieldset class="span6">
-        
-        <label>Maskiner i denne gruppe:</label>
-        <ul class="unstyled well actionlist">
-            {% for pc in selected_group.pcs.all %}
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i
-                      class="icon-hdd"></i> {{ pc.name }}</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern maskine</a></li>
-              </ul>
+        <div class="accordion-group">
+          <div class="accordion-heading">
+            <a class="accordion-toggle btn" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+              Detaljer <i class="icon-chevron-down pull-right"></i>
+            </a>
+          </div>
+          <div id="collapseOne" class="accordion-body collapse in">
+            <div class="accordion-inner">
+              <div class="row-fluid">
+                <fieldset class="span6">
+                  <label>Navn:</label>
+                  <input type="text" value="{{ selected_group.name }}">
+                  <label>Beskrivelse:</label>
+                  <textarea>{{ selected_group.description }}</textarea>
+                </fieldset>
+                <fieldset class="span6">
+                  <label>Computere i denne gruppe:</label>
+                  <ul class="unstyled well actionlist">
+                    {% for pc in selected_group.pcs.all %}
+                    <li>
+                      <div class="btn-group profile dark">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-hdd"></i> {{ pc.name }}</a>
+                        <ul class="dropdown-menu">
+                          <li><a href="#"><i class="icon-remove"></i> Fjern computer</a></li>
+                        </ul>
+                      </div>
+                    </li>
+                    {% endfor %}
+                    <li><a href="#" title="Tilføj computer"><i class="icon-plus"></i> tilføj computer</a></li>
+                  </ul>
+                </fieldset>
+              </div>
             </div>
-            {% endfor %}
-            <li><a href="#" title="Tilføj maskine"><i class="icon-plus"></i> tilføj maskiner</a></li>
-        </ul>
+          </div>
+        </div>
         
-      </fieldset>
+        <div class="accordion-group">
+          <div class="accordion-heading">
+            <a class="accordion-toggle btn" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+              Konfigurationer <i class="icon-chevron-down pull-right"></i>
+            </a>
+          </div>
+          <div id="collapseTwo" class="accordion-body collapse">
+            <div class="accordion-inner">
+              <div class="well">
+                <table class="table table-condensed table-hover">
+                  <tr>
+                    <th>Nøgle</th>
+                    <th>Værdi</th>
+                </tr>
+                {% for entry in selected_group.configuration.entries.all %}
+                  <tr class="muted">
+                      <td>{{ entry.key }}</td>
+                    <td>
+                      <div class="btn-group profile dark">
+                        <a class="dropdown-toggle btn" data-toggle="dropdown"
+                            href="#">{{ entry.value }}</a>
+                        <ul class="dropdown-menu">
+                          <li><a href="#"><i class="icon-edit"></i> Redigér</a></li>
+                          <li><a href="#"><i class="icon-remove"></i> Slet konfiguration</a></li>
+                        </ul>
+                      </div>
+                    </td>
+                </tr>
+                {% endfor %}
+                  <tr>
+                    <td colspan="2">
+                      <a href="#" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj konfiguration</a>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="accordion-group">
+          <div class="accordion-heading">
+            <a class="accordion-toggle btn" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">
+              Pakker <i class="icon-chevron-down pull-right"></i>
+            </a>
+          </div>
+          <div id="collapseThree" class="accordion-body collapse">
+            <div class="accordion-inner">
+              {% include 'system/package_lists/templates.html' %}
+              {% include 'system/package_lists/list.html' with packages=package_infos pl_id='group_packages'%}
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      
     </form>
-    <hr>
-
-          
-    <label>Konfigurationer for maskiner i denne gruppe:</label>
-    <div class="well">
-      <table class="table table-condensed table-hover">
-        <tr>
-          <th>Nøgle</th>
-          <th>Værdi</th>
-      </tr>
-      {% for entry in selected_group.configuration.entries.all %}
-        <tr class="muted">
-            <td>{{ entry.key }}</td>
-          <td>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle btn" data-toggle="dropdown"
-                  href="#">{{ entry.value }}</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-edit"></i> Redigér</a></li>
-                <li><a href="#"><i class="icon-remove"></i> Slet konfiguration</a></li>
-              </ul>
-            </div>
-          </td>
-      </tr>
-      {% endfor %}
-        <tr>
-          <td colspan="2">
-            <a href="#" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj konfiguration</a>
-          </td>
-        </tr>
-      </table>
-    </div>
     
-    <hr>
-    {% include 'system/package_lists/templates.html' %}
-    {% include 'system/package_lists/list.html' with packages=package_infos pl_id='group_packages'%}
   </div>
 {% endblock %}
