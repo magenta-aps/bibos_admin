@@ -60,7 +60,8 @@ class SelectionMixin(View):
 
         display_name = (self.class_display_name if self.class_display_name else
                         self.selection_class.__name__.lower())
-        context['selected_{0}'.format(display_name)] = selected
+        if selected is not None:
+            context['selected_{0}'.format(display_name)] = selected
         context['{0}_list'.format(display_name)] = self.get_list()
 
         return context
@@ -140,7 +141,9 @@ class SiteDetailView(SiteView):
     def get_context_data(self, **kwargs):
         context = super(SiteDetailView, self).get_context_data(**kwargs)
         # For now, show only not-yet-activated PCs
-        context['pcs'] = self.object.pcs.filter(is_active=False)
+        context['pcs'] = self.object.pcs.filter(is_active=False).extra(
+            select={'lower_name': 'lower(name)'}
+        ).order_by('lower_name')
         query = {
             'batch__site': context['site'],
             'status': Job.FAILED
@@ -268,8 +271,11 @@ class ScriptMixin(object):
         # Get context from super class
         context = super(ScriptMixin, self).get_context_data(**kwargs)
         context['site'] = self.site
-        context['local_scripts'] = self.scripts.filter(site=self.site)
-        context['global_scripts'] = self.scripts.filter(site=None)
+        context['local_scripts'] = sorted(self.scripts.filter(site=self.site),
+                                          key=lambda s: s.name.lower())
+        context['global_scripts'] = sorted(self.scripts.filter(site=None),
+                                          key=lambda s: s.name.lower())
+
 
         context['script_inputs'] = self.script_inputs
 
@@ -529,7 +535,9 @@ class GroupsView(SelectionMixin, SiteView):
     class_display_name = 'group'
 
     def get_list(self):
-        return self.object.groups.all()
+        return self.object.groups.all().extra(
+            select={'lower_name': 'lower(name)'}
+        ).order_by('lower_name')
 
     def get_context_data(self, **kwargs):
         context = super(GroupsView, self).get_context_data(**kwargs)

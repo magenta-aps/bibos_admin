@@ -13,7 +13,7 @@ class="active"
   <ul class="sublevelnav">
       <li class="listutils"><a href="/site/{{ site.uid }}/users/new/" title="Tilføj ny bruger"><i class="icon-plus icon-white"></i> tilføj ny bruger</a></li>
 
-      {% for user in site.users %}
+      {% for user in user_list %}
       <li {% ifequal user selected_user %}class="active"{% endifequal %}><a
           href="/site/{{ site.url }}/users/{{ user.username }}"><i class="icon-user"></i> {{ user.username }}</a></li>
       {% endfor %}

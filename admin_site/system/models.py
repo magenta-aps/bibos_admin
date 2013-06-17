@@ -109,7 +109,9 @@ class Site(models.Model):
     @property
     def users(self):
         profiles = [
-            u.get_profile() for u in User.objects.all()
+            u.get_profile() for u in User.objects.all().extra(
+            select={'lower_name': 'lower(username)'}
+        ).order_by('lower_name')
                 if u.get_profile().site == self
                 and u.get_profile().type != 0
         ]
