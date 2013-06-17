@@ -63,4 +63,8 @@ li.selected {background-color: #D5D5D5;}
 .table th.orderby {cursor: pointer; text-align: center;}
 .orderby.active {background: #08c; color: #fff;}
 li.addpackagecontrol {display: block;}
-li.addpackagecontrol label, li.addpackagecontrol a {display: inline} 
+li.addpackagecontrol label, li.addpackagecontrol a {display: inline}
+.clearleft {clear: left}
+.clearright {clear: right}
+.clearboth {clear: both}
+.inline {display: inline}

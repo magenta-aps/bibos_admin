@@ -523,7 +523,6 @@ class ComputersView(SelectionMixin, SiteView):
 
 
 class GroupsView(SelectionMixin, SiteView):
-
     template_name = 'system/site_groups.html'
     selection_class = PCGroup
     class_display_name = 'group'
@@ -531,14 +530,24 @@ class GroupsView(SelectionMixin, SiteView):
     def get_list(self):
         return self.object.groups.all()
 
-    def get_context_data(self, **kwargs):
-        context = super(GroupsView, self).get_context_data(**kwargs)
-        if 'selected_group' in context:
-            group = context['selected_group']
-            ii = group.custom_packages.install_infos
-            context['package_infos'] = ii.order_by('package__name')
-        return context
+    #def get_context_data(self, **kwargs):
+    #    context = super(GroupsView, self).get_context_data(**kwargs)
+    #    if 'selected_group' in context:
+    #        group = context['selected_group']
+    #        ii = group.custom_packages.install_infos
+    #        context['package_infos'] = ii.order_by('package__name')
+    #    return context
 
+    def render_to_response(self, context):
+        if(context['selected_group']):
+            return HttpResponseRedirect('/site/%s/groups/%s/' % (
+                context['site'].uid,
+                context['selected_group'].url
+            ));
+        else: 
+            return HttpResponseRedirect(
+                '/site/%s/groups/new/' % context['site'].uid,
+            )
 
 class UsersView(SelectionMixin, SiteView):
 
@@ -660,9 +669,31 @@ class GroupCreate(SiteMixin, CreateView, LoginRequiredMixin):
         return super(GroupCreate, self).form_valid(form)
 
 
-class GroupUpdate(SiteMixin, UpdateView, LoginRequiredMixin):
+class GroupUpdate(SiteMixin, LoginRequiredMixin, UpdateView):
+    template_name = 'system/site_groups.html'
+    form_class = GroupForm
     model = PCGroup
-    slug_field = 'uid'
+
+    def get_object(self, queryset=None):
+        return PCGroup.objects.get(uid=self.kwargs['group_uid'])
+
+    def get_context_data(self, **kwargs):
+        context = super(GroupUpdate, self).get_context_data(**kwargs)
+        context['selected_group'] = self.object
+        ii = self.object.custom_packages.install_infos
+        context['package_infos'] = ii.order_by('package__name')
+
+        return context
+
+    def form_valid(self, form):
+        self.object.custom_packages.update_by_package_names(
+            self.request.POST.getlist('group_packages_add'),
+            self.request.POST.getlist('group_packages_remove')
+        )
+        return super(GroupUpdate, self).form_valid(form)
+
+    def form_invalid(self, form):
+        return super(GroupUpdate, self).form_invalid(form)
 
 
 class PackageSearch(JSONResponseMixin, ListView):

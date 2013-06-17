@@ -9,12 +9,13 @@
     }
 
     BibOS.addTemplate('packagelist-item', '#packagelist_item');
+    $('#packagelist_item input').attr('disabled', 'disabled');
     var PackageList = function() {
         this.activeList = null
         this.currentPackages = {}
     };
 
-    function addPackageToList(id, label) {
+    function addPackageToList(id, label, submit_name) {
         var input = $('#' + id + "_addremovepackagename"),
             list = $('#' + id + ' ul.packagelist');
 
@@ -53,7 +54,10 @@
                 }
                 var item = $(BibOS.expandTemplate(
                     'packagelist-item',
-                    $.extend(data[0], {'label': label})
+                    $.extend(data[0], {
+                        'label': label,
+                        'submit_name': submit_name
+                    })
                 ));
                 if (existing) {
                     existing.remove();
@@ -71,8 +75,9 @@
                     return true;
                 });
                 if (!inserted) {
-                    item.insertBefore(list.find('li.addpackagecontrol'));
+                    item.appendTo(list);
                 }
+                input.val('');
             },
             'error': errorhandler
         })
@@ -102,10 +107,10 @@
             });
         },
         addPackage: function(id) {
-            addPackageToList(id, 'label-success')
+            addPackageToList(id, 'label-success', id + '_add')
         },
         removePackage: function(id) {
-            addPackageToList(id, 'label-important')
+            addPackageToList(id, 'label-important', id + '_remove')
         },
         setActiveLists: function(id) {
             this.removeList = $('#' + id + ' ul.removedpackages')

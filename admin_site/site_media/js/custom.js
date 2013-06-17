@@ -141,6 +141,10 @@ var BibOS;
       if (new_order == old_order)
           desc = !old_desc;
       return (desc ? '-' : '') + new_order;
+    },
+    setOrderByClasses: function(elem, list, orderkey) {
+      $(list).removeClass('orderby').removeClass('orderby-desc')
+      $(elem).addClass(orderkey.match(/^-/) ? 'orderby-desc' : 'orderby');
     }
   })
   window.BibOS = window.BibOS || new BibOS();
