@@ -66,4 +66,11 @@ li.selected {background-color: #D5D5D5;}
 .table th.orderby {cursor: pointer; text-align: center;}
 .orderby.active {background: #08c; color: #fff;}
 li.addpackagecontrol {display: block;}
-li.addpackagecontrol label, li.addpackagecontrol a {display: inline} 
+li.addpackagecontrol label, li.addpackagecontrol a {display: inline}
+#jobsearchnav {background: #444; color: #ccc;}
+#jobsearch-filterform {padding: 20px;}
+#jobsearch-filterform .nav-header {text-shadow: none; color: #ccc}
+#jobsearch-filterform .collapsing {margin-bottom: 10px;}
+#jobsearch-filterform hr {border: solid 1px #666; border-width: 1px 0 0;}
+#jobsearch-filterform .collapse a {color: #fff; border: none;}
+#jobsearch-filterform .collapse .selected a {background: #08c;}

@@ -9,6 +9,13 @@ Jobs
     var bibos_job_search_url = '{% url 'jobsearch' site.uid %}'
   </script>
   <script type="text/javascript" src="/media/js/jobs_list.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('.collapsing').click(function() {
+        $(this).find('i').toggleClass('icon-chevron-up icon-chevron-down');
+      });
+    });
+  </script>
 {% endblock %}
 
 {% block jobs_active %}
@@ -33,80 +40,74 @@ class="active"
     </tbody>
    </table> 
   </div>
-  <div class="container-fluid main">
-    <div class="row-fluid">
-      <div class="span2">
-        <div class="well">
-          <form id="jobsearch-filterform" name="filterform" action="./" method="post">
-            <input type="hidden" name="batch" value="{{ selected_batch }}" />
-            <input type="hidden" name="pc" value="{{ selected_pc }}" />
-            <input type="hidden" name="group" value="{{ selected_group }}" />
-            <input type="hidden" name="orderby" value="-pk" />
-            <h3 class="nav-header">Filtrér:</h3>
-            <hr>
-            <div id="jobsearch-status-selectors">
-            {% for name, value, label in status_choices%}
-            <label>
-              <input type="checkbox" value="{{ value }}" name="status">
-              <span class="label {{ label }}">{{ name }}</span>
-            </label>
-            {% endfor %}
-            </div>
-            <hr>
-            <a href="javascript:void(0)" class="btn collapsing" data-toggle="collapse" data-target="#demo1"><i class="icon-chevron-down"></i> Batches</a>
-            <div id="demo1" class="collapse out{% if selected_batch %} in{% endif %}">
-              <ul class="unstyled">
-                {% for batch in batches %}
-                <li onclick="BibOS.JobList.selectBatch(this, '{{ batch.pk }}')" {% ifequal batch.pk selected_batch %}class="selected"{% endifequal %}>
-                  <a href="javascript:void(0)">{{ batch.name }}</a>
-                </li>
-                {% endfor %}
-              </ul>
-            </div>
-            <a href="javascript:void(0)" class="btn collapsing" data-toggle="collapse" data-target="#demo2"><i class="icon-chevron-down"></i> PCs</a>
-            <div id="demo2" class="collapse out{% if selected_pc %} in{% endif %}">
-              <ul class="unstyled">
-                {% for pc in pcs %}
-                <li onclick="BibOS.JobList.selectPC(this, '{{ pc.pk }}')" {% ifequal pc.pk selected_pc %}class="selected"{% endifequal %}>
-                  <a href="javascript:void(0)"><i class="icon-hdd"></i> {{ pc.name }}</a>
-                </li>
-                {% endfor %}
-              </ul>
-            </div>
-            <a href="javascript:void(0)" class="btn collapsing" data-toggle="collapse" data-target="#demo3"><i class="icon-chevron-down"></i> Grupper</a>
-            <div id="demo3" class="collapse out{% if selected_group %} in{% endif %}">
-              <ul class="unstyled">
-                {% for group in groups %}
-                <li onclick="BibOS.JobList.selectGroup(this, '{{ group.pk }}')" {% ifequal group.pk selected_group %}class="selected"{% endifequal %}>
-                  <a  href="javascript:void(0)"><i class="icon-tags"></i> {{ group.name }}</a>
-                </li>
-                {% endfor %}
-              </ul>
-            </div>
-          </form>
-        </div>
+  <div id="jobsearchnav" class="sublevelnav">
+    <form id="jobsearch-filterform" name="filterform" action="./" method="post">
+      <input type="hidden" name="batch" value="{{ selected_batch }}" />
+      <input type="hidden" name="pc" value="{{ selected_pc }}" />
+      <input type="hidden" name="group" value="{{ selected_group }}" />
+      <input type="hidden" name="orderby" value="-pk" />
+      <h3 class="nav-header">Filtrér:</h3>
+      <hr>
+      <div id="jobsearch-status-selectors">
+      {% for name, value, label in status_choices%}
+      <label>
+        <input type="checkbox" value="{{ value }}" name="status">
+        <span class="label {{ label }}">{{ name }}</span>
+      </label>
+      {% endfor %}
       </div>
-      <div class="span10">
-        <table class="table table-hover jobtable">
-          <thead>
-            <tr>
-              <th class="orderby order-pk desc" onclick="BibOS.JobList.orderby('pk')"><i class="icon icon-chevron-down"></i></th>
-              <th class="orderby order-batch__script__name desc" onclick="BibOS.JobList.orderby('batch__script__name')">Script <i class="icon icon-chevron-down"></i></th>
-              <th class="orderby order-started desc" onclick="BibOS.JobList.orderby('started')">Startet <i class="icon icon-chevron-down"></i></th>
-              <th class="orderby order-finished desc" onclick="BibOS.JobList.orderby('finished')">Sluttet <i class="icon icon-chevron-down"></i></th>
-              <th class="orderby order-status desc" onclick="BibOS.JobList.orderby('status')">Status <i class="icon icon-chevron-down"></i></th>
-              <th class="orderby order-pc__name desc" onclick="BibOS.JobList.orderby('pc__name')">Computer <i class="icon icon-chevron-down"></i></th>
-              <th class="orderby order-batch__name desc" onclick="BibOS.JobList.orderby('batch__name')">Batch <i class="icon icon-chevron-down"></i></th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="job-list">
-            <tr class="muted">
-              <td colspan="8">Loading data...</td>
-            </tr>
-          </tbody>
-        </table> 
+      <hr>
+      <a href="javascript:void(0)" class="btn collapsing" data-toggle="collapse" data-target="#demo1"><i class="icon-chevron-down"></i> Batches</a>
+      <div id="demo1" class="collapse out{% if selected_batch %} in{% endif %}">
+        <ul class="unstyled">
+          {% for batch in batches %}
+          <li onclick="BibOS.JobList.selectBatch(this, '{{ batch.pk }}')" {% ifequal batch.pk selected_batch %}class="selected"{% endifequal %}>
+            <a href="javascript:void(0)"><i class="icon-list-alt icon-white"></i> {{ batch.name }}</a>
+          </li>
+          {% endfor %}
+        </ul>
       </div>
-    </div>
+      <a href="javascript:void(0)" class="btn collapsing" data-toggle="collapse" data-target="#demo2"><i class="icon-chevron-down"></i> PCs</a>
+      <div id="demo2" class="collapse out{% if selected_pc %} in{% endif %}">
+        <ul class="unstyled">
+          {% for pc in pcs %}
+          <li onclick="BibOS.JobList.selectPC(this, '{{ pc.pk }}')" {% ifequal pc.pk selected_pc %}class="selected"{% endifequal %}>
+            <a href="javascript:void(0)"><i class="icon-hdd icon-white"></i> {{ pc.name }}</a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <a href="javascript:void(0)" class="btn collapsing" data-toggle="collapse" data-target="#demo3"><i class="icon-chevron-down"></i> Grupper</a>
+      <div id="demo3" class="collapse out{% if selected_group %} in{% endif %}">
+        <ul class="unstyled">
+          {% for group in groups %}
+          <li onclick="BibOS.JobList.selectGroup(this, '{{ group.pk }}')" {% ifequal group.pk selected_group %}class="selected"{% endifequal %}>
+            <a  href="javascript:void(0)"><i class="icon-tags icon-white"></i> {{ group.name }}</a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </form>
+  </div>
+  <div class="container-fluid main sublevelmain" style="overflow-x: auto;">
+    <table class="table table-hover jobtable">
+      <thead>
+        <tr>
+          <th class="orderby order-pk desc" onclick="BibOS.JobList.orderby('pk')"><i class="icon icon-chevron-down"></i></th>
+          <th class="orderby order-batch__script__name desc" onclick="BibOS.JobList.orderby('batch__script__name')">Script <i class="icon icon-chevron-down"></i></th>
+          <th class="orderby order-started desc" onclick="BibOS.JobList.orderby('started')">Startet <i class="icon icon-chevron-down"></i></th>
+          <th class="orderby order-finished desc" onclick="BibOS.JobList.orderby('finished')">Sluttet <i class="icon icon-chevron-down"></i></th>
+          <th class="orderby order-status desc" onclick="BibOS.JobList.orderby('status')">Status <i class="icon icon-chevron-down"></i></th>
+          <th class="orderby order-pc__name desc" onclick="BibOS.JobList.orderby('pc__name')">Computer <i class="icon icon-chevron-down"></i></th>
+          <th class="orderby order-batch__name desc" onclick="BibOS.JobList.orderby('batch__name')">Batch <i class="icon icon-chevron-down"></i></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="job-list">
+        <tr class="muted">
+          <td colspan="8">Loading data...</td>
+        </tr>
+      </tbody>
+    </table> 
   </div>
 {% endblock %}
