@@ -15,7 +15,7 @@ class="active"
 {% block specific_content %}
   <ul class="sublevelnav">
       <li class="listutils"><a href="/site/{{ site.url }}/groups/new/" title=""><i class="icon-plus icon-white"></i> tilføj ny gruppe</a></li>
-      {% for group in site.groups.all %}
+      {% for group in group_list %}
       <li {% ifequal group selected_group %}class="active"{% endifequal %}><a
           href="/site/{{ site.url }}/groups/{{ group.url }}/"><i class="icon-tags"></i> {{ group.name }}</a></li>
       {% endfor %}
