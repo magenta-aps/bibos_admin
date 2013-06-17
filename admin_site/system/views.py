@@ -141,9 +141,8 @@ class SiteDetailView(SiteView):
     def get_context_data(self, **kwargs):
         context = super(SiteDetailView, self).get_context_data(**kwargs)
         # For now, show only not-yet-activated PCs
-        context['pcs'] = self.object.pcs.filter(is_active=False).extra(
-            select={'lower_name': 'lower(name)'}
-        ).order_by('lower_name')
+        context['pcs'] = self.object.pcs.filter(is_active=False)
+        
         query = {
             'batch__site': context['site'],
             'status': Job.FAILED
@@ -159,6 +158,8 @@ class SiteDetailView(SiteView):
         )
         if len(jobs) > 0:
             context['jobs'] = jobs
+
+        context['pcs'] = sorted(context['pcs'], key=lambda s: s.name.lower())
 
         return context
 
