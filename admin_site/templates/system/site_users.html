@@ -37,7 +37,11 @@ class="active"
         <fieldset>
           <div class="row-fluid">
             <p><label for="id_username">Username:</label> <input id="id_username" maxlength="30" name="username" type="text" value="{{ selected_user.username }}" /></p>
-            <p><label for="id_password">Password:</label> <input id="id_password" maxlength="128" name="password" type="password" value=""/></p>
+            <p>
+              <label for="id_txtPassword">Password:</label> <input id="id_txtPassword" maxlength="128" name="password" type="password" value="" />
+              <input type="text" id="txthdnPassword" />
+              <label style="display: inline; margin-left: 10px;"><input style="vertical-align: baseline;" type="checkbox" id="chkShow"/> Vis Password</label>
+            </p>
             <p> <input type="hidden" id="id_last_login" name="last_login" type="text" value="2013-06-10 16:04:27.949558" /><input id="initial-id_last_login" name="initial-last_login" type="hidden" value="2013-06-10 16:04:27.949558" /></p>
             <p><label for="id_email">Email address:</label> <input id="id_email"
   maxlength="75" name="email" type="text" value="{{ selected_user.email }}" /></p>
@@ -83,9 +87,13 @@ class="active"
         </font>
         {% endif %}
         <fieldset>        
-          <p><label for="id_username">Username:</label> <input id="id_username" maxlength="30" name="username" type="text" value="Brugernavn" /></p>
-          <p><label for="id_password">Password:</label> <input id="id_password" maxlength="128" name="password" type="password" value=""/></p>
-          <p><label for="id_email">Email address:</label> <input id="id_email" maxlength="75" name="email" type="text" value="ex: email@email.dk" /></p>
+          <p><label for="id_username">Brugernavn:</label> <input id="id_username" maxlength="30" name="username" type="text" value="Brugernavn" /></p>
+          <p>
+            <label for="id_txtPassword">Password:</label> <input id="id_txtPassword" maxlength="128" name="password" type="password" value="" />
+            <input type="text" id="txthdnPassword" />
+            <label style="display: inline; margin-left: 10px;"><input style="vertical-align: baseline;" type="checkbox" id="chkShow"/> Vis Password</label>
+          </p>
+          <p><label for="id_email">Email-addresse:</label> <input id="id_email" maxlength="75" name="email" type="text" value="ex: email@email.dk" /></p>
         </fieldset>
         <hr>
         <fieldset>
@@ -103,5 +111,27 @@ class="active"
       <button class="btn" data-dismiss="modal">Annuller</button>
     </div>
   </div>
+  
+  <script>
+    $(document).ready(function() {
+      $('#txthdnPassword').hide();
+      $('#txthdnPassword').attr('readonly','readonly');
+      $('#id_txtPassword').blur(function() {
+          $('#txthdnPassword').val($(this).val());
+      });
+  
+      $('#chkShow').change(function() {
+        var isChecked = $(this).prop('checked');
+        if (isChecked) {
+          $('#id_txtPassword').hide();
+          $('#txthdnPassword').show();
+        }
+        else {
+          $('#id_txtPassword').show();
+          $('#txthdnPassword').hide();
+        };
+      });
+    })
+  </script>
 
 {% endblock %}
