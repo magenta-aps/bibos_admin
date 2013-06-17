@@ -11,61 +11,96 @@ class="active"
 {% block specific_content %}
 
   <ul class="sublevelnav">
-      <li class="listutils"><a href="/site/{{ site.uid }}/users/new/" title="Tilføj ny bruger"><i class="icon-plus icon-white"></i> tilføj ny bruger</a></li>
+    <li class="listutils"><a href="#addNewUser" role="button" data-toggle="modal" title="Tilføj ny bruger"><i class="icon-plus icon-white"></i> tilføj ny bruger</a></li>
+    <!-- <li class="listutils"><a href="/site/{{ site.uid }}/users/new/" title="Tilføj ny bruger"><i class="icon-plus icon-white"></i> tilføj ny bruger</a></li> -->
 
-      {% for user in user_list %}
-      <li {% ifequal user selected_user %}class="active"{% endifequal %}><a
-          href="/site/{{ site.url }}/users/{{ user.username }}"><i class="icon-user"></i> {{ user.username }}</a></li>
-      {% endfor %}
+    {% for user in user_list %}
+    <li {% ifequal user selected_user %}class="active"{% endifequal %}><a
+        href="/site/{{ site.url }}/users/{{ user.username }}"><i class="icon-user"></i> {{ user.username }}</a></li>
+    {% endfor %}
   </ul>
   
   <div class="container-fluid main sublevelmain">
       <h2 class="divideheader">Profil: <em>{{ selected_user.username }}</em></h2>
-      
-      
       <div>
-          <form action="" method="post">
+        <form action="" method="post">
               {% csrf_token %}
-      <input type="submit" class="btn btn-primary" value="Submit" />
-      <button class="btn">Annuller</button>
+        <input type="submit" class="btn btn-primary" value="Submit" />
+        <button class="btn">Annuller</button>
+        <hr>      
+        {% if form.errors %}
+        <font color="red">
+            {{ form.errors }}
+        </font>
+        {% endif %}
+  
+        <fieldset>
+          <div class="row-fluid">
+            <p><label for="id_username">Username:</label> <input id="id_username" maxlength="30" name="username" type="text" value="{{ selected_user.username }}" /></p>
+            <p><label for="id_password">Password:</label> <input id="id_password" maxlength="128" name="password" type="password" value=""/></p>
+            <p> <input type="hidden" id="id_last_login" name="last_login" type="text" value="2013-06-10 16:04:27.949558" /><input id="initial-id_last_login" name="initial-last_login" type="hidden" value="2013-06-10 16:04:27.949558" /></p>
+            <p><label for="id_email">Email address:</label> <input id="id_email"
+  maxlength="75" name="email" type="text" value="{{ selected_user.email }}" /></p>
+          </div>
+        </fieldset>
 
-      <hr>      
-
-      {% if form.errors %}
-      <font color="red">
-          {{ form.errors }}
-      </font>
-      {% endif %}
-
-      <fieldset>
-        <div class="row-fluid">
-          <p><label for="id_username">Username:</label> <input id="id_username" maxlength="30" name="username" type="text" value="{{ selected_user.username }}" /></p>
-          <p><label for="id_password">Password:</label> <input id="id_password" maxlength="128" name="password" type="password" value=""/></p>
-          <p> <input type="hidden" id="id_last_login" name="last_login" type="text" value="2013-06-10 16:04:27.949558" /><input id="initial-id_last_login" name="initial-last_login" type="hidden" value="2013-06-10 16:04:27.949558" /></p>
-          <p><label for="id_email">Email address:</label> <input id="id_email"
-maxlength="75" name="email" type="text" value="{{ selected_user.email }}" /></p>
-        </div>
-      </fieldset>
-
-      <hr>
-          <fieldset>
-            <div class="row-fluid">
-              <div class="span6">
-                <label>Rettighedsgruppe:</label>
-                <select name="type">
-                    {% for c in choices %}
-                    <option value="{{ c.id }}" {% ifequal c.id 1 %} selected{% endifequal %}>{{ c.val }}</option>
-                    {% endfor %}
-                </select>
-              </div>
-            </div>
-          
-          </fieldset>
-        </form>
         <hr>
-        <div>
-          <a href="#"><i class="icon icon-remove"></i> Slet bruger</a>
-        </div>
+        <fieldset>
+          <div class="row-fluid">
+            <div class="span6">
+              <label>Rettighedsgruppe:</label>
+              <select name="type">
+                  {% for c in choices %}
+                  <option value="{{ c.id }}" {% ifequal c.id 1 %} selected{% endifequal %}>{{ c.val }}</option>
+                  {% endfor %}
+              </select>
+            </div>
+          </div>
+        
+        </fieldset>
+      </form>
+      <hr>
+      <div>
+        <a href="#"><i class="icon icon-remove"></i> Slet bruger</a>
+      </div>
+    </div>
+  </div>
+  
+  
+  <!-- MODAL WINDOW FOR NEW USER REGISTRATION: -->
+  
+  <div id="addNewUser" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal">×</button>
+      <h3>Tilføj ny bruger</h3>
+    </div>
+    <div class="modal-body">
+      <form action="" method="post">
+        {% csrf_token %}
+        {% if form.errors %}
+        <font color="red">
+            {{ form.errors }}
+        </font>
+        {% endif %}
+        <fieldset>        
+          <p><label for="id_username">Username:</label> <input id="id_username" maxlength="30" name="username" type="text" value="Brugernavn" /></p>
+          <p><label for="id_password">Password:</label> <input id="id_password" maxlength="128" name="password" type="password" value=""/></p>
+          <p><label for="id_email">Email address:</label> <input id="id_email" maxlength="75" name="email" type="text" value="ex: email@email.dk" /></p>
+        </fieldset>
+        <hr>
+        <fieldset>
+          <label>Rettighedsgruppe:</label>
+          <select name="type">
+            {% for c in choices %}
+              <option value="{{ c.id }}" {% ifequal c.id 1 %} selected{% endifequal %}>{{ c.val }}</option>
+            {% endfor %}
+          </select>
+        </fieldset>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <input type="submit" class="btn btn-primary" data-dismiss="modal" value="Gem" />
+      <button class="btn" data-dismiss="modal">Annuller</button>
     </div>
   </div>
 

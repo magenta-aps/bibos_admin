@@ -23,8 +23,7 @@ class="active"
 <ul class="sublevelnav">
     
     {% for pc in pcs %}
-    <li><a href="#"><i class="icon-hdd"></i>{% if pc.status.state %}<span class="label
-            label-{{ pc.status.priority }}">{{ pc.status.state }}</span>{% endif %} {{ pc.name }} </a></li>
+    <li><a href="#"><i class="icon-hdd"></i>{% if pc.status.state %} <span class="label label-{{ pc.status.priority }}">{{ pc.status.state }}</span>{% endif %} {{ pc.name }} </a></li>
     {% endfor %}
   </ul>
   
