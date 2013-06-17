@@ -141,18 +141,18 @@ class="active"
             <div class="accordion-inner">
               <fieldset>
                 <ul class="unstyled well actionlist packagelist">
-                    {% for package in selected_pc.added_packages %}
-                  <li>
-                    <div class="btn-group profile dark">
-                      <a class="dropdown-toggle" data-toggle="dropdown"
-                          href="#"><span class="label label-success">{{ package.name }}</span></a>
-                      <ul class="dropdown-menu">
-                        <li><a href="#"><i class="icon-remove"></i> Fjern pakke</a></li>
-                      </ul>
-                    </div>
-                    </li>
-                    {% endfor %}
                   <li><a href="#" title="Tilføj pakke"><i class="icon-plus"></i> tilføj pakker</a></li>
+                  {% for package in selected_pc.added_packages %}
+                    <li>
+                      <div class="btn-group profile dark">
+                        <a class="dropdown-toggle" data-toggle="dropdown"
+                            href="#"><span class="label label-success">{{ package.name }}</span></a>
+                        <ul class="dropdown-menu">
+                          <li><a href="#"><i class="icon-remove"></i> Fjern pakke</a></li>
+                        </ul>
+                      </div>
+                    </li>
+                  {% endfor %}
                 </ul>
               </fieldset>
             </div>
