@@ -25,7 +25,7 @@ def find_lan_addresses():
     return (None, None)
 
 
-def find_local_server():
+def find_gateway():
     lan_ip = None
     broadcast_addr = None
 
@@ -51,6 +51,6 @@ def find_local_server():
         return None
 
 if(__name__ == '__main__'):
-    s = find_local_server()
+    s = find_gateway()
     if s is not None:
         print s
