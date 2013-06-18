@@ -6,22 +6,22 @@
   {% endif %}
 >
     <label>Pakker:</label>
+    <div class="addpackagecontrol">
+      <label for="{{ pl_id }}_addremovepackagename" class="inline">Tilføj/fjern pakker:</label>
+      <input type="text" name="addpackagename" id="{{ pl_id }}_addremovepackagename" value=""/>
+      <a href="javascript:void(0)" onclick="BibOS.PackageList.addPackage('{{ pl_id }}')" title="Tilføj pakke"><i class="icon-plus"></i> Markér at pakke skal installeres</a>
+      <a href="javascript:void(0)" onclick="BibOS.PackageList.removePackage('{{ pl_id }}')" title="Fjern pakke"><i class="icon-minus"></i> Markér at pakke skal afinstalleres</a>
+    </div>
     
     <input type="hidden" id="removeable-package-ids" value="" disabled="disabled" />
     <ul class="unstyled well actionlist packagelist">
       {% for ii in packages %}
         {% if ii.do_add %}
-        {% include 'system/package_lists/item.html' with pk=ii.package.pk name=ii.package.name %}
+        {% include 'system/package_lists/item.html' with pk=ii.package.pk name=ii.package.name submit_name=pl_id|add:'_add' %}
         {% else %}
-        {% include 'system/package_lists/item.html' with pk=ii.package.pk name=ii.package.name label='label-important' form_name='remove_packages'%}
+        {% include 'system/package_lists/item.html' with pk=ii.package.pk name=ii.package.name label='label-important' submit_name=pl_id|add:'_remove' %}
         {% endif %}
       {% endfor %}
-      <li class="addpackagecontrol">
-        <label for="{{ pl_id }}_addremovepackagename">Tilføj/fjern pakke:</label>
-        <input type="text" name="addpackagename" id="{{ pl_id }}_addremovepackagename" value=""/>
-        <a href="javascript:void(0)" onclick="BibOS.PackageList.addPackage('{{ pl_id }}')" title="Tilføj pakke"><i class="icon-plus"></i> Tilføj</a>
-        <a href="javascript:void(0)" onclick="BibOS.PackageList.removePackage('{{ pl_id }}')" title="Fjern pakke"><i class="icon-plus"></i> fjern pakke</a>
-      </li>
     </ul>
 </div>
 {% else %}

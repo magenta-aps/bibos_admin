@@ -64,6 +64,38 @@ class CustomPackages(models.Model):
                                       through='PackageInstallInfo',
                                       blank=True)
 
+
+    def update_by_package_names(self, addlist, removelist):
+        add_packages_old = set()
+        remove_packages_old = set()
+
+        for ii in self.install_infos.all():
+            if ii.do_add:
+                add_packages_old.add(ii.package.name)
+            else:
+                remove_packages_old.add(ii.package.name)
+
+        for oldlist, newlist, addflag in [
+            (add_packages_old, set(addlist), True),
+            (remove_packages_old, set(removelist), False),
+        ]:
+            # Add new add-packages
+            for name in newlist - oldlist:
+                package, created = Package.objects.get_or_create(name=name)
+                ii = PackageInstallInfo(
+                    custom_packages=self,
+                    package=package,
+                    do_add=addflag
+                )
+                ii.save()
+            # Remove unwanted add-packages
+            qs = PackageInstallInfo.objects.filter(
+                do_add=addflag,
+                custom_packages=self,
+                package__name__in=list(oldlist - newlist)
+            )
+            qs.delete()
+
     def __unicode__(self):
         return self.name
 
