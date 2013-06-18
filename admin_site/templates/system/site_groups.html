@@ -33,7 +33,7 @@ class="active"
 {% block specific_content %}
   <ul class="sublevelnav">
       <li class="listutils"><a href="/site/{{ site.url }}/groups/new/" title=""><i class="icon-plus icon-white"></i> tilføj ny gruppe</a></li>
-      {% for group in group_list %}
+      {% for group in site.groups.all %}
       <li {% ifequal group selected_group %}class="active"{% endifequal %}><a
           href="/site/{{ site.url }}/groups/{{ group.url }}/"><i class="icon-tags"></i> {{ group.name }}</a></li>
       {% endfor %}
@@ -43,10 +43,12 @@ class="active"
     
     <h2 class="divideheader">Detaljer om <em>{{ selected_group.name }}</em></h2>
     
-    <form>
+    <form name="updategroupform" id="updategroupform"
+      action="{% url 'group' site.uid selected_group.url %}"
+      method="post" class="row-fluid">
     
       <button class="btn btn-primary">Gem ændringer</button>
-      <button class="btn">Annuller</button>
+      <button class="btn" onclick="return BibOS.PackageList.cancelEditing()">Annuller</button>
       
       <div class="accordion" id="accordion2">
         
@@ -60,10 +62,18 @@ class="active"
             <div class="accordion-inner">
               <div class="row-fluid">
                 <fieldset class="span6">
-                  <label>Navn:</label>
-                  <input type="text" value="{{ selected_group.name }}">
-                  <label>Beskrivelse:</label>
-                  <textarea>{{ selected_group.description }}</textarea>
+                  {% csrf_token %}
+                  <label for="id_name">Navn:</label>
+                  {{ form.name.errors }}
+                  {{ form.name }}
+
+                  <label for="id_uid">Id:</label>
+                  {{ form.uid.errors }}
+                  {{ form.uid }}
+
+                  <label for="id_description">Beskrivelse:</label>
+                  {{ form.description.errors }}
+                  {{ form.description }}
                 </fieldset>
                 <fieldset class="span6">
                   <label>Computere i denne gruppe:</label>
@@ -125,32 +135,6 @@ class="active"
             </div>
           </div>
         </div>
-<!--
-    <button class="btn btn-primary" onclick="$('#updategroupform').submit()">Gem ændringer</button>
-    <button class="btn" onclick="location.href=location.href">Annuller</button>
-          
-    <hr>
-    
-    <form name="updategroupform" id="updategroupform"
-      action="{% url 'group' site.uid selected_group.url %}"
-      method="post" class="row-fluid">
-      <fieldset class="span6">
-        {% csrf_token %}
-        <label for="id_name">Navn:</label>
-        {{ form.name.errors }}
-        {{ form.name }}
-
-        <label for="id_uid">Id:</label>
-        {{ form.uid.errors }}
-        {{ form.uid }}
-
-        <label for="id_description">Beskrivelse:</label>
-        {{ form.description.errors }}
-        {{ form.description }}
-      </fieldset>
-      <fieldset class="span6">
-          -->
-        
         <div class="accordion-group">
           <div class="accordion-heading">
             <a class="accordion-toggle btn" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">
@@ -168,48 +152,5 @@ class="active"
       </div>
       
     </form>
-
-    <!--
-      </fieldset>
-
-      <hr class="clearleft" />
-
-      <label>Konfigurationer for maskiner i denne gruppe:</label>
-      <div class="well">
-        <table class="table table-condensed table-hover">
-          <tr>
-            <th>Nøgle</th>
-            <th>Værdi</th>
-        </tr>
-        {% for entry in selected_group.configuration.entries.all %}
-          <tr class="muted">
-              <td>{{ entry.key }}</td>
-            <td>
-              <div class="btn-group profile dark">
-                <a class="dropdown-toggle btn" data-toggle="dropdown"
-                    href="#">{{ entry.value }}</a>
-                <ul class="dropdown-menu">
-                  <li><a href="#"><i class="icon-edit"></i> Redigér</a></li>
-                  <li><a href="#"><i class="icon-remove"></i> Slet konfiguration</a></li>
-                </ul>
-              </div>
-            </td>
-        </tr>
-        {% endfor %}
-          <tr>
-            <td colspan="2">
-              <a href="#" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj konfiguration</a>
-            </td>
-          </tr>
-        </table>
-      </div>
-
-      <hr>
-      {% include 'system/package_lists/templates.html' %}
-      {% include 'system/package_lists/list.html' with packages=package_infos pl_id='group_packages'%}
-      <hr>
-
-    </form>
-    -->
   </div>
 {% endblock %}

@@ -108,20 +108,18 @@
         },
         addPackage: function(id) {
             addPackageToList(id, 'label-success', id + '_add')
+            return false;
         },
         removePackage: function(id) {
             addPackageToList(id, 'label-important', id + '_remove')
+            return false;
         },
         setActiveLists: function(id) {
             this.removeList = $('#' + id + ' ul.removedpackages')
         },
-        getCurrentPackages: function(id) {
-            var packs = this.currentPackages[id];
-            if(!packs) {
-                var str_list = $('#' + id).attr('data-base-packages') || '';
-                packs = this.currentPackages[id] = str_list.split(",");
-            }
-            return packs;
+        cancelEditing: function() {
+            location.href=location.href;
+            return false;
         }
     });
 

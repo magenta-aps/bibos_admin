@@ -548,7 +548,7 @@ class GroupsView(SelectionMixin, SiteView):
     #    return context
 
     def render_to_response(self, context):
-        if(context['selected_group']):
+        if('selected_group' in context):
             return HttpResponseRedirect('/site/%s/groups/%s/' % (
                 context['site'].uid,
                 context['selected_group'].url
