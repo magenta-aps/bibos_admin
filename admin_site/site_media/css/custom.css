@@ -19,7 +19,7 @@ header h1 em {color: #fff; font-style: normal;}
 .sublevelnav {position: absolute; top: 64px; left: 250px; bottom: 0; width: 250px; background: #fff; overflow-x: hidden; overflow-y: auto; margin: 0;}
 .sublevelnav li a {border-top: solid 1px #ddd; display: block; padding: 10px;}
 .sublevelnav li:first-child a {border: none;}
-.sublevelnav li.active a, .sublevelnav li a:hover {background: #08c; color: #fff; text-decoration: none;}
+.sublevelnav li a:hover {background: #08c; color: #fff; text-decoration: none;}
 .sublevelmain {left: 500px;}
 .inertnav {background: #ccc; border-radius: 5px; padding: 15px 20px;}
 .inertnav li {padding: 2px 0; color: #666;}
@@ -64,7 +64,7 @@ header.detailpage h1.siteheader {margin-left: 20px;}
 div.runscriptdialogheader {display: none;}
 li.selected {background-color: #D5D5D5;}
 .table th.orderby {cursor: pointer; text-align: center; border-radius: 5px;}
-.orderby.active, .orderby:hover {background: #08c; color: #fff;}
+.orderby:hover {background: #08c; color: #fff;}
 li.addpackagecontrol {display: block;}
 li.addpackagecontrol label, li.addpackagecontrol a {display: inline}
 #jobsearchnav {background: #444; color: #ccc;}
@@ -73,8 +73,13 @@ li.addpackagecontrol label, li.addpackagecontrol a {display: inline}
 #jobsearch-filterform .collapsing {margin-bottom: 10px;}
 #jobsearch-filterform hr {border: solid 1px #666; border-width: 1px 0 0;}
 #jobsearch-filterform .collapse a {color: #fff; border: none;}
-#jobsearch-filterform .collapse .selected a {background: #08c;}
 .clearleft {clear: left}
 .clearright {clear: right}
 .clearboth {clear: both}
 .inline {display: inline}
+.nav-list>.active>a,
+.nav-list>.active>a:hover,
+.nav-list>.active>a:focus,
+.sublevelnav li.active a,
+#jobsearch-filterform .collapse .selected a,
+.orderby.active {background-color: #8c0; color: #fff;}
