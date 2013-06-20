@@ -24,6 +24,7 @@ Grupper
 
 {% block javascripts %}
 <script type="text/javascript" src="/media/js/package_lists.js"></script>
+<script type="text/javascript" src="/media/js/configlist.js"></script>
 {% endblock %}
 
 {% block groups_active %}
@@ -104,34 +105,8 @@ class="active"
           </div>
           <div id="collapseTwo" class="accordion-body collapse">
             <div class="accordion-inner">
-              <div class="well">
-                <table class="table table-condensed table-hover">
-                  <tr>
-                    <th>Nøgle</th>
-                    <th>Værdi</th>
-                </tr>
-                {% for entry in selected_group.configuration.entries.all %}
-                  <tr class="muted">
-                      <td>{{ entry.key }}</td>
-                    <td>
-                      <div class="btn-group profile dark">
-                        <a class="dropdown-toggle btn" data-toggle="dropdown"
-                            href="#">{{ entry.value }}</a>
-                        <ul class="dropdown-menu">
-                          <li><a href="#"><i class="icon-edit"></i> Redigér</a></li>
-                          <li><a href="#"><i class="icon-remove"></i> Slet konfiguration</a></li>
-                        </ul>
-                      </div>
-                    </td>
-                </tr>
-                {% endfor %}
-                  <tr>
-                    <td colspan="2">
-                      <a href="#" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj konfiguration</a>
-                    </td>
-                  </tr>
-                </table>
-              </div>
+              {% include 'system/configlist/templates.html' %}
+              {% include 'system/configlist/list.html' with entries=selected_group.configuration.entries.all cnf_id='group_configuration' %}
             </div>
           </div>
         </div>
