@@ -8,8 +8,8 @@ Status
 <script type="text/javascript">
     var current_sorting = '{{orderby}}';
     function joblist_orderby(key) {
-        var new_order = BibOS.getOrderBy(current_sorting, key)
-        location.href = './?orderby=' + new_order
+      var new_order = BibOS.getOrderBy(current_sorting, key);
+      location.href = './?orderby=' + new_order;
     }
 </script>
 {% endblock %}
@@ -30,12 +30,12 @@ class="active"
     
     <table class="table jobtable">
           <tr>
-            <th class="orderby order-pk desc"><a href="javascript:void(0)" onclick="joblist_orderby('batch__script__name')">Script <i class="icon icon-chevron-down"></i></a></th>
-            <th class="orderby order-started desc"><a href="javascript:void(0)" onclick="joblist_orderby('started')">Startet <i class="icon icon-chevron-down"></i></a></th>
-            <th class="orderby order-finished desc"><a href="javascript:void(0)" onclick="joblist_orderby('finished')">Sluttet <i class="icon icon-chevron-down"></i></a></th>
-            <th class="orderby order-status desc"><a href="javascript:void(0)" onclick="joblist_orderby('status')">Status <i class="icon icon-chevron-down"></i></a></th>
-            <th class="orderby order-pc__name desc" onclick="joblist_orderby('pc__name')">Maskine <i class="icon icon-chevron-down"></i></a></th>
-            <th class="orderby order-batch__name desc" onclick="joblist_orderby('batch__name')">Batch <i class="icon icon-chevron-down"></i></a></th>
+            <th class="orderby order-pk desc" onclick="joblist_orderby('batch__script__name')">Script<br><i class="icon icon-chevron-down"></i></th>
+            <th class="orderby order-started desc" onclick="joblist_orderby('started')">Startet<br><i class="icon icon-chevron-down"></i></th>
+            <th class="orderby order-finished desc" onclick="joblist_orderby('finished')">Sluttet<br><i class="icon icon-chevron-down"></i></th>
+            <th class="orderby order-status desc" onclick="joblist_orderby('status')">Status<br><i class="icon icon-chevron-down"></i></th>
+            <th class="orderby order-pc__name desc" onclick="joblist_orderby('pc__name')">Computer<br><i class="icon icon-chevron-down"></i></th>
+            <th class="orderby order-batch__name desc" onclick="joblist_orderby('batch__name')">Batch<br><i class="icon icon-chevron-down"></i></th>
             <th></th>
           </tr>
           {% if jobs %}
