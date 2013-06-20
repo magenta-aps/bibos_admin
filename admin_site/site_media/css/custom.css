@@ -63,8 +63,8 @@ header.detailpage h1.siteheader {margin-left: 20px;}
 .packagelist > li > .btn-group > a {border: none; padding: 5px;}
 div.runscriptdialogheader {display: none;}
 li.selected {background-color: #D5D5D5;}
-.table th.orderby {cursor: pointer; text-align: center;}
-.orderby.active {background: #08c; color: #fff;}
+.table th.orderby {cursor: pointer; text-align: center; border-radius: 5px;}
+.orderby.active, .orderby:hover {background: #08c; color: #fff;}
 li.addpackagecontrol {display: block;}
 li.addpackagecontrol label, li.addpackagecontrol a {display: inline}
 #jobsearchnav {background: #444; color: #ccc;}
