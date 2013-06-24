@@ -700,6 +700,9 @@ class GroupUpdate(SiteMixin, LoginRequiredMixin, UpdateView):
             self.request.POST.getlist('group_packages_add'),
             self.request.POST.getlist('group_packages_remove')
         )
+        self.object.configuration.update_from_request(
+            self.request.POST, 'group_configuration'
+        )
         return super(GroupUpdate, self).form_valid(form)
 
     def form_invalid(self, form):

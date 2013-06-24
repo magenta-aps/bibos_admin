@@ -27,6 +27,40 @@ class Configuration(models.Model):
     # of the classes to which it may be aggregated.
     name = models.CharField(max_length=255, unique=True)
 
+    def update_from_request(self, req_params, submit_name):
+        seen_set = set()
+        new_ids = []
+
+        existing_set = set(cnf.pk for cnf in self.entries.all())
+
+        for pk in req_params.getlist(submit_name, []):
+            key_param = "%s_%s_key" % (submit_name, pk)
+            value_param = "%s_%s_value" % (submit_name, pk)
+
+            key = req_params.get(key_param, '')
+            value = req_params.get(value_param, '')
+
+            if pk.startswith("new_"):
+                # Create new entry
+                cnf = ConfigurationEntry(
+                    key=key,
+                    value=value,
+                    owner_configuration=self
+                )
+            else:
+                # Update submitted entry
+                cnf = ConfigurationEntry.objects.get(pk=pk)
+                cnf.key = key
+                cnf.value = value
+                seen_set.add(cnf.pk)
+
+            cnf.save()
+
+        # Delete entries that were not in the submitted data
+        for pk in existing_set - seen_set:
+            cnf = ConfigurationEntry.objects.get(pk=pk)
+            cnf.delete()
+
     def __unicode__(self):
         return self.name
 

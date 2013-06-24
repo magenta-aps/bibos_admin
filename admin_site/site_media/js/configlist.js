@@ -8,15 +8,27 @@
         return;
     }
 
-    BibOS.addTemplate('configlist-item', '#configuration-item-template');
-    $('#configuration-item-template').attr('disabled', 'disabled');
     var ConfigList = function() {
         // Member variables?
     };
 
     $.extend(ConfigList.prototype, {
         init: function() {
-            this.activeItem = null;
+            BibOS.addTemplate(
+                'configlist-item',
+                '#configuration-item-template'
+            );
+            $('#configuration-item-template input').attr(
+                'disabled', 'disabled'
+            );
+            $('#editconfigdialog input').attr('disabled', 'disabled');
+            $('#editconfigdialog').on('shown', function() {
+                if($('#editconfig_pk').val() == 'new') {
+                    $('#editconfig_name').focus();
+                } else {
+                    $('#editconfig_value').focus().select()
+                }
+            })
         },
         addConfig: function(id, key, value) {
             var num_new = $('#' + id + '_new_entries').val()
@@ -64,19 +76,19 @@
             while (c && c.length && !c.is('div.btn-group')) {
                 c = c.parent();
             }
-            this.activeItem = c;
+            $('#editconfigdialog input').removeAttr('disabled');
             $('#editconfig_id').val(id);
             $('#editconfig_pk').val(c.find('input.config-pk').val());
-            $('#editconfig_name').val(
-                c.find('input.config-key').val()
-            ).attr('disabled', 'disabled');
+            var e = $('#editconfig_name').val(c.find('input.config-key').val());
+            e.attr('disabled', 'disabled');
             $('#editconfig_value').val(c.find('input.config-value').val());
             $('#editconfigdialog').modal('show');
         },
         startAdd: function(id) {
+            $('#editconfigdialog input').removeAttr('disabled');
             $('#editconfig_id').val(id);
             $('#editconfig_pk').val('new');
-            $('#editconfig_name').val('').removeAttr('disabled');
+            $('#editconfig_name').val('');
             $('#editconfig_value').val('');
             $('#editconfigdialog').modal('show');
         },
@@ -96,6 +108,7 @@
                 );
                 if (existing.length) {
                     alert(tr("Config-navnet %s findes allerede", name))
+                    $('#editconfig_name').focus().select();
                     return false;
                 }
                 this.addConfig(id, name, value);
@@ -111,6 +124,7 @@
                     p.find('.config-print-value').html(value)
                 }
             }
+            $('#editconfigdialog input').attr('disabled', 'disabled');
             $('#editconfigdialog').modal('hide');
             return false;
         }
