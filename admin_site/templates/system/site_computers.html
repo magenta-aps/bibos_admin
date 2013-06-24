@@ -66,6 +66,9 @@ class="active"
                   
                   <label>Distribution:</label>
                   <input type="text" value="{{ selected_pc.distribution }}">
+                  <label>Aktiv:</label>
+                  <input type="checkbox" 
+                  {% if selected_pc.is_active %}checked="checked"{% endif %} >
                 </fieldset>
                 <fieldset class="span6">
                   <label>Grupper:</label>

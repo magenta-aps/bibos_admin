@@ -253,6 +253,8 @@ class PC(models.Model):
     package_list = models.ForeignKey(PackageList, null=True, blank=True)
     site = models.ForeignKey(Site, related_name='pcs')
     is_active = models.BooleanField(_('active'), default=False)
+    is_update_required = models.BooleanField(_('update required'),
+                                             default=False)
     creation_time = models.DateTimeField(_('creation time'),
         auto_now_add=True)
     last_seen = models.DateTimeField(_('last seen'), null=True, blank=True)
@@ -281,14 +283,19 @@ class PC(models.Model):
     def status(self):
         if not self.is_active:
             return self.Status(NEW, INFO)
-        elif False:
+        elif self.is_update_required:
             # If packages require update
             return self.Status(UPDATE, WARNING)
-        elif not self.last_seen:
-            # If it has failed jobs
-            return self.Status(FAIL, IMPORTANT)
         else:
-            return self.Status(OK, None)
+            # Get a list of all jobs associated with this PC and see if any of
+            # them failed.
+            from job.models import Job
+            failed_jobs = self.jobs.filter(status=Job.FAILED)
+            if len(failed_jobs) > 0:
+                # Only UNHANDLED failed jobs, please.
+                return self.Status(FAIL, IMPORTANT)
+            else: 
+                return self.Status(OK, None)
 
     def __unicode__(self):
         return self.name

@@ -141,7 +141,8 @@ class SiteDetailView(SiteView):
     def get_context_data(self, **kwargs):
         context = super(SiteDetailView, self).get_context_data(**kwargs)
         # For now, show only not-yet-activated PCs
-        context['pcs'] = self.object.pcs.filter(is_active=False)
+        context['pcs'] = self.object.pcs.all()
+        context['pcs'] = [pc for pc in context['pcs'] if pc.status.state != '']
         
         query = {
             'batch__site': context['site'],
