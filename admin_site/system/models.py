@@ -155,7 +155,7 @@ class Site(models.Model):
     @property
     def is_delete_allowed(self):
         """This should always be checked by the user interface to avoid
-        spurious deletion."""
+        validation errors from the pre_delete signal."""
         return self.pcs.count() == 0
 
     def __unicode__(self):
@@ -214,6 +214,12 @@ class PCGroup(models.Model):
     @property
     def url(self):
         return self.uid
+
+    @property
+    def is_delete_allowed(self):
+        """This should always be checked by the user interface to avoid
+        validation errors from the pre_delete signal."""
+        return self.pcs.count() == 0
 
     def __unicode__(self):
         return self.name

@@ -2,8 +2,8 @@ from django.conf.urls import patterns, url
 
 from views import SiteList, SiteView, SiteCreate, SiteUpdate, SiteDelete
 from views import AdminIndex, ComputersView, GroupsView, UsersView, JobsView
-from views import GroupCreate, GroupUpdate, JobSearch, SiteDetailView
-from views import UserCreate
+from views import GroupCreate, GroupUpdate, GroupDelete, JobSearch
+from views import SiteDetailView, UserCreate
 from views import ScriptList, ScriptUpdate, ScriptCreate, ScriptDelete
 from views import ScriptRun
 from views import ConfigurationEntryCreate, ConfigurationEntryUpdate
@@ -41,6 +41,8 @@ urlpatterns = patterns(
         name='new_group'),
     url(r'^site/(?P<site_uid>\w+)/groups/(?P<group_uid>\w+)/$',
         GroupUpdate.as_view(), name='group'),
+    url(r'^site/(?P<site_uid>\w+)/groups/(?P<group_uid>\w+)/delete/$',
+        GroupDelete.as_view(), name='group_delete'),
     url(r'^site/(?P<slug>\w+)/jobs/search/',
         JobSearch.as_view(),
         name='jobsearch'),

@@ -716,6 +716,16 @@ class GroupUpdate(SiteMixin, LoginRequiredMixin, UpdateView):
         return super(GroupUpdate, self).form_invalid(form)
 
 
+class GroupDelete(SiteMixin, LoginRequiredMixin, DeleteView):
+    model = PCGroup
+
+    def get_object(self, queryset=None):
+        return PCGroup.objects.get(uid=self.kwargs['group_uid'])
+
+    def get_success_url(self):
+        return '/site/{0}/groups/'.format(self.kwargs['site_uid'])
+
+
 class PackageSearch(JSONResponseMixin, ListView):
     raw_result = False
 
