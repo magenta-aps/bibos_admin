@@ -3,7 +3,7 @@ from django.conf.urls import patterns, url
 from views import SiteList, SiteView, SiteCreate, SiteUpdate, SiteDelete
 from views import AdminIndex, ComputersView, GroupsView, UsersView, JobsView
 from views import GroupCreate, GroupUpdate, GroupDelete, JobSearch
-from views import SiteDetailView, UserCreate
+from views import SiteDetailView, UserCreate, SiteConfiguration
 from views import ScriptList, ScriptUpdate, ScriptCreate, ScriptDelete
 from views import ScriptRun
 from views import ConfigurationEntryCreate, ConfigurationEntryUpdate
@@ -23,7 +23,7 @@ urlpatterns = patterns(
         name='delete_site'),
     url(r'^site/(?P<slug>\w+)/$', SiteDetailView.as_view(), name='site'),
     url(r'^site/(?P<slug>\w+)/configuration/$',
-        SiteView.as_view(template_name='system/site_configuration.html'),
+        SiteConfiguration.as_view(),
         name='configuration'),
     url(r'^site/(?P<site_uid>\w+)/configuration/new/$',
         ConfigurationEntryCreate.as_view(), name='new_config_entry'),

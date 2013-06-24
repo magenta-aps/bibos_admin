@@ -167,6 +167,29 @@ class SiteDetailView(SiteView):
         return context
 
 
+class SiteConfiguration(SiteView):
+    template_name = 'system/site_configuration.html'
+
+    def get_context_data(self, **kwargs):
+        # First, get basic context from superclass
+        context = super(SiteConfiguration, self).get_context_data(**kwargs)
+        configs = self.object.configuration.entries.all()
+        context['site_configs'] = configs.order_by('key')
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        # Do basic method
+        kwargs['updated'] = True
+        result = self.get(request, *args, **kwargs)
+
+        # Handle saving of data
+        self.object.configuration.update_from_request(
+            request.POST, 'site_configs'
+        )
+        return result
+
+
 # Now follows all site-based views, i.e. subclasses
 # of SiteView.
 class JobsView(SiteView):
