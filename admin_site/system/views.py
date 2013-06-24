@@ -1,3 +1,6 @@
+import json
+import datetime
+
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -18,8 +21,7 @@ from forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
 from forms import UserForm, ParameterForm
 from job.models import Job, Script, Input, Batch, Parameter
 
-import json
-import datetime
+import signals
 
 
 # Mixin class to require login
@@ -143,7 +145,7 @@ class SiteDetailView(SiteView):
         # For now, show only not-yet-activated PCs
         context['pcs'] = self.object.pcs.all()
         context['pcs'] = [pc for pc in context['pcs'] if pc.status.state != '']
-        
+
         query = {
             'batch__site': context['site'],
             'status': Job.FAILED
@@ -277,7 +279,6 @@ class ScriptMixin(object):
                                           key=lambda s: s.name.lower())
         context['global_scripts'] = sorted(self.scripts.filter(site=None),
                                           key=lambda s: s.name.lower())
-
 
         context['script_inputs'] = self.script_inputs
 
@@ -553,11 +554,12 @@ class GroupsView(SelectionMixin, SiteView):
             return HttpResponseRedirect('/site/%s/groups/%s/' % (
                 context['site'].uid,
                 context['selected_group'].url
-            ));
-        else: 
+            ))
+        else:
             return HttpResponseRedirect(
                 '/site/%s/groups/new/' % context['site'].uid,
             )
+
 
 class UsersView(SelectionMixin, SiteView):
 
@@ -630,6 +632,14 @@ class SiteCreate(CreateView, LoginRequiredMixin):
 class SiteUpdate(UpdateView, LoginRequiredMixin):
     model = Site
     form_class = SiteForm
+    slug_field = 'uid'
+
+    def get_success_url(self):
+        return '/sites/'
+
+
+class SiteDelete(DeleteView, LoginRequiredMixin):
+    model = Site
     slug_field = 'uid'
 
     def get_success_url(self):
