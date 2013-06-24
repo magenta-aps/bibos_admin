@@ -701,7 +701,7 @@ class GroupUpdate(SiteMixin, LoginRequiredMixin, UpdateView):
         context = super(GroupUpdate, self).get_context_data(**kwargs)
         context['selected_group'] = self.object
         ii = self.object.custom_packages.install_infos
-        context['package_infos'] = ii.order_by('package__name')
+        context['package_infos'] = ii.order_by('-do_add', 'package__name')
 
         return context
 

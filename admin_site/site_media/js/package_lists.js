@@ -66,7 +66,8 @@
                 var inserted = false;
                 list.find('li.packagemarker').each(function() {
                     li = $(this)
-                    if (li.attr('data-packagename') > val) {
+                    if (li.attr('data-packagename') > val &&
+                        li.find('span.' + label).length) {
                         item.insertBefore(li)
                         input.val('');
                         inserted = true;
@@ -75,7 +76,15 @@
                     return true;
                 });
                 if (!inserted) {
-                    item.appendTo(list);
+                    if(label == 'label-success') {
+                        var anchor = list.find('span.label-important');
+                        if(anchor.length)
+                            item.insertBefore(anchor.parents('li'))
+                        else
+                            item.appendTo(list);
+                    } else {
+                        item.appendTo(list);
+                    }
                 }
                 input.val('');
             },
