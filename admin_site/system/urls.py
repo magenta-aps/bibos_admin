@@ -1,9 +1,9 @@
 from django.conf.urls import patterns, url
 
-from views import SiteList, SiteView, SiteCreate, SiteUpdate, AdminIndex
-from views import ComputersView, GroupsView, UsersView, JobsView
-from views import GroupCreate, GroupUpdate, JobSearch, SiteDetailView
-from views import UserCreate
+from views import SiteList, SiteView, SiteCreate, SiteUpdate, SiteDelete
+from views import AdminIndex, ComputersView, GroupsView, UsersView, JobsView
+from views import GroupCreate, GroupUpdate, GroupDelete, JobSearch
+from views import SiteDetailView, UserCreate
 from views import ScriptList, ScriptUpdate, ScriptCreate, ScriptDelete
 from views import ScriptRun
 from views import ConfigurationEntryCreate, ConfigurationEntryUpdate
@@ -18,6 +18,9 @@ urlpatterns = patterns(
     url(r'^sites/(?P<slug>\w+)/edit/$',
         SiteUpdate.as_view(),
         name='edit_site'),
+    url(r'^sites/(?P<slug>\w+)/delete/$',
+        SiteDelete.as_view(),
+        name='delete_site'),
     url(r'^site/(?P<slug>\w+)/$', SiteDetailView.as_view(), name='site'),
     url(r'^site/(?P<slug>\w+)/configuration/$',
         SiteView.as_view(template_name='system/site_configuration.html'),
@@ -38,6 +41,8 @@ urlpatterns = patterns(
         name='new_group'),
     url(r'^site/(?P<site_uid>\w+)/groups/(?P<group_uid>\w+)/$',
         GroupUpdate.as_view(), name='group'),
+    url(r'^site/(?P<site_uid>\w+)/groups/(?P<group_uid>\w+)/delete/$',
+        GroupDelete.as_view(), name='group_delete'),
     url(r'^site/(?P<slug>\w+)/jobs/search/',
         JobSearch.as_view(),
         name='jobsearch'),

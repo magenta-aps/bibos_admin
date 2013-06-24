@@ -98,7 +98,6 @@ class CustomPackages(models.Model):
                                       through='PackageInstallInfo',
                                       blank=True)
 
-
     def update_by_package_names(self, addlist, removelist):
         add_packages_old = set()
         remove_packages_old = set()
@@ -187,6 +186,12 @@ class Site(models.Model):
     def url(self):
         return self.uid
 
+    @property
+    def is_delete_allowed(self):
+        """This should always be checked by the user interface to avoid
+        validation errors from the pre_delete signal."""
+        return self.pcs.count() == 0
+
     def __unicode__(self):
         return self.name
 
@@ -243,6 +248,12 @@ class PCGroup(models.Model):
     @property
     def url(self):
         return self.uid
+
+    @property
+    def is_delete_allowed(self):
+        """This should always be checked by the user interface to avoid
+        validation errors from the pre_delete signal."""
+        return self.pcs.count() == 0
 
     def __unicode__(self):
         return self.name
@@ -328,7 +339,7 @@ class PC(models.Model):
             if len(failed_jobs) > 0:
                 # Only UNHANDLED failed jobs, please.
                 return self.Status(FAIL, IMPORTANT)
-            else: 
+            else:
                 return self.Status(OK, None)
 
     def __unicode__(self):
