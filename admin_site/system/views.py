@@ -167,6 +167,29 @@ class SiteDetailView(SiteView):
         return context
 
 
+class SiteConfiguration(SiteView):
+    template_name = 'system/site_configuration.html'
+
+    def get_context_data(self, **kwargs):
+        # First, get basic context from superclass
+        context = super(SiteConfiguration, self).get_context_data(**kwargs)
+        configs = self.object.configuration.entries.all()
+        context['site_configs'] = configs.order_by('key')
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        # Do basic method
+        kwargs['updated'] = True
+        result = self.get(request, *args, **kwargs)
+
+        # Handle saving of data
+        self.object.configuration.update_from_request(
+            request.POST, 'site_configs'
+        )
+        return result
+
+
 # Now follows all site-based views, i.e. subclasses
 # of SiteView.
 class JobsView(SiteView):
@@ -701,7 +724,7 @@ class GroupUpdate(SiteMixin, LoginRequiredMixin, UpdateView):
         context = super(GroupUpdate, self).get_context_data(**kwargs)
         context['selected_group'] = self.object
         ii = self.object.custom_packages.install_infos
-        context['package_infos'] = ii.order_by('package__name')
+        context['package_infos'] = ii.order_by('-do_add', 'package__name')
 
         return context
 
@@ -709,6 +732,9 @@ class GroupUpdate(SiteMixin, LoginRequiredMixin, UpdateView):
         self.object.custom_packages.update_by_package_names(
             self.request.POST.getlist('group_packages_add'),
             self.request.POST.getlist('group_packages_remove')
+        )
+        self.object.configuration.update_from_request(
+            self.request.POST, 'group_configuration'
         )
         return super(GroupUpdate, self).form_valid(form)
 

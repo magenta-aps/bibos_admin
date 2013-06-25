@@ -108,7 +108,6 @@ class="active"
           </div>
           <div id="collapseTwo" class="accordion-body collapse">
             <div class="accordion-inner">
-              {% include 'system/configlist/templates.html' %}
               {% include 'system/configlist/list.html' with entries=selected_group.configuration.entries.all cnf_id='group_configuration' %}
             </div>
           </div>
@@ -121,7 +120,6 @@ class="active"
           </div>
           <div id="collapseThree" class="accordion-body collapse">
             <div class="accordion-inner">
-              {% include 'system/package_lists/templates.html' %}
               {% include 'system/package_lists/list.html' with packages=package_infos pl_id='group_packages'%}
             </div>
           </div>
@@ -130,5 +128,9 @@ class="active"
       </div>
       
     </form>
+
+    {% include 'system/package_lists/templates.html' %}
+    {% include 'system/configlist/templates.html' %}
+
   </div>
 {% endblock %}
