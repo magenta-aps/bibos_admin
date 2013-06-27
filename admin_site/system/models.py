@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 
 
 """The following variables define states of objects like jobs or PCs. It is
@@ -114,7 +115,11 @@ class CustomPackages(models.Model):
         ]:
             # Add new add-packages
             for name in newlist - oldlist:
-                package, created = Package.objects.get_or_create(name=name)
+                try:
+                    package = Package.objects.filter(name=name)[0]
+                except IndexError:
+                    package = Package.objects.create(name=name)
+
                 ii = PackageInstallInfo(
                     custom_packages=self,
                     package=package,
@@ -296,6 +301,7 @@ class PC(models.Model):
     configuration = models.ForeignKey(Configuration)
     pc_groups = models.ManyToManyField(PCGroup, related_name='pcs', blank=True)
     package_list = models.ForeignKey(PackageList, null=True, blank=True)
+    custom_packages = models.ForeignKey(CustomPackages, null=True, blank=True)
     site = models.ForeignKey(Site, related_name='pcs')
     is_active = models.BooleanField(_('active'), default=False)
     is_update_required = models.BooleanField(_('update required'),
@@ -305,16 +311,42 @@ class PC(models.Model):
     last_seen = models.DateTimeField(_('last seen'), null=True, blank=True)
 
     @property
-    def added_packages(self):
-        dist_packages = set(self.distribution.package_list.packages.all())
-        my_packages = set(self.package_list.packages.all())
-        return my_packages.difference(dist_packages)
+    def current_packages(self):
+        return set(p.name for p in self.package_list.packages.all())
 
     @property
-    def removed_packages(self):
-        dist_packages = set(self.distribution.package_list.packages.all())
-        my_packages = set(self.package_list.packages.all())
-        return dist_packages.difference(my_packages)
+    def wanted_packages(self):
+        wanted_packages = set(p.name for p in
+                              self.distribution.package_list.packages.all())
+
+        for group in self.pc_groups.all():
+            for ii in group.custom_packages.install_infos.all():
+                if ii.do_add:
+                    wanted_packages.add(ii.package.name)
+                else:
+                    wanted_packages.discard(ii.package.name)
+
+        for ii in self.custom_packages.install_infos.all():
+            if ii.do_add:
+                wanted_packages.add(ii.package.name)
+            else:
+                wanted_packages.discard(ii.package.name)
+
+        return wanted_packages
+
+    @property
+    def pending_package_updates(self):
+        wanted = self.wanted_packages
+        current = self.current_packages
+        return (wanted - current, current - wanted)
+
+    @property
+    def pending_packages_add(self):
+        return self.wanted_packages - self.current_packages
+
+    @property
+    def pending_packages_remove(self):
+        return self.current_packages - self.wanted_packages
 
     class Status:
         """This class represents the status of af PC. We may want to do
@@ -341,6 +373,9 @@ class PC(models.Model):
                 return self.Status(FAIL, IMPORTANT)
             else:
                 return self.Status(OK, None)
+
+    def get_absolute_url(self):
+        return reverse('computer', args=(self.site.uid, self.uid))
 
     def __unicode__(self):
         return self.name

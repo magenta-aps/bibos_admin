@@ -83,3 +83,7 @@ li.addpackagecontrol label, li.addpackagecontrol a {display: inline}
 .sublevelnav li.active a,
 #jobsearch-filterform .collapse .selected a,
 .orderby.active {background-color: #8c0; color: #fff;}
+ul.addgrouplist {display: none; max-height: 300px; overflow-y: auto; position: absolute; background-color: #fff;}
+ul.addgrouplist li {cursor: pointer;}
+li.addgrouptrigger {position: relative;}
+li.addgrouptrigger:hover ul.addgrouplist {display: block}

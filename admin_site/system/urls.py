@@ -1,11 +1,11 @@
 from django.conf.urls import patterns, url
 
 from views import SiteList, SiteView, SiteCreate, SiteUpdate, SiteDelete
-from views import AdminIndex, ComputersView, GroupsView, UsersView, JobsView
+from views import AdminIndex, PCsView, GroupsView, UsersView, JobsView
 from views import GroupCreate, GroupUpdate, GroupDelete, JobSearch
 from views import SiteDetailView, UserCreate, SiteConfiguration
 from views import ScriptList, ScriptUpdate, ScriptCreate, ScriptDelete
-from views import ScriptRun
+from views import ScriptRun, PCUpdate
 from views import ConfigurationEntryCreate, ConfigurationEntryUpdate
 from views import ConfigurationEntryDelete
 from views import PackageSearch
@@ -31,10 +31,10 @@ urlpatterns = patterns(
         ConfigurationEntryUpdate.as_view(), name='edit_config_entry'),
     url(r'^site/(?P<site_uid>\w+)/configuration/delete/(?P<pk>\d+)/$',
         ConfigurationEntryDelete.as_view(), name='delete_config_entry'),
-    url(r'^site/(?P<slug>\w+)/computers/$', ComputersView.as_view(),
+    url(r'^site/(?P<slug>\w+)/computers/$', PCsView.as_view(),
         name='computers'),
-    url(r'^site/(?P<slug>\w+)/computers/(?P<uid>\w+)/$',
-        ComputersView.as_view(), name='computer'),
+    url(r'^site/(?P<site_uid>\w+)/computers/(?P<pc_uid>\w+)/$',
+        PCUpdate.as_view(), name='computer'),
     url(r'^site/(?P<slug>\w+)/groups/$', GroupsView.as_view(),
         name='groups'),
     url(r'^site/(?P<site_uid>\w+)/groups/new/$', GroupCreate.as_view(),

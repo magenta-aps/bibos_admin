@@ -4,7 +4,7 @@ from django import forms
 from django.forms.models import inlineformset_factory
 from django.contrib.auth.models import User
 
-from models import Site, PCGroup, ConfigurationEntry
+from models import Site, PCGroup, ConfigurationEntry, PC
 from job.models import Script, Input
 
 
@@ -71,3 +71,11 @@ class ParameterForm(forms.Form):
                 self.fields[name] = forms.DateTimeField(**field_data)
             else:
                 self.fields[name] = forms.CharField(**field_data)
+
+
+class PCForm(forms.ModelForm):
+    class Meta:
+        model = PC
+        exclude = ('uid', 'configuration', 'package_list', 'site',
+                   'is_update_required', 'creation_time', 'last_seen',
+                   'custom_packages')
