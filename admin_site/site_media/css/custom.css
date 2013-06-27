@@ -87,3 +87,7 @@ ul.addgrouplist {display: none; max-height: 300px; overflow-y: auto; position: a
 ul.addgrouplist li {cursor: pointer;}
 li.addgrouptrigger {position: relative;}
 li.addgrouptrigger:hover ul.addgrouplist {display: block}
+ul.addpclist {display: none; max-height: 300px; overflow-y: auto; position: absolute; background-color: #fff;}
+ul.addpclist li {cursor: pointer;}
+li.addpctrigger {position: relative;}
+li.addpctrigger:hover ul.addpclist {display: block}

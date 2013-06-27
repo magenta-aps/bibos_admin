@@ -25,6 +25,7 @@ Grupper
 {% block javascripts %}
 <script type="text/javascript" src="/media/js/package_lists.js"></script>
 <script type="text/javascript" src="/media/js/configlist.js"></script>
+<script type="text/javascript" src="/media/js/pclist.js"></script>
 {% endblock %}
 
 {% block groups_active %}
@@ -80,20 +81,9 @@ class="active"
                   {{ form.description }}
                 </fieldset>
                 <fieldset class="span6">
-                  <label>Computere i denne gruppe:</label>
-                  <ul class="unstyled well actionlist">
-                    {% for pc in selected_group.pcs.all %}
-                    <li>
-                      <div class="btn-group profile dark">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-hdd"></i> {{ pc.name }}</a>
-                        <ul class="dropdown-menu">
-                          <li><a href="#"><i class="icon-remove"></i> Fjern computer</a></li>
-                        </ul>
-                      </div>
-                    </li>
-                    {% endfor %}
-                    <li><a href="#" title="Tilføj computer"><i class="icon-plus"></i> tilføj computer</a></li>
-                  </ul>
+                  <label for="id_pcs">Computere i denne gruppe:</label>
+                  {{ form.pcs.errors }}
+                  {% include 'system/pclist/list.html' with submit_name='pcs' %}
                 </fieldset>
               </div>
             </div>

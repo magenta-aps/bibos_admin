@@ -21,6 +21,40 @@ class SiteForm(forms.ModelForm):
 
 
 class GroupForm(forms.ModelForm):
+    # Need to set up this side of the many-to-many relation between groups
+    # and PCs manually.
+    pcs = forms.ModelMultipleChoiceField(
+        queryset=PC.objects.all(),
+        required=False
+    )
+
+    def __init__(self, *args, **kwargs):
+        if 'instance' in kwargs:
+            initial = kwargs.setdefault('initial', {})
+            initial['pcs'] = [pc.pk for pc in
+                              kwargs['instance'].pcs.all()]
+
+        forms.ModelForm.__init__(self, *args, **kwargs)        
+
+    def save(self, commit=True):
+        instance = forms.ModelForm.save(self, False)
+
+        old_save_m2m = self.save_m2m
+        def save_m2m():
+            old_save_m2m()
+            instance.pcs.clear()
+            for pc in self.cleaned_data['pcs']:
+                instance.pcs.add(pc)
+
+        self.save_m2m = save_m2m
+
+        # Do we need to save all changes now?
+        if commit:
+            instance.save()
+            self.save_m2m()
+
+        return instance
+
     class Meta:
         model = PCGroup
         exclude = ['site', 'configuration', 'custom_packages']

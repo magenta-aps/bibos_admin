@@ -813,9 +813,26 @@ class GroupUpdate(SiteMixin, LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(GroupUpdate, self).get_context_data(**kwargs)
-        context['selected_group'] = self.object
-        ii = self.object.custom_packages.install_infos
+
+        group = self.object
+        form = context['form']
+        site = context['site']
+
+        ii = group.custom_packages.install_infos
         context['package_infos'] = ii.order_by('-do_add', 'package__name')
+
+        pc_queryset = site.pcs.all()
+        form.fields['pcs'].queryset = pc_queryset
+
+        selected_pc_ids = form['pcs'].value()
+        context['available_pcs'] = pc_queryset.exclude(
+            pk__in=selected_pc_ids
+        )
+        context['selected_pcs'] = pc_queryset.filter(
+            pk__in=selected_pc_ids
+        )
+
+        context['selected_group'] = group
 
         return context
 
