@@ -29,7 +29,7 @@ class GroupForm(forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
-        if 'instance' in kwargs:
+        if 'instance' in kwargs and kwargs['instance'] is not None:
             initial = kwargs.setdefault('initial', {})
             initial['pcs'] = [pc.pk for pc in
                               kwargs['instance'].pcs.all()]

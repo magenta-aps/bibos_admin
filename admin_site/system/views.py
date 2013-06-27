@@ -795,6 +795,15 @@ class GroupCreate(SiteMixin, CreateView, LoginRequiredMixin):
     form_class = GroupForm
     slug_field = 'uid'
 
+    def get_context_data(self, **kwargs):
+        context = super(GroupCreate, self).get_context_data(**kwargs)
+
+        # We don't want to edit computers yet
+        if 'pcs' in context['form'].fields:
+            del context['form'].fields['pcs']
+
+        return context
+
     def form_valid(self, form):
         site = get_object_or_404(Site, uid=self.kwargs['site_uid'])
         self.object = form.save(commit=False)
@@ -833,6 +842,9 @@ class GroupUpdate(SiteMixin, LoginRequiredMixin, UpdateView):
         )
 
         context['selected_group'] = group
+
+        context['newform'] = GroupForm()
+        del context['newform'].fields['pcs']
 
         return context
 

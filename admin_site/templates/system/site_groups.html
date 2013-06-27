@@ -34,7 +34,9 @@ class="active"
 
 {% block specific_content %}
   <ul class="sublevelnav">
-      <li class="listutils"><a href="/site/{{ site.url }}/groups/new/" title=""><i class="icon-plus icon-white"></i> tilføj ny gruppe</a></li>
+      <li class="listutils">
+        <a href="#addNewGroup" role="button" data-toggle="modal" title="tilføj ny gruppe"><i class="icon-plus icon-white"></i> tilføj ny gruppe</a>
+      </li>
       {% for group in site.groups.all %}
       <li {% ifequal group selected_group %}class="active"{% endifequal %}><a
           href="/site/{{ site.url }}/groups/{{ group.url }}/"><i class="icon-tags"></i> {{ group.name }}</a></li>
@@ -118,6 +120,23 @@ class="active"
       </div>
       
     </form>
+
+    <div id="addNewGroup" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <form action="{% url 'new_group' site.uid %}" name="new_group_form" id="new_group_form" method="post">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">×</button>
+          <h3>Tilføj ny gruppe</h3>
+        </div>
+        <div class="modal-body">
+            {% csrf_token %}
+            {{ newform.as_p }}
+        </div>
+        <div class="modal-footer">
+          <input type="submit" class="btn btn-primary" value="Gem" />
+          <input type="reset" class="btn" data-dismiss="modal" value="Annuller" />
+        </div>
+      </form>
+    </div>
 
     {% include 'system/package_lists/templates.html' %}
     {% include 'system/configlist/templates.html' %}
