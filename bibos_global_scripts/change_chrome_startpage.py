@@ -5,11 +5,10 @@
 # this.
 
 # Synopsis: 
-#    change_chrome_startpage <uri> <preferences-file>
+#    change_chrome_startpage <uri> [<preferences-file>]
 #
-# Both parameters are mandatory. The preferences-file might default to the
-# user's own .config/ directory, but we'd still not know if this is Chromium or
-# Chrome.
+# The URI is mandatory. The preferences-file defaults to the .config/
+# directory in the hidden user directory in a standard BibOS installation.
 #
 # There is no direct validation of the input parameters. The URI is assumed to
 # be that of a valid web site, and the preferences file is assumed to exist and
@@ -22,12 +21,15 @@
 import sys
 import json
 
-if len(sys.argv) != 3:
-    print "Usage: change_chrome_startpage <uri> <preferences-file>"
+if len(sys.argv) == 2:
+    preferences = '/home/.skjult/.config/google-chrome/Default/Preferences'
+elif len(sys.argv) == 3:
+    preferences = sys.argv[2]
+else:
+    print "Usage: change_chrome_startpage <uri> [<preferences-file>]"
     sys.exit(1)
 
 uri = sys.argv[1]
-preferences = sys.argv[2]
 
 try:
     with open(preferences, 'r') as f:
