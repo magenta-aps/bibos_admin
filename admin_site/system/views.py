@@ -1,3 +1,6 @@
+import json
+import datetime
+
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -15,11 +18,10 @@ from account.models import UserProfile
 
 from models import Site, PC, PCGroup, ConfigurationEntry, Package
 from forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
-from forms import UserForm, ParameterForm
+from forms import UserForm, ParameterForm, PCForm
 from job.models import Job, Script, Input, Batch, Parameter
 
-import json
-import datetime
+import signals
 
 
 # Mixin class to require login
@@ -141,17 +143,28 @@ class SiteDetailView(SiteView):
     def get_context_data(self, **kwargs):
         context = super(SiteDetailView, self).get_context_data(**kwargs)
         # For now, show only not-yet-activated PCs
-        context['pcs'] = self.object.pcs.filter(is_active=False)
-        
+        context['pcs'] = self.object.pcs.all()
+        context['pcs'] = [pc for pc in context['pcs'] if pc.status.state != '']
+
         query = {
             'batch__site': context['site'],
             'status': Job.FAILED
         }
         params = self.request.GET or self.request.POST
+
         orderby = params.get('orderby', '-pk')
         if not orderby in JobSearch.VALID_ORDER_BY:
             orderby = '-pk'
         context['orderby'] = orderby
+
+        if orderby.startswith('-'):
+            context['orderby_key'] = orderby[1:]
+            context['orderby_direction'] = 'desc'
+        else:
+            context['orderby_key'] = orderby
+            context['orderby_direction'] = 'asc'
+
+        context['orderby_base_url'] = context['site'].get_absolute_url() + '?'
 
         jobs = JobSearch.get_jobs_display_data(
             Job.objects.filter(**query).order_by(orderby, 'pk')
@@ -162,6 +175,29 @@ class SiteDetailView(SiteView):
         context['pcs'] = sorted(context['pcs'], key=lambda s: s.name.lower())
 
         return context
+
+
+class SiteConfiguration(SiteView):
+    template_name = 'system/site_configuration.html'
+
+    def get_context_data(self, **kwargs):
+        # First, get basic context from superclass
+        context = super(SiteConfiguration, self).get_context_data(**kwargs)
+        configs = self.object.configuration.entries.all()
+        context['site_configs'] = configs.order_by('key')
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        # Do basic method
+        kwargs['updated'] = True
+        result = self.get(request, *args, **kwargs)
+
+        # Handle saving of data
+        self.object.configuration.update_from_request(
+            request.POST, 'site_configs'
+        )
+        return result
 
 
 # Now follows all site-based views, i.e. subclasses
@@ -276,7 +312,6 @@ class ScriptMixin(object):
                                           key=lambda s: s.name.lower())
         context['global_scripts'] = sorted(self.scripts.filter(site=None),
                                           key=lambda s: s.name.lower())
-
 
         context['script_inputs'] = self.script_inputs
 
@@ -518,15 +553,104 @@ class ScriptDelete(ScriptMixin, DeleteView):
     pass
 
 
-class ComputersView(SelectionMixin, SiteView):
+class PCsView(SelectionMixin, SiteView):
 
-    template_name = 'system/site_computers.html'
+    template_name = 'system/site_pcs.html'
     selection_class = PC
 
     def get_list(self):
         return self.object.pcs.all().extra(
             select={'lower_name': 'lower(name)'}
         ).order_by('lower_name')
+
+    def render_to_response(self, context):
+        if('selected_pc' in context):
+            return HttpResponseRedirect('/site/%s/computers/%s/' % (
+                context['site'].uid,
+                context['selected_pc'].uid
+            ))
+        else:
+            return super(PCsView, self).render_to_response(context)
+
+
+class PCUpdate(SiteMixin, UpdateView):
+    template_name = 'system/pc_form.html'
+    form_class = PCForm
+    slug_field = 'uid'
+
+    VALID_ORDER_BY = []
+    for i in ['pk', 'batch__script__name', 'started', 'finished', 'status',
+              'batch__name']:
+        VALID_ORDER_BY.append(i)
+        VALID_ORDER_BY.append('-' + i)
+
+    def get_object(self, queryset=None):
+        return PC.objects.get(uid=self.kwargs['pc_uid'])
+
+    def get_context_data(self, **kwargs):
+        context = super(PCUpdate, self).get_context_data(**kwargs)
+
+        site = context['site']
+        form = context['form']
+        pc = self.object
+        params = self.request.GET or self.request.POST
+
+        context['pc_list'] = site.pcs.all().extra(
+            select={'lower_name': 'lower(name)'}
+        ).order_by('lower_name')
+
+        group_set = site.groups.all()
+
+        selected_group_ids = form['pc_groups'].value()
+        context['available_groups'] = group_set.exclude(
+            pk__in=selected_group_ids
+        )
+        context['selected_groups'] = group_set.filter(
+            pk__in=selected_group_ids
+        )
+
+        ii = self.object.custom_packages.install_infos
+        context['package_infos'] = ii.order_by('-do_add', 'package__name')
+
+        a, r = pc.pending_package_updates
+        context['pending_packages_add'] = sorted(a)
+        context['pending_packages_remove'] = sorted(r)
+
+        context['active_accordion'] = params.get('accordion', 'details')
+
+        orderby = params.get('orderby', '-pk')
+        if not orderby in JobSearch.VALID_ORDER_BY:
+            orderby = '-pk'
+        context['joblist'] = pc.jobs.order_by('status', 'pk').order_by(
+            orderby,
+            'pk'
+        )
+
+        if orderby.startswith('-'):
+            context['orderby_key'] = orderby[1:]
+            context['orderby_direction'] = 'desc'
+        else:
+            context['orderby_key'] = orderby
+            context['orderby_direction'] = 'asc'
+
+        context['orderby_base_url'] = ''.join([
+            pc.get_absolute_url(),
+            '?accordion=joblist&'
+        ])
+
+        context['selected_pc'] = pc
+
+        return context
+
+    def form_valid(self, form):
+        self.object.custom_packages.update_by_package_names(
+            self.request.POST.getlist('pc_packages_add'),
+            self.request.POST.getlist('pc_packages_remove')
+        )
+        self.object.configuration.update_from_request(
+            self.request.POST, 'pc_config'
+        )
+        return super(PCUpdate, self).form_valid(form)
 
 
 class GroupsView(SelectionMixin, SiteView):
@@ -539,24 +663,17 @@ class GroupsView(SelectionMixin, SiteView):
             select={'lower_name': 'lower(name)'}
         ).order_by('lower_name')
 
-    #def get_context_data(self, **kwargs):
-    #    context = super(GroupsView, self).get_context_data(**kwargs)
-    #    if 'selected_group' in context:
-    #        group = context['selected_group']
-    #        ii = group.custom_packages.install_infos
-    #        context['package_infos'] = ii.order_by('package__name')
-    #    return context
-
     def render_to_response(self, context):
         if('selected_group' in context):
             return HttpResponseRedirect('/site/%s/groups/%s/' % (
                 context['site'].uid,
                 context['selected_group'].url
-            ));
-        else: 
+            ))
+        else:
             return HttpResponseRedirect(
                 '/site/%s/groups/new/' % context['site'].uid,
             )
+
 
 class UsersView(SelectionMixin, SiteView):
 
@@ -635,6 +752,14 @@ class SiteUpdate(UpdateView, LoginRequiredMixin):
         return '/sites/'
 
 
+class SiteDelete(DeleteView, LoginRequiredMixin):
+    model = Site
+    slug_field = 'uid'
+
+    def get_success_url(self):
+        return '/sites/'
+
+
 class ConfigurationEntryCreate(SiteMixin, CreateView, LoginRequiredMixin):
     model = ConfigurationEntry
     form_class = ConfigurationEntryForm
@@ -670,6 +795,15 @@ class GroupCreate(SiteMixin, CreateView, LoginRequiredMixin):
     form_class = GroupForm
     slug_field = 'uid'
 
+    def get_context_data(self, **kwargs):
+        context = super(GroupCreate, self).get_context_data(**kwargs)
+
+        # We don't want to edit computers yet
+        if 'pcs' in context['form'].fields:
+            del context['form'].fields['pcs']
+
+        return context
+
     def form_valid(self, form):
         site = get_object_or_404(Site, uid=self.kwargs['site_uid'])
         self.object = form.save(commit=False)
@@ -688,9 +822,29 @@ class GroupUpdate(SiteMixin, LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(GroupUpdate, self).get_context_data(**kwargs)
-        context['selected_group'] = self.object
-        ii = self.object.custom_packages.install_infos
-        context['package_infos'] = ii.order_by('package__name')
+
+        group = self.object
+        form = context['form']
+        site = context['site']
+
+        ii = group.custom_packages.install_infos
+        context['package_infos'] = ii.order_by('-do_add', 'package__name')
+
+        pc_queryset = site.pcs.all()
+        form.fields['pcs'].queryset = pc_queryset
+
+        selected_pc_ids = form['pcs'].value()
+        context['available_pcs'] = pc_queryset.exclude(
+            pk__in=selected_pc_ids
+        )
+        context['selected_pcs'] = pc_queryset.filter(
+            pk__in=selected_pc_ids
+        )
+
+        context['selected_group'] = group
+
+        context['newform'] = GroupForm()
+        del context['newform'].fields['pcs']
 
         return context
 
@@ -699,10 +853,23 @@ class GroupUpdate(SiteMixin, LoginRequiredMixin, UpdateView):
             self.request.POST.getlist('group_packages_add'),
             self.request.POST.getlist('group_packages_remove')
         )
+        self.object.configuration.update_from_request(
+            self.request.POST, 'group_configuration'
+        )
         return super(GroupUpdate, self).form_valid(form)
 
     def form_invalid(self, form):
         return super(GroupUpdate, self).form_invalid(form)
+
+
+class GroupDelete(SiteMixin, LoginRequiredMixin, DeleteView):
+    model = PCGroup
+
+    def get_object(self, queryset=None):
+        return PCGroup.objects.get(uid=self.kwargs['group_uid'])
+
+    def get_success_url(self):
+        return '/site/{0}/groups/'.format(self.kwargs['site_uid'])
 
 
 class PackageSearch(JSONResponseMixin, ListView):

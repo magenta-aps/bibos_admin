@@ -4,7 +4,7 @@ from django import forms
 from django.forms.models import inlineformset_factory
 from django.contrib.auth.models import User
 
-from models import Site, PCGroup, ConfigurationEntry
+from models import Site, PCGroup, ConfigurationEntry, PC
 from job.models import Script, Input
 
 
@@ -21,6 +21,40 @@ class SiteForm(forms.ModelForm):
 
 
 class GroupForm(forms.ModelForm):
+    # Need to set up this side of the many-to-many relation between groups
+    # and PCs manually.
+    pcs = forms.ModelMultipleChoiceField(
+        queryset=PC.objects.all(),
+        required=False
+    )
+
+    def __init__(self, *args, **kwargs):
+        if 'instance' in kwargs and kwargs['instance'] is not None:
+            initial = kwargs.setdefault('initial', {})
+            initial['pcs'] = [pc.pk for pc in
+                              kwargs['instance'].pcs.all()]
+
+        forms.ModelForm.__init__(self, *args, **kwargs)        
+
+    def save(self, commit=True):
+        instance = forms.ModelForm.save(self, False)
+
+        old_save_m2m = self.save_m2m
+        def save_m2m():
+            old_save_m2m()
+            instance.pcs.clear()
+            for pc in self.cleaned_data['pcs']:
+                instance.pcs.add(pc)
+
+        self.save_m2m = save_m2m
+
+        # Do we need to save all changes now?
+        if commit:
+            instance.save()
+            self.save_m2m()
+
+        return instance
+
     class Meta:
         model = PCGroup
         exclude = ['site', 'configuration', 'custom_packages']
@@ -71,3 +105,11 @@ class ParameterForm(forms.Form):
                 self.fields[name] = forms.DateTimeField(**field_data)
             else:
                 self.fields[name] = forms.CharField(**field_data)
+
+
+class PCForm(forms.ModelForm):
+    class Meta:
+        model = PC
+        exclude = ('uid', 'configuration', 'package_list', 'site',
+                   'is_update_required', 'creation_time', 'last_seen',
+                   'custom_packages')

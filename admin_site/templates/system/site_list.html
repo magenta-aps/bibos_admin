@@ -16,7 +16,9 @@
           <ul class="dropdown-menu pull-right">
               <li><a href="/site/{{site.url}}/"><i class="icon-home"></i> Gå til</a></li>
               <li><a href="/sites/{{ site.url }}/edit/"><i class="icon-edit"></i> Redigér</a></li>
-            <li><a href="#" title="Slet bibliotek"><i class="icon-remove"></i> Slet</a></li>
+              {% if site.is_delete_allowed %}
+              <li><a href="/sites/{{ site.url }}/delete/" title="Slet bibliotek"><i class="icon-remove"></i> Slet</a></li>
+              {% endif %}
           </ul>
         </div>
       {% endfor %}      

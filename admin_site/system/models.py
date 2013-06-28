@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 
 
 """The following variables define states of objects like jobs or PCs. It is
@@ -26,6 +27,40 @@ class Configuration(models.Model):
     # Doesn't need any actual fields, it seems. Should not exist independently
     # of the classes to which it may be aggregated.
     name = models.CharField(max_length=255, unique=True)
+
+    def update_from_request(self, req_params, submit_name):
+        seen_set = set()
+        new_ids = []
+
+        existing_set = set(cnf.pk for cnf in self.entries.all())
+
+        for pk in req_params.getlist(submit_name, []):
+            key_param = "%s_%s_key" % (submit_name, pk)
+            value_param = "%s_%s_value" % (submit_name, pk)
+
+            key = req_params.get(key_param, '')
+            value = req_params.get(value_param, '')
+
+            if pk.startswith("new_"):
+                # Create new entry
+                cnf = ConfigurationEntry(
+                    key=key,
+                    value=value,
+                    owner_configuration=self
+                )
+            else:
+                # Update submitted entry
+                cnf = ConfigurationEntry.objects.get(pk=pk)
+                cnf.key = key
+                cnf.value = value
+                seen_set.add(cnf.pk)
+
+            cnf.save()
+
+        # Delete entries that were not in the submitted data
+        for pk in existing_set - seen_set:
+            cnf = ConfigurationEntry.objects.get(pk=pk)
+            cnf.delete()
 
     def __unicode__(self):
         return self.name
@@ -64,7 +99,6 @@ class CustomPackages(models.Model):
                                       through='PackageInstallInfo',
                                       blank=True)
 
-
     def update_by_package_names(self, addlist, removelist):
         add_packages_old = set()
         remove_packages_old = set()
@@ -81,7 +115,11 @@ class CustomPackages(models.Model):
         ]:
             # Add new add-packages
             for name in newlist - oldlist:
-                package, created = Package.objects.get_or_create(name=name)
+                try:
+                    package = Package.objects.filter(name=name)[0]
+                except IndexError:
+                    package = Package.objects.create(name=name)
+
                 ii = PackageInstallInfo(
                     custom_packages=self,
                     package=package,
@@ -153,6 +191,12 @@ class Site(models.Model):
     def url(self):
         return self.uid
 
+    @property
+    def is_delete_allowed(self):
+        """This should always be checked by the user interface to avoid
+        validation errors from the pre_delete signal."""
+        return self.pcs.count() == 0
+
     def __unicode__(self):
         return self.name
 
@@ -210,6 +254,12 @@ class PCGroup(models.Model):
     def url(self):
         return self.uid
 
+    @property
+    def is_delete_allowed(self):
+        """This should always be checked by the user interface to avoid
+        validation errors from the pre_delete signal."""
+        return self.pcs.count() == 0
+
     def __unicode__(self):
         return self.name
 
@@ -251,23 +301,52 @@ class PC(models.Model):
     configuration = models.ForeignKey(Configuration)
     pc_groups = models.ManyToManyField(PCGroup, related_name='pcs', blank=True)
     package_list = models.ForeignKey(PackageList, null=True, blank=True)
+    custom_packages = models.ForeignKey(CustomPackages, null=True, blank=True)
     site = models.ForeignKey(Site, related_name='pcs')
     is_active = models.BooleanField(_('active'), default=False)
+    is_update_required = models.BooleanField(_('update required'),
+                                             default=False)
     creation_time = models.DateTimeField(_('creation time'),
         auto_now_add=True)
     last_seen = models.DateTimeField(_('last seen'), null=True, blank=True)
 
     @property
-    def added_packages(self):
-        dist_packages = set(self.distribution.package_list.packages.all())
-        my_packages = set(self.package_list.packages.all())
-        return my_packages.difference(dist_packages)
+    def current_packages(self):
+        return set(p.name for p in self.package_list.packages.all())
 
     @property
-    def removed_packages(self):
-        dist_packages = set(self.distribution.package_list.packages.all())
-        my_packages = set(self.package_list.packages.all())
-        return dist_packages.difference(my_packages)
+    def wanted_packages(self):
+        wanted_packages = set(p.name for p in
+                              self.distribution.package_list.packages.all())
+
+        for group in self.pc_groups.all():
+            for ii in group.custom_packages.install_infos.all():
+                if ii.do_add:
+                    wanted_packages.add(ii.package.name)
+                else:
+                    wanted_packages.discard(ii.package.name)
+
+        for ii in self.custom_packages.install_infos.all():
+            if ii.do_add:
+                wanted_packages.add(ii.package.name)
+            else:
+                wanted_packages.discard(ii.package.name)
+
+        return wanted_packages
+
+    @property
+    def pending_package_updates(self):
+        wanted = self.wanted_packages
+        current = self.current_packages
+        return (wanted - current, current - wanted)
+
+    @property
+    def pending_packages_add(self):
+        return self.wanted_packages - self.current_packages
+
+    @property
+    def pending_packages_remove(self):
+        return self.current_packages - self.wanted_packages
 
     class Status:
         """This class represents the status of af PC. We may want to do
@@ -281,14 +360,22 @@ class PC(models.Model):
     def status(self):
         if not self.is_active:
             return self.Status(NEW, INFO)
-        elif False:
+        elif self.is_update_required:
             # If packages require update
             return self.Status(UPDATE, WARNING)
-        elif not self.last_seen:
-            # If it has failed jobs
-            return self.Status(FAIL, IMPORTANT)
         else:
-            return self.Status(OK, None)
+            # Get a list of all jobs associated with this PC and see if any of
+            # them failed.
+            from job.models import Job
+            failed_jobs = self.jobs.filter(status=Job.FAILED)
+            if len(failed_jobs) > 0:
+                # Only UNHANDLED failed jobs, please.
+                return self.Status(FAIL, IMPORTANT)
+            else:
+                return self.Status(OK, None)
+
+    def get_absolute_url(self):
+        return reverse('computer', args=(self.site.uid, self.uid))
 
     def __unicode__(self):
         return self.name

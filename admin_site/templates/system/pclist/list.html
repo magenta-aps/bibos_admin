@@ -1,0 +1,22 @@
+{% if submit_name %}
+<ul class="unstyled well actionlist" id="id_{{ submit_name }}">
+  {% for pc in selected_pcs %}
+    {% include 'system/pclist/item.html' with pk=pc.pk name=pc.name selected='yes' %}
+  {% endfor %}
+  <li class="addpctrigger">
+    <a href="javascript:void(0)" title="Tilføj ny gruppe"><i class="icon-plus"></i> tilføj ny gruppe</a>
+    <ul class="addpclist">
+      {% for pc in available_pcs %}
+        {% include 'system/pclist/item.html' with pk=pc.pk name=pc.name %}
+      {% endfor %}
+    </ul>
+  </li>
+</ul>
+<script type="text/javascript"><!--
+$(function() {
+  BibOS.PCList.setupList('#id_{{ submit_name }}')
+});
+//--></script>
+{% else %}
+<p>You must specify a <em>submit_name</em> when including a pc list.</p>
+{% endif %}

@@ -8,40 +8,25 @@ Global konfiguration
 class="active"
 {% endblock %}
 
+{% block javascripts %}
+<script type="text/javascript" src="/media/js/configlist.js"></script>
+{% endblock %}
+
+
 {% block specific_content %}
-
-
   <div class="container-fluid main">
-    
-        <div class="well" style="margin-top: 20px;">
-          <table class="table table-condensed table-hover">
-            <tr class="welledth">
-              <th>Nøgle</th>
-              <th>Værdi</th>
-          </tr>
-          {% for c in site.configuration.entries.all %}
-            <tr class="muted">
-                <td>{{ c.key }}</td>
-              <td>
-                <div class="btn-group profile dark">
-                  <a class="dropdown-toggle btn" data-toggle="dropdown"
-                      href="#">{{ c.value }}</a>
-                  <ul class="dropdown-menu">
-                      <li><a href="edit/{{c.pk}}/"><i class="icon-edit"></i> Redigér</a></li>
-                      <li><a href="delete/{{c.pk}}"><i class="icon-remove"></i> Slet konfiguration</a></li>
-                  </ul>
-                </div>
-              </td>
-          </tr>
-          {% endfor %}
-            <tr>
-              <td colspan="2">
-                <a href="new/" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj konfiguration</a>
-              </td>
-            </tr>
-        </table>
-        {{ form.as_table }}
-        </div>
-    
+
+    <form action="{% url 'configuration' site.uid%}" method="post"
+      name="site_configuration_form" id="site_configuration_form">
+
+      <div>
+        <button class="btn btn-primary">Gem ændringer</button>
+        <button class="btn" onclick="return ((location.href=location.href) && false)">Annuller</button>
+        {% csrf_token %}
+      </div>
+
+      {% include 'system/configlist/list.html' with entries=site_configs cnf_id='site_configs' %}
+      {% include 'system/configlist/templates.html' %}
+    </form>
   </div>
 {% endblock %}

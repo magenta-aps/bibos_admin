@@ -145,7 +145,25 @@ var BibOS;
     setOrderByClasses: function(elem, list, orderkey) {
       $(list).removeClass('orderby').removeClass('orderby-desc')
       $(elem).addClass(orderkey.match(/^-/) ? 'orderby-desc' : 'orderby');
-    }
+    },
+    insertToOrderedList: function(topElem, selector, matcher, elem, defaultInsertCallback) {
+      var inserted = false,
+        lastInsert = defaultInsertCallback || function() {
+          elem.detach().appendTo($(topElem));
+        }
+
+      $(topElem).children(selector).each(function() {
+        var currentElem = $(this);
+        if(matcher(currentElem)) {
+          elem.detach().insertBefore(currentElem);
+          inserted = true;
+        }
+        return !inserted;
+      });
+
+      if(!inserted)
+        lastInsert(elem)
+    },
   })
   window.BibOS = window.BibOS || new BibOS();
   var b = window.BibOS;
