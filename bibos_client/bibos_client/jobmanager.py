@@ -1,6 +1,3 @@
-from admin_client import BibOSAdmin
-from bibos_utils.bibos_config import BibOSConfig
-from lockfile import FileLock, AlreadyLocked
 
 import os
 import os.path
@@ -12,6 +9,12 @@ import urlparse
 import glob
 import re
 import subprocess
+from lockfile import FileLock, AlreadyLocked
+
+from bibos_utils.bibos_config import BibOSConfig
+
+from admin_client import BibOSAdmin
+from utils import upload_packages
 
 """
 Directory structure for storing BibOS jobs:
@@ -262,12 +265,16 @@ def get_url_and_uid():
 def import_new_jobs():
     (remote_url, uid) = get_url_and_uid()
     remote = BibOSAdmin(remote_url)
-    jobs = remote.get_instructions(uid)
+    jobs, do_send_package_info = remote.get_instructions(uid)
 
     for j in jobs:
         local_job = LocalJob(data=j)
         local_job.save()
         local_job.logline("Job imported at %s" % datetime.datetime.now())
+
+    if do_send_package_info:
+        # Send full package info to server.
+        upload_packages()
 
 
 def report_job_results(joblist):

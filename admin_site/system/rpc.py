@@ -175,4 +175,4 @@ def get_instructions(pc_uid):
             'executable_code': job.batch.script.executable_code.read()
         })
 
-    return jobs
+    return (jobs, pc.do_send_package_info)

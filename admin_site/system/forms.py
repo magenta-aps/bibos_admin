@@ -34,12 +34,13 @@ class GroupForm(forms.ModelForm):
             initial['pcs'] = [pc.pk for pc in
                               kwargs['instance'].pcs.all()]
 
-        forms.ModelForm.__init__(self, *args, **kwargs)        
+        forms.ModelForm.__init__(self, *args, **kwargs)
 
     def save(self, commit=True):
         instance = forms.ModelForm.save(self, False)
 
         old_save_m2m = self.save_m2m
+
         def save_m2m():
             old_save_m2m()
             instance.pcs.clear()

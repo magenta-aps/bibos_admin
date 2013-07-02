@@ -306,6 +306,10 @@ class PC(models.Model):
     is_active = models.BooleanField(_('active'), default=False)
     is_update_required = models.BooleanField(_('update required'),
                                              default=False)
+    # This field is used to communicate to the JobManager on each PC that it
+    # should send an update of installed packages next time it contacts us.
+    do_send_package_info = models.BooleanField(_('send package info',
+                                                 default=False))
     creation_time = models.DateTimeField(_('creation time'),
         auto_now_add=True)
     last_seen = models.DateTimeField(_('last seen'), null=True, blank=True)
