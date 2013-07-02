@@ -13,6 +13,7 @@ setup(
     scripts=['bin/bibos_register_in_admin', 'bin/bibos_upload_packages',
             'bin/bibos_upload_dist_packages',
             'bin/register_new_bibos_client.sh',
-            'bin/bibos_find_gateway'],
+            'bin/bibos_find_gateway',
+            'bin/jobmanager'],
     zip_safe=False
 )

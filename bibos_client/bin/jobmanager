@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+
+import os
+import sys
+
+from bibos_client.jobmanager import update_and_run
+
+if not os.geteuid() == 0:
+    sys.exit("\n Only root can run this program. \n")
+
+# We are root!
+
+update_and_run()
+
