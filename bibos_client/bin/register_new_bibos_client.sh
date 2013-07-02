@@ -85,3 +85,13 @@
     # OK, we got the config. 
     # Do the deed.
     sudo bibos_register_in_admin
+
+    # Now setup cron job
+    if [[ -f $(which jobmanager) ]]
+    then
+        sudo crontab -l > /tmp/oldcron
+        sudo echo "*/5 * * * * $(which jobmanager)" >> /tmp/oldcron
+        sudo crontab /tmp/oldcron
+        sudo rm /tmp/oldcron
+    fi
+
