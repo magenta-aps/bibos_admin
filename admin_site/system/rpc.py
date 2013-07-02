@@ -84,6 +84,7 @@ def upload_dist_packages(distribution_uid, package_data):
                     package_list=distribution.package_list,
                     status=pd['status']
                 )
+    return 0
 
 
 def send_status_info(pc_uid, package_data, job_data):
@@ -121,6 +122,9 @@ def send_status_info(pc_uid, package_data, job_data):
                     package_list=pc.package_list,
                     status=pd['status']
                 )
+        # Assume no packages are any longer "pending".
+        pc.custom_packages.update_by_package_names(pc.pending_packages_remove,
+                                                   pc.pending_packages_add)
 
     # 3. Update jobs with job data
     if job_data is not None:
