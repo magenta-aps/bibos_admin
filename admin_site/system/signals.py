@@ -13,7 +13,7 @@ def site_pre_delete(sender, instance, **kwargs):
 
 
 @receiver(pre_delete, sender=PCGroup)
-def site_pre_delete(sender, instance, **kwargs):
+def pcgroup_pre_delete(sender, instance, **kwargs):
     group = instance
     if not group.is_delete_allowed:
         raise ValidationError(
