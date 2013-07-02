@@ -4,7 +4,7 @@
 import datetime
 
 from models import PC, Site, Distribution, Configuration, ConfigurationEntry
-from models import PackageList, Package, PackageStatus
+from models import PackageList, Package, PackageStatus, CustomPackages
 from job.models import Job
 from django.db.models import Q
 
@@ -16,11 +16,14 @@ def register_new_computer(name, uid, distribution, site, configuration):
     try:
         new_pc = PC.objects.get(uid=uid)
         package_list = new_pc.package_list
+        custom_packages = new_pc.custom_packages
     except PC.DoesNotExist:
         new_pc = PC(name=name, uid=uid)
         new_pc.site = Site.objects.get(uid=site)
-        # TODO: Better to enforce existence of package list in constructor.
+        # TODO: Better to enforce existence of package list in AfterSave
+        # signal.
         package_list = PackageList(name=name)
+        custom_packages = CustomPackages(name=name)
 
     new_pc.distribution = Distribution.objects.get(uid=distribution)
     new_pc.is_active = False
@@ -48,6 +51,8 @@ def register_new_computer(name, uid, distribution, site, configuration):
     new_pc.configuration = my_config
     package_list.save()
     new_pc.package_list = package_list
+    custom_packages.save()
+    new_pc.custom_packages = custom_packages
     new_pc.save()
     return 0
 
