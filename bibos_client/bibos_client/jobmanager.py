@@ -273,8 +273,12 @@ def import_new_jobs():
         local_job.logline("Job imported at %s" % datetime.datetime.now())
 
     if do_send_package_info:
-        # Send full package info to server.
-        upload_packages()
+        try:
+            # Send full package info to server.
+            upload_packages()
+        except Exception as e:
+            print >>os.sys.stderr, "Package upload failed" + str(e)
+
 
 
 def report_job_results(joblist):

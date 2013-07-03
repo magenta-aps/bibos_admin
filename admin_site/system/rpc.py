@@ -47,7 +47,9 @@ def register_new_computer(name, uid, distribution, site, configuration):
         entry = ConfigurationEntry(key=k, value=v,
                                    owner_configuration=my_config)
         entry.save()
-    # Set and save PmC.
+    # Tell us about yourself
+    new_pc.do_send_package_info = True
+    # Set and save PmC
     new_pc.configuration = my_config
     package_list.save()
     new_pc.package_list = package_list
@@ -96,11 +98,18 @@ def send_status_info(pc_uid, package_data, job_data):
 
     # 1. Lookup PC, update "last_seen" field
     pc = PC.objects.get(uid=pc_uid)
+    
+    if not pc.is_active:
+        # Fail silently
+        return 0
+
     pc.last_seen = datetime.datetime.now()
     pc.save()
 
-    if package_data is not None:
+    if package_data and pc.do_send_package_info:
         # 2. Update package lists with package data
+        # Ignore if we didn't ask for this
+
         # Clear existing packages
         pc.package_list.packages.clear()
 
@@ -125,6 +134,10 @@ def send_status_info(pc_uid, package_data, job_data):
         # Assume no packages are any longer "pending".
         pc.custom_packages.update_by_package_names(pc.pending_packages_remove,
                                                    pc.pending_packages_add)
+        # We just got the package info update we requested, so clear the flag
+        # until we need a new update.
+        pc.do_send_package_info = False
+        pc.save()
 
     # 3. Update jobs with job data
     if job_data is not None:
@@ -148,6 +161,11 @@ def get_instructions(pc_uid):
     These jobs will generally take the form of bash scripts."""
 
     pc = PC.objects.get(uid=pc_uid)
+    
+    if not pc.is_active:
+        # Fail silently
+        return ([], False)
+
     pc.last_seen = datetime.datetime.now()
     pc.save()
 
