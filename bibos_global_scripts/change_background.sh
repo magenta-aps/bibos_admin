@@ -37,7 +37,7 @@ HIDDEN_DIR=/home/.skjult
 mkdir -p $IMAGES_HOME
 mkdir -p $HIDDEN_DIR/.config/dconf
 
-IMAGE_FULL_PATH="$IMAGES_HOME"/"$IMAGE_FILE"
+IMAGE_FULL_PATH="$IMAGES_HOME"/"$(basename "$IMAGE_FILE")"
 
 cp "$IMAGE_FILE"  "$IMAGE_FULL_PATH"
 
