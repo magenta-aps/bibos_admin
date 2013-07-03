@@ -41,8 +41,10 @@ IMAGE_FULL_PATH="$IMAGES_HOME"/"$(basename "$IMAGE_FILE")"
 
 cp "$IMAGE_FILE"  "$IMAGE_FULL_PATH"
 
+export DISPLAY=:0.0
+export XAUTHORITY=/home/$AS_USER/.Xauthority
 
-sudo -u $AS_USER gsettings set org.gnome.desktop.background picture-uri file://"$IMAGE_FULL_PATH" 2>/dev/null
+sudo -u $AS_USER /usr/bin/gsettings set org.gnome.desktop.background picture-uri file://"$IMAGE_FULL_PATH" 2>/dev/null
 
 cp /home/$AS_USER/.config/dconf/user $HIDDEN_DIR/.config/dconf/
 exit 0
