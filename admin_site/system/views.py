@@ -710,6 +710,9 @@ class UserCreate(CreateView, LoginRequiredMixin):
         # Add site
         site = get_object_or_404(Site, uid=self.kwargs['slug'])
         context['site'] = site
+        context['form'].setup_usertype_choices(
+            self.request.user.bibos_profile.get().type,
+        )
 
         return context
 

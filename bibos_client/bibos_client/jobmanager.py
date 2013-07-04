@@ -280,7 +280,6 @@ def import_new_jobs():
             print >>os.sys.stderr, "Package upload failed" + str(e)
 
 
-
 def report_job_results(joblist):
     if len(joblist) < 1:
         return

@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 
 from models import Site, PCGroup, ConfigurationEntry, PC
 from job.models import Script, Input
+from account.models import UserProfile
 
 
 class SiteForm(forms.ModelForm):
@@ -79,10 +80,53 @@ class ConfigurationEntryForm(forms.ModelForm):
 
 
 class UserForm(forms.ModelForm):
+    usertype = forms.ChoiceField(
+        required=True,
+        choices=UserProfile.type_choices
+    )
+
+    def set_usertype_single_choice(self, choice_type):
+        self.fields['usertype'].choices = [
+            (c, l) for c, l in UserProfile.type_choices if c == choice_type
+        ]
+        self.fields['usertype'].widget.attrs['readonly'] = True
+
+    # Sets the choices in the usertype widget depending on the usertype
+    # of the user currently filling out the form
+    def setup_usertype_choices(self, loginuser_type, initial_type=None):
+        if loginuser_type == UserProfile.SUPER_ADMIN:
+            # Superadmins can edit everything
+            pass
+        elif loginuser_type == UserProfile.SITE_ADMIN:
+            # If initial type is super_admin, hardcode to that single choice
+            if initial_type == UserProfile.SUPER_ADMIN:
+                self.set_usertype_single_choice(UserProfile.SITE_ADMIN)
+            else:
+                # Only select between site-admins and site users
+                self.fields['usertype'].choices = UserProfile.NON_ADMIN_CHOICES
+        else:
+            # Everybody else only get one choice
+            if initial_type is None:
+                # Can only choose site_user during creation
+                self.set_usertype_single_choice(UserProfile.SITE_USER)
+                self.fields['usertype'].widget.attrs['readonly']
+            else:
+                # And is locked to existing value during editing
+                self.set_usertype_single_choice(initial_type)
+
+    def __init__(self, *args, **kwargs):
+        initial = kwargs.setdefault('initial', {})
+        if 'instance' in kwargs and kwargs['instance'] is not None:
+            initial['usertype'] = kwargs['instance'].bibos_profile.type
+        else:
+            initial['usertype'] = UserProfile.SITE_USER
+        forms.ModelForm.__init__(self, *args, **kwargs)
+
     class Meta:
         model = User
         exclude = ('groups', 'user_permissions', 'first_name', 'last_name',
-                   'is_staff', 'is_active', 'is_superuser', 'date_joined')
+                   'is_staff', 'is_active', 'is_superuser', 'date_joined',
+                   'last_login')
 
 
 class ParameterForm(forms.Form):

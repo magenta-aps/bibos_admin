@@ -378,6 +378,38 @@ class PC(models.Model):
             else:
                 return self.Status(OK, None)
 
+    def get_config_value(self, key, default=None):
+        value = default
+        configs = [self.site.configuration]
+        configs.extend([g.configuration for g in self.pc_groups.all()])
+        configs.append(self.configuration)
+        for conf in configs:
+            try:
+                entry = conf.entries.get(key=key)
+                value = entry.value
+            except ConfigurationEntry.DoesNotExist:
+                pass
+        return value
+
+    def get_merged_config_list(self, key, default=None):
+        result = default[:] if default is not None else []
+
+        configs = [self.site.configuration]
+        configs.extend([g.configuration for g in self.pc_groups.all()])
+        configs.append(self.configuration)
+
+        for conf in configs:
+            try:
+                entry = conf.entries.get(key=key)
+                for v in entry.value.split(","):
+                    v = v.strip()
+                    if v != '' and v not in result:
+                        result.append(v)
+            except ConfigurationEntry.DoesNotExist:
+                pass
+
+        return result
+
     def get_absolute_url(self):
         return reverse('computer', args=(self.site.uid, self.uid))
 

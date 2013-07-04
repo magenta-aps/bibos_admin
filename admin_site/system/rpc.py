@@ -2,6 +2,7 @@
 # client.
 
 import datetime
+import system.proxyconf
 
 from models import PC, Site, Distribution, Configuration, ConfigurationEntry
 from models import PackageList, Package, PackageStatus, CustomPackages
@@ -98,7 +99,7 @@ def send_status_info(pc_uid, package_data, job_data):
 
     # 1. Lookup PC, update "last_seen" field
     pc = PC.objects.get(uid=pc_uid)
-    
+
     if not pc.is_active:
         # Fail silently
         return 0
@@ -152,16 +153,13 @@ def send_status_info(pc_uid, package_data, job_data):
     return 0
 
 
-import os
-
-
 def get_instructions(pc_uid):
     """This function will ask for new instructions in the form of a list of
     jobs, which will be scheduled for execution and executed upon receipt.
     These jobs will generally take the form of bash scripts."""
 
     pc = PC.objects.get(uid=pc_uid)
-    
+
     if not pc.is_active:
         # Fail silently
         return ([], False)
@@ -194,3 +192,7 @@ def get_instructions(pc_uid):
         })
 
     return (jobs, pc.do_send_package_info)
+
+
+def get_proxy_setup(pc_uid):
+    return system.proxyconf.get_proxy_setup(pc_uid)

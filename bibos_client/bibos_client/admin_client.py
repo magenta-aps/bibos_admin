@@ -29,6 +29,8 @@ class BibOSAdmin(object):
     def get_instructions(self, pc_uid):
         return self._rpc_srv.get_instructions(pc_uid)
 
+    def get_proxy_setup(self, pc_uid):
+        return self._rpc_srv.get_proxy_setup(pc_uid)
 
 if __name__ == '__main__':
     """Simple test suite."""
