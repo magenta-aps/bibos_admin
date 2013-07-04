@@ -90,7 +90,7 @@ def upload_dist_packages(distribution_uid, package_data):
     return 0
 
 
-def send_status_info(pc_uid, package_data, job_data):
+def send_status_info(pc_uid, package_data, job_data, update_required):
     """Update package lists as well as the status of outstanding jobs.
     If no updates of package or job data, these will be None. In that
     case, this function really works as an "I'm alive" signal."""
@@ -107,8 +107,8 @@ def send_status_info(pc_uid, package_data, job_data):
     pc.last_seen = datetime.datetime.now()
     pc.save()
 
+    # 2. Update package lists with package data
     if package_data and pc.do_send_package_info:
-        # 2. Update package lists with package data
         # Ignore if we didn't ask for this
 
         # Clear existing packages
@@ -149,6 +149,12 @@ def send_status_info(pc_uid, package_data, job_data):
             job.finished = jd['finished']
             job.log_output = jd['log_output']
             job.save()
+
+    # 4. Check if update is required.
+    if update_required is not None:
+        updates, security_updates = update_required
+        if security_updates > 0:
+            pc.is_update_required = True
 
     return 0
 
