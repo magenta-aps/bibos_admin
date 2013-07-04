@@ -280,12 +280,27 @@ def import_new_jobs():
             print >>os.sys.stderr, "Package upload failed" + str(e)
 
 
+def check_outstanding_packages():
+    # Get number of packages with updates and number of security updates.
+    # This is really a wrapper for apt-check.
+    try:
+        proc = subprocess.Popen(["/usr/lib/update-notifier/apt-check"],
+                                stderr=subprocess.PIPE, shell=True)
+        _, err = proc.communicate()
+        package_updates, security_updates = map(int, err.split(';'))
+        return (package_updates, security_updates)
+    except Exception as e:
+        print >>os.sys.stderr, "apt-check failed" + str(e)
+        return None
+
+
 def report_job_results(joblist):
     if len(joblist) < 1:
         return
     (remote_url, uid) = get_url_and_uid()
     remote = BibOSAdmin(remote_url)
-    remote.send_status_info(uid, None, joblist)
+    remote.send_status_info(uid, None, joblist,
+                            update_required=check_outstanding_packages())
 
 
 def get_pending_job_dirs():
