@@ -197,11 +197,30 @@ PROXY_HTPASSWD_FILE = os.path.join(ETC_DIR, 'bibos-proxy.htpasswd')
 
 # List of hosts that should be allowed through BibOS gateway proxies
 DEFAULT_ALLOWED_PROXY_HOSTS = [
-    'dk.archive.ubuntu.com'
+    # Ubuntu sources
+    '.archive.ubuntu.com',
+    'ports.ubuntu.com',
+    'security.ubuntu.com',
+    'ddebs.ubuntu.com',
+    'mirror.ubuntu.com',
+    '.archive.canonical.com',
+    'extras.ubuntu.com',
+    'changelogs.ubuntu.com',
+
+    # BibOS sites
+    'bibos-admin.magenta-aps.dk',
+    'bibos-admin.ventiltest.dk',
+    'bibos.web06.magenta-aps.dk',
+
+    # Extra application sources
+    'dl.google.com',
+    'downloads.sourcefourge.net',
 ]
 
 # List of hosts that should be proxied directly from the gateway and
 # not through the central server
 DEFAULT_DIRECT_PROXY_HOSTS = [
-    'dk.archive.ubuntu.com'
+    '.archive.ubuntu.com',
+    'bibos-admin.magenta-aps.dk',
+    'bibos-admin.ventiltest.dk'
 ]
