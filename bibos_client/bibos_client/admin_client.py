@@ -23,8 +23,10 @@ class BibOSAdmin(object):
         return self._rpc_srv.upload_dist_packages(distribution_uid,
                                                   package_data)
 
-    def send_status_info(self, pc_uid, package_data, job_data):
-        return self._rpc_srv.send_status_info(pc_uid, package_data, job_data)
+    def send_status_info(self, pc_uid, package_data, job_data,
+                         update_required=None):
+        return self._rpc_srv.send_status_info(pc_uid, package_data, job_data,
+                                              update_required)
 
     def get_instructions(self, pc_uid):
         return self._rpc_srv.get_instructions(pc_uid)
