@@ -27,6 +27,7 @@ header h1 em {color: #fff; font-style: normal;}
 .divideheader {background: #444; color: #ddd; padding: 0 20px; margin-top: 40px; font-size: 21px;}
 .divideheader em {color: #fff; font-style: normal;}
 h2.divideheader {margin-top: 20px;}
+.divideheader .label {margin-left: 20px; position: relative; bottom: 2px;}
 .accordion {margin-top: 20px;}
 .accordion-group {border: none; padding: 0;}
 .accordion-toggle {text-align: left;}
