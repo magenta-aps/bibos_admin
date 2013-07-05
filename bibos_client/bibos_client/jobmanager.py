@@ -9,8 +9,9 @@ import urlparse
 import glob
 import re
 import subprocess
-from lockfile import FileLock, AlreadyLocked
+import bibos_client.bibos_proxy_setup
 
+from lockfile import FileLock, AlreadyLocked
 from bibos_utils.bibos_config import BibOSConfig
 
 from admin_client import BibOSAdmin
