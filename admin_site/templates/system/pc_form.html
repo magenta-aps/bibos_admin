@@ -47,7 +47,9 @@ class="active"
   
   <div class="container-fluid main sublevelmain">
     
-    <h2 class="divideheader">Detaljer om <em>{{ selected_pc.name }}</em></h2>
+    <h2 class="divideheader">Detaljer om <em>{{ selected_pc.name }}</em> <span class="label label-warning">Update venter</span></h2>
+    
+    <p class="pull-right"><span class="muted">Sidst set:</span> <strong>4. juli 2012</strong> 13.53</p>
     
     <form name="pc_update_form" id="pc_update_form" action="{% url 'computer' site.uid selected_pc.uid %}" method="post">
       {% csrf_token %}
@@ -79,9 +81,11 @@ class="active"
                   {{ form.distribution.errors }}
                   {{ form.distribution }}
 
-                  <label for="id_is_active">Aktiv:</label>
-                  {{ form.is_active.errors }}
-                  {{ form.is_active }}
+                  <label class="checkbox" for="id_is_active">
+                    {{ form.is_active.errors }}
+                    {{ form.is_active }} Aktiv
+                  </label>
+                  
                 </fieldset>
                 <fieldset class="span6">
                   {{ form.pc_groups.errors }}
