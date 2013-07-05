@@ -36,8 +36,8 @@ then
 
     if [ -f $USERCRON ]
     then
-        sed -i -e "/${MESSAGE}/d" $USERCRON
-        crontab $USERCRON
+        sed -i -e "/lukker/d" $USERCRON
+        sudo -u user crontab $USERCRON
     fi
 
 else
@@ -53,14 +53,20 @@ else
         fi
         if [ -f $USERCRON ]
         then
-            sed -i -e "/${MESSAGE}/d" $USERCRON
+            sed -i -e "/lukker/d" $USERCRON
         fi
         # Assume the parameters are already validated as integers.
-        echo "$(expr $(expr $MINUTES + 5) % 60) $HOURS * * * /usr/sbin/shutdown now" >> $TCRON
+        echo "$MINUTES $HOURS * * * /usr/sbin/shutdown now" >> $TCRON
         crontab $TCRON
 
+        MINM5P60=$(expr $(expr $MINUTES - 5) + 60)
+        # Rounding minutes
+        MINS=$(expr $MINM5P60 % 60)
+        HRCORR=$(expr 1 - $(expr $MINM5P60 / 60))
+        HRS=$(expr $HOURS - $HRCORR)
+        HRS=$(expr $(expr $HRS + 24) % 24)
         # Now output to user's crontab as well
-        echo "$MINUTES $HOURS * * * DISPLAY=:0.0 /usr/bin/notify-send \"$MESSAGE\"" >> $USERCRON
+        echo "$MINS $HRS * * * DISPLAY=:0.0 /usr/bin/notify-send \"$MESSAGE\"" >> $USERCRON
         sudo -u user crontab $USERCRON
     else
         echo "Usage: shutdown_at_time.sh [--off] [hours minutes]"
