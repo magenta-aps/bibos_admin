@@ -8,7 +8,7 @@ from system.models import PC, Site
 class Script(models.Model):
     """A script to be performed on a registered client computer."""
     name = models.CharField(_('name'), max_length=255)
-    description = models.CharField(_('description'), max_length=1024)
+    description = models.TextField(_('description'), max_length=1024)
     site = models.ForeignKey(Site, related_name='scripts',
                              null=True, blank=True)
     # The executable_code field should contain a single executable (e.g. a Bash
