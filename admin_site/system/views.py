@@ -388,6 +388,27 @@ class ScriptMixin(object):
 class ScriptList(ScriptMixin, SiteView):
     template_name = 'system/scripts/list.html'
 
+    def get(self, request, *args, **kwargs):
+        self.setup_script_editing(**kwargs)
+        try:
+            # Sort by -site followed by lowercased name
+            def sort_by(a, b):
+                if a.site == b.site:
+                    return a.name.lower().__cmp__(b.name.lower())
+                else:
+                    if b.site is not None:
+                        return 1
+                    else:
+                        return -1
+            script = sorted(self.scripts,cmp=sort_by)[0]
+            return HttpResponseRedirect(script.get_absolute_url(
+                site_uid=self.site.uid
+            ))
+        except Exception as e:
+            return HttpResponseRedirect(
+                "/site/%s/scripts/new/" % self.site.uid
+            )
+
 
 class ScriptCreate(ScriptMixin, CreateView):
     template_name = 'system/scripts/create.html'

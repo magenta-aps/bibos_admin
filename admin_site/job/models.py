@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import reverse
 
 from system.models import PC, Site
 
@@ -22,6 +23,13 @@ class Script(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def get_absolute_url(self, **kwargs):
+        if 'site_uid' in kwargs:
+            site_uid = kwargs['site_uid']
+        else:
+            site_uid = self.site.uid
+        return reverse('script', args=(site_uid, self.pk))
 
 
 class Batch(models.Model):
