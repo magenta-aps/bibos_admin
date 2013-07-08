@@ -1,6 +1,7 @@
 import json
 import datetime
 
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -400,7 +401,7 @@ class ScriptList(ScriptMixin, SiteView):
                         return 1
                     else:
                         return -1
-            script = sorted(self.scripts,cmp=sort_by)[0]
+            script = sorted(self.scripts, cmp=sort_by)[0]
             return HttpResponseRedirect(script.get_absolute_url(
                 site_uid=self.site.uid
             ))
@@ -705,57 +706,98 @@ class UsersView(SelectionMixin, SiteView):
     def get_list(self):
         return self.object.users
 
-    def get_context_data(self, **kwargs):
-        # First, get basic context from superclass
-        context = super(UsersView, self).get_context_data(**kwargs)
-        # Add choices for UserProfile type
-        choices = UserProfile.type_choices
-        choices_dict = [{'id': k, 'val': v} for (k, v) in choices]
-        context['choices'] = choices_dict
+    def render_to_response(self, context):
+        if('selected_user' in context):
+            return HttpResponseRedirect('/site/%s/users/%s/' % (
+                context['site'].uid,
+                context['selected_user'].username
+            ))
+        else:
+            return HttpResponseRedirect(
+                '/site/%s/users/new/' % context['site'].uid,
+            )
 
+
+class UsersMixin(object):
+    def add_site_to_context(self, context):
+        self.site = get_object_or_404(Site, uid=self.kwargs['site_uid'])
+        context['site'] = self.site
+        return context
+
+    def add_userlist_to_context(self, context):
+        if 'site' not in context:
+            self.add_site_to_context(context)
+        context['user_list'] = context['site'].users
         return context
 
 
-class UserCreate(CreateView, LoginRequiredMixin):
+class UserCreate(CreateView, UsersMixin, LoginRequiredMixin):
     model = User
     form_class = UserForm
     lookup_field = 'username'
-    template_name = 'system/site_users.html'
+    template_name = 'system/users/create.html'
+
+    def get_form(self, form_class):
+        form = super(UserCreate, self).get_form(form_class)
+        form.prefix = 'create'
+        return form
 
     def get_context_data(self, **kwargs):
         context = super(UserCreate, self).get_context_data(**kwargs)
-        # Add choices for UserProfile type
-        choices = UserProfile.type_choices
-        choices_dict = [{'id': k, 'val': v} for (k, v) in choices]
-        context['choices'] = choices_dict
-        # Add site
-        site = get_object_or_404(Site, uid=self.kwargs['slug'])
-        context['site'] = site
-        context['form'].setup_usertype_choices(
-            self.request.user.bibos_profile.get().type,
-        )
-
+        self.add_userlist_to_context(context)
         return context
 
     def form_valid(self, form):
-        site = get_object_or_404(Site, uid=self.kwargs['slug'])
         self.object = form.save()
+
+        site = get_object_or_404(Site, uid=self.kwargs['site_uid'])
         profile = self.object.bibos_profile.create(
             user=self.object,
-            type=self.request.POST['type'],
+            type=form.cleaned_data['usertype'],
             site=site
         )
         result = super(UserCreate, self).form_valid(form)
         return result
 
     def get_success_url(self):
-        return '/site/{0}/users/'.format(self.kwargs['slug'])
+        return '/site/%s/users/%s/' % (
+            self.kwargs['site_uid'],
+            self.object.username
+        )
 
 
-class UserUpdate(UpdateView, LoginRequiredMixin):
+class UserUpdate(UpdateView, UsersMixin, LoginRequiredMixin):
     model = User
     form_class = UserForm
-    lookup_field = 'username'
+    template_name = 'system/users/update.html'
+
+    def get_object(self, queryset=None):
+        self.selected_user = User.objects.get(username=self.kwargs['username'])
+        return self.selected_user
+
+    def get_context_data(self, **kwargs):
+        context = super(UserUpdate, self).get_context_data(**kwargs)
+        self.add_userlist_to_context(context)
+        context['selected_user'] = self.selected_user
+        context['create_form'] = UserForm(prefix='create')
+        context['create_url'] = reverse('new_user',
+                                        kwargs={'site_uid': self.site.uid})
+        return context
+
+    def form_valid(self, form):
+        self.object = form.save()
+
+        site = get_object_or_404(Site, uid=self.kwargs['site_uid'])
+        profile = self.object.bibos_profile.get(site=site)
+        profile.type = form.cleaned_data['usertype']
+        result = super(UserUpdate, self).form_valid(form)
+        return result
+
+    def get_success_url(self):
+        return '/site/%s/users/%s/' % (
+            self.kwargs['site_uid'],
+            self.object.username
+        )
 
 
 class SiteCreate(CreateView, LoginRequiredMixin):

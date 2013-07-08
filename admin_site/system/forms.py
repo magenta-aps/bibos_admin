@@ -8,6 +8,8 @@ from models import Site, PCGroup, ConfigurationEntry, PC
 from job.models import Script, Input
 from account.models import UserProfile
 
+from django.utils.translation import ugettext as _
+
 
 class SiteForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -85,6 +87,29 @@ class UserForm(forms.ModelForm):
         choices=UserProfile.type_choices
     )
 
+    password_confirm = forms.CharField(
+        label=_("Password (again)"), widget=forms.PasswordInput(
+            attrs={'class': 'passwordinput'}
+        )
+    )
+
+    def __init__(self, *args, **kwargs):
+        initial = kwargs.setdefault('initial', {})
+        if 'instance' in kwargs and kwargs['instance'] is not None:
+            initial['usertype'] = kwargs['instance'].bibos_profile.get().type
+        else:
+            initial['usertype'] = UserProfile.SITE_USER
+        forms.ModelForm.__init__(self, *args, **kwargs)
+
+    class Meta:
+        model = User
+        exclude = ('groups', 'user_permissions', 'first_name', 'last_name',
+                   'is_staff', 'is_active', 'is_superuser', 'date_joined',
+                   'last_login')
+        widgets = {
+            'password': forms.PasswordInput(attrs={'class': 'passwordinput'})
+        }
+
     def set_usertype_single_choice(self, choice_type):
         self.fields['usertype'].choices = [
             (c, l) for c, l in UserProfile.type_choices if c == choice_type
@@ -114,19 +139,20 @@ class UserForm(forms.ModelForm):
                 # And is locked to existing value during editing
                 self.set_usertype_single_choice(initial_type)
 
-    def __init__(self, *args, **kwargs):
-        initial = kwargs.setdefault('initial', {})
-        if 'instance' in kwargs and kwargs['instance'] is not None:
-            initial['usertype'] = kwargs['instance'].bibos_profile.type
-        else:
-            initial['usertype'] = UserProfile.SITE_USER
-        forms.ModelForm.__init__(self, *args, **kwargs)
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        pw1 = cleaned_data.get("password")
+        pw2 = cleaned_data.get("password_confirm")
+        if pw1 != pw2:
+            raise forms.ValidationError(_('Passwords must be identical.'))
+        return cleaned_data
 
-    class Meta:
-        model = User
-        exclude = ('groups', 'user_permissions', 'first_name', 'last_name',
-                   'is_staff', 'is_active', 'is_superuser', 'date_joined',
-                   'last_login')
+    def save(self, commit=True):
+        user = super(UserForm, self).save(commit=False)
+        user.set_password(self.cleaned_data["password"])
+        if commit:
+            user.save()
+        return user
 
 
 class ParameterForm(forms.Form):

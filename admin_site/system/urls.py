@@ -3,7 +3,7 @@ from django.conf.urls import patterns, url
 from views import SiteList, SiteView, SiteCreate, SiteUpdate, SiteDelete
 from views import AdminIndex, PCsView, GroupsView, UsersView, JobsView
 from views import GroupCreate, GroupUpdate, GroupDelete, JobSearch
-from views import SiteDetailView, UserCreate, SiteConfiguration
+from views import SiteDetailView, UserCreate, UserUpdate, SiteConfiguration
 from views import ScriptList, ScriptUpdate, ScriptCreate, ScriptDelete
 from views import ScriptRun, PCUpdate
 from views import ConfigurationEntryCreate, ConfigurationEntryUpdate
@@ -66,10 +66,10 @@ urlpatterns = patterns(
 
     # Users
     url(r'^site/(?P<slug>\w+)/users/$', UsersView.as_view(), name='users'),
-    url(r'^site/(?P<slug>\w+)/users/new/$',
+    url(r'^site/(?P<site_uid>\w+)/new_user/$',
         UserCreate.as_view(), name='new_user'),
-    url(r'^site/(?P<slug>\w+)/users/(?P<username>\w+)/$',
-        UsersView.as_view(), name='user'),
+    url(r'^site/(?P<site_uid>\w+)/users/(?P<username>\w+)/$',
+        UserUpdate.as_view(), name='user'),
 
     # Packages
     url(r'^packages/',

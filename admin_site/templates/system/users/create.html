@@ -1,0 +1,35 @@
+{% extends "site_with_navigation.html" %}
+
+{% block specific_title %}
+Brugere
+{% endblock %}
+
+{% block users_active %}
+class="active"
+{% endblock %}
+
+{% block specific_content %}
+
+  <ul class="sublevelnav">
+    <li class="listutils"><a href="{% url 'new_user' site.uid %}" title="Tilføj ny bruger"><i class="icon-plus icon-white"></i> tilføj ny bruger</a></li>
+
+    {% for user in user_list %}
+    <li {% ifequal user selected_user %}class="active"{% endifequal %}><a
+        href="/site/{{ site.url }}/users/{{ user.username }}"><i class="icon-user"></i> {{ user.username }}</a></li>
+    {% endfor %}
+  </ul>
+  
+  <div class="container-fluid main sublevelmain">
+      <h2 class="divideheader">Opret ny bruger</em></h2>
+      <div>
+        <form action="{% url 'new_user' site.uid %}" name="create_user_form" id="create_user_form" method="post">
+          {% csrf_token %}
+          {% include 'system/users/form.html' with form_id='create_user_form' %}
+          <hr>      
+          <input type="submit" class="btn btn-primary" value="Gem" />
+          <button class="btn">Annuller</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
