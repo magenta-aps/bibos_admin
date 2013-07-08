@@ -150,7 +150,7 @@ class LocalJob(dict):
     def save_property_to_file(self, prop, file_path):
         if(prop in self):
             fh = open(file_path, 'w')
-            fh.write(self[prop])
+            fh.write(self[prop].encode("utf8"))
             fh.close()
 
     def populate(self, data):
