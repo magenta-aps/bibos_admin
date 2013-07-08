@@ -138,7 +138,6 @@ def send_status_info(pc_uid, package_data, job_data, update_required):
         # We just got the package info update we requested, so clear the flag
         # until we need a new update.
         pc.do_send_package_info = False
-        pc.save()
 
     # 3. Update jobs with job data
     if job_data is not None:
@@ -155,6 +154,10 @@ def send_status_info(pc_uid, package_data, job_data, update_required):
         updates, security_updates = update_required
         if security_updates > 0:
             pc.is_update_required = True
+        elif pc.is_update_required:
+            pc.is_update_required = False
+
+    pc.save()
 
     return 0
 
