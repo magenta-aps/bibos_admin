@@ -23,6 +23,7 @@ from forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
 from forms import UserForm, ParameterForm, PCForm
 from job.models import Job, Script, Input, Batch, Parameter
 
+from django.conf import settings
 import signals
 
 
@@ -466,7 +467,7 @@ class ScriptList(ScriptMixin, SiteView):
             # Sort by -site followed by lowercased name
             def sort_by(a, b):
                 if a.site == b.site:
-                    return a.name.lower().__cmp__(b.name.lower())
+                    return cmp(a.name.lower(), b.name.lower())
                 else:
                     if b.site is not None:
                         return 1
@@ -477,6 +478,10 @@ class ScriptList(ScriptMixin, SiteView):
                 site_uid=self.site.uid
             ))
         except Exception as e:
+
+            if settings.DEBUG:
+                raise
+
             return HttpResponseRedirect(
                 "/site/%s/scripts/new/" % self.site.uid
             )
