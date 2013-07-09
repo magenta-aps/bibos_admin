@@ -1,7 +1,7 @@
 import os
 import csv
 import xmlrpclib
-
+import urllib2
 
 # Thanks to A. Ellerton for this
 class ProxyTransport(xmlrpclib.Transport):
@@ -20,11 +20,14 @@ class ProxyTransport(xmlrpclib.Transport):
     A. Ellerton 2006-07-06
     """
 
+    def __init__(self, schema='http'):
+        xmlrpclib.Transport.__init__(self)
+        self.schema = schema
+
     def request(self, host, handler, request_body, verbose):
-        import urllib2
 
         self.verbose = verbose
-        url = 'http://' + host + handler
+        url = self.schema + '://' + host + handler
 
         request = urllib2.Request(url)
         request.add_data(request_body)
@@ -49,7 +52,9 @@ class BibOSAdmin(object):
         rpc_args = {'verbose': verbose, 'allow_none': True}
         # Use proxy if present
         if 'http_proxy' in os.environ:
-            rpc_args['transport'] = ProxyTransport()
+            rpc_args['transport'] = ProxyTransport(
+                schema=url[:url.index(':')]
+            )
 
         self._rpc_srv = xmlrpclib.ServerProxy(self._url, **rpc_args)
 
