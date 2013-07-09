@@ -32,7 +32,7 @@ class="active"
       </div>
       <hr>
       <div>
-        <a href="#"><i class="icon icon-remove"></i> Slet bruger</a>
+        <a href="{% url 'delete_user' site.uid selected_user.username %}"><i class="icon icon-remove"></i> Slet bruger</a>
       </div>
     </div>
   </div>

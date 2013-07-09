@@ -1,0 +1,54 @@
+{% extends "site_with_navigation.html" %}
+
+{% block specific_title %}
+Brugere
+{% endblock %}
+
+{% block users_active %}
+class="active"
+{% endblock %}
+
+{% block specific_content %}
+
+  <ul class="sublevelnav">
+    <li class="listutils"><a href="#addNewUser" role="button" data-toggle="modal" title="Tilføj ny bruger"><i class="icon-plus icon-white"></i> tilføj ny bruger</a></li>
+
+    {% for user in user_list %}
+    <li {% ifequal user selected_user %}class="active"{% endifequal %}><a
+        href="/site/{{ site.url }}/users/{{ user.username }}"><i class="icon-user"></i> {{ user.username }}</a></li>
+    {% endfor %}
+  </ul>
+  
+  <div class="container-fluid main sublevelmain">
+      <h2 class="divideheader">Slet bruger: <em>{{ selected_user.username }}</em></h2>
+      <div>
+        <form action="{% url 'delete_user' site.uid selected_user.username %}" name="update_user_form" id="update_user_form" method="post">
+          {% csrf_token %}
+          <p>Er du sikker på at du vil slette brugeren {{ selected_user.username }}{% if selected_user.email %} &lt;{{ selected_user.email }}&gt;{% endif %}?</p>
+          <input type="submit" value="Bekræft sletning" />
+          <input type="button" onclick="location.href='{% url 'user' site.uid selected_user.username %}'" value="Annullér" />
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  
+  <!-- MODAL WINDOW FOR NEW USER REGISTRATION: -->
+  
+  <div id="addNewUser" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <form action="{% url 'new_user' site.uid %}" name="create_user_form" id="create_user_form" method="post">
+      {% csrf_token %}
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <h3>Tilføj ny bruger</h3>
+      </div>
+      <div class="modal-body">
+        {% include 'system/users/form.html' with form=create_form form_id='create_user_form' form_action=create_url %}
+      </div>
+      <div class="modal-footer">
+        <input type="submit" class="btn btn-primary" value="Gem" />
+        <button class="btn" data-dismiss="modal">Annuller</button>
+      </div>
+    </form>
+  </div>
+{% endblock %}

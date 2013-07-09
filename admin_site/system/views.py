@@ -780,8 +780,7 @@ class UserUpdate(UpdateView, UsersMixin, LoginRequiredMixin):
         self.add_userlist_to_context(context)
         context['selected_user'] = self.selected_user
         context['create_form'] = UserForm(prefix='create')
-        context['create_url'] = reverse('new_user',
-                                        kwargs={'site_uid': self.site.uid})
+
         return context
 
     def form_valid(self, form):
@@ -798,6 +797,26 @@ class UserUpdate(UpdateView, UsersMixin, LoginRequiredMixin):
             self.kwargs['site_uid'],
             self.object.username
         )
+
+
+class UserDelete(DeleteView, UsersMixin, LoginRequiredMixin):
+    model = User
+    template_name = 'system/users/delete.html'
+
+    def get_object(self, queryset=None):
+        self.selected_user = User.objects.get(username=self.kwargs['username'])
+        return self.selected_user
+
+    def get_context_data(self, **kwargs):
+        context = super(UserDelete, self).get_context_data(**kwargs)
+        self.add_userlist_to_context(context)
+        context['selected_user'] = self.selected_user
+        context['create_form'] = UserForm(prefix='create')
+
+        return context
+
+    def get_success_url(self):
+        return '/site/%s/users/' % self.kwargs['site_uid']
 
 
 class SiteCreate(CreateView, LoginRequiredMixin):
