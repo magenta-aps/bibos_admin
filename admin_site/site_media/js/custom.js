@@ -30,6 +30,14 @@ var BibOS;
       $.each(this.cssToLoad, function() {
         t.loadStylesheet(this)
       })
+
+      var m = document.cookie.match(/\bbibos-notification\s*=\s*([^;]+)/)
+      if(m) {
+        notification = $('.bibos-notification').first()
+        notification.html(unescape(m[1])).fadeIn()
+        document.cookie = 'bibos-notification=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
+      }
+
     },
 
     loadResource: function(type, src) {

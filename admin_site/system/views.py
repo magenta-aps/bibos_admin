@@ -193,13 +193,18 @@ class SiteConfiguration(SiteView):
     def post(self, request, *args, **kwargs):
         # Do basic method
         kwargs['updated'] = True
-        result = self.get(request, *args, **kwargs)
+        response = self.get(request, *args, **kwargs)
 
         # Handle saving of data
         self.object.configuration.update_from_request(
             request.POST, 'site_configs'
         )
-        return result
+
+        response.set_cookie(
+            'bibos-notification',
+            _('Configuration for %s updated') % kwargs['slug']
+        )
+        return response
 
 
 # Now follows all site-based views, i.e. subclasses
@@ -237,7 +242,13 @@ class JobSearch(JSONResponseMixin, SiteView):
         VALID_ORDER_BY.append('-' + i)
 
     @staticmethod
-    def get_jobs_display_data(joblist):
+    def get_jobs_display_data(joblist, site=None):
+        if len(joblist) == 0:
+            return []
+
+        if site is None:
+            site = joblist[0].batch.site
+
         return [{
             'script_name': job.batch.script.name,
             'started': str(job.started) if job.started else None,
@@ -248,7 +259,8 @@ class JobSearch(JSONResponseMixin, SiteView):
             'batch_name': job.batch.name,
             # Yep, it's meant to be double-escaped - it's HTML-escaped
             # content that will be stored in an HTML attribute
-            'log_output': escape(escape(job.log_output))
+            'log_output': escape(escape(job.log_output)),
+            'restart_url': '/site/%s/jobs/%s/restart/' % (site.uid, job.pk)
         } for job in joblist]
 
     def post(self, request, *args, **kwargs):
@@ -283,8 +295,63 @@ class JobSearch(JSONResponseMixin, SiteView):
         return context
 
     def convert_context_to_json(self, context):
-        result = JobSearch.get_jobs_display_data(context['job_list'])
+        result = JobSearch.get_jobs_display_data(
+            context['job_list'],
+            site=context['site']
+        )
         return json.dumps(result)
+
+
+class JobRestarter(DetailView, LoginRequiredMixin):
+    template_name = 'system/jobs/restart.html'
+    model = Job
+
+    def status_fail_response(self):
+        response = HttpResponseRedirect(self.get_success_url())
+        response.set_cookie(
+            'bibos-notification',
+            _('Can only restart jobs with status %s') % Job.FAILED
+        )
+        return response
+
+    def get(self, request, *args, **kwargs):
+        self.site = get_object_or_404(Site, uid=kwargs['site_uid'])
+        self.object = self.get_object()
+
+        # Only restart jobs that have failed
+        if self.object.status != Job.FAILED:
+            return self.status_fail_response()
+
+        context = self.get_context_data(object=self.object)
+
+        return self.render_to_response(context)
+
+    def get_context_data(self, **kwargs):
+        context = super(JobRestarter, self).get_context_data(**kwargs)
+        context['site'] = self.site
+        context['selected_job'] = self.object
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.site = get_object_or_404(Site, uid=kwargs['site_uid'])
+        self.object = self.get_object()
+
+        if self.object.status != Job.FAILED:
+            return self.status_fail_response()
+
+        new_job = self.object.restart()
+        response = HttpResponseRedirect(self.get_success_url())
+        response.set_cookie(
+            'bibos-notification',
+            "Job %s restarted as job %s" % (
+                self.object.pk,
+                new_job.pk
+            )
+        )
+        return response
+
+    def get_success_url(self):
+        return '/site/%s/jobs/' % self.kwargs['site_uid']
 
 
 class ScriptMixin(object):
@@ -676,7 +743,12 @@ class PCUpdate(SiteMixin, UpdateView):
         self.object.configuration.update_from_request(
             self.request.POST, 'pc_config'
         )
-        return super(PCUpdate, self).form_valid(form)
+        response = super(PCUpdate, self).form_valid(form)
+        response.set_cookie(
+            'bibos-notification',
+            _('Computer %s updated') % self.object.name
+        )
+        return response
 
 
 class GroupsView(SelectionMixin, SiteView):
@@ -793,8 +865,12 @@ class UserUpdate(UpdateView, UsersMixin, LoginRequiredMixin):
         site = get_object_or_404(Site, uid=self.kwargs['site_uid'])
         profile = self.object.bibos_profile.get(site=site)
         profile.type = form.cleaned_data['usertype']
-        result = super(UserUpdate, self).form_valid(form)
-        return result
+        response = super(UserUpdate, self).form_valid(form)
+        response.set_cookie(
+            'bibos-notification',
+            _('User %s updated') % self.object.username
+        )
+        return response
 
     def get_success_url(self):
         return '/site/%s/users/%s/' % (
@@ -821,6 +897,14 @@ class UserDelete(DeleteView, UsersMixin, LoginRequiredMixin):
 
     def get_success_url(self):
         return '/site/%s/users/' % self.kwargs['site_uid']
+
+    def delete(self, request, *args, **kwargs):
+        response = super(UserDelete, self).delete(request, *args, **kwargs)
+        response.set_cookie(
+            'bibos-notification',
+            'User %s deleted' % self.kwargs['username']
+        )
+        return response
 
 
 class SiteCreate(CreateView, LoginRequiredMixin):
@@ -945,7 +1029,12 @@ class GroupUpdate(SiteMixin, LoginRequiredMixin, UpdateView):
         self.object.configuration.update_from_request(
             self.request.POST, 'group_configuration'
         )
-        return super(GroupUpdate, self).form_valid(form)
+        response = super(GroupUpdate, self).form_valid(form)
+        response.set_cookie(
+            'bibos-notification',
+            _('Group %s updated') % self.object.name
+        )
+        return response
 
     def form_invalid(self, form):
         return super(GroupUpdate, self).form_invalid(form)
@@ -959,6 +1048,15 @@ class GroupDelete(SiteMixin, LoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         return '/site/{0}/groups/'.format(self.kwargs['site_uid'])
+
+    def delete(self, request, *args, **kwargs):
+        name = self.get_object().name
+        response = super(GroupDelete, self).delete(request, *args, **kwargs)
+        response.set_cookie(
+            'bibos-notification',
+            _('Group %s deleted') % name
+        )
+        return response
 
 
 class PackageSearch(JSONResponseMixin, ListView):

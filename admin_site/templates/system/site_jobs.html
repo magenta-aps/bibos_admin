@@ -38,7 +38,7 @@ class="active"
           <button class="btn" data-toggle="popover" title="Log"
                   data-original-title="Log" data-html="true"
                   data-placement="bottom"
-                  data-content="<a href='javascript:void(0)'><i class='icon-refresh'></i> Genstart job</a><pre>#LOG_OUTPUT#</pre>"><i class="icon-info-sign"></i></button>
+                  data-content="<a href='#RESTART_URL#'><i class='icon-refresh'></i> Genstart job</a><pre>#LOG_OUTPUT#</pre>"><i class="icon-info-sign"></i></button>
         </td>
       </tr>
     </tbody>
@@ -94,6 +94,7 @@ class="active"
     </form>
   </div>
   <div class="container-fluid main sublevelmain" style="overflow-x: auto;">
+    {% include 'notification.html' %}
     <table class="table table-hover jobtable">
       <thead>
         <tr>

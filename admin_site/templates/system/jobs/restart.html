@@ -1,0 +1,15 @@
+{% extends "site_with_navigation.html" %}
+
+{% block specific_title %}
+Genstart job
+{% endblock %}
+
+{% block specific_content %}
+  <div class="container-fluid main">
+    <p>Er du sikker på du vil genstarte job {{ selected_job.pk }}?</p>
+    <form action="{% url 'restart_job' site.uid selected_job.pk %}" method="post">{% csrf_token %}
+      <input class="btn btn-primary" type="submit" value="Ja" />
+      <a class="btn" href="{% url 'jobs' site.uid %}">Nej</a>
+    </form>
+  </div>
+{% endblock %}

@@ -46,6 +46,7 @@ class="active"
   <div class="container-fluid main sublevelmain">
     
     <h2 class="divideheader">Detaljer om <em>{{ selected_group.name }}</em></h2>
+    {% include 'notification.html' %}
     
     <form name="updategroupform" id="updategroupform"
       action="{% url 'group' site.uid selected_group.url %}"

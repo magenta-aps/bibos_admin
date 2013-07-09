@@ -12,10 +12,10 @@
         {{ form.username }}
       </p>
       <p>
-        <label for="{{ form.password.id_for_label }}">Adgangskode (udfyld for at skifte):</label>
-        {{ form.password.errors }}
-        {{ form.password }}
-        <input class="hiddenpasswordfield" type="text" id="{{ form.password.id_for_label }}_pwshadow" type="text" />
+        <label for="{{ form.new_password.id_for_label }}">Adgangskode (udfyld for at skifte):</label>
+        {{ form.new_password.errors }}
+        {{ form.new_password }}
+        <input class="hiddenpasswordfield" type="text" id="{{ form.new_password.id_for_label }}_pwshadow" type="text" />
 
         <label style="display: inline; margin-left: 10px;" for="{{ form_id|default:'user_form' }}_show_password">
         <input style="vertical-align: baseline;" id="{{ form_id|default:'user_form' }}_show_password" type="checkbox" class="showpasswordcheckbox" tabindex="100"/> Vis Password</label>

@@ -19,6 +19,13 @@ $(function(){
             var container = this.elem
             $.each(dataList, function() {
                 var item = $(BibOS.expandTemplate('job-entry', this))
+                // Remove restart link unless job has failed
+                if(this['label'] != 'label-important') {
+                    var button = item.find('button.btn').first()
+                    var content = button.attr('data-content')
+                    content = content.substr(content.indexOf('<pre>'))
+                    button.attr('data-content', content)
+                }
                 item.find('.btn').popover()
                 item.find('input:checkbox').click(function() {
                     $(this).parents('tr').toggleClass('marked');

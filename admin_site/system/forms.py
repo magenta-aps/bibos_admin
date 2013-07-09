@@ -87,10 +87,18 @@ class UserForm(forms.ModelForm):
         choices=UserProfile.type_choices
     )
 
+    new_password = forms.CharField(
+        label=_("Password"), widget=forms.PasswordInput(
+            attrs={'class': 'passwordinput'}
+        ),
+        required=False
+    )
+
     password_confirm = forms.CharField(
         label=_("Password (again)"), widget=forms.PasswordInput(
             attrs={'class': 'passwordinput'}
-        )
+        ),
+        required=False
     )
 
     def __init__(self, *args, **kwargs):
@@ -99,16 +107,14 @@ class UserForm(forms.ModelForm):
             initial['usertype'] = kwargs['instance'].bibos_profile.get().type
         else:
             initial['usertype'] = UserProfile.SITE_USER
+
         forms.ModelForm.__init__(self, *args, **kwargs)
 
     class Meta:
         model = User
         exclude = ('groups', 'user_permissions', 'first_name', 'last_name',
                    'is_staff', 'is_active', 'is_superuser', 'date_joined',
-                   'last_login')
-        widgets = {
-            'password': forms.PasswordInput(attrs={'class': 'passwordinput'})
-        }
+                   'last_login', 'password')
 
     def set_usertype_single_choice(self, choice_type):
         self.fields['usertype'].choices = [
@@ -141,7 +147,7 @@ class UserForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = self.cleaned_data
-        pw1 = cleaned_data.get("password")
+        pw1 = cleaned_data.get("new_password")
         pw2 = cleaned_data.get("password_confirm")
         if pw1 != pw2:
             raise forms.ValidationError(_('Passwords must be identical.'))
@@ -149,7 +155,8 @@ class UserForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super(UserForm, self).save(commit=False)
-        user.set_password(self.cleaned_data["password"])
+        if self.cleaned_data["new_password"]:
+            user.set_password(self.cleaned_data["new_password"])
         if commit:
             user.save()
         return user
