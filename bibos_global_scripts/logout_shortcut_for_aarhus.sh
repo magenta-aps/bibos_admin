@@ -23,6 +23,6 @@ EOF
 NWA_LOGOUT_STRING="https://nhs.aarhuskommune.dk/nwa_auth/action/logout"
 
 USER_CLEANUP_FILE="/usr/share/bibos/bin/user-cleanup.bash"
-echo "curl $NWA_LOGOUT_STRING &> /dev/null" >> $USER_CLEANUP_FILE
+echo "curl $NWA_LOGOUT_STRING &> /dev/null &" >> $USER_CLEANUP_FILE 
 
 exit 0
