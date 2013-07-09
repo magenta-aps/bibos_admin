@@ -32,10 +32,11 @@
         setModalContent: function(html) {
             $('#runscriptmodal').html(html);
         },
-        addInput: function (data_in) {
+        addInput: function (id, data_in) {
+            var container = $(id)
             if (!data_in)
                 data_in = {}
-            var count = $('#script-input-container tr.script-input').length;
+            var count = container.find('tr.script-input').length;
             var data = $.extend(
                 {
                     pk: '',
@@ -52,22 +53,24 @@
                 data
             ));
             elem.find('select').val(data['value_type']);
-            elem.insertBefore($('#script-input-add'));
-            this.updateInputNames();
+            elem.insertBefore(container.find('tr.script-input-add').first());
+            this.updateInputNames(id);
         },
         removeInput: function(elem) {
+            var container = $(elem).parents('fieldset').first()
             $(elem).remove();
-            this.updateInputNames();
+            this.updateInputNames(container);
         },
-        updateInputNames: function() {
-            inputs = $('#script-input-container tr.script-input');
+        updateInputNames: function(id) {
+            var container = $(id)
+            inputs = container.find('tr.script-input');
             inputs.each(function(i, e) {
                 var elem = $(e);
                 elem.find('input.pk-input').attr('name', 'script-input-' + i + '-pk')
                 elem.find('input.name-input').attr('name', 'script-input-' + i + '-name')
                 elem.find('select.type-input').attr('name', 'script-input-' + i + '-type')
             })
-            $('#script-number-of-inputs').val(inputs.length);
+            container.find('input.script-number-of-inputs').val(inputs.length);
         },
         selectGroupOrPC: function(htmlElem) {
             elem = $(htmlElem);

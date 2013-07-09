@@ -1,0 +1,41 @@
+  <ul class="nav nav-tabs scripttabs">
+    {% if global_selected %}
+    <li><a href="#localscripts" data-toggle="tab">Lokale scripts</a></li>
+    <li class="active"><a href="#globalscripts" data-toggle="tab">Globale scripts</a></li>
+    {% else %}
+    <li class="active"><a href="#localscripts" data-toggle="tab">Lokale scripts</a></li>
+    <li><a href="#globalscripts" data-toggle="tab">Globale scripts</a></li>
+    {% endif %}
+  </ul>
+  <div class="tab-content">
+    {% if global_selected %}
+    <div class="tab-pane" id="localscripts">
+    {% else %}
+    <div class="tab-pane active" id="localscripts">
+    {% endif %}
+      <ul class="unstyled" >
+      {% for script in local_scripts %}
+        {% ifequal script selected_script %}
+        <li class="active"><a href="{% url 'script' site.uid script.pk %}"><i class="icon-list"></i> {{ script.name }}</a></li>
+        {% else %}
+        <li><a href="{% url 'script' site.uid script.pk %}" class= ><i class="icon-list"></i> {{ script.name }}</a></li>
+        {% endifequal %}
+      {% endfor %}
+      </ul>
+    </div>
+    {% if global_selected %}
+    <div class="tab-pane active" id="globalscripts">
+    {% else %}
+    <div class="tab-pane" id="globalscripts">
+    {% endif %}
+      <ul class="unstyled">
+      {% for script in global_scripts %}
+        {% ifequal script selected_script %}
+        <li class="active"><a href="{% url 'script' site.uid script.pk %}"><i class="icon-list"></i> {{ script.name }}</a></li>
+        {% else %}
+        <li><a href="{% url 'script' site.uid script.pk %}" class= ><i class="icon-list"></i> {{ script.name }}</a></li>
+        {% endifequal %}
+      {% endfor %}
+      </ul>
+    </div>
+  </div>

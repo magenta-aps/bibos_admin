@@ -399,7 +399,7 @@ class ScriptMixin(object):
                     'name': input.name,
                     'value_type': input.value_type
                 } for input in self.script.inputs.all()]
-        else:
+        elif context['script_inputs'] is None:
             context['script_inputs'] = []
 
         context['script_inputs_json'] = json.dumps(context['script_inputs'])
@@ -496,6 +496,11 @@ class ScriptCreate(ScriptMixin, CreateView):
         context['type_choices'] = Input.VALUE_CHOICES
         return context
 
+    def get_form(self, form_class):
+        form = super(ScriptCreate, self).get_form(form_class)
+        form.prefix = 'create'
+        return form
+
     def form_valid(self, form):
         if self.validate_script_inputs():
             self.object = form.save()
@@ -525,6 +530,9 @@ class ScriptUpdate(ScriptMixin, UpdateView):
         if self.script is not None and self.script.executable_code is not None:
             context['script_preview'] = self.script.executable_code.read()
         context['type_choices'] = Input.VALUE_CHOICES
+        self.create_form = ScriptForm()
+        self.create_form.prefix='create'
+        context['create_form'] = self.create_form
         return context
 
     def get_object(self, queryset=None):
@@ -533,7 +541,12 @@ class ScriptUpdate(ScriptMixin, UpdateView):
     def form_valid(self, form):
         if self.validate_script_inputs():
             self.save_script_inputs()
-            return super(ScriptUpdate, self).form_valid(form)
+            response = super(ScriptUpdate, self).form_valid(form)
+            response.set_cookie(
+                'bibos-notification',
+                _('Script %s updated') % self.script.name
+            )
+            return response
         else:
             return self.form_invalid(form, transfer_inputs=False)
 

@@ -1,111 +1,53 @@
-{% extends "system/scripts/list.html" %}
-
-{% block javascripts %}
-<script type="text/javascript" src="/media/js/script_edit.js"></script>
-<script type="text/javascript">
-$(function() {
-var inputs = {{ script_inputs_json|safe }}
-$.each(inputs, function() {BibOS.ScriptEdit.addInput(this)})
-})
-</script>
-{% endblock %}
-
-{% block script_specific_content %}
-<div class="template-container">
-  <table>
-    <tbody id="script-input-template">
-      <tr class="script-input">
-        <td>
-          <input type="hidden" name="script-input-pk" value="#PK#" class="pk-input" />
-          <div class="error">#NAME_ERROR#</div>
-          <input type="text" name="script-input-name" value="#NAME#" class="name-input">
-        </td>
-        <td>
-          <div class="error">#TYPE_ERROR#</div>
-          <select name="script-input-type" class="type-input">
-            {% for value, name in type_choices %}
-            <option value="{{value}}">{{name}}</option>
-            {% endfor %}
-          </select>
-        </td>
-        <td><a href="javascript:void(0)" onclick="BibOS.ScriptEdit.removeInput($(this).parent().parent())">Fjern</a></td>
-      </tr>
-    </tbody>
-  </table>  
+<div class="row-fluid">
+  <div class="span6">
+    <fieldset>
+      {{ form.name.errors }}
+      <label for="{{ form.name.id_for_label }}">Navn:</label>
+      {{ form.name }}        
+      {{ form.description.errors }}
+      <label for="{{ form.description.id_for_label }}">Beskrivelse:</label>
+      {{ form.description }}
+      <label for="site">
+        <input type="checkbox" id="{{ form.prefix }}-site" name="site" value="{{ site.id }}" {% if not global_script %}checked="checked"{% endif %}>
+        Lokalt script for {{ site.uid }}
+      </label>
+      
+    </fieldset>
+  </div>
+  
+  <div class="span6">
+    <fieldset>
+      {% if show_code_preview %}
+      Kode-preview:
+      <pre>{{script_preview |escape}}</pre>
+      {% endif %}
+      {{ form.executable_code.errors }}
+      <label for="{{ form.executable_code.id_for_label }}">Upload scriptkode:</label>
+      {{ form.executable_code }}
+    </fieldset>
+  </div>
 </div>
   
-<h2 class="divideheader">
-{% block script_form_heading %}
-Detaljer om script: <em>{{ selected_script.name }}</em>
-{% endblock %}
-</h2>
-<form
-    method="post"
-    name="scriptform"
-    id="scriptform"
-    {% if selected_script %}
-    action="{% url 'script' site.uid selected_script.pk %}"
-    {% else %}
-    action="{% url 'new_script' site.uid %}"
-    {% endif %}
-    enctype="multipart/form-data"
->
-  {% csrf_token %}
-  {% block script_edit_controls %}
-  {% endblock %}
-  <hr>
-  
-  <div class="row-fluid">
-    <div class="span6">
-      <fieldset>
-        {{ form.name.errors }}
-        <label for="name">Navn:</label>
-        {{ form.name }}        
-        {{ form.description.errors }}
-        <label for="description">Beskrivelse:</label>
-        {{ form.description }}
-        <label for="site">
-          <input type="checkbox" id="site" name="site" value="{{ site.id }}" {% if not script.is_global %}checked="checked"{% endif %}>
-          Lokalt script for {{ site.uid }}
-        </label>
-        
-      </fieldset>
-    </div>
-    
-    <div class="span6">
-      <fieldset>
-        {% block script_code_preview %}
-        {% endblock %}
-        {{ form.executable_code.errors }}
-        <label for="executable_code">Upload scriptkode:</label>
-        {{ form.executable_code }}
-      </fieldset>
-    </div>
-  
+<hr>
+
+<fieldset id="{{ form.prefix|default:'update' }}-script-inputs">
+  <label>Input-parametre:</label>
+  <input type="hidden" name="script-number-of-inputs" class="script-number-of-inputs" value="0" />
+  <div class="well">
+    <table class="table table-condensed">
+      <thead>
+        <tr>
+          <th>Navn</th>
+          <th>Type</th>
+        </tr>
+      </thead>
+      <tbody id="script-input-container">
+        <tr class="script-input-add">
+          <td colspan="3">
+            <a href="javascript:void(0)" onclick="BibOS.ScriptEdit.addInput('#{{ form.prefix|default:'update' }}-script-inputs', {})" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj parameter</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
-    
-  <hr>
-  
-  <fieldset>
-    <label>Input-parametre:</label>
-    <input type="hidden" name="script-number-of-inputs" id="script-number-of-inputs" value="0" />
-    <div class="well">
-      <table class="table table-condensed">
-        <thead>
-          <tr>
-            <th>Navn</th>
-            <th>Type</th>
-          </tr>
-        </thead>
-        <tbody id="script-input-container">
-          <tr id="script-input-add">
-            <td colspan="3">
-              <a href="javascript:void(0)" onclick="BibOS.ScriptEdit.addInput({})" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj parameter</a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </fieldset>
-</form>
-{% endblock %}
+</fieldset>

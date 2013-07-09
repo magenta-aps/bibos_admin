@@ -1,17 +1,84 @@
-{% extends "system/scripts/form.html" %}
+{% extends "site_with_navigation.html" %}
 
-{% block script_form_heading %}
-Redigér script: <em>{{ selected_script.name }}</em>
+{% block specific_title %}
+Scripts
 {% endblock %}
 
-{% block script_edit_controls %}
-<a href="#runscriptmodal" role="button" class="btn btn-success" data-toggle="modal">Kør script</a>
-<input type="submit" class="btn btn-primary" value="Gem ændringer" />
-<button class="btn" onclick="location.href='{% url 'script' site.uid selected_script.pk %}'; return false;">Annuller</button>
+{% block scripts_active %}
+class="active"
 {% endblock %}
 
-{% block script_code_preview %}
-Kode-preview:
-<pre>{{script_preview |escape}}</pre>
+{% block javascripts %}
+<script type="text/javascript" src="/media/js/script_edit.js"></script>
+<script type="text/javascript">
+$(function() {
+var inputs = {{ script_inputs_json|safe }}
+$.each(inputs, function() {BibOS.ScriptEdit.addInput('#update-script-inputs', this)})
+})
+</script>
 {% endblock %}
 
+{% block specific_content %}
+  <div class="sublevelnav">
+    <div class="listutils"><a href="#addNewScript" role="button" data-toggle="modal" title="Tilføj nyt script"><i class="icon-plus icon-white"></i> tilføj nyt script</a></div>
+    {% include 'system/scripts/navigation.html' %}
+  </div>
+
+  {% include 'system/scripts/templates.html' %}
+
+  <div class="container-fluid main sublevelmain">
+    <h2 class="divideheader">
+      Redigér script: <em>{{ selected_script.name }}</em>
+    </h2>
+
+    <form method="post" name="scriptform" id="scriptform"
+        action="{% url 'script' site.uid selected_script.pk %}"
+        enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div>
+      {% include 'notification.html' %}
+      </div>
+      <a href="#runscriptmodal" role="button" class="btn btn-success" data-toggle="modal">Kør script</a>
+      <input type="submit" class="btn btn-primary" value="Gem ændringer" />
+      <button class="btn" onclick="location.href='{% url 'script' site.uid selected_script.pk %}'; return false;">Annuller</button>
+
+      <hr>
+      {% include 'system/scripts/form.html' with show_code_preview=1 global_script=script.is_global %}
+    </form>
+
+    <div id="runscriptmodal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">×</button>
+              <div id="runscriptmodalheader"><h3>Kør script</h3></div>
+      </div>
+      <div class="modal-body">
+                <iframe id="runscriptmodaliframe" src="{% url 'run_script' site.uid script.pk %}" style="border: 0; width: 100%; height: 250px;"></iframe>
+      </div>
+      <div id="runscriptmodalfooter" class="modal-footer">
+              <button class="btn" data-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>  
+
+  <!-- MODAL WINDOW FOR NEW USER REGISTRATION: -->
+  
+  <div id="addNewScript" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 650px">
+    <form action="{% url 'new_script' site.uid %}" name="create_script_form"
+      id="create_script_form" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <h3>Tilføj nyt script</h3>
+      </div>
+      <div class="modal-body">
+        {% include 'system/scripts/form.html' with form=create_form %}
+      </div>
+      <div class="modal-footer">
+        <input type="submit" class="btn btn-primary" value="Gem" />
+        <button class="btn" data-dismiss="modal">Annuller</button>
+      </div>
+    </form>
+  </div>
+
+{% endblock %}
