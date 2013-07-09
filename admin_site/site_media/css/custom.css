@@ -92,3 +92,4 @@ ul.addpclist {display: none; max-height: 300px; overflow-y: auto; position: abso
 ul.addpclist li {cursor: pointer;}
 li.addpctrigger {position: relative;}
 li.addpctrigger:hover ul.addpclist {display: block}
+.bibos-notification { display: none; background-color: #88CC00; border: 1px solid white; padding: 0.25em 0.5em 0.25em 0.5em; color: #fff; }

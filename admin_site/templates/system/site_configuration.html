@@ -19,6 +19,8 @@ class="active"
     <form action="{% url 'configuration' site.uid%}" method="post"
       name="site_configuration_form" id="site_configuration_form">
 
+      {% include 'notification.html' %}
+
       <div>
         <button class="btn btn-primary">Gem ændringer</button>
         <button class="btn" onclick="return ((location.href=location.href) && false)">Annuller</button>

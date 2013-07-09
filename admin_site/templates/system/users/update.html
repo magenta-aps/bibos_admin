@@ -21,6 +21,7 @@ class="active"
   
   <div class="container-fluid main sublevelmain">
       <h2 class="divideheader">Profil: <em>{{ selected_user.username }}</em></h2>
+      {% include 'notification.html' %}
       <div>
         <form action="{% url 'user' site.uid selected_user.username %}" name="update_user_form" id="update_user_form" method="post">
           {% csrf_token %}
