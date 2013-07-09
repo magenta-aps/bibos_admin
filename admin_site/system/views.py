@@ -9,6 +9,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.template import Context
+from django.utils.html import escape
 
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import View, ListView, DetailView, RedirectView
@@ -244,7 +245,10 @@ class JobSearch(JSONResponseMixin, SiteView):
             'status': job.status,
             'label': job.status_label,
             'pc_name': job.pc.name,
-            'batch_name': job.batch.name
+            'batch_name': job.batch.name,
+            # Yep, it's meant to be double-escaped - it's HTML-escaped
+            # content that will be stored in an HTML attribute
+            'log_output': escape(escape(job.log_output))
         } for job in joblist]
 
     def post(self, request, *args, **kwargs):
