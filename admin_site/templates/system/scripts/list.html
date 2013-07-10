@@ -9,73 +9,10 @@ class="active"
 {% endblock %}
 
 {% block specific_content %}
-
-  <div class="sublevelnav">
-    
-    <div class="listutils"><a href="{% url 'new_script' site.uid %}" title="Tilføj nyt script"><i class="icon-plus icon-white"></i> tilføj nyt script</a></div>
-
-    <ul class="nav nav-tabs scripttabs">
-      {% if global_selected %}
-      <li><a href="#localscripts" data-toggle="tab">Lokale scripts</a></li>
-      <li class="active"><a href="#globalscripts" data-toggle="tab">Globale scripts</a></li>
-      {% else %}
-      <li class="active"><a href="#localscripts" data-toggle="tab">Lokale scripts</a></li>
-      <li><a href="#globalscripts" data-toggle="tab">Globale scripts</a></li>
-      {% endif %}
-    </ul>
-    <div class="tab-content">
-      {% if global_selected %}
-      <div class="tab-pane" id="localscripts">
-      {% else %}
-      <div class="tab-pane active" id="localscripts">
-      {% endif %}
-        <ul class="unstyled" >
-        {% for script in local_scripts %}
-          {% ifequal script selected_script %}
-          <li class="active"><a href="{% url 'script' site.uid script.pk %}"><i class="icon-list"></i> {{ script.name }}</a></li>
-          {% else %}
-          <li><a href="{% url 'script' site.uid script.pk %}" class= ><i class="icon-list"></i> {{ script.name }}</a></li>
-          {% endifequal %}
-        {% endfor %}
-        </ul>
-      </div>
-      {% if global_selected %}
-      <div class="tab-pane active" id="globalscripts">
-      {% else %}
-      <div class="tab-pane" id="globalscripts">
-      {% endif %}
-        <ul class="unstyled">
-        {% for script in global_scripts %}
-          {% ifequal script selected_script %}
-          <li class="active"><a href="{% url 'script' site.uid script.pk %}"><i class="icon-list"></i> {{ script.name }}</a></li>
-          {% else %}
-          <li><a href="{% url 'script' site.uid script.pk %}" class= ><i class="icon-list"></i> {{ script.name }}</a></li>
-          {% endifequal %}
-        {% endfor %}
-        </ul>
-      </div>
-    </div>
-  </div>
-  
   <div class="container-fluid main sublevelmain">
     {% block script_specific_content %}
       <h2>Vælg et script til venstre eller opret et nyt</h2>
     {% endblock %}
-
-    {% if script %}
-    <div id="runscriptmodal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">×</button>
-              <div id="runscriptmodalheader"><h3>Kør script</h3></div>
-      </div>
-      <div class="modal-body">
-                <iframe id="runscriptmodaliframe" src="{% url 'run_script' site.uid script.pk %}" style="border: 0; width: 100%; height: 250px;"></iframe>
-      </div>
-      <div id="runscriptmodalfooter" class="modal-footer">
-              <button class="btn" data-dismiss="modal">OK</button>
-      </div>
-    </div>
-    {% endif %}
-   </div>  
+  </div>  
 
 {% endblock %}

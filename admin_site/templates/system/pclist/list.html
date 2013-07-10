@@ -4,7 +4,7 @@
     {% include 'system/pclist/item.html' with pk=pc.pk name=pc.name selected='yes' %}
   {% endfor %}
   <li class="addpctrigger">
-    <a href="javascript:void(0)" title="Tilføj ny gruppe"><i class="icon-plus"></i> tilføj ny gruppe</a>
+    <a href="javascript:void(0)" title="Tilføj ny computer"><i class="icon-plus"></i> tilføj ny computer</a>
     <ul class="addpclist">
       {% for pc in available_pcs %}
         {% include 'system/pclist/item.html' with pk=pc.pk name=pc.name %}
