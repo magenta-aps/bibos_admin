@@ -531,7 +531,7 @@ class ScriptUpdate(ScriptMixin, UpdateView):
             context['script_preview'] = self.script.executable_code.read()
         context['type_choices'] = Input.VALUE_CHOICES
         self.create_form = ScriptForm()
-        self.create_form.prefix='create'
+        self.create_form.prefix = 'create'
         context['create_form'] = self.create_form
         return context
 
