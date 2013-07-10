@@ -162,24 +162,70 @@ def send_status_info(pc_uid, package_data, job_data, update_required):
     return 0
 
 
-def get_instructions(pc_uid):
+def get_instructions(pc_uid, update_data):
     """This function will ask for new instructions in the form of a list of
     jobs, which will be scheduled for execution and executed upon receipt.
     These jobs will generally take the form of bash scripts."""
 
     pc = PC.objects.get(uid=pc_uid)
 
+    pc.last_seen = datetime.datetime.now()
+    pc.save()
+
     if not pc.is_active:
         # Fail silently
         return ([], False)
 
-    pc.last_seen = datetime.datetime.now()
-    pc.save()
+    update_pkgs = update_data.get('updated_packages', [])
+    if len(update_pkgs) > 0:
+        for pdata in update_pkgs:
+            # Find or create the package in the global collection of packages
+            try:
+                p = Package.objects.get(
+                    name=pdata['name'],
+                    version=pdata['version']
+                )
+            except Package.DoesNotExist:
+                p = Package(
+                    name=pdata['name'],
+                    version=pdata['version'],
+                    description=pdata['description']
+                )
+            # Change or create the package status for the package/PC
+            try:
+                p_status = pc.package_list.statuses.get(
+                    package__name=pdata['name']
+                )
+                p_status.package = p
+                p_status.status = 'install'
+            except PackageStatus.DoesNotExist:
+                p_status = PackageStatus(
+                    status='install',
+                    package=p,
+                    package_list=pc.package_list
+                )
+            p_status.save()
+
+    remove_pkgs = update_data.get('removed_packages', [])
+    if len(remove_pkgs) > 0:
+        pc.package_list.statuses.filter(package__name__in=remove_pkgs).delete()
+
+    # get list of packages to install and remove
+    to_install, to_remove = pc.pending_package_updates
+
+    # Make sure packages we just installed are not flagged for removal
+    for name in [p['name'] for p in update_pkgs]:
+        if name in to_remove:
+            pc.custom_packages.update_package_status(name, True)
+            to_remove.remove(name)
+
+    # Make sure packages we just removed are not flagged for installation
+    for name in remove_pkgs:
+        if name in to_install:
+            pc.custom_packages.update_package_status(name, False)
+            to_install.remove(name)
 
     jobs = []
-
-    # TODO: Retrieve non-submitted jobs, mark them as subitted and send to the
-    # client denoted by UID.
 
     for job in pc.jobs.filter(status=Job.NEW):
         parameters = []
@@ -200,8 +246,51 @@ def get_instructions(pc_uid):
             'executable_code': job.batch.script.executable_code.read()
         })
 
-    return (jobs, pc.do_send_package_info)
+    result = {
+        'jobs': jobs,
+        'configuration': pc.get_full_config(),
+    }
+
+    if pc.do_send_package_info:
+        result['do_send_package_info'] = True
+
+    if len(to_remove):
+        result['remove_packages'] = list(to_remove)
+    if len(to_install):
+        result['install_packages'] = list(to_install)
+
+    return result
 
 
 def get_proxy_setup(pc_uid):
     return system.proxyconf.get_proxy_setup(pc_uid)
+
+
+def push_config_keys(pc_uid, config_dict):
+    pc = PC.objects.get(uid=pc_uid)
+
+    # We need two config dicts: one from the PC itself and one from groups
+    # and global configuration
+    config_lists = pc.get_list_of_configurations()
+
+    pc_config_list = config_lists.pop()
+
+    pc_config = {}
+    for entry in pc_config_list.entries.all():
+        pc_config[entry.key] = entry.value
+
+    others_config = {}
+    for conf in config_lists:
+        for entry in conf.entries.all():
+            others_config[entry.key] = entry.value
+
+    for key, value in config_dict.items():
+        # Special case: If the value we want is in others_config, we just have
+        # to remove any pc-specific config:
+        if key in others_config and others_config[key] == value:
+            if key in pc_config:
+                pc.configuration.remove_entry(key)
+        else:
+            pc.configuration.update_entry(key, value)
+
+    return True

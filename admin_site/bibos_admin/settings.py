@@ -158,8 +158,10 @@ XMLRPC_METHODS = (
     ('system.rpc.send_status_info', 'send_status_info'),
     ('system.rpc.upload_dist_packages', 'upload_dist_packages'),
     ('system.rpc.get_instructions', 'get_instructions'),
-    ('system.rpc.get_proxy_setup', 'get_proxy_setup')
+    ('system.rpc.get_proxy_setup', 'get_proxy_setup'),
+    ('system.rpc.push_config_keys', 'push_config_keys')
 )
+
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.
