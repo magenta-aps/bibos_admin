@@ -103,3 +103,124 @@ sudo a2enmod ssl
 sudo a2ensite bibos_admin
 sudo service apache2 restart
 
+
+Setup the bibos-archive / proxy
+
+sudo mkdir /home/bibos/archive-site
+sudo mkdir /home/bibos/archive-site/conf
+sudo mkdir /home/bibos/archive-site/docs
+sudo mkdir /home/bibos/archive-site/logs
+
+Open /home/bibos/archive-site/conf/site.conf and add the collowing,
+substituting your own values for servername/alias and serveradmin
+
+### CONFIG START ###
+ProxyRequests On
+ProxyVia On
+
+<Proxy *>
+    Order allow,deny
+    Allow from All
+    AuthType Basic
+    AuthName "BibOS authenticated proxy"
+    AuthUserFile /home/bibos/bibos_admin/admin_site/etc/bibos-proxy.htpasswd
+    Require valid-user
+</Proxy>
+
+<VirtualHost *:80>
+    ServerName bibos-admin.magenta-aps.dk
+    ServerAlias www.bibos-admin.magenta-aps.dk
+
+    DocumentRoot /home/bibos/archive-site/docs
+    ErrorLog /home/bibos/archive-site/logs/error_log
+    CustomLog /home/bibos/archive-site/logs/custom_log combined
+    DirectoryIndex index.html index.htm
+</VirtualHost>
+### CONFIG END ###
+
+Make sure the htpasswd file exists and is writeable by apache:
+
+sudo touch /home/bibos/bibos_admin/admin_site/etc/bibos-proxy.htpasswd
+sudo chown www-data /home/bibos/bibos_admin/admin_site/etc/bibos-proxy.htpasswd
+
+Enable proxy modules and the new site in apache and isable the default site:
+
+sudo a2enmod proxy proxy_connect proxy_ftp proxy_http
+sudo ln -s /home/bibos/archive-site/conf/site.conf \
+    /etc/apache2/sites-available/000-bibos-archive
+sudo a2ensite 000-bibos-archive
+sudo a2dissite default
+
+sudo service apache2 restart
+
+Place an HTML-file welcoming new visitors to the configured site by editing
+/home/bibos/archive-site/docs/index.html:
+
+### FILE START ###
+<html>
+<head>
+<title>BibOS-admin</title>
+</head>
+<body>
+<h1>BibOS-admin</h1>
+<p>Welcome to the BibOS-admin site</p>
+<p><a href="https://bibos-admin.magenta-aps.dk/"
+    >Click here to go to the administration system</a>
+</p>
+<p><a href="/archive/">Click here to go to the archive</a></p>
+</body>
+</html>
+### FILE END ###
+
+Create a user for the sshfs archive:
+
+sudo useradd -d /home/bibos-archive -m -s /bin/false -u 901 bibos-archive
+sudo mkdir -m 0700 ~bibos-archive/.ssh
+
+Open ~bibos-archive/.ssh/authorized_keys and add the BibOS public key
+
+# START #
+ssh-dss AAAAB3NzaC1kc3MAAACBAMXcCY3bDdzOwwv8WNyLuBWCJn+8DgRNXMIuRiBRx40rpQAVaq5wGrLL5dI3N+tuo+Bi58Fgbk4IWhHamdAS7yH/TgRb9vrKTrdmUViJ3WWVPLt5HEhScDOkLSDKfutyWfBAMl2hbCMWAo8P44Rx5RM/7lEarnNfFRatXU7cQQYHAAAAFQD0kLP0aiOfPEsb2lfnjAXYmYZg0QAAAIEAgZj1ODpiGkjgwBq+VIe8zd3CamTGgDORN+R3xGadMbsvyaO/PVC7kdsv3xG6VfiHTCN3n2nNe7tHmFdhheMByYlZ0yoQADfl5dcpRSc4jRwWph1tl6nVcwKu1V0BVLu1eMIv3lp4O3Bbgm2JKz/qRs1+atdCH/52AvKY1bsFFboAAACAEhMHWHD32i42KpmF5l5ci/0L4PSs0lqCoJn+40MEiII4/+pHJHXWGdYkSzRnbuM+zZBP14i1ttekZbJXvUFUU3cVb3G+urnCgHHI0lvAxGR9r0GDlsdk6vSRk4JUHPlEcKM3s+pGCQ6vQEfDq8lhQmdHR5v7goBmhrhtbCaSNwU= jubk@workdev
+# END #
+
+Fix permissions for ss files
+
+sudo chown -R bibos-archive.bibos-archive ~bibos-archive/.ssh
+sudo chmod 0600 ~bibos-archive/.ssh/authorized_keys
+
+Make /bibos-archive structure
+
+sudo mkdir /bibos-archive/
+sudo mkdir /bibos-archive/archive
+sudo mkdir /bibos-archive/archive/iso
+sudo mkdir /bibos-archive/archive/hd
+
+Fix permissions:
+sudo chown root:root /bibos-archive
+sudo chmod og-w /bibos-archive
+
+Open /etc/ssh/sshd_config and make the following changes:
+
+1) Comment out any existing SubSystem sftp line:
+
+#Subsystem sftp /usr/lib/openssh/sftp-server
+
+2) And add the following at the end of the file:
+
+## BibOS start ##
+Subsystem sftp internal-sftp
+Match User bibos-archive
+    ChrootDirectory /bibos-archive
+    ForceCommand internal-sftp
+    X11Forwarding no
+    AllowTCPForwarding no
+## BibOS end ##
+
+Restart ssh:
+
+sudo service ssh restart
+
+And finally link the archive under the the virtualhost we created earlier
+
+sudo ln -s /bibos-archive/archive/ /home/bibos/archive-site/docs/archive
+

@@ -52,7 +52,7 @@ def get_proxy_setup(pc_uid):
         ),
         'upstream_host': pc.get_config_value(
             'proxy_upstream_host',
-            'bibos-proxy.web06.magenta-aps.dk'
+            'bibos-admin.magenta-aps.dk'
         ),
         'upstream_port': pc.get_config_value(
             'proxy_upstream_port',
