@@ -6,6 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.template import Context
@@ -25,7 +26,17 @@ from job.models import Job, Script, Input, Batch, Parameter
 
 from django.conf import settings
 import signals
+import re
 
+def set_notification_cookie(response, message):
+    def escaper(m):
+        i = ord(m.group(0))
+        return '%%u%X' % i if i > 255 else '%%%X' %i
+
+    response.set_cookie(
+        'bibos-notification',
+        value=re.sub('[\xA0-\xFFFFF]', escaper, message)
+    )
 
 # Mixin class to require login
 class LoginRequiredMixin(View):
@@ -201,8 +212,8 @@ class SiteConfiguration(SiteView):
             request.POST, 'site_configs'
         )
 
-        response.set_cookie(
-            'bibos-notification',
+        set_notification_cookie(
+            response,
             _('Configuration for %s updated') % kwargs['slug']
         )
         return response
@@ -309,8 +320,8 @@ class JobRestarter(DetailView, LoginRequiredMixin):
 
     def status_fail_response(self):
         response = HttpResponseRedirect(self.get_success_url())
-        response.set_cookie(
-            'bibos-notification',
+        set_notification_cookie(
+            response,
             _('Can only restart jobs with status %s') % Job.FAILED
         )
         return response
@@ -341,13 +352,10 @@ class JobRestarter(DetailView, LoginRequiredMixin):
             return self.status_fail_response()
 
         new_job = self.object.restart()
-        response = HttpResponseRedirect(self.get_success_url())
-        response.set_cookie(
-            'bibos-notification',
-            "Job %s restarted as job %s" % (
-                self.object.pk,
-                new_job.pk
-            )
+        response =  HttpResponseRedirect(self.get_success_url())
+        set_notification_cookie(
+            response,
+            "Job %s restarted as job %s" % (self.object.pk, new_job.pk)
         )
         return response
 
@@ -538,8 +546,8 @@ class ScriptUpdate(ScriptMixin, UpdateView):
         if self.validate_script_inputs():
             self.save_script_inputs()
             response = super(ScriptUpdate, self).form_valid(form)
-            response.set_cookie(
-                'bibos-notification',
+            set_notification_cookie(
+                response,
                 _('Script %s updated') % self.script.name
             )
             return response
@@ -758,8 +766,8 @@ class PCUpdate(SiteMixin, UpdateView):
             self.request.POST, 'pc_config'
         )
         response = super(PCUpdate, self).form_valid(form)
-        response.set_cookie(
-            'bibos-notification',
+        set_notification_cookie(
+            response,
             _('Computer %s updated') % self.object.name
         )
         return response
@@ -778,8 +786,8 @@ class MarkPackageUpgrade(SiteMixin, View):
                 pc.uid
             )
         )
-        response.set_cookie(
-            'bibos-notification',
+        set_notification_cookie(
+            response,
             _('Marked %s packages for upgrade') % num
         )
         return response
@@ -900,8 +908,8 @@ class UserUpdate(UpdateView, UsersMixin, LoginRequiredMixin):
         profile = self.object.bibos_profile.get(site=site)
         profile.type = form.cleaned_data['usertype']
         response = super(UserUpdate, self).form_valid(form)
-        response.set_cookie(
-            'bibos-notification',
+        set_notification_cookie(
+            response,
             _('User %s updated') % self.object.username
         )
         return response
@@ -934,9 +942,9 @@ class UserDelete(DeleteView, UsersMixin, LoginRequiredMixin):
 
     def delete(self, request, *args, **kwargs):
         response = super(UserDelete, self).delete(request, *args, **kwargs)
-        response.set_cookie(
-            'bibos-notification',
-            'User %s deleted' % self.kwargs['username']
+        set_notification_cookie(
+            response,
+            _('User %s deleted') % self.kwargs['username']
         )
         return response
 
@@ -1064,8 +1072,8 @@ class GroupUpdate(SiteMixin, LoginRequiredMixin, UpdateView):
             self.request.POST, 'group_configuration'
         )
         response = super(GroupUpdate, self).form_valid(form)
-        response.set_cookie(
-            'bibos-notification',
+        set_notification_cookie(
+            response,
             _('Group %s updated') % self.object.name
         )
         return response
@@ -1086,8 +1094,8 @@ class GroupDelete(SiteMixin, LoginRequiredMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         name = self.get_object().name
         response = super(GroupDelete, self).delete(request, *args, **kwargs)
-        response.set_cookie(
-            'bibos-notification',
+        set_notification_cookie(
+            response,
             _('Group %s deleted') % name
         )
         return response
