@@ -386,8 +386,8 @@ class PC(models.Model):
                                              default=False)
     # This field is used to communicate to the JobManager on each PC that it
     # should send an update of installed packages next time it contacts us.
-    do_send_package_info = models.BooleanField(_('send package info',
-                                                 default=False))
+    do_send_package_info = models.BooleanField(_('send package info'),
+                                                 default=True)
     creation_time = models.DateTimeField(_('creation time'),
         auto_now_add=True)
     last_seen = models.DateTimeField(_('last seen'), null=True, blank=True)
