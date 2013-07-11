@@ -89,9 +89,6 @@
     # Now setup cron job
     if [[ -f $(which jobmanager) ]]
     then
-        sudo crontab -l > /tmp/oldcron
-        sudo echo "*/5 * * * * $(which jobmanager)" >> /tmp/oldcron
-        sudo crontab /tmp/oldcron
-        sudo rm /tmp/oldcron
+        sudo echo 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' > /etc/cron.d/bibos-jobmanager
+        sudo echo "*/5 * * * * root $(which jobmanager)" >> /etc/cron.d/bibos-jobmanager
     fi
-
