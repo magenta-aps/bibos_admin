@@ -79,7 +79,7 @@
                     if(label == 'label-success') {
                         var anchor = list.find('span.label-important');
                         if(anchor.length)
-                            item.insertBefore(anchor.parents('li'))
+                            item.insertBefore(anchor.parents('li').first())
                         else
                             item.appendTo(list);
                     } else {
