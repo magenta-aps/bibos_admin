@@ -477,11 +477,7 @@ class ScriptList(ScriptMixin, SiteView):
             return HttpResponseRedirect(script.get_absolute_url(
                 site_uid=self.site.uid
             ))
-        except Exception as e:
-
-            if settings.DEBUG:
-                raise
-
+        except IndexError:
             return HttpResponseRedirect(
                 "/site/%s/scripts/new/" % self.site.uid
             )
