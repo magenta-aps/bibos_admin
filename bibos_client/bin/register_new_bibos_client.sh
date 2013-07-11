@@ -5,7 +5,7 @@
     # Attempt to get shared config file from gateway.
     # It this fails, the user must enter the corresponding data (site and 
     # admin_url) manually.
-    ADMIN_SITE="http://$(bibos_find_gateway 2> /dev/null)" 
+    ADMIN_SITE="https://$(bibos_find_gateway 2> /dev/null)" 
     SHARED_CONFIG="/tmp/bibos.conf"
     curl -s "$ADMIN_SITE/bibos.conf" -o "$SHARED_CONFIG"
 
@@ -72,7 +72,7 @@
     fi
     if [[ -z "$ADMIN_URL" ]]
     then 
-        ADMIN_URL=http://bibos-admin.magenta-aps.dk
+        ADMIN_URL="https://bibos-admin.magenta-aps.dk"
         echo "Indtast admin-url hvis det ikke er $ADMIN_URL"
         read NEW_ADMIN_URL
         if [[ -n $NEW_ADMIN_URL ]]
