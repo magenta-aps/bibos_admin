@@ -48,11 +48,14 @@ tests to ensure everything is fine.
     python manage.py test
 
 This should pass with no problems.
+
+
 Database setup
+++++++++++++++
 
 To set up the database, first become the postgres user:
 
-sudo su - postgres
+    sudo su - postgres
 
 Now create database and user:
 
@@ -87,9 +90,10 @@ DATABASES = {
 
 and do
 
-python manage.py syncdb
+    python manage.py syncdb
 
 Apache Setup
+++++++++++++
 
 Copy the setup file from admin_site/etc to the Apache sites-available
 folder.
@@ -98,18 +102,18 @@ folder.
 
 Now create custom logs, enable SSL, enable site and restart Apache.
 
-sudo mkdir /var/log/bibos_admin
-sudo a2enmod ssl
-sudo a2ensite bibos_admin
-sudo service apache2 restart
+    sudo mkdir /var/log/bibos_admin
+    sudo a2enmod ssl
+    sudo a2ensite bibos_admin
+    sudo service apache2 restart
 
 
 Setup the bibos-archive / proxy
 
-sudo mkdir /home/bibos/archive-site
-sudo mkdir /home/bibos/archive-site/conf
-sudo mkdir /home/bibos/archive-site/docs
-sudo mkdir /home/bibos/archive-site/logs
+    sudo mkdir /home/bibos/archive-site
+    sudo mkdir /home/bibos/archive-site/conf
+    sudo mkdir /home/bibos/archive-site/docs
+    sudo mkdir /home/bibos/archive-site/logs
 
 Open /home/bibos/archive-site/conf/site.conf and add the collowing,
 substituting your own values for servername/alias and serveradmin
@@ -140,16 +144,16 @@ ProxyVia On
 
 Make sure the htpasswd file exists and is writeable by apache:
 
-sudo touch /home/bibos/bibos_admin/admin_site/etc/bibos-proxy.htpasswd
-sudo chown www-data /home/bibos/bibos_admin/admin_site/etc/bibos-proxy.htpasswd
+    sudo touch /home/bibos/bibos_admin/admin_site/etc/bibos-proxy.htpasswd
+    sudo chown www-data /home/bibos/bibos_admin/admin_site/etc/bibos-proxy.htpasswd
 
 Enable proxy modules and the new site in apache and isable the default site:
 
-sudo a2enmod proxy proxy_connect proxy_ftp proxy_http
-sudo ln -s /home/bibos/archive-site/conf/site.conf \
-    /etc/apache2/sites-available/000-bibos-archive
-sudo a2ensite 000-bibos-archive
-sudo a2dissite default
+    sudo a2enmod proxy proxy_connect proxy_ftp proxy_http
+    sudo ln -s /home/bibos/archive-site/conf/site.conf \
+        /etc/apache2/sites-available/000-bibos-archive
+    sudo a2ensite 000-bibos-archive
+    sudo a2dissite default
 
 sudo service apache2 restart
 
