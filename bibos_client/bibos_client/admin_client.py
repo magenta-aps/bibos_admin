@@ -3,6 +3,15 @@ import csv
 import xmlrpclib
 import urllib2
 
+from bibos_utils.bibos_config import BibOSConfig
+
+
+def get_default_admin(verbose=False):
+    conf_data = BibOSConfig().get_data()
+    admin_url = conf_data.get('admin_url', 'http://bibos.magenta-aps.dk')
+    xml_rpc_url = conf_data.get('xml_rpc_url', '/admin-xml/')
+    return BibOSAdmin(''.join([admin_url, xml_rpc_url]), verbose=verbose)
+
 
 # Thanks to A. Ellerton for this
 class ProxyTransport(xmlrpclib.Transport):
@@ -74,11 +83,15 @@ class BibOSAdmin(object):
         return self._rpc_srv.send_status_info(pc_uid, package_data, job_data,
                                               update_required)
 
-    def get_instructions(self, pc_uid):
-        return self._rpc_srv.get_instructions(pc_uid)
+    def get_instructions(self, pc_uid, update_data):
+        return self._rpc_srv.get_instructions(pc_uid, update_data)
 
     def get_proxy_setup(self, pc_uid):
         return self._rpc_srv.get_proxy_setup(pc_uid)
+
+    def push_config_keys(self, pc_uid, config_dict):
+        return self._rpc_srv.push_config_keys(pc_uid, config_dict)
+
 
 if __name__ == '__main__':
     """Simple test suite."""

@@ -1,0 +1,6 @@
+These are scripts which are developed as part of the BibOS admin system.
+
+They are not intended as general purpose GNU/Linux scripts, but are written
+specifically for the BibOS distribution.
+
+The scripts in the directory "diagnostics" are intended for debugging.

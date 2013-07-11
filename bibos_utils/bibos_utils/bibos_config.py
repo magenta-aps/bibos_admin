@@ -90,5 +90,20 @@ class BibOSConfig():
 
         return current[key]
 
+    def remove_key(self, key):
+        current = self.yamldata
+        try:
+            i = key.find(".")
+            while (i != -1):
+                subkey = key[:i]
+                current = current[subkey]
+                key = key[i + 1:]
+                i = key.find(".")
+        except:
+            raise
+
+        if key in current:
+            del current[key]
+
     def get_data(self):
         return self.yamldata

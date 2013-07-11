@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
@@ -61,6 +62,22 @@ class Configuration(models.Model):
         for pk in existing_set - seen_set:
             cnf = ConfigurationEntry.objects.get(pk=pk)
             cnf.delete()
+
+    def remove_entry(self, key):
+        return self.entries.filter(key=key).delete()
+
+    def update_entry(self, key, value):
+        try:
+            e = self.entries.get(key=key)
+            e.value = value
+        except ConfigurationEntry.DoesNotExist:
+            e = ConfigurationEntry(
+                owner_configuration=self,
+                key=key,
+                value=value
+            )
+        finally:
+            e.save()
 
     def __unicode__(self):
         return self.name
@@ -134,6 +151,26 @@ class CustomPackages(models.Model):
             )
             qs.delete()
 
+    def update_package_status(self, name, do_add):
+        # Delete any old reference
+        self.install_infos.filter(
+            package__name=name
+        ).delete()
+
+        # And create a new
+        try:
+            package = Package.objects.filter(name=name)[0]
+        except IndexError:
+            package = Package.objects.create(name=name)
+
+        ii = PackageInstallInfo(
+            custom_packages=self,
+            package=package,
+            do_add=do_add
+        )
+
+        ii.save()
+
     def __unicode__(self):
         return self.name
 
@@ -156,11 +193,52 @@ class PackageList(models.Model):
                                       through='PackageStatus',
                                       blank=True)
 
+    @property
+    def installed_packages(self):
+        return [s.package for s in self.statuses.filter(
+            Q(status__startswith='install') |
+            Q(status=PackageStatus.NEEDS_UPGRADE) |
+            Q(status=PackageStatus.UPGRADE_PENDING)
+        )]
+
+    @property
+    def needs_upgrade_packages(self):
+        return [s.package for s in self.statuses.filter(
+            status=PackageStatus.NEEDS_UPGRADE
+        )]
+
+    @property
+    def pending_upgrade_packages(self):
+        return [s.package for s in self.statuses.filter(
+            status=PackageStatus.UPGRADE_PENDING
+        )]
+
+    def flag_for_upgrade(self, package_names):
+        if len(package_names):
+            qs = self.statuses.filter(
+                package__name__in=package_names,
+                status=PackageStatus.NEEDS_UPGRADE
+            )
+            num = len(qs)
+            qs.update(
+                status=PackageStatus.UPGRADE_PENDING
+            )
+            return num
+        else:
+            return 0
+
     def __unicode__(self):
         return self.name
 
 
 class PackageStatus(models.Model):
+    NEEDS_UPGRADE = 'needs upgrade'
+    UPGRADE_PENDING = 'upgrade pending'
+
+    # Note that dpkg can output just about anything for the status-field,
+    # but installed packages will all have a status that starts with
+    # 'install'
+
     status = models.CharField(max_length=255)
     package = models.ForeignKey(Package)
     package_list = models.ForeignKey(PackageList,
@@ -316,12 +394,14 @@ class PC(models.Model):
 
     @property
     def current_packages(self):
-        return set(p.name for p in self.package_list.packages.all())
+        return set(p.name for p in self.package_list.installed_packages)
 
     @property
     def wanted_packages(self):
-        wanted_packages = set(p.name for p in
-                              self.distribution.package_list.packages.all())
+        wanted_packages = set(
+            p.name for p in
+            self.distribution.package_list.installed_packages
+        )
 
         for group in self.pc_groups.all():
             for ii in group.custom_packages.install_infos.all():
@@ -378,11 +458,15 @@ class PC(models.Model):
             else:
                 return self.Status(OK, None)
 
-    def get_config_value(self, key, default=None):
-        value = default
+    def get_list_of_configurations(self):
         configs = [self.site.configuration]
         configs.extend([g.configuration for g in self.pc_groups.all()])
         configs.append(self.configuration)
+        return configs
+
+    def get_config_value(self, key, default=None):
+        value = default
+        configs = self.get_list_of_configurations()
         for conf in configs:
             try:
                 entry = conf.entries.get(key=key)
@@ -390,6 +474,14 @@ class PC(models.Model):
             except ConfigurationEntry.DoesNotExist:
                 pass
         return value
+
+    def get_full_config(self):
+        result = {}
+        configs = self.get_list_of_configurations()
+        for conf in configs:
+            for entry in conf.entries.all():
+                result[entry.key] = entry.value
+        return result
 
     def get_merged_config_list(self, key, default=None):
         result = default[:] if default is not None else []

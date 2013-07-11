@@ -129,6 +129,20 @@
         cancelEditing: function() {
             location.href=location.href;
             return false;
+        },
+        markUpgradePackages: function(container_id, form_id) {
+            var form = $(form_id);
+            form.find('input[name=packages]').remove();
+            $(container_id).find('input[name=upgrade_package]:checked').each(
+                function() {   
+                    if($(this).attr('name') == 'upgrade_package') {
+                        $('<input>').attr(
+                            { 'type': 'hidden', 'name': 'packages'}
+                        ).val($(this).val()).appendTo(form)
+                    }
+                }
+            )
+            form.submit()
         }
     });
 
