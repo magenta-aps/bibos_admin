@@ -62,6 +62,22 @@ class Configuration(models.Model):
             cnf = ConfigurationEntry.objects.get(pk=pk)
             cnf.delete()
 
+    def remove_entry(self, key):
+        return self.entries.filter(key=key).delete()
+
+    def update_entry(self, key, value):
+        try:
+            e = self.entries.get(key=key)
+            e.value = value
+        except ConfigurationEntry.DoesNotExist:
+            e = ConfigurationEntry(
+                owner_configuration=self,
+                key=key,
+                value=value
+            )
+        finally:
+            e.save()
+
     def __unicode__(self):
         return self.name
 
@@ -133,6 +149,26 @@ class CustomPackages(models.Model):
                 package__name__in=list(oldlist - newlist)
             )
             qs.delete()
+
+    def update_package_status(self, name, do_add):
+        # Delete any old reference
+        self.install_infos.filter(
+            package__name=name
+        ).delete()
+
+        # And create a new
+        try:
+            package = Package.objects.filter(name=name)[0]
+        except IndexError:
+            package = Package.objects.create(name=name)
+
+        ii = PackageInstallInfo(
+            custom_packages=self,
+            package=package,
+            do_add=do_add
+        )
+
+        ii.save()
 
     def __unicode__(self):
         return self.name
@@ -316,7 +352,11 @@ class PC(models.Model):
 
     @property
     def current_packages(self):
-        return set(p.name for p in self.package_list.packages.all())
+        return set(
+            s.package.name for s in self.package_list.statuses.filter(
+                status='install'
+            )
+        )
 
     @property
     def wanted_packages(self):
@@ -378,11 +418,15 @@ class PC(models.Model):
             else:
                 return self.Status(OK, None)
 
-    def get_config_value(self, key, default=None):
-        value = default
+    def get_list_of_configurations(self):
         configs = [self.site.configuration]
         configs.extend([g.configuration for g in self.pc_groups.all()])
         configs.append(self.configuration)
+        return configs
+
+    def get_config_value(self, key, default=None):
+        value = default
+        configs = self.get_list_of_configurations()
         for conf in configs:
             try:
                 entry = conf.entries.get(key=key)
@@ -390,6 +434,14 @@ class PC(models.Model):
             except ConfigurationEntry.DoesNotExist:
                 pass
         return value
+
+    def get_full_config(self):
+        result = {}
+        configs = self.get_list_of_configurations()
+        for conf in configs:
+            for entry in conf.entries.all():
+                result[entry.key] = entry.value
+        return result
 
     def get_merged_config_list(self, key, default=None):
         result = default[:] if default is not None else []
