@@ -12,6 +12,8 @@ fi
 cat << EOF > /usr/share/bibos/bin/auto_logout.sh
 #!/usr/bin/env bash
 
+atrm \$(atq | awk '{ print \$1; } ')
+
 TIME=$1
 
 if [ \$TIME -ge 5 ]
