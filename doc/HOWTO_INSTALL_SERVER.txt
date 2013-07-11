@@ -92,6 +92,11 @@ and do
 
     python manage.py syncdb
 
+Import the current available package names to the database:
+
+/home/bibos/bibos_admin/admin_site/scripts/import_package_names.py \
+    'http://packages.ubuntu.com/precise/allpackages?format=txt.gz'
+
 Apache Setup
 ++++++++++++
 
