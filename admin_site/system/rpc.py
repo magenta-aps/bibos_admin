@@ -274,11 +274,16 @@ def get_instructions(pc_uid, update_data):
 
 
 def get_proxy_setup(pc_uid):
+    pc = PC.objects.get(uid=pc_uid)
+    if not pc.is_active:
+        return 0
     return system.proxyconf.get_proxy_setup(pc_uid)
 
 
 def push_config_keys(pc_uid, config_dict):
     pc = PC.objects.get(uid=pc_uid)
+    if not pc.is_active:
+        return 0
 
     # We need two config dicts: one from the PC itself and one from groups
     # and global configuration
