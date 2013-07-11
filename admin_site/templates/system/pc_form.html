@@ -125,18 +125,45 @@ class="active"
             <div class="accordion-inner">
               <div><strong>Tilpasning af pakker kun på denne maskine</strong></div>
               {% include 'system/package_lists/list.html' with packages=package_infos pl_id='pc_packages'%}
+              {% if pending_packages_remove %}
               <div><strong>Pakker der venter på at blive installeret på maskinen</strong></div>
               <ul>
                 {% for name in pending_packages_add %}
                   <li>{{ name }}</li>
                 {% endfor %}
               </ul>
+              {% endif %}
+              {% if pending_packages_remove %}
               <div><strong>Pakker der venter på at blive fjernet fra maskinen</strong></div>
               <ul>
                 {% for name in pending_packages_remove %}
                   <li>{{ name }}</li>
                 {% endfor %}
               </ul>
+              {% endif %}
+              {% if selected_pc.package_list.needs_upgrade_packages %}
+              <div><strong>Pakker der kan opgraderes på maskinen</strong></div>
+              <ul id="needs_upgrade_packages">
+                {% for package in selected_pc.package_list.needs_upgrade_packages %}
+                  <li>
+                    <label for="upgrade_package-{{ package.pk }}">
+                      <input type="checkbox" id="upgrade_package-{{ package.pk }}" name="upgrade_package" value="{{ package.name }}" />
+                      {{ package.name }}
+                    </label>
+                  </li>
+                {% endfor %}
+              </ul>
+              <input type="button" value="Opgrader de valgte pakker"
+                     onclick="BibOS.PackageList.markUpgradePackages('#needs_upgrade_packages', '#upgrade_packages_form')" />
+              {% endif %}
+              {% if selected_pc.package_list.pending_upgrade_packages %}
+              <div><strong>Pakker der venter på at blive opgraderet</strong></div>
+              <ul>
+                {% for package in selected_pc.package_list.pending_upgrade_packages %}
+                  <li>{{ package.name }}</li>
+                {% endfor %}
+              </ul>
+              {% endif %}
             </div>
           </div>
         </div>
@@ -181,7 +208,12 @@ class="active"
         </div>
         
       </div>
+    </form>
 
+    <form name="upgrade_packages_form" id="upgrade_packages_form"
+      action="{% url 'mark_upgrade_packages' site.uid pc.uid %}" method="post"
+      style="display: none;">
+      {% csrf_token %}
     </form>
     {% include 'system/package_lists/templates.html' %}
     {% include 'system/configlist/templates.html' %}

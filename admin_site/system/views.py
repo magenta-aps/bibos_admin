@@ -769,6 +769,26 @@ class PCUpdate(SiteMixin, UpdateView):
         return response
 
 
+class MarkPackageUpgrade(SiteMixin, View):
+    def post(self, request, *args, **kwargs):
+        site = get_object_or_404(Site, uid=kwargs['site_uid'])
+        pc = get_object_or_404(PC, uid=kwargs['uid'])
+        num = pc.package_list.flag_for_upgrade(
+            request.POST.getlist('packages', [])
+        )
+        response = HttpResponseRedirect(
+            '/site/%s/computers/%s/?accordion=packages' % (
+                site.uid,
+                pc.uid
+            )
+        )
+        response.set_cookie(
+            'bibos-notification',
+            _('Marked %s packages for upgrade') % num
+        )
+        return response
+
+
 class GroupsView(SelectionMixin, SiteView):
     template_name = 'system/site_groups.html'
     selection_class = PCGroup

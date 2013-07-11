@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
@@ -192,11 +193,52 @@ class PackageList(models.Model):
                                       through='PackageStatus',
                                       blank=True)
 
+    @property
+    def installed_packages(self):
+        return [s.package for s in self.statuses.filter(
+            Q(status__startswith='install') |
+            Q(status=PackageStatus.NEEDS_UPGRADE) |
+            Q(status=PackageStatus.UPGRADE_PENDING)
+        )]
+
+    @property
+    def needs_upgrade_packages(self):
+        return [s.package for s in self.statuses.filter(
+            status=PackageStatus.NEEDS_UPGRADE
+        )]
+
+    @property
+    def pending_upgrade_packages(self):
+        return [s.package for s in self.statuses.filter(
+            status=PackageStatus.UPGRADE_PENDING
+        )]
+
+    def flag_for_upgrade(self, package_names):
+        if len(package_names):
+            qs = self.statuses.filter(
+                package__name__in=package_names,
+                status=PackageStatus.NEEDS_UPGRADE
+            )
+            num = len(qs)
+            qs.update(
+                status=PackageStatus.UPGRADE_PENDING
+            )
+            return num
+        else:
+            return 0
+
     def __unicode__(self):
         return self.name
 
 
 class PackageStatus(models.Model):
+    NEEDS_UPGRADE = 'needs upgrade'
+    UPGRADE_PENDING = 'upgrade pending'
+
+    # Note that dpkg can output just about anything for the status-field,
+    # but installed packages will all have a status that starts with
+    # 'install'
+
     status = models.CharField(max_length=255)
     package = models.ForeignKey(Package)
     package_list = models.ForeignKey(PackageList,
@@ -352,16 +394,14 @@ class PC(models.Model):
 
     @property
     def current_packages(self):
-        return set(
-            s.package.name for s in self.package_list.statuses.filter(
-                status='install'
-            )
-        )
+        return set(p.name for p in self.package_list.installed_packages)
 
     @property
     def wanted_packages(self):
-        wanted_packages = set(p.name for p in
-                              self.distribution.package_list.packages.all())
+        wanted_packages = set(
+            p.name for p in
+            self.distribution.package_list.installed_packages
+        )
 
         for group in self.pc_groups.all():
             for ii in group.custom_packages.install_infos.all():

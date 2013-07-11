@@ -10,6 +10,7 @@ import glob
 import re
 import subprocess
 import bibos_client.bibos_proxy_setup
+import tempfile
 
 from lockfile import FileLock, AlreadyLocked
 from bibos_utils.bibos_config import BibOSConfig
@@ -31,6 +32,8 @@ Directory structure for storing BibOS jobs:
 
 JOBS_DIR = '/var/lib/bibos/jobs'
 LOCK = FileLock(JOBS_DIR + '/running')
+PACKAGE_LIST_FILE = '/var/lib/bibos/current_packages.list'
+PACKAGE_LINE_MATCHER = re.compile('ii\s+(\S+)\s+(\S+)\s+(.*)')
 
 
 class LocalJob(dict):
@@ -49,7 +52,6 @@ class LocalJob(dict):
             if path[-1] == '/':
                 path = path[:-1]
 
-            print path
             # Find id from last part of path
             m = re.match(".*/(\d+)$", path)
             if m is None:
@@ -263,17 +265,119 @@ def get_url_and_uid():
     return(rpc_url, uid)
 
 
-def import_new_jobs():
+def get_packages_from_file(filename):
+    packages = {}
+
+    fh = open(filename, 'r')
+    for line in fh.readlines():
+        m = PACKAGE_LINE_MATCHER.match(line)
+        if m is not None:
+            packages[m.group(1)] = {
+                'name': m.group(1),
+                'version': m.group(2),
+                'description': m.group(3)
+            }
+    return packages
+
+
+def get_local_package_diffs():
+    # If package list does not yet exist, generate it and return an empty
+    # result
+    if not os.path.isfile(PACKAGE_LIST_FILE):
+        # Write a new file
+        subprocess.call(
+            "dpkg -l | grep '^ii ' > %s" % PACKAGE_LIST_FILE,
+            shell=True
+        )
+        # And return nothing
+        return (None, [], [])
+
+    # Create a temporary file
+    tmpfilename = tempfile.mkstemp()[1]
+
+    # Generate a new file list
+    subprocess.call(
+        "dpkg -l | grep '^ii ' > %s" % tmpfilename,
+        shell=True
+    )
+
+    org_packages = get_packages_from_file(PACKAGE_LIST_FILE)
+    new_packages = get_packages_from_file(tmpfilename)
+
+    updated_or_installed = []
+    for name, value in new_packages.items():
+        if name in org_packages:
+            # Package is upgraded if version is not the same
+            if org_packages[name]['version'] != value['version']:
+                updated_or_installed.append(value)
+            del org_packages[name]
+        else:
+            updated_or_installed.append(value)
+    # anything left over in org_packages must have been removed
+    removed = org_packages.keys()
+
+    return (tmpfilename, updated_or_installed, removed)
+
+
+def get_instructions():
     (remote_url, uid) = get_url_and_uid()
     remote = BibOSAdmin(remote_url)
-    jobs, do_send_package_info = remote.get_instructions(uid)
 
-    for j in jobs:
-        local_job = LocalJob(data=j)
-        local_job.save()
-        local_job.logline("Job imported at %s" % datetime.datetime.now())
+    tmpfilename, updated_pkgs, removed_pkgs = get_local_package_diffs()
 
-    if do_send_package_info:
+    try:
+        instructions = remote.get_instructions(uid, {
+            'updated_packages': updated_pkgs,
+            'removed_packages': removed_pkgs
+        })
+        # Everything went well, overwrite old package list
+        if tmpfilename:
+            subprocess.call(['mv', tmpfilename, PACKAGE_LIST_FILE])
+    except Exception as e:
+        print >>os.sys.stderr, "Error while getting instructions:" + str(e)
+        if tmpfilename:
+            subprocess.call(['rm', tmpfilename])
+        return False
+
+    if 'configuration' in instructions:
+        # Update configuration
+        bibos_config = BibOSConfig()
+        local_config = {}
+        for key, value in bibos_config.get_data().items():
+            # We only care about string values
+            if isinstance(value, basestring):
+                local_config[key] = value
+
+        for key, value in instructions['configuration'].items():
+            bibos_config.set_value(key, value)
+            if key in local_config:
+                del local_config[key]
+
+        # Anything left in local_config needs to be removed
+        for key in local_config.keys():
+            bibos_config.remove_key(key)
+
+        bibos_config.save()
+
+    if 'remove_packages' in instructions:
+        cmd = ['apt-get', '-y', 'remove']
+        cmd.extend(instructions['remove_packages'])
+        subprocess.call(cmd)
+
+    if 'install_packages' in instructions:
+        cmd = ['apt-get', '-y', 'install']
+        cmd.extend(instructions['install_packages'])
+        subprocess.call(cmd)
+
+    # Import jobs
+    if 'jobs' in instructions:
+        for j in instructions['jobs']:
+            local_job = LocalJob(data=j)
+            local_job.save()
+            local_job.logline("Job imported at %s" % datetime.datetime.now())
+
+    if ('do_send_package_info' in instructions and
+        instructions['do_send_package_info']):
         try:
             # Send full package info to server.
             upload_packages()
@@ -335,7 +439,7 @@ def update_and_run():
     try:
         LOCK.acquire(0)
         try:
-            import_new_jobs()
+            get_instructions()
             run_pending_jobs()
         finally:
             LOCK.release()

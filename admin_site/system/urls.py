@@ -5,7 +5,7 @@ from views import AdminIndex, PCsView, GroupsView, UsersView, JobsView
 from views import GroupCreate, GroupUpdate, GroupDelete, JobSearch, UserDelete
 from views import SiteDetailView, UserCreate, UserUpdate, SiteConfiguration
 from views import ScriptList, ScriptUpdate, ScriptCreate, ScriptDelete
-from views import ScriptRun, PCUpdate, JobRestarter
+from views import ScriptRun, PCUpdate, JobRestarter, MarkPackageUpgrade
 from views import ConfigurationEntryCreate, ConfigurationEntryUpdate
 from views import ConfigurationEntryDelete
 from views import PackageSearch
@@ -33,6 +33,8 @@ urlpatterns = patterns(
         ConfigurationEntryDelete.as_view(), name='delete_config_entry'),
     url(r'^site/(?P<slug>\w+)/computers/$', PCsView.as_view(),
         name='computers'),
+    url(r'^site/(?P<site_uid>\w+)/computers/(?P<uid>\w+)/upgrade_packages/$',
+        MarkPackageUpgrade.as_view(), name='mark_upgrade_packages'),
     url(r'^site/(?P<site_uid>\w+)/computers/(?P<pc_uid>\w+)/$',
         PCUpdate.as_view(), name='computer'),
     url(r'^site/(?P<slug>\w+)/groups/$', GroupsView.as_view(),

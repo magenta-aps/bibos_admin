@@ -191,6 +191,7 @@ def get_instructions(pc_uid, update_data):
                     version=pdata['version'],
                     description=pdata['description']
                 )
+                p.save()
             # Change or create the package status for the package/PC
             try:
                 p_status = pc.package_list.statuses.get(
@@ -210,20 +211,30 @@ def get_instructions(pc_uid, update_data):
     if len(remove_pkgs) > 0:
         pc.package_list.statuses.filter(package__name__in=remove_pkgs).delete()
 
-    # get list of packages to install and remove
-    to_install, to_remove = pc.pending_package_updates
+    # get list of packages to install and remove unless we want the PC to give
+    # us a list of packages first
+    to_install = []
+    to_remove = []
+    if not pc.do_send_package_info:
+        to_install, to_remove = pc.pending_package_updates
 
-    # Make sure packages we just installed are not flagged for removal
-    for name in [p['name'] for p in update_pkgs]:
-        if name in to_remove:
-            pc.custom_packages.update_package_status(name, True)
-            to_remove.remove(name)
+        # Add packages that are pending update to the list of packages we want
+        # installed, as apt-get will upgrade any package in the package list
+        # for apt-get install.
+        for p in pc.package_list.pending_upgrade_packages:
+            to_install.add(p.name)
 
-    # Make sure packages we just removed are not flagged for installation
-    for name in remove_pkgs:
-        if name in to_install:
-            pc.custom_packages.update_package_status(name, False)
-            to_install.remove(name)
+        # Make sure packages we just installed are not flagged for removal
+        for name in [p['name'] for p in update_pkgs]:
+            if name in to_remove:
+                pc.custom_packages.update_package_status(name, True)
+                to_remove.remove(name)
+
+        # Make sure packages we just removed are not flagged for installation
+        for name in remove_pkgs:
+            if name in to_install:
+                pc.custom_packages.update_package_status(name, False)
+                to_install.remove(name)
 
     jobs = []
 
