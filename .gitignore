@@ -3,8 +3,10 @@
 /admin_site/include
 /admin_site/local
 /admin_site/bin
+/admin_site/etc/bibos-proxy.htpasswd
 /admin_site/site_media/script_uploads
 /admin_site/site_media/parameter_uploads
+/admin_site/site_media/site_media
 /bibos_utils/bibos_utils.egg-info/
 /bibos_utils/build/
 /bibos_utils/dist/
@@ -13,3 +15,6 @@
 /bibos_client/dist/
 
 *.pyc
+.bash_history
+.viminfo
+.vim

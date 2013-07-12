@@ -10,7 +10,7 @@ header h1 em {color: #fff; font-style: normal;}
 .nav.utils>li>a:hover, .nav.utils>li>a:focus {background: #666; border-radius: 5px;}
 .nav-list.utils .nav-header {text-shadow: none; color: #ccc;}
 .listutils a {background: #444; color: #fff; padding: 10px; display: block;}
-.profile {font-size: 14px;}
+.profile {font-size: 14px; margin-right: 20px;}
 .profile a.dropdown-toggle {color: #fff;}
 .dark a.dropdown-toggle {color: #000;}
 .nav-list.utils .divider {border: none; background: #666;}
@@ -19,7 +19,7 @@ header h1 em {color: #fff; font-style: normal;}
 .sublevelnav {position: absolute; top: 64px; left: 250px; bottom: 0; width: 250px; background: #fff; overflow-x: hidden; overflow-y: auto; margin: 0;}
 .sublevelnav li a {border-top: solid 1px #ddd; display: block; padding: 10px;}
 .sublevelnav li:first-child a {border: none;}
-.sublevelnav li.active a, .sublevelnav li a:hover {background: #08c; color: #fff; text-decoration: none;}
+.sublevelnav li a:hover {background: #08c; color: #fff; text-decoration: none;}
 .sublevelmain {left: 500px;}
 .inertnav {background: #ccc; border-radius: 5px; padding: 15px 20px;}
 .inertnav li {padding: 2px 0; color: #666;}
@@ -27,6 +27,10 @@ header h1 em {color: #fff; font-style: normal;}
 .divideheader {background: #444; color: #ddd; padding: 0 20px; margin-top: 40px; font-size: 21px;}
 .divideheader em {color: #fff; font-style: normal;}
 h2.divideheader {margin-top: 20px;}
+.divideheader .label {margin-left: 20px; position: relative; bottom: 2px;}
+.accordion {margin-top: 20px;}
+.accordion-group {border: none; padding: 0;}
+.accordion-toggle {text-align: left;}
 .searchfilter .btn {display: block; text-align: left;}
 .well .table {margin-bottom: 0;}
 .table th {border-top: none;}
@@ -40,7 +44,6 @@ h3.nav-header {margin: 0; padding: 0;}
 .popover.top .arrow {left: auto; right: 30px;}
 .popover.top {margin: 0 20px 5px 0;}
 .jobtable .popover-content a {margin-bottom: 10px; display: inline-block;}
-.jobtable tr {cursor: pointer;}
 .jobtable tr td {border-top: solid 1px #ccc;}
 .jobtable tr.marked td, .jobtable tr.marked:hover td {background: #08c; color: #fff;}
 .scripttabs {margin: 0; background: #444; padding: 10px 10px 0; border: none;}
@@ -54,4 +57,39 @@ h3.nav-header {margin: 0; padding: 0;}
 .actionlist li:first-child a {border: none;}
 .actionlist .btn-group {display: block;}
 .actionlist a:hover {background: #08c; color: #fff; text-decoration: none; border-radius: 5px;}
-
+.template-container {display: none;}
+header.detailpage h1.siteheader {margin-left: 20px;}
+.packagelist > li {display: inline-block;}
+.packagelist > li > .btn-group {margin: 0;}
+.packagelist > li > .btn-group > a {border: none; padding: 5px;}
+div.runscriptdialogheader {display: none;}
+li.selected {background-color: #D5D5D5;}
+.table th.orderby {cursor: pointer; text-align: center; border-radius: 5px;}
+.orderby:hover {background: #08c; color: #fff;}
+li.addpackagecontrol {display: block;}
+li.addpackagecontrol label, li.addpackagecontrol a {display: inline}
+#jobsearchnav {background: #444; color: #ccc;}
+#jobsearch-filterform {padding: 20px;}
+#jobsearch-filterform .nav-header {text-shadow: none; color: #ccc}
+#jobsearch-filterform .collapsing {margin-bottom: 10px;}
+#jobsearch-filterform hr {border: solid 1px #666; border-width: 1px 0 0;}
+#jobsearch-filterform .collapse a {color: #fff; border: none;}
+.clearleft {clear: left}
+.clearright {clear: right}
+.clearboth {clear: both}
+.inline {display: inline}
+.nav-list>.active>a,
+.nav-list>.active>a:hover,
+.nav-list>.active>a:focus,
+.sublevelnav li.active a,
+#jobsearch-filterform .collapse .selected a,
+.orderby.active {background-color: #8c0; color: #fff;}
+ul.addgrouplist {display: none; max-height: 300px; overflow-y: auto; position: absolute; background-color: #fff;}
+ul.addgrouplist li {cursor: pointer;}
+li.addgrouptrigger {position: relative;}
+li.addgrouptrigger:hover ul.addgrouplist {display: block}
+ul.addpclist {display: none; max-height: 300px; overflow-y: auto; position: absolute; background-color: #fff;}
+ul.addpclist li {cursor: pointer;}
+li.addpctrigger {position: relative;}
+li.addpctrigger:hover ul.addpclist {display: block}
+.bibos-notification { display: none; background-color: #88CC00; border: 1px solid white; padding: 0.25em 0.5em 0.25em 0.5em; color: #fff; }

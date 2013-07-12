@@ -1,0 +1,15 @@
+{% if orderby_key == key %}
+<th
+  class="orderby order-{{ key }} {{ orderby_direction }} active"
+  onclick="location.href='{{ orderby_base_url }}orderby={% if orderby_direction != 'desc' %}-{% endif %}{{ key }}'"
+  >{{ label }}<br/>
+  <i class="icon icon-chevron-{% if orderby_direction == 'desc' %}up{% else %}down{% endif %}"></i>
+</th>
+{% else %}
+<th
+  class="orderby order-{{ key }} desc"
+  onclick="location.href='{{ orderby_base_url }}orderby={{ key }}'"
+  >{{ label }}</a><br/>
+  <i class="icon icon-chevron-down"></i>
+</th>
+{% endif %}

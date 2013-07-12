@@ -4,51 +4,135 @@
 Brugere
 {% endblock %}
 
+{% block users_active %}
+class="active"
+{% endblock %}
+
 {% block specific_content %}
 
   <ul class="sublevelnav">
-    <li class="listutils"><a href="#" title="Tilføj nyt bibliotek"><i class="icon-plus icon-white"></i> tilføj ny bruger</a></li>
-    <li><a href="#"><i class="icon-user"></i> Admin</a></li>
-    <li class="active"><a href="#"><i class="icon-user"></i> Sherlock Holmes</a></li>
-    <li><a href="#"><i class="icon-user"></i> Dr. Watson</a></li>
-    <li><a href="#"><i class="icon-user"></i> Irene Adler</a></li>
+    <li class="listutils"><a href="#addNewUser" role="button" data-toggle="modal" title="Tilføj ny bruger"><i class="icon-plus icon-white"></i> tilføj ny bruger</a></li>
+    <!-- <li class="listutils"><a href="/site/{{ site.uid }}/users/new/" title="Tilføj ny bruger"><i class="icon-plus icon-white"></i> tilføj ny bruger</a></li> -->
+
+    {% for user in user_list %}
+    <li {% ifequal user selected_user %}class="active"{% endifequal %}><a
+        href="/site/{{ site.url }}/users/{{ user.username }}"><i class="icon-user"></i> {{ user.username }}</a></li>
+    {% endfor %}
   </ul>
   
   <div class="container-fluid main sublevelmain">
-      <h2 class="divideheader">Profil: <em>Sherlock Holmes</em></h2>
-      
-      <button class="btn btn-primary">Gem ændringer</button>
-      <button class="btn">Annuller</button>
-          
-      <hr>
-      
+      <h2 class="divideheader">Profil: <em>{{ selected_user.username }}</em></h2>
       <div>
-        <form>
-          <fieldset>
-            <div class="row-fluid">
-              <div class="span6">
-                <label>Navn:</label>
-                <input type="text" value="Sherlock Holmes">
-              </div>
-              <div class="span6">
-                <label>Rettighedsgruppe:</label>
-                <select>
-                  <option>Administrator</option>
-                  <option>------</option>
-                  <option>Administrator</option>
-                  <option>Superadministrator</option>
-                  <option>Gæst</option>
-                </select>
-              </div>
-            </div>
-          
-          </fieldset>
-        </form>
+        <form action="" method="post">
+              {% csrf_token %}
+        <input type="submit" class="btn btn-primary" value="Gem" />
+        <button class="btn">Annuller</button>
+        <hr>      
+        {% if form.errors %}
+        <font color="red">
+            {{ form.errors }}
+        </font>
+        {% endif %}
+  
+        <fieldset>
+          {{ form.as_p }}
+          <div class="row-fluid">
+            <p><label for="id_username">Username:</label> <input id="id_username" maxlength="30" name="username" type="text" value="{{ selected_user.username }}" /></p>
+            <p>
+              <label for="id_txtPassword">Password:</label> <input id="id_txtPassword" maxlength="128" name="password" type="password" value="" />
+              <input type="text" id="txthdnPassword" />
+              <label style="display: inline; margin-left: 10px;"><input style="vertical-align: baseline;" type="checkbox" id="chkShow"/> Vis Password</label>
+            </p>
+            <p> <input type="hidden" id="id_last_login" name="last_login" type="text" value="2013-06-10 16:04:27.949558" /><input id="initial-id_last_login" name="initial-last_login" type="hidden" value="2013-06-10 16:04:27.949558" /></p>
+            <p><label for="id_email">Email address:</label> <input id="id_email"
+  maxlength="75" name="email" type="text" value="{{ selected_user.email }}" /></p>
+          </div>
+        </fieldset>
+
         <hr>
-        <div>
-          <a href="#"><i class="icon icon-remove"></i> Slet bruger</a>
-        </div>
+        <fieldset>
+          <div class="row-fluid">
+            <div class="span6">
+              <label>Rettighedsgruppe:</label>
+              <select name="type">
+                  {% for c in choices %}
+                  <option value="{{ c.id }}" {% ifequal c.id 1 %} selected{% endifequal %}>{{ c.val }}</option>
+                  {% endfor %}
+              </select>
+            </div>
+          </div>
+        
+        </fieldset>
+      </form>
+      <hr>
+      <div>
+        <a href="#"><i class="icon icon-remove"></i> Slet bruger</a>
+      </div>
     </div>
   </div>
+  
+  
+  <!-- MODAL WINDOW FOR NEW USER REGISTRATION: -->
+  
+  <div id="addNewUser" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal">×</button>
+      <h3>Tilføj ny bruger</h3>
+    </div>
+    <div class="modal-body">
+      <form action="" method="post">
+        {% csrf_token %}
+        {% if form.errors %}
+        <font color="red">
+            {{ form.errors }}
+        </font>
+        {% endif %}
+        <fieldset>        
+          <p><label for="id_username">Brugernavn:</label> <input id="id_username" maxlength="30" name="username" type="text" value="Brugernavn" /></p>
+          <p>
+            <label for="id_txtPassword">Password:</label> <input id="id_txtPassword" maxlength="128" name="password" type="password" value="" />
+            <input type="text" id="txthdnPassword" />
+            <label style="display: inline; margin-left: 10px;"><input style="vertical-align: baseline;" type="checkbox" id="chkShow"/> Vis Password</label>
+          </p>
+          <p><label for="id_email">Email-addresse:</label> <input id="id_email" maxlength="75" name="email" type="text" value="ex: email@email.dk" /></p>
+        </fieldset>
+        <hr>
+        <fieldset>
+          <label>Rettighedsgruppe:</label>
+          <select name="type">
+            {% for c in choices %}
+              <option value="{{ c.id }}" {% ifequal c.id 1 %} selected{% endifequal %}>{{ c.val }}</option>
+            {% endfor %}
+          </select>
+        </fieldset>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <input type="submit" class="btn btn-primary" data-dismiss="modal" value="Gem" />
+      <button class="btn" data-dismiss="modal">Annuller</button>
+    </div>
+  </div>
+  
+  <script>
+    $(document).ready(function() {
+      $('#txthdnPassword').hide();
+      $('#txthdnPassword').attr('readonly','readonly');
+      $('#id_txtPassword').blur(function() {
+          $('#txthdnPassword').val($(this).val());
+      });
+  
+      $('#chkShow').change(function() {
+        var isChecked = $(this).prop('checked');
+        if (isChecked) {
+          $('#id_txtPassword').hide();
+          $('#txthdnPassword').show();
+        }
+        else {
+          $('#id_txtPassword').show();
+          $('#txthdnPassword').hide();
+        };
+      });
+    })
+  </script>
 
 {% endblock %}

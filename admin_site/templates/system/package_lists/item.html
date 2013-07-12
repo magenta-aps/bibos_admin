@@ -1,0 +1,13 @@
+{# Remember that this templates must be able to be called both from templates.html and from list.html #}
+<li data-packagename="{{ name }}" class="packagemarker">
+  <input type="hidden" name="{{ submit_name|default:'extra_packages' }}" value="{{ name }}" />
+  <div class="btn-group profile dark">
+    <a class="dropdown-toggle"
+      data-toggle="dropdown" href="javascript:void(0)"><span
+      class="label {{label|default:'label-success'}}"
+    >{{ name }}</span></a>
+    <ul class="dropdown-menu">
+      <li><a href="javascript:void(0)" onclick="$(this).parent().parent().parent().parent().remove()"><i class="icon-remove"></i> Fjern markering</a></li>
+    </ul>
+  </div>
+</li>

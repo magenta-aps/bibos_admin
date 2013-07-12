@@ -2,7 +2,18 @@ In *this* directory enter:
 
 .scripts/install.sh
 
-If a virtualenv from a previous installation already exists, the install script
-will abort. Please clean this up first by doing a
+If a virtualenv from a previous installation already exists, the install
+script will abort. Please clean this up first by doing a
 
 rm -rf bin/ lib/ local/ include/
+
+If this is a completely fresh installation, initialize the database by
+doing
+
+python manage.py syncdb
+
+Now run 
+
+python manage.py runserver 8080
+
+And you will be able to access the system at http://localhost:8080.

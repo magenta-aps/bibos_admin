@@ -2,9 +2,20 @@
 from django.contrib import admin
 
 from models import Configuration, ConfigurationEntry, PackageList, Package
-from models import Site, Distribution, PCGroup, PC
+from models import Site, Distribution, PCGroup, PC, CustomPackages
+from models import PackageInstallInfo, PackageStatus
 
 ar = admin.site.register
+
+
+class PackageInstallInfoInline(admin.TabularInline):
+    model = PackageInstallInfo
+    extra = 3
+
+
+class PackageStatusInline(admin.TabularInline):
+    model = PackageStatus
+    extra = 3
 
 
 class ConfigurationEntryInline(admin.TabularInline):
@@ -12,16 +23,12 @@ class ConfigurationEntryInline(admin.TabularInline):
     extra = 3
 
 
-class PackageInline(admin.TabularInline):
-    model = Package
-    # Don't include a lot of extras, the intention is not that these lists
-    # should be updated manually.
-    extra = 1
-
-
 class PackageListAdmin(admin.ModelAdmin):
-    fields = ['name', 'uid']
-    inlines = [PackageInline]
+    inlines = [PackageStatusInline]
+
+
+class CustomPackagesAdmin(admin.ModelAdmin):
+    inlines = [PackageInstallInfoInline]
 
 
 class ConfigurationAdmin(admin.ModelAdmin):
@@ -39,8 +46,10 @@ class PCGroupAdmin(admin.ModelAdmin):
 
 
 ar(Configuration, ConfigurationAdmin)
-ar(PackageList, PackageListAdmin)
+ar(PackageList)
+ar(CustomPackages, CustomPackagesAdmin)
 ar(Site)
 ar(Distribution)
 ar(PCGroup, PCGroupAdmin)
 ar(PC)
+ar(Package)

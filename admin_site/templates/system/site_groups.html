@@ -4,229 +4,143 @@
 Grupper
 {% endblock %}
 
+{% block head_javascripts %}
+  <!--
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('.accordion-group:first-child').find('i').toggleClass('icon-chevron-up icon-chevron-down');
+      $('.accordion-toggle').click(function(event){
+        $(this).find('i').toggleClass('icon-chevron-up icon-chevron-down');
+        $('.accordion-group').each(function() {
+          if ($(this).find('.accordion-body').hasClass('in')) {
+            $(this).find('i').removeClass('icon-chevron-up').addClass('icon-chevron-down');
+          };
+        });
+      });
+    });
+  </script>
+  -->
+{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript" src="/media/js/package_lists.js"></script>
+<script type="text/javascript" src="/media/js/configlist.js"></script>
+<script type="text/javascript" src="/media/js/pclist.js"></script>
+{% endblock %}
+
+{% block groups_active %}
+class="active"
+{% endblock %}
+
 {% block specific_content %}
-
-
   <ul class="sublevelnav">
-    <li class="listutils"><a href="#" title=""><i class="icon-plus icon-white"></i> tilføj ny gruppe</a></li>
-    <li><a href="#"><i class="icon-tags"></i> Gruppe A</a></li>
-    <li class="active"><a href="#"><i class="icon-tags"></i> Gruppe B</a></li>
-    <li><a href="#"><i class="icon-tags"></i> Gruppe C</a></li>
-    <li><a href="#"><i class="icon-tags"></i> Gruppe D</a></li>
-    <li><a href="#"><i class="icon-tags"></i> Gruppe E</a></li>
-    <li><a href="#"><i class="icon-tags"></i> Gruppe F</a></li>
+      <li class="listutils">
+        <a href="#addNewGroup" role="button" data-toggle="modal" title="tilføj ny gruppe"><i class="icon-plus icon-white"></i> tilføj ny gruppe</a>
+      </li>
+      {% for group in site.groups.all %}
+      <li {% ifequal group selected_group %}class="active"{% endifequal %}><a
+          href="/site/{{ site.url }}/groups/{{ group.url }}/"><i class="icon-tags"></i> {{ group.name }}</a></li>
+      {% endfor %}
   </ul>
   
   <div class="container-fluid main sublevelmain">
     
-    <h2 class="divideheader">Detaljer om <em>Gruppe B</em></h2>
+    <h2 class="divideheader">Detaljer om <em>{{ selected_group.name }}</em></h2>
+    {% include 'notification.html' %}
     
-    <button class="btn btn-primary">Gem ændringer</button>
-    <button class="btn">Annuller</button>
-          
-    <hr>
+    <form name="updategroupform" id="updategroupform"
+      action="{% url 'group' site.uid selected_group.url %}"
+      method="post" class="row-fluid">
     
-    <form class="row-fluid">
-      <fieldset class="span6">
+      <button class="btn btn-primary">Gem ændringer</button>
+      <button class="btn" onclick="return BibOS.PackageList.cancelEditing()">Annuller</button>
+      {% if selected_group.is_delete_allowed %}
+      <br />
+      <a  href="/site/{{ site.url }}/groups/{{ selected_group.url }}/delete/">Slet Gruppe</a>
+      {% endif %}
+      <div class="accordion" id="accordion2">
         
-        <label>Navn:</label>
-        <input type="text" value="Gruppe B">
-        
-        <label>Beskrivelse:</label>
-        <textarea>Gruppe af PCere i afd. for børnelitteratur</textarea>
-        
-      </fieldset>
-      <fieldset class="span6">
-        
-        <label>Maskiner i denne gruppe:</label>
-        <ul class="unstyled well actionlist">
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-hdd"></i> Computer A</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern maskine</a></li>
-              </ul>
+        <div class="accordion-group">
+          <div class="accordion-heading">
+            <a class="accordion-toggle btn" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+              Detaljer <i class="icon-chevron-down pull-right"></i>
+            </a>
+          </div>
+          <div id="collapseOne" class="accordion-body collapse in">
+            <div class="accordion-inner">
+              <div class="row-fluid">
+                <fieldset class="span6">
+                  {% csrf_token %}
+                  <label for="id_name">Navn:</label>
+                  {{ form.name.errors }}
+                  {{ form.name }}
+
+                  <label for="id_uid">Id:</label>
+                  {{ form.uid.errors }}
+                  {{ form.uid }}
+
+                  <label for="id_description">Beskrivelse:</label>
+                  {{ form.description.errors }}
+                  {{ form.description }}
+                </fieldset>
+                <fieldset class="span6">
+                  <label for="id_pcs">Computere i denne gruppe:</label>
+                  {{ form.pcs.errors }}
+                  {% include 'system/pclist/list.html' with submit_name='pcs' %}
+                </fieldset>
+              </div>
             </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-hdd"></i> Computer Z</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-hdd"></i> Computer D</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-hdd"></i> Computer E</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li><a href="#" title="Tilføj maskine"><i class="icon-plus"></i> tilføj maskiner</a></li>
-        </ul>
+          </div>
+        </div>
         
-      </fieldset>
-    </form>
-    <hr>
-    <div class="row-fluid">
-      <div class="span6">
-          
-        <label>Konfigurationer for maskiner i denne gruppe:</label>
-        <div class="well">
-          <table class="table table-condensed table-hover">
-            <tr>
-              <th>Nøgle</th>
-              <th>Værdi</th>
-            </tr>
-            <tr class="muted">
-              <td>Automatic update</td>
-              <td>
-                <div class="btn-group profile dark">
-                  <a class="dropdown-toggle btn" data-toggle="dropdown" href="#">false</a>
-                  <ul class="dropdown-menu">
-                    <li><a href="#"><i class="icon-edit"></i> Redigér</a></li>
-                    <li><a href="#"><i class="icon-remove"></i> Slet konfiguration</a></li>
-                  </ul>
-                </div>
-              </td>
-            </tr>
-            <tr class="muted">
-              <td>Logout timeout</td>
-              <td>
-                <div class="btn-group profile dark">
-                  <a class="dropdown-toggle btn" data-toggle="dropdown" href="#">180 min</a>
-                  <ul class="dropdown-menu">
-                    <li><a href="#"><i class="icon-edit"></i> Redigér</a></li>
-                    <li><a href="#"><i class="icon-remove"></i> Slet konfiguration</a></li>
-                  </ul>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2">
-                <a href="#" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj konfiguration</a>
-              </td>
-            </tr>
-          </table>
+        <div class="accordion-group">
+          <div class="accordion-heading">
+            <a class="accordion-toggle btn" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+              Konfigurationer <i class="icon-chevron-down pull-right"></i>
+            </a>
+          </div>
+          <div id="collapseTwo" class="accordion-body collapse">
+            <div class="accordion-inner">
+              {% include 'system/configlist/list.html' with entries=selected_group.configuration.entries.all cnf_id='group_configuration' %}
+            </div>
+          </div>
+        </div>
+        <div class="accordion-group">
+          <div class="accordion-heading">
+            <a class="accordion-toggle btn" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">
+              Pakker <i class="icon-chevron-down pull-right"></i>
+            </a>
+          </div>
+          <div id="collapseThree" class="accordion-body collapse">
+            <div class="accordion-inner">
+              {% include 'system/package_lists/list.html' with packages=package_infos pl_id='group_packages'%}
+            </div>
+          </div>
         </div>
         
       </div>
-      <div class="span6">
-        
-        <label>Pakker:</label>
-        <ul class="unstyled well actionlist">
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="label label-success">libvar64</span></a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern pakke</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="label label-success">Danish-language-files</span></a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern pakke</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="label label-success">dist-patch-3.0.236</span></a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern pakke</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#">Distribution-upgrade-3.0</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern pakke for denne maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#">libmoghills</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern pakke for denne maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#">dist-patch-3.0.234</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern pakke for denne maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="label label-important">MS-font-faces</span></a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-plus"></i> Acceptér pakke for denne maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#">dist-patch-3.0.233</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern pakke for denne maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="label label-important">Ubuntu-font-faces</span></a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-plus"></i> Acceptér pakke for denne maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#">libdipvip32</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern pakke for denne maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#">MS-font-faces-arabic</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern pakke for denne maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="btn-group profile dark">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#">dist-patch-3.0.0</a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="icon-remove"></i> Fjern pakke for denne maskine</a></li>
-              </ul>
-            </div>
-          </li>
-          <li><a href="#" title="Tilføj pakke"><i class="icon-plus"></i> tilføj pakker</a></li>
-        </ul>
-        
-      </div>
       
+    </form>
+
+    <div id="addNewGroup" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <form action="{% url 'new_group' site.uid %}" name="new_group_form" id="new_group_form" method="post">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">×</button>
+          <h3>Tilføj ny gruppe</h3>
+        </div>
+        <div class="modal-body">
+            {% csrf_token %}
+            {{ newform.as_p }}
+        </div>
+        <div class="modal-footer">
+          <input type="submit" class="btn btn-primary" value="Gem" />
+          <input type="reset" class="btn" data-dismiss="modal" value="Annuller" />
+        </div>
+      </form>
     </div>
-    
+
+    {% include 'system/package_lists/templates.html' %}
+    {% include 'system/configlist/templates.html' %}
+
   </div>
 {% endblock %}

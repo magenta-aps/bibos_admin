@@ -11,11 +11,10 @@ TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     ('Carsten Agger', 'agger@magenta-aps.dk'),
-    ('Jørgen Ulrik B. Kragh', 'jubk@magenta-aps.dk'),
+    ('Jørgen Ulrik B. Krag', 'jubk@magenta-aps.dk'),
 )
 
 MANAGERS = ADMINS
-
 
 
 DATABASES = {
@@ -42,11 +41,11 @@ ALLOWED_HOSTS = []
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'Europe/Copenhagen'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'da-DK'
 
 SITE_ID = 1
 
@@ -155,10 +154,14 @@ DJANGO_APPS = (
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 XMLRPC_METHODS = (
-    ('system.xmlrpc.register_new_computer', 'register_new_computer'),
-    ('system.xmlrpc.send_status_info', 'send_status_info'),
-    ('system.xmlrpc.get_instructions', 'get_instructions')
+    ('system.rpc.register_new_computer', 'register_new_computer'),
+    ('system.rpc.send_status_info', 'send_status_info'),
+    ('system.rpc.upload_dist_packages', 'upload_dist_packages'),
+    ('system.rpc.get_instructions', 'get_instructions'),
+    ('system.rpc.get_proxy_setup', 'get_proxy_setup'),
+    ('system.rpc.push_config_keys', 'push_config_keys')
 )
+
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.
@@ -189,3 +192,38 @@ LOGGING = {
 }
 
 AUTH_PROFILE_MODULE = 'account.UserProfile'
+
+ETC_DIR = os.path.join(install_dir, 'etc')
+PROXY_HTPASSWD_FILE = os.path.join(ETC_DIR, 'bibos-proxy.htpasswd')
+
+# List of hosts that should be allowed through BibOS gateway proxies
+DEFAULT_ALLOWED_PROXY_HOSTS = [
+    # Ubuntu sources
+    '.archive.ubuntu.com',
+    'ports.ubuntu.com',
+    'security.ubuntu.com',
+    'ddebs.ubuntu.com',
+    'mirror.ubuntu.com',
+    '.archive.canonical.com',
+    'extras.ubuntu.com',
+    'changelogs.ubuntu.com',
+
+    # BibOS sites
+    'bibos-admin.magenta-aps.dk',
+    'bibos-admin.ventiltest.dk',
+    'bibos.web06.magenta-aps.dk',
+
+    # Extra application sources
+    'dl.google.com',
+    'downloads.sourcefourge.net',
+]
+
+# List of hosts that should be proxied directly from the gateway and
+# not through the central server
+DEFAULT_DIRECT_PROXY_HOSTS = [
+    '.archive.ubuntu.com',
+    'bibos-admin.magenta-aps.dk',
+    'bibos-admin.ventiltest.dk'
+]
+
+CLOSED_DISTRIBUTIONS = [ 'BIBOS', ]

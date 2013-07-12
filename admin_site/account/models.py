@@ -4,11 +4,10 @@ from django.contrib.auth.models import User
 
 from system.models import Site
 
-
 class UserProfile(models.Model):
     """BibOS Admin specific user profile."""
     # This is the user to which the profile belongs
-    user = models.ForeignKey(User, unique=True)
+    user = models.ForeignKey(User, unique=True, related_name='bibos_profile')
 
     SUPER_ADMIN = 0
     SITE_USER = 1
@@ -18,6 +17,13 @@ class UserProfile(models.Model):
         (SITE_USER, _("Site User")),
         (SITE_ADMIN, _("Site Admin"))
     )
+
+    # The choices that can be used on the non-admin part of the website
+    NON_ADMIN_CHOICES = (
+        (SITE_USER, _("Site User")),
+        (SITE_ADMIN, _("Site Admin"))
+    )
+
     type = models.IntegerField(choices=type_choices, default=SITE_USER)
     site = models.ForeignKey(Site, null=True, blank=True)
     # TODO: Add more fields/user options as needed.

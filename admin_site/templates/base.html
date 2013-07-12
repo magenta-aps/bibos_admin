@@ -8,15 +8,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="/media/css/bootstrap.min.css" rel="stylesheet" media="screen">
   <link href="/media/css/custom.css" rel="stylesheet" media="screen">
+  {% block stylesheets %}
+  {% endblock %}
+  <script src="http://code.jquery.com/jquery.js"></script>
+  <script src="/media/js/custom.js"></script>
+  {% block head_javascripts %}
+  {% endblock %}
 </head>
 
 <body>
-
-    {% block body %}
-    {% endblock %}
-
-    <script src="http://code.jquery.com/jquery.js"></script>
-    <script src="/media/js/bootstrap.min.js"></script>
-    <script src="/media/js/custom.js"></script>
+  {% block body %}
+  {% endblock %}
+  <script src="/media/js/bootstrap.min.js"></script>
+  {% block javascripts %}
+  {% endblock %}
 </body>
 </html>

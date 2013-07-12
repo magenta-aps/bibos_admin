@@ -1,21 +1,38 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.core.exceptions import FieldError
+from django.core.urlresolvers import reverse
 
-from system.models import PC
+from system.models import PC, Site
+
+import datetime
 
 
 class Script(models.Model):
     """A script to be performed on a registered client computer."""
     name = models.CharField(_('name'), max_length=255)
-    description = models.CharField(_('description'), max_length=1024)
+    description = models.TextField(_('description'), max_length=4096)
+    site = models.ForeignKey(Site, related_name='scripts',
+                             null=True, blank=True)
     # The executable_code field should contain a single executable (e.g. a Bash
     # script OR a single extractable .zip or .tar.gz file with all necessary
     # data.
     executable_code = models.FileField(_('executable code'),
                                        upload_to='site_media/script_uploads')
 
+    @property
+    def is_global(self):
+        return self.site is None
+
     def __unicode__(self):
         return self.name
+
+    def get_absolute_url(self, **kwargs):
+        if 'site_uid' in kwargs:
+            site_uid = kwargs['site_uid']
+        else:
+            site_uid = self.site.uid
+        return reverse('script', args=(site_uid, self.pk))
 
 
 class Batch(models.Model):
@@ -24,8 +41,8 @@ class Batch(models.Model):
     # TODO: The name should probably be generated automatically from ID and
     # script and date, etc.
     name = models.CharField(_('name'), max_length=255)
-    targets = models.ManyToManyField(PC, related_name='targets', blank=True)
     script = models.ForeignKey(Script)
+    site = models.ForeignKey(Site, related_name='batches')
 
     def __unicode__(self):
         return self.name
@@ -40,24 +57,84 @@ class Job(models.Model):
     RUNNING = 'RUNNING'
     DONE = 'DONE'
     FAILED = 'FAILED'
+    RESOLVED = 'RESOLVED'
+
     STATUS_CHOICES = (
         (NEW, _('New')),
         (SUBMITTED, _('Submitted')),
         (RUNNING, _('Running')),
         (DONE, _('Done')),
-        (FAILED, _('Failed'))
+        (FAILED, _('Failed')),
+        (RESOLVED, _('Resolved'))
     )
+
+    STATUS_TO_LABEL = {
+        NEW: '',
+        SUBMITTED: 'label-info',
+        RUNNING: 'label-warning',
+        DONE: 'label-success',
+        FAILED: 'label-important',
+        RESOLVED: 'label-success'
+    }
+
     # Fields
     # Use built-in ID field for ID.
     status = models.CharField(max_length=10, choices=STATUS_CHOICES,
                               default=NEW)
     log_output = models.CharField(_('log output'), max_length=4096, blank=True)
-    started = models.DateTimeField(_('started'))
-    finished = models.DateTimeField(_('finished'))
-    batch = models.ForeignKey(Batch)
+    started = models.DateTimeField(_('started'), null=True)
+    finished = models.DateTimeField(_('finished'), null=True)
+    batch = models.ForeignKey(Batch, related_name='jobs')
+    pc = models.ForeignKey(PC, related_name='jobs')
 
     def __unicode__(self):
         return '_'.join(map(unicode, [self.batch, self.id]))
+
+    @property
+    def status_label(self):
+        if self.status is None:
+            return ''
+        else:
+            return Job.STATUS_TO_LABEL[self.status]
+
+    @property
+    def failed(self):
+        return self.status == Job.FAILED
+
+    def resolve(self):
+        if self.failed:
+            self.status = Job.RESOLVED
+            self.save()
+        else:
+            raise Exception(_('Cannot change status from %s to %s') % (
+                self.status,
+                Job.RESOLVED
+            ))
+
+    def restart(self):
+        if not self.failed:
+            raise Exception(_('Can only restart jobs with status %s') % (
+                Job.FAILED
+            ))
+        # Create a new batch
+        now_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        script = self.batch.script
+        new_batch = Batch(site=self.batch.site, script=script,
+                          name=' '.join([script.name, now_str]))
+        new_batch.save()
+        for p in self.batch.parameters.all():
+            new_p = Parameter(
+                input=p.input,
+                batch=new_batch,
+                file_value=p.file_value,
+                string_value=p.string_value
+            )
+            new_p.save()
+        new_job = Job(batch=new_batch, pc=self.pc)
+        new_job.save()
+        self.resolve()
+
+        return new_job
 
 
 class Input(models.Model):
@@ -81,7 +158,7 @@ class Input(models.Model):
                                   max_length=10)
     position = models.IntegerField(_('position'))
     mandatory = models.BooleanField(_('mandatory'), default=True)
-    script = models.ForeignKey(Script)
+    script = models.ForeignKey(Script, related_name='inputs')
 
     def __unicode__(self):
         return self.name
@@ -90,14 +167,19 @@ class Input(models.Model):
 class Parameter(models.Model):
     """An input parameter for a job, a script, etc."""
 
-    string_value = models.CharField(max_length=4096)
-    integer_value = models.IntegerField()
-    date_value = models.DateTimeField()
-    file_value = models.FileField(upload_to='site_media/parameter_uploads')
-    # TODO: This field is redundant, replace with lookup on input
-    value_type = models.CharField(_('value type'), choices=Input.VALUE_CHOICES,
-                                 max_length=10)
+    string_value = models.CharField(max_length=4096, null=True, blank=True)
+    file_value = models.FileField(upload_to='site_media/parameter_uploads',
+                                  null=True,
+                                  blank=True)
     # which input does this belong to?
     input = models.ForeignKey(Input)
     # and which batch are we running?
-    batch = models.ForeignKey(Batch)
+    batch = models.ForeignKey(Batch, related_name='parameters')
+
+    @property
+    def transfer_value(self):
+        input_type = self.input.value_type
+        if input_type == Input.FILE:
+            return self.file_value.url
+        else:
+            return self.string_value

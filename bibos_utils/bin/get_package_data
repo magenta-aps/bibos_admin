@@ -9,7 +9,7 @@ fi
 
 # Awesome oneliner to extract package data as CSV field - spread on more lines 
 # for enhanced legibility.
-for PACKAGE in $(dpkg --get-selections  | awk ' { print $1; } ')
-do 
-    echo $PACKAGE\;$(dpkg -s $PACKAGE | grep Status | cut -d ':' -f 2)\;$(dpkg -s $PACKAGE | grep Version | cut -d ' ' -f 2)\;$(dpkg -l $PACKAGE | grep $PACKAGE | cut -c 99-)
-done > $FILENAME
+
+dpkg-query -W -f '${Package};${Status};${Version};${Description}\n' | \
+    grep -v '^ ' | \
+    grep "." > $FILENAME

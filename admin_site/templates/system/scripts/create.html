@@ -1,0 +1,57 @@
+{% extends "site_with_navigation.html" %}
+
+{% block specific_title %}
+Scripts
+{% endblock %}
+
+{% block scripts_active %}
+class="active"
+{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript" src="/media/js/script_edit.js"></script>
+<script type="text/javascript">
+$(function() {
+var inputs = {{ script_inputs_json|safe }}
+$.each(inputs, function() {BibOS.ScriptEdit.addInput('#create-script-inputs', this)})
+})
+</script>
+{% endblock %}
+
+{% block specific_content %}
+  <div class="sublevelnav">
+    <div class="listutils"><a href="{% url 'new_script' site.uid %}" title="Tilføj nyt script"><i class="icon-plus icon-white"></i> tilføj nyt script</a></div>
+    {% include 'system/scripts/navigation.html' %}
+  </div>
+
+  {% include 'system/scripts/templates.html' %}
+
+  <div class="container-fluid main sublevelmain">
+    <h2 class="divideheader">
+      Opret script
+    </h2>
+
+    <form method="post" name="scriptform" id="scriptform"
+        action="{% url 'new_script' site.uid %}"
+        enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div>
+      {% include 'notification.html' %}
+      </div>
+      <input type="submit" class="btn btn-primary" value="Opret script" />
+      <button class="btn" onclick="location.href='{% url 'scripts' site.uid %}'; return false">Annuller</button>
+
+      <hr>
+      {% include 'system/scripts/form.html' %}
+    </form>
+  </div>  
+
+{% endblock %}
+
+
+{% block script_form_heading %}
+{% endblock %}
+
+{% block script_edit_controls %}
+{% endblock %}

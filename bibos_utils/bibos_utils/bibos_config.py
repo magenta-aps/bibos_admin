@@ -35,6 +35,9 @@ class BibOSConfig():
         try:
             stream = open(self.filename, "r")
             self.yamldata = yaml.load(stream)
+            # Load returns None when the file is empty, but we need a dict
+            if self.yamldata is None:
+                self.yamldata = {}
         except IOError as e:
             if e.errno == 2:
                 # File does not exist -> empty YAML dictionary.
@@ -86,6 +89,21 @@ class BibOSConfig():
             raise
 
         return current[key]
+
+    def remove_key(self, key):
+        current = self.yamldata
+        try:
+            i = key.find(".")
+            while (i != -1):
+                subkey = key[:i]
+                current = current[subkey]
+                key = key[i + 1:]
+                i = key.find(".")
+        except:
+            raise
+
+        if key in current:
+            del current[key]
 
     def get_data(self):
         return self.yamldata

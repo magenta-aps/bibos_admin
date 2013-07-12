@@ -1,0 +1,67 @@
+  {% if form.non_field_errors %}
+  <font color="red">
+      {{ form.non_field_errors }}
+  </font>
+  {% endif %}
+
+  <fieldset>
+    <div class="row-fluid">
+      <p>
+        <label for="{{ form.username.id_for_label }}">Brugernavn:</label>
+        {{ form.username.errors }}
+        {{ form.username }}
+      </p>
+      <p>
+        <label for="{{ form.new_password.id_for_label }}">Adgangskode (udfyld for at skifte):</label>
+        {{ form.new_password.errors }}
+        {{ form.new_password }}
+        <input class="hiddenpasswordfield" type="text" id="{{ form.new_password.id_for_label }}_pwshadow" type="text" />
+
+        <label style="display: inline; margin-left: 10px;" for="{{ form_id|default:'user_form' }}_show_password">
+        <input style="vertical-align: baseline;" id="{{ form_id|default:'user_form' }}_show_password" type="checkbox" class="showpasswordcheckbox" tabindex="100"/> Vis Password</label>
+
+        <label for="{{ form.password_confirm.id_for_label }}">Adgangskode (igen):</label>
+        {{ form.password_confirm.errors }}
+        {{ form.password_confirm }}
+        <input class="hiddenpasswordfield" type="text" id="{{ form.password_confirm.id_for_label }}_pwshadow" type="text" />
+      </p>
+      <p>
+        <label for="{{ form.email.id_for_label }}">E-mail adresse:</label>
+        {{ form.email.errors }}
+        {{ form.email }}
+      </p>
+    </div>
+    </fieldset>
+    <fieldset>
+      <div class="row-fluid">
+        <div class="span6">
+          <label for="{{ form.usertype.id_for_label }}">Brugertype:</label>
+          {{ form.usertype.errors }}
+          {{ form.usertype }}
+        </div>
+      </div>
+  </fieldset>
+
+<script type="text/javascript">
+  $(function() {
+    var form = $('#{{ form_id|default:'user_form' }}');
+
+    // Hide and readonly the shadow fields
+    form.find('input.hiddenpasswordfield').hide().attr('readonly', 'readonly');
+    form.find('input.passwordinput').blur(function() {
+      var t = $(this);
+      $('#' + t.attr('id') + '_pwshadow').val(t.val())
+    })
+
+    // Setup checkbox handler
+    form.find('.showpasswordcheckbox').on('click', function() {
+      if($(this).is(':checked')) {
+        form.find('input.passwordinput').hide();
+        form.find('input.hiddenpasswordfield').show();
+      } else {
+        form.find('input.hiddenpasswordfield').hide();
+        form.find('input.passwordinput').show();
+      }
+    })
+  })
+</script>

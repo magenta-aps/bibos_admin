@@ -1,0 +1,573 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.7: http://docutils.sourceforge.net/" />
+<title>Bibos Admin: Dokumentation af globale scripts</title>
+<style type="text/css">
+
+/*
+:Author: David Goodger (goodger@python.org)
+:Id: $Id: html4css1.css 6253 2010-03-02 00:24:53Z milde $
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+
+See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin: 0 0 0.5em 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left, .figure.align-left, object.align-left {
+  clear: left ;
+  float: left ;
+  margin-right: 1em }
+
+img.align-right, .figure.align-right, object.align-right {
+  clear: right ;
+  float: right ;
+  margin-left: 1em }
+
+img.align-center, .figure.align-center, object.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.align-left {
+  text-align: left }
+
+.align-center {
+  clear: both ;
+  text-align: center }
+
+.align-right {
+  text-align: right }
+
+/* reset inner alignment in figures */
+div.align-right {
+  text-align: left }
+
+/* div.align-center * { */
+/*   text-align: left } */
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font: inherit }
+
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document" id="bibos-admin-dokumentation-af-globale-scripts">
+<h1 class="title">Bibos Admin: Dokumentation af globale scripts</h1>
+
+<div class="section" id="indledning">
+<h1>Indledning</h1>
+<p>Denne fil indeholder dokumentation for de globale scripts til
+BibOSAdmin-interfacet, der leveres sammen med selve systemet.</p>
+<p>For hvert område indeholder dokumentet en omtale af de scripts, der findes; en
+specifikation af de parametre, de tager; og en bemærkning om, hvilke ting man
+skal passe på, når man kører scriptet.</p>
+<p>De her beskrevne scrips er alle lagt ind som globale scripts på admin-sitet og
+kildekoden til dem kan findes her: <a class="reference external" href="https://bibos-admin.magenta-aps.dk/scripts">https://bibos-admin.magenta-aps.dk/scripts</a></p>
+<p>Alle scripts, der vedrører publikumsbrugerens opsætning, kan først forventes at
+få effekt, når brugeren er logget ud og logget ind igen efter kørslen.</p>
+</div>
+<div class="section" id="automatisk-opdatering">
+<h1>Automatisk opdatering</h1>
+<dl class="docutils">
+<dt><em>Script:</em></dt>
+<dd>handle_unattended_upgrades.sh</dd>
+<dt><em>Parametre:</em></dt>
+<dd><ul class="first last simple">
+<li>interval - antal dage mellem checks, 0 for at slå fra</li>
+<li>distribution - &quot;all&quot; for alle, &quot;security&quot; for kun sikkerhedsopdateringer og
+&quot;pass&quot; for ingen ændring.</li>
+</ul>
+</dd>
+</dl>
+<p>Det er muligt at indstille, at en computer selv skal hente og installere
+opdateringer uden om admin-systemet.</p>
+<p>Der er to parametre, der kan skrues på her: Om den automatiske installation
+skal være slået til eller fra, og om den skal hente alle opdateringer eller kun
+sikkerhedsopdateringer. Hvis parametrene ikke indeholder det, der er
+specificeret herover, vil scriptet fejle eller ikke have nogen effekt.</p>
+<p>Scriptet kan findes som globalt script på admin-sitet
+under navnet &quot;Automatiske opdateringer&quot;.</p>
+</div>
+<div class="section" id="skifte-browserstartside">
+<h1>Skifte browserstartside</h1>
+<dl class="docutils">
+<dt><em>Scripts:</em></dt>
+<dd>change_firefox_startpage.sh
+change_chrome_startpage.py</dd>
+<dt><em>Parametre:</em></dt>
+<dd><ul class="first last simple">
+<li>URL - adressen på den hjemmeside, man ønsker at sætte som startside.</li>
+</ul>
+</dd>
+</dl>
+<p>Der foretages ingen validering af, at URL'en angiver en gyldig
+hjemmeside-adresse, eller at adressen eksisterer.</p>
+<p>De to scripts kan findes som hhv. &quot;Startside for Google Chrome&quot; og &quot;Startside
+for Mozilla Firefox&quot; under &quot;Globale Scripts&quot;.</p>
+</div>
+<div class="section" id="skifte-browserbogmaerker">
+<h1>Skifte browserbogmærker</h1>
+<dl class="docutils">
+<dt><em>Scripts:</em></dt>
+<dd>upload_firefox_bookmarks.sh
+upload_googlechrome_bookmarks.sh</dd>
+<dt><em>Parametre:</em></dt>
+<dd><ul class="first last simple">
+<li>bookmark_file - en fil, der indeholder de ønskede bogmærker.</li>
+</ul>
+</dd>
+</dl>
+<p>For at bruge disse scripts er det nødvendigt at finde ud af, hvor Firefox og
+Chrome gemmer bogmærkerne henne. På en BibOS-maskine er det (ud fra brugerens
+hjemmemappe) er det i .mozilla/firefox/e1362422.default/ for Firefox og
+.config/google-chrome/Default/ for Google Chrome. Hvis du arbejder på en
+Linux-maskine vil de ligge noget i retning af samme sted; på Windows og Mac kan
+de ligge andre steder.</p>
+<p>For begge browseres vedkommende gælder, at du på én maskine skal tilpasse
+bogmærkerne, så de er, præcis som du ønsker det, og (vigtigt!) lukke browseren.
+Herefter skal du for Firefox' vedkommende køre Firefox-scriptet med den <em>nyeste</em>
+fil i &quot;bookmarkbackups&quot;-mappen som parameter. Hvis det er Google Chrome, du
+ønsker at give nye bogmærker, skal du køre Chrome-scriptet med filen
+&quot;Bookmarks&quot; i Default-mappen som parameter.</p>
+<p>Begge scripts vil kun virke hvis den fil, man angiver som parameter, faktisk
+eksisterer, men der foretages ingen validering af, at den indeholder noget
+fornuftigt.</p>
+<p>De to scripts ligger i &quot;Global Scripts&quot; under navnet &quot;Bogmærker for Firefox&quot;
+hhv &quot;Bogmærker for Google Chrome&quot;.</p>
+</div>
+<div class="section" id="skifte-skrivebordsbaggrund">
+<h1>Skifte skrivebordsbaggrund</h1>
+<dl class="docutils">
+<dt><em>Script:</em></dt>
+<dd>change_background.sh</dd>
+<dt><em>Parametre:</em></dt>
+<dd><ul class="first last simple">
+<li>image_file - en fil, der indeholder det billede, der ønskes sat som
+baggrund.</li>
+</ul>
+</dd>
+</dl>
+<p>Dette er lige ud ad landevejen. Der foretages ingen validering af, at
+den fil, der gives med, faktisk er en billedfil.</p>
+<p>I &quot;Global Scripts&quot; ligger dette script under navnet &quot;Skift baggrundsbillede&quot;.</p>
+</div>
+<div class="section" id="aendre-tekst-i-infoboks-pa-skrivebordet">
+<h1>Ændre tekst i infoboks på skrivebordet</h1>
+<dl class="docutils">
+<dt><em>Script:</em></dt>
+<dd>change_desktop_warning.sh</dd>
+<dt><em>Parametre:</em></dt>
+<dd><ul class="first last simple">
+<li>image_file - en billedfil, der indeholder den nye advarsel.</li>
+</ul>
+</dd>
+</dl>
+<p>Dette script udskifter grundlæggende den nuværende advarsel med en anden, der
+uploades som billedfil. Det er altså op til brugeren/biblioteket selv at
+generere en billedfil.</p>
+<p>Der foretages ingen validering af, at den medsendte fil faktisk indeholder et
+billede, der vil se fornuftigt ud på skrivebordet.</p>
+<p>Ligger i &quot;Globale Scripts&quot; som &quot;Skift infoboks på skrivebordet&quot;.</p>
+</div>
+<div class="section" id="aendre-url-til-hjaelp-pa-skrivebordet">
+<h1>Ændre URL til &quot;Hjælp&quot; på skrivebordet</h1>
+<dl class="docutils">
+<dt><em>Script:</em></dt>
+<dd>change_url_for_help_link.sh</dd>
+<dt><em>Parametre:</em></dt>
+<dd><ul class="first last simple">
+<li>URL - den nye URL til hjælpelinket.</li>
+</ul>
+</dd>
+</dl>
+<p>Igen lige ud ad landevejen - send en URL med som parameter, og linket på
+skrivebordet vil pege på en ny &quot;hjælpe&quot;-URL. Der foretages ingen validering af,
+at den medsendte parameter faktisk er en gyldig URL.</p>
+<p>Scriptet ligger i &quot;Globale Scripts&quot; under navnet &quot;Ændre hjælpe-ikon på
+skrivebord&quot;.</p>
+</div>
+<div class="section" id="skifte-password-for-bruger-og-superbruger">
+<h1>Skifte password for bruger og superbruger</h1>
+<dl class="docutils">
+<dt><em>Scripts:</em></dt>
+<dd>change_superuser_password.sh
+change_user_password.sh</dd>
+</dl>
+<p><em>Parametre:</em></p>
+<blockquote>
+<ul class="simple">
+<li>password</li>
+<li>passwordigen - det nye password og en gentagelse, for at sikre at brugeren
+kan skrive det to gange.</li>
+</ul>
+</blockquote>
+<p>Da publikumsbrugeren logger ind automatisk, er det normalt ikke nødvendigt at
+sætte et password for denne bruger.</p>
+<p>Det er derimod <em>meget vigtigt</em> at skifte fra standard-passwordet til et andet,
+så snart en BibOS-maskine er færdiginstalleret. Passwords vises p.t. i klartekst,
+når man indtaster dem. Pas derfor på ikke at blive kigget over skulderen e.l.</p>
+<p>Ligger i &quot;Globale Scripts&quot; under navnet &quot;Skift password for bruger&quot; hhv. &quot;Skift
+password for superbruger&quot;.</p>
+</div>
+<div class="section" id="oprette-nye-genveje-pa-skrivebordet">
+<h1>Oprette nye genveje på skrivebordet</h1>
+<dl class="docutils">
+<dt><em>Script:</em></dt>
+<dd>set_desktop_shortcut.sh</dd>
+<dt><em>Parametre:</em></dt>
+<dd>shortcut_file - en fil, der skal anbringes på skrivebordet.</dd>
+</dl>
+<p>Dette script gør dybest set ikke andet end at anbringe den fil, der uploades,
+på brugerens skrivebord. Hvis du ønsker en decideret genvej (en .desktop-fil),
+er det nødvendigt at fremstille den først.</p>
+<p>Ligger i &quot;Globale Scripts&quot; under navnet &quot;Genvej til skrivebord&quot;.</p>
+</div>
+<div class="section" id="mulighed-for-at-aktivere-automatisk-nedlukning-logoff">
+<h1>Mulighed for at aktivere automatisk nedlukning/logoff</h1>
+<dl class="docutils">
+<dt><em>Scripts:</em></dt>
+<dd>always_logout_after_time.sh
+logout_after_time.sh</dd>
+<dt><em>Parametre:</em></dt>
+<dd>minutes - det antal minutter efter hvilket brugeren skal smides af.</dd>
+</dl>
+<p>Disse to scripts virker lidt forskelligt. <em>always_logout_after_time.sh</em> logger
+brugeren ud X minutter efter hver login - hvor X er det antal minutter, der er
+specificeret som parameter. Hvis X er større end 5, varskos brugeren 5 minutter
+før.</p>
+<p><em>logout_after_time.sh</em> smider brugeren af én gang X minutter efter, at scriptet
+er kørt. I dette tilfælde sker det ved at computeren genstartes.</p>
+<p>NB: Brugeren har ingen mulighed for at undgå udlogningen eller nedlogningen.</p>
+<p>Scriptet til fast udlogning (ikke engangsscriptet) bliver dog nulstillet, hvis
+brugeren logger ud og logger ind igen.</p>
+<p>De to scripts kan findes under &quot;Globale Scripts&quot; som &quot;Log altid ud efter X
+minutter&quot; hhv &quot;Smid bruger af efter X minutter&quot;.</p>
+</div>
+<div class="section" id="log-ud">
+<h1>Log ud</h1>
+<dl class="docutils">
+<dt><em>Scripts:</em></dt>
+<dd>logout_button_just_logout.sh
+logout_shortcut_for_aarhus.sh</dd>
+<dt><em>Parametre:</em></dt>
+<dd>ingen</dd>
+</dl>
+<p>Det første af disse scripts anbringer en &quot;Log Ud&quot;-knap på skrivebordet. Det
+eneste, den gør, er at logge ud.</p>
+<p>Det andet script er Aarhus-specifikt; det anbringer en &quot;Log ud&quot;-knap på
+skrivebordet og sørger for, at brugeren altid logges af Internettet ved logout.</p>
+<p>Findes under &quot;Globale Scripts&quot; som hhv. &quot;Logout-knap&quot; og &quot;Logout-knap til
+Aarhus&quot;.</p>
+</div>
+<div class="section" id="mulighed-for-at-lukke-maskinen-pa-et-fast-tidspunkt-hver-dag">
+<h1>Mulighed for at lukke maskinen på et fast tidspunkt hver dag</h1>
+<dl class="docutils">
+<dt><em>Scripts:</em></dt>
+<dd>shutdown_at_time.sh</dd>
+<dt><em>Parametre:</em></dt>
+<dd>hours - timeangivelsen for det ønskede klokkeslet
+minutes - minutangivelsen for det ønskede klokkeslet</dd>
+</dl>
+<p>Scriptet sætter computeren til altid at lukke ned på et bestemt tidspunkt hver
+dag. Det kunne for eksempel være fem minutter efter lukketid. Brugeren varskos
+fem minutter før.</p>
+<p>NB: Brugeren har ingen mulighed for at undgå dette.</p>
+<p>Scriptet finder under &quot;Globale Scripts&quot; under navnet &quot;Lukker ned dagligt&quot;.</p>
+</div>
+<div class="section" id="aktivere-og-deaktivere-pauseskaerm">
+<h1>Aktivere og deaktivere pauseskærm</h1>
+<dl class="docutils">
+<dt><em>Scripts:</em></dt>
+<dd>xscreensaver_enable.sh
+xscreensaver_disable.sh
+xscreensaver_change_settings.sh</dd>
+<dt><em>Parametre:</em></dt>
+<dd>&quot;enable&quot; og &quot;disable&quot; tager ingen parametre.
+&quot;change_settings&quot; tager én parameter, nemlig en fil med indstillinger for
+xscreensaver.</dd>
+</dl>
+<p>For at aktivere pauseskærmen kører du &quot;enable&quot;. For at fjerne den igen og
+geninstallere Ubuntus egen &quot;blank skærms&quot;-baserede pauseskærm kører du
+&quot;disable&quot;.</p>
+<p>For at ændre indstillinger for pauseskærm tilretter du indstillingerne på én
+maskine, så de er præcis som du vil have dem, og kalder &quot;change_settings&quot; med
+filen &quot;.xscreensaver&quot; i din brugers hjemmemappe som parameter.</p>
+<p>Scriptet validerer ikke, at den uploadede fil indeholder noget fornuftigt.</p>
+<p>De tre scripts kan findes som henholdsvis &quot;Aktivér pauseskærm&quot;, &quot;Fjern
+pauseskærm&quot; og &quot;Ændre indstillinger for pauseskærm&quot; under &quot;Globale scripts&quot;.</p>
+</div>
+<div class="section" id="diagnostiske-scripts">
+<h1>Diagnostiske scripts</h1>
+<dl class="docutils">
+<dt><em>Scripts:</em></dt>
+<dd>diagnostics/env.sh
+diagnistics/fail.sh</dd>
+</dl>
+<p>Disse er mest beregnet til fejlfinding.</p>
+<p>&quot;env.sh&quot; lister de environment-variabler, der er tilgængelige for et
+BibOS-script.</p>
+<p>&quot;fail.sh&quot; er et script, der altid fejler, hvilket kan være nyttigt, hvis man
+gerne vil teste håndteringen af fejlede jobs.</p>
+</div>
+</div>
+</body>
+</html>

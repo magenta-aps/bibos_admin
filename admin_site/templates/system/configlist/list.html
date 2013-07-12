@@ -1,0 +1,21 @@
+{% if cnf_id %}
+<div class="well" id="{{ cnf_id }}">
+  <table class="table table-condensed table-hover">
+    <tr>
+      <th>Nøgle</th>
+      <th>Værdi</th>
+    </tr>
+  {% for entry in entries %}
+    {% include 'system/configlist/item.html' with pk=entry.pk key=entry.key value=entry.value submit_name=cnf_id %}
+  {% endfor %}
+    <tr>
+      <td colspan="2">
+        <input type="hidden" name="{{ cnf_id }}_new_entries" id="{{ cnf_id }}_new_entries" value="0" />
+        <a href="javascript:void(0)" onclick="BibOS.ConfigList.startAdd('{{ cnf_id }}')" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj konfiguration</a>
+      </td>
+    </tr>
+  </table>
+</div>
+{% else %}
+<p>You must specify a <em>cnf_id</em> when inserting a configuration list</p>
+{% endif %}

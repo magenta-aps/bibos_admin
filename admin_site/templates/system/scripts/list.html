@@ -1,0 +1,18 @@
+{% extends "site_with_navigation.html" %}
+
+{% block specific_title %}
+Scripts
+{% endblock %}
+
+{% block scripts_active %}
+class="active"
+{% endblock %}
+
+{% block specific_content %}
+  <div class="container-fluid main sublevelmain">
+    {% block script_specific_content %}
+      <h2>Vælg et script til venstre eller opret et nyt</h2>
+    {% endblock %}
+  </div>  
+
+{% endblock %}

@@ -6,6 +6,7 @@ import netifaces
 import os
 import sys
 import csv
+import urlparse
 
 from bibos_utils.bibos_config import BibOSConfig
 from bibos_client.admin_client import BibOSAdmin
@@ -17,9 +18,11 @@ data = config.get_data()
 hostname = data['hostname']
 site = data['site']
 distribution = data['distribution']
-admin_url = data['admin_url']
+admin_url = data.get('admin_url', 'http://bibos.magenta-aps.dk/')
+xml_rpc_url = data.get('xml_rpc_url', '/admin-xml/')
+urlparse.urljoin(admin_url, xml_rpc_url)
 
-admin = BibOSAdmin(admin_url)
+admin = BibOSAdmin(urlparse.urljoin(admin_url, xml_rpc_url))
 
 if not data.has_key('uid'):
     # Calculate UID and add to configuration
@@ -46,6 +49,8 @@ except Exception as e:
 
 # Computer created, now upload package data.
 
+# TODO: Do NOT do this. Factor to new program.
+"""
 os.system('get_package_data /tmp/packages.csv')
 
 with open('/tmp/packages.csv') as f:
@@ -57,3 +62,5 @@ try:
 except Exception as e:
     print >> sys.stderr, 'Error:', str(e)
     sys.exit(1)
+"""
+

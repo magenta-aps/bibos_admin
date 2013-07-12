@@ -1,0 +1,22 @@
+{% if submit_name %}
+<ul class="unstyled well actionlist" id="id_{{ submit_name }}">
+  {% for group in selected_groups %}
+    {% include 'system/pcgrouplist/item.html' with pk=group.pk name=group.name selected='yes' %}
+  {% endfor %}
+  <li class="addgrouptrigger">
+    <a href="#" title="Tilføj ny gruppe"><i class="icon-plus"></i> tilføj ny gruppe</a>
+    <ul class="addgrouplist">
+      {% for group in available_groups %}
+        {% include 'system/pcgrouplist/item.html' with pk=group.pk name=group.name %}
+      {% endfor %}
+    </ul>
+  </li>
+</ul>
+<script type="text/javascript"><!--
+$(function() {
+  BibOS.PCGroupList.setupList('#id_{{ submit_name }}')
+});
+//--></script>
+{% else %}
+<p>You must specify a <em>submit_name</em> when including a pcgroup list.</p>
+{% endif %}

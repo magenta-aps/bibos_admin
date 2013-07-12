@@ -4,63 +4,31 @@
 Global konfiguration
 {% endblock %}
 
+{% block configuration_active %}
+class="active"
+{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript" src="/media/js/configlist.js"></script>
+{% endblock %}
+
+
 {% block specific_content %}
-
-
   <div class="container-fluid main">
-    
-    <button class="btn btn-primary">Gem ændringer</button>
-    <button class="btn">Annuller</button>
-          
-        <div class="well" style="margin-top: 20px;">
-          <table class="table table-condensed table-hover">
-            <tr class="welledth">
-              <th>Nøgle</th>
-              <th>Værdi</th>
-            </tr>
-            <tr class="muted">
-              <td>Automatic update</td>
-              <td>
-                <div class="btn-group profile dark">
-                  <a class="dropdown-toggle btn" data-toggle="dropdown" href="#">false</a>
-                  <ul class="dropdown-menu">
-                    <li><a href="#"><i class="icon-edit"></i> Redigér</a></li>
-                    <li><a href="#"><i class="icon-remove"></i> Slet konfiguration</a></li>
-                  </ul>
-                </div>
-              </td>
-            </tr>
-            <tr class="muted">
-              <td>Logout timeout</td>
-              <td>
-                <div class="btn-group profile dark">
-                  <a class="dropdown-toggle btn" data-toggle="dropdown" href="#">180 min</a>
-                  <ul class="dropdown-menu">
-                    <li><a href="#"><i class="icon-edit"></i> Redigér</a></li>
-                    <li><a href="#"><i class="icon-remove"></i> Slet konfiguration</a></li>
-                  </ul>
-                </div>
-              </td>
-            </tr>
-            <tr class="muted">
-              <td>Update on shutdown</td>
-              <td>
-                <div class="btn-group profile dark">
-                  <a class="dropdown-toggle btn" data-toggle="dropdown" href="#">True</a>
-                  <ul class="dropdown-menu">
-                    <li><a href="#"><i class="icon-edit"></i> Redigér</a></li>
-                    <li><a href="#"><i class="icon-remove"></i> Slet konfiguration</a></li>
-                  </ul>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2">
-                <a href="#" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj konfiguration</a>
-              </td>
-            </tr>
-          </table>
-        </div>
-    
+
+    <form action="{% url 'configuration' site.uid%}" method="post"
+      name="site_configuration_form" id="site_configuration_form">
+
+      {% include 'notification.html' %}
+
+      <div>
+        <button class="btn btn-primary">Gem ændringer</button>
+        <button class="btn" onclick="return ((location.href=location.href) && false)">Annuller</button>
+        {% csrf_token %}
+      </div>
+
+      {% include 'system/configlist/list.html' with entries=site_configs cnf_id='site_configs' %}
+      {% include 'system/configlist/templates.html' %}
+    </form>
   </div>
 {% endblock %}
