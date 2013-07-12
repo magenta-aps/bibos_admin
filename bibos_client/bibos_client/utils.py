@@ -41,7 +41,7 @@ def upload_packages():
     admin = BibOSAdmin(urlparse.urljoin(admin_url, xml_rpc_url))
 
     # TODO: Make option to turn off/avoid repeating this.
-    os.system('/usr/local/bin/get_package_data /tmp/packages.csv')
+    os.system('get_package_data /tmp/packages.csv')
 
     upgrade_pkgs = set(get_upgrade_packages())
 

@@ -7,8 +7,14 @@
       {{ form.description.errors }}
       <label for="{{ form.description.id_for_label }}">Beskrivelse:</label>
       {{ form.description }}
-      <label for="site">
-        <input type="checkbox" id="{{ form.prefix }}-site" name="site" value="{{ site.id }}" {% if not global_script %}checked="checked"{% endif %}>
+      <label for="id_{% if form.prefix %}{{ form.prefix }}-{% endif %}site">
+        <input
+          type="checkbox"
+          id="id_{% if form.prefix %}{{ form.prefix }}-{% endif %}site"
+          name="{% if form.prefix %}{{ form.prefix }}-{% endif %}site"
+          value="{{ site.id }}"
+          {% if not global_script %}checked="checked"{% endif %}
+        >
         Lokalt script for {{ site.uid }}
       </label>
       

@@ -190,4 +190,4 @@ class PCForm(forms.ModelForm):
         model = PC
         exclude = ('uid', 'configuration', 'package_list', 'site',
                    'is_update_required', 'creation_time', 'last_seen',
-                   'custom_packages')
+                   'custom_packages', 'do_send_package_info')

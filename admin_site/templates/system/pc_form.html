@@ -125,7 +125,7 @@ class="active"
             <div class="accordion-inner">
               <div><strong>Tilpasning af pakker kun på denne maskine</strong></div>
               {% include 'system/package_lists/list.html' with packages=package_infos pl_id='pc_packages'%}
-              {% if pending_packages_remove %}
+              {% if pending_packages_add %}
               <div><strong>Pakker der venter på at blive installeret på maskinen</strong></div>
               <ul>
                 {% for name in pending_packages_add %}

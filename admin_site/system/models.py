@@ -194,12 +194,12 @@ class PackageList(models.Model):
                                       blank=True)
 
     @property
-    def installed_packages(self):
-        return [s.package for s in self.statuses.filter(
+    def names_of_installed_package(self):
+        return self.statuses.filter(
             Q(status__startswith='install') |
             Q(status=PackageStatus.NEEDS_UPGRADE) |
             Q(status=PackageStatus.UPGRADE_PENDING)
-        )]
+        ).values_list('package__name', flat=True)
 
     @property
     def needs_upgrade_packages(self):
@@ -394,27 +394,28 @@ class PC(models.Model):
 
     @property
     def current_packages(self):
-        return set(p.name for p in self.package_list.installed_packages)
+        return set(self.package_list.names_of_installed_package)
 
     @property
     def wanted_packages(self):
         wanted_packages = set(
-            p.name for p in
-            self.distribution.package_list.installed_packages
+            self.distribution.package_list.names_of_installed_package
         )
 
         for group in self.pc_groups.all():
-            for ii in group.custom_packages.install_infos.all():
-                if ii.do_add:
-                    wanted_packages.add(ii.package.name)
+            iis = group.custom_packages.install_infos
+            for do_add, name in iis.values_list('do_add', 'package__name'):
+                if do_add:
+                    wanted_packages.add(name)
                 else:
-                    wanted_packages.discard(ii.package.name)
+                    wanted_packages.discard(name)
 
-        for ii in self.custom_packages.install_infos.all():
-            if ii.do_add:
-                wanted_packages.add(ii.package.name)
+        iis = self.custom_packages.install_infos
+        for do_add, name in iis.values_list('do_add', 'package__name'):
+            if do_add:
+                wanted_packages.add(name)
             else:
-                wanted_packages.discard(ii.package.name)
+                wanted_packages.discard(name)
 
         return wanted_packages
 
