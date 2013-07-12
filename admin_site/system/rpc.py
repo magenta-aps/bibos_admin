@@ -3,11 +3,13 @@
 
 import datetime
 import system.proxyconf
+from django.db.models import Q
+
+from django.conf import settings
 
 from models import PC, Site, Distribution, Configuration, ConfigurationEntry
 from models import PackageList, Package, PackageStatus, CustomPackages
 from job.models import Job
-from django.db.models import Q
 
 
 def register_new_computer(name, uid, distribution, site, configuration):
@@ -66,6 +68,10 @@ def upload_dist_packages(distribution_uid, package_data):
     fresh install of a standardized Debian-like system which is to be supported
     by the BibOS admin."""
 
+    if distribution_uid in settings.CLOSED_DISTRIBUTIONS:
+        # Ignore
+        return 0
+    
     distribution = Distribution.objects.get(uid=distribution_uid)
 
     if package_data is not None:
