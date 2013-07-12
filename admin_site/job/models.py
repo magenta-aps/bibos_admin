@@ -153,7 +153,7 @@ class Input(models.Model):
         (FILE, _('File'))
     )
 
-    name = models.CharField(_('name'), max_length=255, unique=True)
+    name = models.CharField(_('name'), max_length=255)
     value_type = models.CharField(_('value type'), choices=VALUE_CHOICES,
                                   max_length=10)
     position = models.IntegerField(_('position'))
