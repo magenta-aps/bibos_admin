@@ -8,6 +8,10 @@ Brugere
 class="active"
 {% endblock %}
 
+{% block specific_documentation_links %}
+  <li {% block admin_users_active %}{% endblock %}><a href="{% url 'doc' 'admin_users' %}"><i class="icon-list-alt icon-white"></i> Administration af brugere</a></li>
+{% endblock %}
+
 {% block specific_content %}
 
   <ul class="sublevelnav">

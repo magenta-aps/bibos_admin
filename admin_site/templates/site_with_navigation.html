@@ -26,6 +26,11 @@ class="detailpage"
     <li {% block scripts_active %}{% endblock %}><a href="/site/{{ site.url }}/scripts/"><i class="icon-list icon-white"></i> Scripts</a></li>
     <li class="divider"></li>
     <li {% block users_active %}{% endblock %}><a href="/site/{{site.url}}/users/"><i class="icon-user icon-white"></i> Brugere</a></li>
+    <li class="divider"></li>
+    <li class="nav-header"><a href="{% url 'doc_root' %}">Dokumentation</a></li>
+    <li></li>
+    {% block specific_documentation_links %}
+    {% endblock %}
   </ul>
 
   {% block specific_content %}

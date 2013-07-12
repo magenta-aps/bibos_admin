@@ -1,0 +1,14 @@
+{% extends 'documentation/index.html' %}
+
+{% block activate_pc_active %}class="active"{% endblock %}
+
+{% block specific_content %}
+  <h1>Aktivering af PC</h1>
+  <p>
+    Når du har installeret BibOS på en PC vil den dukke op i listen over nye
+    computere under <a href="{% url 'doc' 'getting_started' %}">site-status</a>.
+    Før du kan begynde at arbejde med maskinen skal du aktivere den.
+    Det gør du ved at klikke på computeren og sætte et hak i fluebenet "Aktiv" og klikke på "Gem ændringer".
+    Maskinen vil efterfølgende (inden for 10 minutter) uploade sin liste af installerede pakker og være klar til brug.
+  </p>
+{% endblock %}

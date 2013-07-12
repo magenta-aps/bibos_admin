@@ -1,0 +1,18 @@
+{% extends 'documentation/index.html' %}
+
+{% block install_usb_active %}class="active"{% endblock %}
+
+{% block specific_content %}
+  <h1>Installation af BibOS via USB</h1>
+  <p>
+    Installation fra USB foregår på stort set samme måde som
+    <a href="{% url 'doc' 'install_dvd' %}">installation via DVD</a>. Du skal
+    blot bruge programmet <a href="http://www.tuxboot.org/">tuxboot</a> til
+    at overføre ISO'et til USB-stick'en i stedet for at brænde en DVD.
+  </p>
+  <p>
+    Bemærk at USB-stick'en vil optræde som en harddisk på computeren under
+    installationen, så vær sikker på at vælge den rigtige harddisk når du
+    bliver spurgt hvor du vil installere.
+  </p>
+{% endblock %}

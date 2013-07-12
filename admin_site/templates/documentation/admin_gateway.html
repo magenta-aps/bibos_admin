@@ -1,0 +1,21 @@
+{% extends 'documentation/index.html' %}
+
+{% block admin_gateway_active %}class="active"{% endblock %}
+
+{% block specific_content %}
+  <h1>Administration af BibOS-gateway</h1>
+  <p>
+    Denne del af dokumentationen er stadig under udarbejdelse.
+  </p>
+  <p>
+    Man kan konfigurere en BibOS-gateway ved at sætte følgende
+    konfigurations-nøgler for maskinen og afvikle scriptet
+    <em>/usr/share/bibos/gateway/update_proxy_config.py</em> via sudo:
+    <ul>
+      <li>proxy_allowed_hosts</li>
+      <li>proxy_upstream_host</li>
+      <li>proxy_upstream_port</li>
+      <li>proxy_direct_hosts</li>
+    </ul>
+  </p>
+{% endblock %}

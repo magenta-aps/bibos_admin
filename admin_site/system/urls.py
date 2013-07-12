@@ -7,7 +7,7 @@ from views import SiteDetailView, UserCreate, UserUpdate, SiteConfiguration
 from views import ScriptList, ScriptUpdate, ScriptCreate, ScriptDelete
 from views import ScriptRun, PCUpdate, JobRestarter, MarkPackageUpgrade
 from views import ConfigurationEntryCreate, ConfigurationEntryUpdate
-from views import ConfigurationEntryDelete
+from views import ConfigurationEntryDelete, DocView
 from views import PackageSearch
 
 urlpatterns = patterns(
@@ -80,8 +80,9 @@ urlpatterns = patterns(
         UserDelete.as_view(), name='delete_user'),
 
     # Packages
-    url(r'^packages/',
-        PackageSearch.as_view(),
-        name='packages'),
+    url(r'^packages/', PackageSearch.as_view(), name='packages'),
 
+    # Documentation
+    url(r'^documentation/(?P<name>\w+)/', DocView.as_view(), name='doc'),
+    url(r'^documentation/', DocView.as_view(), name='doc_root'),
 )

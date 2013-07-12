@@ -14,6 +14,7 @@ from django.utils.html import escape
 
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import View, ListView, DetailView, RedirectView
+from django.views.generic import TemplateView
 
 from django.db.models import Q
 
@@ -27,6 +28,7 @@ from job.models import Job, Script, Input, Batch, Parameter
 from django.conf import settings
 import signals
 import re
+import os
 
 def set_notification_cookie(response, message):
     def js_escape(c):
@@ -1153,3 +1155,17 @@ class PackageSearch(JSONResponseMixin, ListView):
                 'description': p.description,
                 'version': p.version
             } for p in self.object_list])
+
+class DocView(TemplateView):
+    def get_template_names(self):
+        if 'name' in self.kwargs:
+            templatename = 'documentation/%s.html' % self.kwargs['name']
+        else:
+            templatename = 'documentation/getting_started.html'
+        print settings.TEMPLATE_DIRS[0] + templatename
+        if os.path.isfile(
+            '/'.join([settings.TEMPLATE_DIRS[0],templatename])
+        ):
+            return templatename
+        else:
+            raise Http404
