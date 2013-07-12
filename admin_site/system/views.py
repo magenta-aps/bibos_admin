@@ -29,13 +29,18 @@ import signals
 import re
 
 def set_notification_cookie(response, message):
-    def escaper(m):
-        i = ord(m.group(0))
-        return '%%u%X' % i if i > 255 else '%%%X' %i
+    def js_escape(c):
+        i = ord(c)
+        if i < 128:
+            return c
+        elif i < 256:
+            return '%%%X' % i
+        else:
+            return '%%u%X' % i
 
     response.set_cookie(
         'bibos-notification',
-        value=re.sub('[\xA0-\xFFFFF]', escaper, message)
+        ''.join([js_escape(c) for c in message])
     )
 
 # Mixin class to require login
