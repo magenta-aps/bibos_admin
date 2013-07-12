@@ -35,6 +35,7 @@ try:
     with open(preferences, 'r') as f:
         data = json.load(f)
     data['session']['urls_to_restore_on_startup'] = [uri]
+    data['session']['restore_on_startup'] = 4
 
     with open(preferences, 'w') as f:
         json.dump(data, f)
