@@ -39,4 +39,16 @@
     <a href="{% url 'doc' 'admin_gateway' %}"
        title="Tilpas gateway konfiguration">tilpasse dens konfiguration</a>.
   </p>
+  <p>
+    OBS! En BibOS-gateway vil som udgangspunkt fortælle klienterne at de skal
+    henvende sig på IP-adressen for det første netkort på maskinen. Hvis
+    maskinen har flere netkort kan det være nødvendigt at konfigurere hvilket
+    netkort der skal bruges til at modtage/svare på broadcast-forespørgsler
+    fra klienterne. Man kan ændre IP'en gateway'en lytter på/svarer med ved at
+    udføre følgende kommandoer:
+    <pre>sudo set_bibos_config gateway_address 1.2.3.4
+bibos_push_config_keys gateway_address
+sudo service bibos-broadcast-server restart
+</pre>
+  </p>
 {% endblock %}
