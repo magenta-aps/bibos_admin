@@ -225,3 +225,5 @@ DEFAULT_DIRECT_PROXY_HOSTS = [
     'bibos-admin.magenta-aps.dk',
     'bibos-admin.ventiltest.dk'
 ]
+
+CLOSED_DISTRIBUTIONS = [ 'BIBOS', ]
