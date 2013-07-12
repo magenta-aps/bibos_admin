@@ -93,3 +93,9 @@ ul.addpclist li {cursor: pointer;}
 li.addpctrigger {position: relative;}
 li.addpctrigger:hover ul.addpclist {display: block}
 .bibos-notification { display: none; background-color: #88CC00; border: 1px solid white; padding: 0.25em 0.5em 0.25em 0.5em; color: #fff; }
+div.docscontainer { max-width: 600px; }
+div.docscontainer p, div.docscontainer h1, div.docscontainer h2, div.docscontainer h3, div.docscontainer h4 { margin-top: 0.75em; margin-bottom: 0.25em; }
+div.docscontainer h1 { font-size: 1.75em; line-height: inherit; }
+div.docscontainer h2 { font-size: 1.25em; line-height: inherit; }
+div.docscontainer h3 { font-size: 1.1em; line-height: inherit; }
+div.docscontainer h4 { font-size: 1em; line-height: inherit; }

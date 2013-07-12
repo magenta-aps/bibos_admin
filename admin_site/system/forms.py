@@ -170,7 +170,7 @@ class ParameterForm(forms.Form):
         for i, inp in enumerate(script.inputs.all().order_by('position')):
             name = 'parameter_%s' % i
             field_data = {
-                'label': "Parameter %s" % (i + 1),
+                'label': inp.name,
                 'required': True if inp.mandatory else False
             }
             if inp.value_type == Input.FILE:

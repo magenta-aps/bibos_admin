@@ -22,6 +22,11 @@ Jobs
 class="active"
 {% endblock %}
 
+{% block specific_documentation_links %}
+  <li {% block admin_scripts_active %}{% endblock %}><a href="{% url 'doc' 'admin_scripts' %}"><i class="icon-list-alt icon-white"></i> Administration af scripts</a></li>
+  <li {% block run_script_active %}{% endblock %}><a href="{% url 'doc' 'run_script' %}"><i class="icon-list-alt icon-white"></i> Kørsel af scripts</a></li>
+{% endblock %}
+
 {% block specific_content %}
   <div class="template-container">
    <table>
