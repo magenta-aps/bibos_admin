@@ -30,6 +30,7 @@ import signals
 import re
 import os
 
+
 def set_notification_cookie(response, message):
     def js_escape(c):
         i = ord(c)
@@ -44,6 +45,7 @@ def set_notification_cookie(response, message):
         'bibos-notification',
         ''.join([js_escape(c) for c in message])
     )
+
 
 # Mixin class to require login
 class LoginRequiredMixin(View):
@@ -359,7 +361,7 @@ class JobRestarter(DetailView, LoginRequiredMixin):
             return self.status_fail_response()
 
         new_job = self.object.restart()
-        response =  HttpResponseRedirect(self.get_success_url())
+        response = HttpResponseRedirect(self.get_success_url())
         set_notification_cookie(
             response,
             "Job %s restarted as job %s" % (self.object.pk, new_job.pk)
@@ -1156,6 +1158,7 @@ class PackageSearch(JSONResponseMixin, ListView):
                 'version': p.version
             } for p in self.object_list])
 
+
 class DocView(TemplateView):
     def get_template_names(self):
         if 'name' in self.kwargs:
@@ -1164,7 +1167,7 @@ class DocView(TemplateView):
             templatename = 'documentation/getting_started.html'
         print settings.TEMPLATE_DIRS[0] + templatename
         if os.path.isfile(
-            '/'.join([settings.TEMPLATE_DIRS[0],templatename])
+            '/'.join([settings.TEMPLATE_DIRS[0], templatename])
         ):
             return templatename
         else:

@@ -71,7 +71,7 @@ def upload_dist_packages(distribution_uid, package_data):
     if distribution_uid in settings.CLOSED_DISTRIBUTIONS:
         # Ignore
         return 0
-    
+
     distribution = Distribution.objects.get(uid=distribution_uid)
 
     if package_data is not None:
