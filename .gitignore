@@ -18,3 +18,5 @@
 .bash_history
 .viminfo
 .vim
+
+admin_site/bibos_admin/settings.py
