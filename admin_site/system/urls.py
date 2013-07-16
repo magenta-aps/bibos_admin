@@ -33,7 +33,9 @@ urlpatterns = patterns(
         ConfigurationEntryDelete.as_view(), name='delete_config_entry'),
     url(r'^site/(?P<slug>[ \w]+)/computers/$', PCsView.as_view(),
         name='computers'),
-    url(r'^site/(?P<site_uid>[ \w]+)/computers/(?P<uid>\w+)/upgrade_packages/$',
+    url(
+        (r'^site/(?P<site_uid>[ \w]+)/' +
+         r'computers/(?P<uid>\w+)/upgrade_packages/$'),
         MarkPackageUpgrade.as_view(), name='mark_upgrade_packages'),
     url(r'^site/(?P<site_uid>[ \w]+)/computers/(?P<pc_uid>\w+)/$',
         PCUpdate.as_view(), name='computer'),
