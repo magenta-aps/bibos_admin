@@ -841,7 +841,7 @@ class UsersView(SelectionMixin, SiteView):
             ))
         else:
             return HttpResponseRedirect(
-                '/site/%s/users/new/' % context['site'].uid,
+                '/site/%s/new_user/' % context['site'].uid,
             )
 
 
