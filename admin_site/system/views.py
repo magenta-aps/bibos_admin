@@ -272,8 +272,10 @@ class JobSearch(JSONResponseMixin, SiteView):
 
         return [{
             'script_name': job.batch.script.name,
-            'started': str(job.started) if job.started else None,
-            'finished': str(job.finished) if job.started else None,
+            'started': job.started.strftime("%Y-%m-%d %H:%M:%S") if
+                job.started else None,
+            'finished': job.finished.strftime("%Y-%m-%d %H:%M:%S") if
+                job.finished else None,
             'status': job.status,
             'label': job.status_label,
             'pc_name': job.pc.name,
