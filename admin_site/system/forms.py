@@ -84,7 +84,7 @@ class ConfigurationEntryForm(forms.ModelForm):
 class UserForm(forms.ModelForm):
     usertype = forms.ChoiceField(
         required=True,
-        choices=UserProfile.type_choices
+        choices=UserProfile.NON_ADMIN_CHOICES
     )
 
     new_password = forms.CharField(
