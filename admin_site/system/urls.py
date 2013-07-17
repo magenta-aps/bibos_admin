@@ -76,9 +76,10 @@ urlpatterns = patterns(
     url(r'^site/(?P<slug>[ \w]+)/users/$', UsersView.as_view(), name='users'),
     url(r'^site/(?P<site_uid>[ \w]+)/new_user/$',
         UserCreate.as_view(), name='new_user'),
-    url(r'^site/(?P<site_uid>[ \w]+)/users/(?P<username>\w+)/$',
+    url(r'^site/(?P<site_uid>[ \w]+)/users/(?P<username>[_\w\@\.\+\-]+)/$',
         UserUpdate.as_view(), name='user'),
-    url(r'^site/(?P<site_uid>[ \w]+)/users/(?P<username>\w+)/delete/$',
+    url((r'^site/(?P<site_uid>[ \w]+)/users/'+
+         r'(?P<username>[_\w\@\.\+\-]+)/delete/$'),
         UserDelete.as_view(), name='delete_user'),
 
     # Packages

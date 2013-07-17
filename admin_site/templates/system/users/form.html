@@ -9,7 +9,7 @@
       <p>
         <label for="{{ form.username.id_for_label }}">Brugernavn:</label>
         {{ form.username.errors }}
-        {{ form.username }}
+        {{ form.username }} {{ form.username.help_text }}
       </p>
       <p>
         <label for="{{ form.new_password.id_for_label }}">Adgangskode (udfyld for at skifte):</label>
