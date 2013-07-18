@@ -4,7 +4,7 @@ import datetime
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils.decorators import method_decorator
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
@@ -54,6 +54,43 @@ class LoginRequiredMixin(View):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(LoginRequiredMixin, self).dispatch(*args, **kwargs)
+
+
+class SuperAdminOnlyMixin(View):
+    """Only allows access to super admins."""
+    check_function = user_passes_test(lambda u: u.get_profile().type ==
+                                      UserProfile.SUPER_ADMIN)
+
+    @method_decorator(login_required)
+    @method_decorator(check_function)
+    def dispatch(self, *args, **kwargs):
+        return super(SuperAdminOnlyMixin, self).dispatch(*args, **kwargs)
+
+
+class SuperAdminOrThisSiteMixin(View):
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        """Limit access to super users or users belonging to THIS site."""
+        site = None
+        slug_field = None
+        # Find out which field is used as site slug
+        if 'site_uid' in kwargs:
+            slug_field = 'site_uid'
+        elif 'slug' in kwargs:
+            slug_field = 'slug'
+        # If none given, give up
+        if slug_field:
+            site = get_object_or_404(Site, uid=kwargs[slug_field])
+        check_function = user_passes_test(
+            lambda u:
+            (u.get_profile().type == UserProfile.SUPER_ADMIN) or
+            (site and site == u.get_profile().site)
+        )
+        wrapped_super = check_function(
+            super(SuperAdminOrThisSiteMixin, self).dispatch
+        )
+        return wrapped_super(*args, **kwargs)
 
 
 # Mixin class for list selection (single select).
@@ -147,14 +184,14 @@ class AdminIndex(RedirectView, LoginRequiredMixin):
 
 
 # Site overview list to be displayed for super user
-class SiteList(ListView, LoginRequiredMixin):
+class SiteList(ListView, SuperAdminOnlyMixin):
     """Displays list of sites."""
     model = Site
     context_object_name = 'site_list'
 
 
 # Base class for Site-based passive (non-form) views
-class SiteView(DetailView, LoginRequiredMixin):
+class SiteView(DetailView, SuperAdminOrThisSiteMixin):
     """Base class for all views based on a single site."""
     model = Site
     slug_field = 'uid'
@@ -325,7 +362,7 @@ class JobSearch(JSONResponseMixin, SiteView):
         return json.dumps(result)
 
 
-class JobRestarter(DetailView, LoginRequiredMixin):
+class JobRestarter(DetailView, SuperAdminOrThisSiteMixin):
     template_name = 'system/jobs/restart.html'
     model = Job
 
@@ -502,7 +539,7 @@ class ScriptList(ScriptMixin, SiteView):
             )
 
 
-class ScriptCreate(ScriptMixin, CreateView):
+class ScriptCreate(ScriptMixin, CreateView, SuperAdminOrThisSiteMixin):
     template_name = 'system/scripts/create.html'
     form_class = ScriptForm
 
@@ -860,7 +897,7 @@ class UsersMixin(object):
         return context
 
 
-class UserCreate(CreateView, UsersMixin, LoginRequiredMixin):
+class UserCreate(CreateView, UsersMixin, SuperAdminOrThisSiteMixin):
     model = User
     form_class = UserForm
     lookup_field = 'username'
@@ -895,7 +932,7 @@ class UserCreate(CreateView, UsersMixin, LoginRequiredMixin):
         )
 
 
-class UserUpdate(UpdateView, UsersMixin, LoginRequiredMixin):
+class UserUpdate(UpdateView, UsersMixin, SuperAdminOrThisSiteMixin):
     model = User
     form_class = UserForm
     template_name = 'system/users/update.html'
@@ -932,7 +969,7 @@ class UserUpdate(UpdateView, UsersMixin, LoginRequiredMixin):
         )
 
 
-class UserDelete(DeleteView, UsersMixin, LoginRequiredMixin):
+class UserDelete(DeleteView, UsersMixin, SuperAdminOrThisSiteMixin):
     model = User
     template_name = 'system/users/delete.html'
 
@@ -960,7 +997,7 @@ class UserDelete(DeleteView, UsersMixin, LoginRequiredMixin):
         return response
 
 
-class SiteCreate(CreateView, LoginRequiredMixin):
+class SiteCreate(CreateView, SuperAdminOnlyMixin):
     model = Site
     form_class = SiteForm
     slug_field = 'uid'
@@ -969,7 +1006,7 @@ class SiteCreate(CreateView, LoginRequiredMixin):
         return '/sites/'
 
 
-class SiteUpdate(UpdateView, LoginRequiredMixin):
+class SiteUpdate(UpdateView, SuperAdminOnlyMixin):
     model = Site
     form_class = SiteForm
     slug_field = 'uid'
@@ -978,7 +1015,7 @@ class SiteUpdate(UpdateView, LoginRequiredMixin):
         return '/sites/'
 
 
-class SiteDelete(DeleteView, LoginRequiredMixin):
+class SiteDelete(DeleteView, SuperAdminOnlyMixin):
     model = Site
     slug_field = 'uid'
 
@@ -986,7 +1023,8 @@ class SiteDelete(DeleteView, LoginRequiredMixin):
         return '/sites/'
 
 
-class ConfigurationEntryCreate(SiteMixin, CreateView, LoginRequiredMixin):
+class ConfigurationEntryCreate(SiteMixin, CreateView,
+                               SuperAdminOrThisSiteMixin):
     model = ConfigurationEntry
     form_class = ConfigurationEntryForm
 
@@ -1001,7 +1039,8 @@ class ConfigurationEntryCreate(SiteMixin, CreateView, LoginRequiredMixin):
         return '/site/{0}/configuration/'.format(self.kwargs['site_uid'])
 
 
-class ConfigurationEntryUpdate(SiteMixin, UpdateView, LoginRequiredMixin):
+class ConfigurationEntryUpdate(SiteMixin, UpdateView,
+                               SuperAdminOrThisSiteMixin):
     model = ConfigurationEntry
     form_class = ConfigurationEntryForm
 
@@ -1009,14 +1048,15 @@ class ConfigurationEntryUpdate(SiteMixin, UpdateView, LoginRequiredMixin):
         return '/site/{0}/configuration/'.format(self.kwargs['site_uid'])
 
 
-class ConfigurationEntryDelete(SiteMixin, DeleteView, LoginRequiredMixin):
+class ConfigurationEntryDelete(SiteMixin, DeleteView,
+                               SuperAdminOrThisSiteMixin):
     model = ConfigurationEntry
 
     def get_success_url(self):
         return '/site/{0}/configuration/'.format(self.kwargs['site_uid'])
 
 
-class GroupCreate(SiteMixin, CreateView, LoginRequiredMixin):
+class GroupCreate(SiteMixin, CreateView, SuperAdminOrThisSiteMixin):
     model = PCGroup
     form_class = GroupForm
     slug_field = 'uid'
@@ -1038,7 +1078,7 @@ class GroupCreate(SiteMixin, CreateView, LoginRequiredMixin):
         return super(GroupCreate, self).form_valid(form)
 
 
-class GroupUpdate(SiteMixin, LoginRequiredMixin, UpdateView):
+class GroupUpdate(SiteMixin, SuperAdminOrThisSiteMixin, UpdateView):
     template_name = 'system/site_groups.html'
     form_class = GroupForm
     model = PCGroup
@@ -1093,7 +1133,7 @@ class GroupUpdate(SiteMixin, LoginRequiredMixin, UpdateView):
         return super(GroupUpdate, self).form_invalid(form)
 
 
-class GroupDelete(SiteMixin, LoginRequiredMixin, DeleteView):
+class GroupDelete(SiteMixin, SuperAdminOrThisSiteMixin, DeleteView):
     model = PCGroup
 
     def get_object(self, queryset=None):
