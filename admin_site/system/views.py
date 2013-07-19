@@ -59,7 +59,7 @@ class LoginRequiredMixin(View):
 class SuperAdminOnlyMixin(View):
     """Only allows access to super admins."""
     check_function = user_passes_test(lambda u: u.get_profile().type ==
-                                      UserProfile.SUPER_ADMIN)
+                                      UserProfile.SUPER_ADMIN, login_url='/')
 
     @method_decorator(login_required)
     @method_decorator(check_function)
@@ -85,7 +85,7 @@ class SuperAdminOrThisSiteMixin(View):
         check_function = user_passes_test(
             lambda u:
             (u.get_profile().type == UserProfile.SUPER_ADMIN) or
-            (site and site == u.get_profile().site)
+            (site and site == u.get_profile().site), login_url='/'
         )
         wrapped_super = check_function(
             super(SuperAdminOrThisSiteMixin, self).dispatch
@@ -572,7 +572,7 @@ class ScriptCreate(ScriptMixin, CreateView, SuperAdminOrThisSiteMixin):
         return '/site/%s/scripts/%s/' % (self.site.uid, self.script.pk)
 
 
-class ScriptUpdate(ScriptMixin, UpdateView):
+class ScriptUpdate(ScriptMixin, UpdateView, LoginRequiredMixin):
     template_name = 'system/scripts/update.html'
     form_class = ScriptForm
 
