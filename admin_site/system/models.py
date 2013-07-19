@@ -254,6 +254,20 @@ class Site(models.Model):
     uid = models.CharField(_('uid'), max_length=255, unique=True)
     configuration = models.ForeignKey(Configuration)
 
+    @staticmethod
+    def get_system_site():
+        try:
+            site = Site.objects.get(uid='system')
+        except Site.DoesNotExist:
+            site = Site.objects.create(
+                name='system',
+                uid='system',
+                configuration=Configuration.objects.create(
+                    name='system_site_configuration'
+                )
+            )
+        return site
+
     @property
     def users(self):
         profiles = [
@@ -285,7 +299,7 @@ class Site(models.Model):
         self.uid = self.uid.lower()
         # 2. Create related configuration object if necessary.
         is_new = self.id is None
-        if is_new:
+        if is_new and self.configuration is None:
             try:
                 self.configuration = Configuration.objects.get(
                     name=self.uid

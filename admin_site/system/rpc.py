@@ -9,7 +9,7 @@ from django.conf import settings
 
 from models import PC, Site, Distribution, Configuration, ConfigurationEntry
 from models import PackageList, Package, PackageStatus, CustomPackages
-from job.models import Job
+from job.models import Job, Script
 
 
 def register_new_computer(name, uid, distribution, site, configuration):
@@ -242,26 +242,19 @@ def get_instructions(pc_uid, update_data):
                 pc.custom_packages.update_package_status(name, False)
                 to_install.remove(name)
 
+    if len(to_remove):
+        sc = Script.get_system_script('remove_packages.sh')
+        sc.run_on_pc(pc, ','.join(to_remove))
+
+    if len(to_install):
+        sc = Script.get_system_script('install_or_upgrade_packages.sh')
+        sc.run_on_pc(pc, ','.join(to_install))
+
     jobs = []
-
     for job in pc.jobs.filter(status=Job.NEW):
-        parameters = []
-
-        for param in job.batch.parameters.order_by("input__position"):
-            parameters.append({
-                'type': param.input.value_type,
-                'value': param.transfer_value
-            })
-
         job.status = Job.SUBMITTED
         job.save()
-
-        jobs.append({
-            'id': job.pk,
-            'status': job.status,
-            'parameters': parameters,
-            'executable_code': job.batch.script.executable_code.read()
-        })
+        jobs.append(job.as_instruction)
 
     result = {
         'jobs': jobs,
@@ -270,11 +263,6 @@ def get_instructions(pc_uid, update_data):
 
     if pc.do_send_package_info:
         result['do_send_package_info'] = True
-
-    if len(to_remove):
-        result['remove_packages'] = list(to_remove)
-    if len(to_install):
-        result['install_packages'] = list(to_install)
 
     return result
 

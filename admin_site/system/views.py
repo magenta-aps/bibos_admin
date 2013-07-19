@@ -421,7 +421,10 @@ class ScriptMixin(object):
         # Add the global and local script lists
         self.scripts = Script.objects.filter(
             Q(site=self.site) | Q(site=None)
+        ).exclude(
+            site__name='system'
         )
+
         if 'script_pk' in kwargs:
             self.script = get_object_or_404(Script, pk=kwargs['script_pk'])
 
@@ -669,28 +672,15 @@ class ScriptRun(SiteView):
         if not form.is_valid():
             self.step2(context)
         else:
-            # Create batch
-            now_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            batch = Batch(site=context['site'], script=context['script'],
-                          name=' '.join([context['script'].name, now_str]))
-            batch.save()
-            context['batch'] = batch
+            args = []
+            for i in range(0, context['script'].inputs.count()):
+                args.append(form.cleaned_data['parameter_%s' % i])
 
-            # Add parameters
-            for i, inp in enumerate(
-                context['script'].inputs.all().order_by('position')
-            ):
-                value = form.cleaned_data['parameter_%s' % i]
-                if(inp.value_type == Input.FILE):
-                    p = Parameter(input=inp, batch=batch, file_value=value)
-                else:
-                    p = Parameter(input=inp, batch=batch, string_value=value)
-                p.save()
-
-            # Create a job ofr each pc
-            for pc_pk in pcs:
-                job = Job(batch=batch, pc=PC.objects.get(pk=pc_pk))
-                job.save()
+            context['batch'] = context['script'].run_on(
+                context['site'],
+                PC.objects.filter(pk__in=pcs),
+                *args
+            )
 
     def get_context_data(self, **kwargs):
         context = super(ScriptRun, self).get_context_data(**kwargs)
