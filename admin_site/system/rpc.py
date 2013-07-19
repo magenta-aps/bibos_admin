@@ -201,7 +201,8 @@ def get_instructions(pc_uid, update_data):
             # Change or create the package status for the package/PC
             try:
                 p_status = pc.package_list.statuses.get(
-                    package__name=pdata['name']
+                    package__name=pdata['name'],
+                    package__version=pdata['version']
                 )
                 p_status.package = p
                 p_status.status = 'install'
@@ -211,6 +212,11 @@ def get_instructions(pc_uid, update_data):
                     package=p,
                     package_list=pc.package_list
                 )
+            except PackageStatus.MultipleObjectsReturned:
+                # TODO: Log this at some point, or find out how to handle it.
+                # FIXME: This may potentially be a problem as we're skipping
+                # some package info.
+                raise
             p_status.save()
 
     remove_pkgs = update_data.get('removed_packages', [])
