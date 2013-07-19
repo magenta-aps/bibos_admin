@@ -9,7 +9,7 @@ from django.conf import settings
 
 from models import PC, Site, Distribution, Configuration, ConfigurationEntry
 from models import PackageList, Package, PackageStatus, CustomPackages
-from job.models import Job
+from job.models import Job, Script
 
 
 def register_new_computer(name, uid, distribution, site, configuration):
@@ -201,7 +201,8 @@ def get_instructions(pc_uid, update_data):
             # Change or create the package status for the package/PC
             try:
                 p_status = pc.package_list.statuses.get(
-                    package__name=pdata['name']
+                    package__name=pdata['name'],
+                    package__version=pdata['version']
                 )
                 p_status.package = p
                 p_status.status = 'install'
@@ -211,6 +212,11 @@ def get_instructions(pc_uid, update_data):
                     package=p,
                     package_list=pc.package_list
                 )
+            except PackageStatus.MultipleObjectsReturned:
+                # TODO: Log this at some point, or find out how to handle it.
+                # FIXME: This may potentially be a problem as we're skipping
+                # some package info.
+                raise
             p_status.save()
 
     remove_pkgs = update_data.get('removed_packages', [])
@@ -242,26 +248,19 @@ def get_instructions(pc_uid, update_data):
                 pc.custom_packages.update_package_status(name, False)
                 to_install.remove(name)
 
+    if len(to_remove):
+        sc = Script.get_system_script('remove_packages.sh')
+        sc.run_on_pc(pc, ','.join(to_remove))
+
+    if len(to_install):
+        sc = Script.get_system_script('install_or_upgrade_packages.sh')
+        sc.run_on_pc(pc, ','.join(to_install))
+
     jobs = []
-
     for job in pc.jobs.filter(status=Job.NEW):
-        parameters = []
-
-        for param in job.batch.parameters.order_by("input__position"):
-            parameters.append({
-                'type': param.input.value_type,
-                'value': param.transfer_value
-            })
-
         job.status = Job.SUBMITTED
         job.save()
-
-        jobs.append({
-            'id': job.pk,
-            'status': job.status,
-            'parameters': parameters,
-            'executable_code': job.batch.script.executable_code.read()
-        })
+        jobs.append(job.as_instruction)
 
     result = {
         'jobs': jobs,
@@ -270,11 +269,6 @@ def get_instructions(pc_uid, update_data):
 
     if pc.do_send_package_info:
         result['do_send_package_info'] = True
-
-    if len(to_remove):
-        result['remove_packages'] = list(to_remove)
-    if len(to_install):
-        result['install_packages'] = list(to_install)
 
     return result
 
