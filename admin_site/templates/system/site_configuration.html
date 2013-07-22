@@ -24,7 +24,9 @@ class="active"
       <div>
         <button class="btn btn-primary">Gem ændringer</button>
         <button class="btn" onclick="return ((location.href=location.href) && false)">Annuller</button>
-        {% csrf_token %}
+        <div style="margin-top: 20px;">
+          {% csrf_token %}
+        </div>
       </div>
 
       {% include 'system/configlist/list.html' with entries=site_configs cnf_id='site_configs' %}

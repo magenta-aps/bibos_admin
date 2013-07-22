@@ -6,10 +6,10 @@
   {% endif %}
 >
     <div class="addpackagecontrol">
-      <label for="{{ pl_id }}_addremovepackagename" class="inline">Tilføj/fjern pakker:</label>
+      <label for="{{ pl_id }}_addremovepackagename" class="inline">Søg pakker:</label>
       <input type="text" name="addpackagename" id="{{ pl_id }}_addremovepackagename" value=""/>
-      <a href="javascript:void(0)" onclick="BibOS.PackageList.addPackage('{{ pl_id }}')" title="Tilføj pakke"><i class="icon-plus"></i> Markér at pakke skal installeres</a>
-      <a href="javascript:void(0)" onclick="BibOS.PackageList.removePackage('{{ pl_id }}')" title="Fjern pakke"><i class="icon-minus"></i> Markér at pakke skal afinstalleres</a>
+      <a class="btn btn-success" href="javascript:void(0)" onclick="BibOS.PackageList.addPackage('{{ pl_id }}')" title="Tilføj pakke"><i class="icon-plus icon-white"></i> Pakke skal installeres</a>
+      <a class="btn btn-danger" href="javascript:void(0)" onclick="BibOS.PackageList.removePackage('{{ pl_id }}')" title="Fjern pakke"><i class="icon-remove icon-white"></i> Pakke skal fjernes</a>
     </div>
     
     <input type="hidden" id="removeable-package-ids" value="" disabled="disabled" />
