@@ -54,12 +54,8 @@ class="active"
       <input type="hidden" name="pc" value="{{ selected_pc }}" />
       <input type="hidden" name="group" value="{{ selected_group }}" />
       <input type="hidden" name="orderby" value="-pk" />
-      <h3 class="nav-header">
-        Filtrér:
-        <div style="float: right;">
-          <input class="btn btn-primary" type="button" onclick="BibOS.JobList.reset()" value="Nulstil filtre" />
-        </div>
-      </h3>
+      <input class="btn btn-primary pull-right" type="button" onclick="BibOS.JobList.reset()" value="Nulstil filtre" />
+      <h3 class="nav-header">Filtrér:</h3>
       <hr>
       <div id="jobsearch-status-selectors">
       {% for name, value, label in status_choices%}

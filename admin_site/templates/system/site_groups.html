@@ -59,8 +59,7 @@ class="active"
       <button class="btn btn-primary">Gem ændringer</button>
       <button class="btn" onclick="return BibOS.PackageList.cancelEditing()">Annuller</button>
       {% if selected_group.is_delete_allowed %}
-      <br />
-      <a  href="/site/{{ site.url }}/groups/{{ selected_group.url }}/delete/">Slet Gruppe</a>
+      <a class="btn btn-danger pull-right" href="/site/{{ site.url }}/groups/{{ selected_group.url }}/delete/"><i class="icon-remove icon-white"></i> Slet Gruppe</a>
       {% endif %}
       <div class="accordion" id="accordion2">
         

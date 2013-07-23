@@ -32,13 +32,10 @@ class="active"
           {% csrf_token %}
           <input type="submit" class="btn btn-primary" value="Gem" />
           <button class="btn">Annuller</button>
+          <a class="btn btn-danger pull-right" href="{% url 'delete_user' site.uid selected_user.username %}"><i class="icon icon-remove icon-white"></i> Slet bruger</a>
           <hr>      
           {% include 'system/users/form.html' with form_id='update_user_form' %}
         </form>
-      </div>
-      <hr>
-      <div>
-        <a href="{% url 'delete_user' site.uid selected_user.username %}"><i class="icon icon-remove"></i> Slet bruger</a>
       </div>
     </div>
   </div>
