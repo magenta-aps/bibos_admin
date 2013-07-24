@@ -1,12 +1,14 @@
 {% extends 'documentation/index.html' %}
 
+{% block doc_subtitle %}Admin-systemet{% endblock %}
+
 {% block admin_pc_active %}class="active"{% endblock %}
 
 {% block specific_content %}
   <h1>Administration af PC</h1>
   <p>
     Administrationssiden for en PC har fire harmonika-fanablade med forskellige
-    funktioner, beskrevet herunder. Klik på det enkelte faneblad for at åbne
+    funktioner, som er beskrevet herunder. Klik på det enkelte faneblad for at åbne
     den relevante funktion.
   </p>
   <h2>Generelle oplysninger og gruppetilknytninger</h2>
@@ -14,12 +16,12 @@
     Her kan du ændre computerens navn, beskrivelse og distribution, samt
     aktivere den hvis den ikke er blevet aktiveret efter installation. Du kan
     også tilføje og fjerne grupper som PC'en er tilknyttet. Du skal klikke på
-    knappen "Gem ændringer" før dine ændringer træder i kræft.
+    knappen "Gem ændringer", før dine ændringer træder i kræft.
   </p>
   <p>
-    Bemærk at medlemskab af grupper kan have indflydelse på computerens
-    konfiguration og pakker. Det at tilføje computeren til en gruppe kan altså
-    betyde at computeren installerer eller afinstallerer pakker.
+    Bemærk, at medlemskab af grupper kan have indflydelse på computerens
+    konfiguration og pakker. Hvis du tilføjer computeren til en gruppe, kan det altså
+    betyde, at computeren installerer eller afinstallerer pakker.
   </p>
 
   <h2>Konfigurationer</h2>
@@ -32,36 +34,37 @@
 
   <h2>Pakker</h2>
   <p>
-    Her har du mulighed for at angive specielle pakker der enten skal
-    installeres eller fjernes på maskinen. Man tilføjer eller fjerne en pakke
+    Her har du mulighed for at angive specielle pakker, der enten skal
+    installeres eller fjernes på maskinen. Man tilføjer eller fjerner en pakke
     ved at skrive pakkenavnet i tekst-feltet og klikke på enten installer eller
     afinstaller linket. Tekstfeltet er forsynet med en search-as-you-type
-    funktion der søger i både pakkenavn og beskrivelse. Det er kun muligt at
-    tilføje/fjerne pakker som admin-systemet kender til. Det vil sige at man
+    funktion, der søger i både pakkenavn og beskrivelse. Det er kun muligt at
+    tilføje eller fjerne pakker, som admin-systemet kender til. Det vil sige, at man
     ikke bare kan skrive et vilkårligt navn.
   </p>
   <p>
-    Når man har lavet sine ændringer til tilføjede/fjernede pakker skal man
-    huske at klikke på "Gem ændringer"-knappen. Ellers bliver ændringerne ikke
-    gemt. Der kan gå op til 5 minutter før pakkerne installeres på maskinen og
-    op efterfølgende yderligere 5 minutter før admin-systemet får besked om det
-    og opdaterer sine liste. Pakkerne vil altså bliver vist som ventende på
-    installation/afinstallation i op til 10 minutter.
+    Når man har lavet sine ændringer til tilføjede/fjernede, pakker skal man
+    huske at klikke på "Gem ændringer"-knappen. Ellers vil ændringerne ikke
+    blive
+    gemt. Der kan gå op til 5 minutter, før pakkerne installeres på maskinen og
+    efterfølgende yderligere 5 minutter, før admin-systemet får besked om det
+    og opdaterer sine lister. Pakkerne vil altså blive vist som ventende på
+    installation eller afinstallation i op til 10 minutter.
   </p>
   <p>
-    Pakker der afventer installation eller afinstallation på computeren vil
+    Pakker, der afventer installation eller afinstallation på computeren, vil
     blive vist i lister under valget af tilføjede/fjernede pakker. Hvis der
-    ikke bliver vist noget betyder det at maskinen har alle nødvendige pakker
+    ikke bliver vist noget, betyder det at maskinen har alle nødvendige pakker
     installeret.
   </p>
   <p>
-    Hvis der er pakker på maskinen der mangler at blive opgraderet vises de
+    Hvis der er pakker på maskinen, der mangler at blive opgraderet, vises de
     også i en liste. Du kan opgradere udvalgte pakker ved at vælge dem i listen
-    og klikke på "Opgrader de valgte pakker". Dette er dog ikke nødvendigt hvis
+    og klikke på "Opgrader de valgte pakker". Dette er dog ikke nødvendigt, hvis
     maskinen er sat op til automatisk at opgradere pakker.
   </p>
   <p>
-    Hvis du har udvalgt pakker til opgradering vil de blive vist i en fjerde
+    Hvis du har udvalgt pakker til opgradering, vil de blive vist i en fjerde
     liste indtil opgraderingen er udført.
   </p>
   <h2>Jobhistorik</h2>
@@ -69,6 +72,6 @@
     Her kan du se en historik over jobs tilknyttet computeren. Du kan klikke på
     pilene over listen for at ændre sorteringen. Hvis du klikker på info-ikonet
     til højre på det enkelte job får du mulighed for at se log-output for
-    jobbet semt for at jobbet igen hvis det fejlede.
+    jobbet samt for at køre jobbet igen, hvis det fejlede.
   </p>
 {% endblock %}

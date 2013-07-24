@@ -33,7 +33,13 @@ class="detailpage"
     <li class="nav-header">BibOS-gateway</li>
     <li {% block install_gateway_active %}{% endblock %}><a href="{% url 'doc' 'install_gateway' %}"><i class="icon-list-alt icon-white"></i> Installation BibOS-gateway</a></li>
     <li {% block admin_gateway_active %}{% endblock %}><a href="{% url 'doc' 'admin_gateway' %}"><i class="icon-list-alt icon-white"></i> Administration af gateway</a></li>
-  </ul>
+    <li class="divider"></li>
+    <li class="nav-header">Om</li>
+    <li {% block om_bibos_admin_active %}{% endblock %}>
+
+    <a href="{% url 'doc' 'om_bibos_admin' %}"><i class="icon-list-alt
+            icon-white"></i>Om BibOS-Admin </a></li>
+</ul>
 
   <div class="container-fluid main">
     <div class="docscontainer">
