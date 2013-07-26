@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import json
 import datetime
 
@@ -1192,15 +1193,73 @@ class PackageSearch(JSONResponseMixin, ListView):
 
 
 class DocView(TemplateView):
-    def get_template_names(self):
+    docname = 'status'
+
+    def template_exists(self, subpath):
+        fullpath = os.path.join(settings.TEMPLATE_DIRS[0], subpath)
+        return os.path.isfile(fullpath)
+
+    def get_context_data(self, **kwargs):
         if 'name' in self.kwargs:
-            templatename = 'documentation/%s.html' % self.kwargs['name']
+            self.docname = self.kwargs['name']
         else:
-            templatename = 'documentation/getting_started.html'
-        print settings.TEMPLATE_DIRS[0] + templatename
-        if os.path.isfile(
-            '/'.join([settings.TEMPLATE_DIRS[0], templatename])
-        ):
-            return templatename
-        else:
+            # This will be mapped to documentation/index.html
+            self.docname = 'index'
+
+        if self.docname.find("..") != -1:
             raise Http404
+
+        # Try <docname>.html and <docname>/index.html
+        name_templates = [
+            'documentation/{0}.html',
+            'documentation/{0}/index.html'
+        ]
+
+        templatename = None
+        for nt in name_templates:
+            expanded = nt.format(self.docname)
+            if self.template_exists(expanded):
+                templatename = expanded
+                break
+
+        if templatename is None:
+            raise Http404
+        else:
+            self.template_name = templatename
+
+        context = super(DocView, self).get_context_data(**kwargs)
+        context['docmenuitems'] = [
+            ('', 'Admin-systemet'),
+            ('status', 'Status'),
+            ('global_configuration', 'Global konfiguration'),
+            ('computers', 'Computere'),
+            ('groups', 'Grupper'),
+            ('jobs', 'Jobs'),
+            ('scripts', 'Scripts'),
+            ('users', 'Brugere'),
+
+            ('', 'Installation af BibOS'),
+            ('install_dvd', 'Installation via DVD'),
+            ('install_usb', 'Installation via USB'),
+            ('install_network', 'Installation via netværk'),
+
+            ('', 'BibOS-gateway'),
+            ('gateway_install', 'Installation BibOS-gateway'),
+            ('gateway_admin', 'Administration af gateway'),
+        ]
+        docnames = self.docname.split("/")
+        
+        context['menu_active'] = docnames[0]
+
+        # Add a submenu if it exists
+        submenu_template = "documentation/" + docnames[0] + "/__submenu__.html"
+        if self.template_exists(submenu_template):
+            context['submenu_template'] = submenu_template
+
+        if len(docnames) > 1 and docnames[1]:
+            # Don't allow direct access to submenus
+            if docnames[1] == '__submenu__':
+                raise Http404
+            context['submenu_active'] = docnames[1]
+
+        return context

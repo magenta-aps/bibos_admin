@@ -99,3 +99,6 @@ div.docscontainer h1 { font-size: 1.75em; line-height: inherit; }
 div.docscontainer h2 { font-size: 1.25em; line-height: inherit; }
 div.docscontainer h3 { font-size: 1.1em; line-height: inherit; }
 div.docscontainer h4 { font-size: 1em; line-height: inherit; }
+ul.nav li ul { color: #fff; list-style: none; padding: 0; margin: 0 0 0 1em; }
+ul.nav li ul a, ul.nav li ul a:hover, ul.nav li ul a:focus { color: #fff; text-decoration: none; }
+ul.nav li ul li.active { font-style: italic; }

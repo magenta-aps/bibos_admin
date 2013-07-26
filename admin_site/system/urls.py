@@ -86,6 +86,6 @@ urlpatterns = patterns(
     url(r'^packages/', PackageSearch.as_view(), name='packages'),
 
     # Documentation
-    url(r'^documentation/(?P<name>[ \w]+)/', DocView.as_view(), name='doc'),
+    url(r'^documentation/(?P<name>[\d\w\/]+)/', DocView.as_view(), name='doc'),
     url(r'^documentation/', DocView.as_view(), name='doc_root'),
 )

@@ -1,0 +1,25 @@
+{% extends 'documentation/index.html' %}
+
+{% block specific_content %}
+  <h1>Computere: Stam-oplysninger og grupper</h1>
+  <p>
+    Som standard når du klikker dig ind på en computer vil du få vist
+    computerens stamdata og gruppetilhørsforhold. Her kan du ændre computerens
+    navn, beskrivelse og distribution, samt aktivere den hvis den ikke er
+    blevet aktiveret efter installation. Du kan også tilføje og fjerne grupper
+    som PC'en er tilknyttet. Du skal klikke på knappen "Gem ændringer" før dine
+    ændringer træder i kræft.
+  </p>
+  <p>
+    Du tilføjer grupper ved at føre musen hen over "tilføj ny gruppe". Hvis der
+    findes grupper som computeren endnu ikke er medlem af vil de dukke op i en
+    liste under muse-markøren. Klik på en gruppe for at knytte computeren til
+    gruppen. Husk at ændringerne ikke bliver permanente før du har klikket på
+    "Gem ændringer" øverst i skærmbilledet.
+  </p>
+  <p>
+    Bemærk at medlemskab af grupper kan have indflydelse på computerens
+    konfiguration og pakker. Det at tilføje computeren til en gruppe kan altså
+    betyde at computeren installerer eller afinstallerer pakker.
+  </p>
+{% endblock %}

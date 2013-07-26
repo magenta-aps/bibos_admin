@@ -1,0 +1,26 @@
+{% extends 'documentation/index.html' %}
+
+{% block admin_groups_active %}class="active"{% endblock %}
+
+{% block specific_content %}
+  <h1>Grupper</h1>
+  <p>
+    En BibOS-gruppe er en samling af computere der deler konfigurationsnøgler
+    og/eller pakketilpasninger. En gruppe kan også bruges til at nemt at køre
+    et script på en samling af maskiner.
+  </p>
+  <p>
+    Når man klikker på Grupper i venstremenuen vil man til venstre for
+    venstremenuen få vist en liste af grupper for det site man er under. Man
+    kan klikke på navnet for den enkelte gruppe for at redigere gruppen.
+  </p>
+  <p>
+    Til højre vises redigeringsinterfacet for den valgte gruppe. Hvis ikke der
+    er oprettet nogen grupper for det site man er under vises dialogen til
+    oprettelse af grupper.
+  </p>
+  <p>
+    Når man klikker ind på en gruppe får man mulighed for at redigere følgende:
+    {% include 'documentation/groups/__submenu__.html' %}
+  </p>
+{% endblock %}
