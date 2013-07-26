@@ -27,6 +27,7 @@ class="active"
               {% csrf_token %}
         <input type="submit" class="btn btn-primary" value="Gem" />
         <button class="btn">Annuller</button>
+        <a class="btn btn-danger" href="#"><i class="icon-remove icon-white"></i> Slet bruger</a>
         <hr>      
         {% if form.errors %}
         <font color="red">
@@ -64,10 +65,6 @@ class="active"
         
         </fieldset>
       </form>
-      <hr>
-      <div>
-        <a href="#"><i class="icon icon-remove"></i> Slet bruger</a>
-      </div>
     </div>
   </div>
   

@@ -1,8 +1,11 @@
 {% extends 'sitebase.html' %}
 
 {% block header_title %}
-  BibOS dokumentation:
-  <em>{% block doc_subtitle %}BibOS{% endblock %}</em>
+{% if docheading %}
+  BibOS documentation: {{ docheading }}
+{% else %}
+  BibOS dokumentation
+{% endif %}
 {% endblock %}
 
 {% block header_class %}
@@ -40,6 +43,5 @@ class="detailpage"
   
 {% endblock %}
 </div>
-
 </div>
 {% endblock %}

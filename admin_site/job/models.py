@@ -164,7 +164,9 @@ class Job(models.Model):
     # Use built-in ID field for ID.
     status = models.CharField(max_length=10, choices=STATUS_CHOICES,
                               default=NEW)
-    log_output = models.CharField(_('log output'), max_length=4096, blank=True)
+    log_output = models.CharField(_('log output'),
+                                  max_length=128000,
+                                  blank=True)
     started = models.DateTimeField(_('started'), null=True)
     finished = models.DateTimeField(_('finished'), null=True)
     batch = models.ForeignKey(Batch, related_name='jobs')

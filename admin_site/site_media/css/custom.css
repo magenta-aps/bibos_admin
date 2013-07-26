@@ -92,13 +92,17 @@ ul.addpclist {display: none; max-height: 300px; overflow-y: auto; position: abso
 ul.addpclist li {cursor: pointer;}
 li.addpctrigger {position: relative;}
 li.addpctrigger:hover ul.addpclist {display: block}
-.bibos-notification { display: none; background-color: #88CC00; border: 1px solid white; padding: 0.25em 0.5em 0.25em 0.5em; color: #fff; }
+.bibos-notification, .errorlist { display: none; background-color: #88CC00; box-shadow: 2px 5px 10px #aaa; padding: 0.25em 0.5em 0.25em 0.5em; color: #fff; margin: 0 0 10px; border: solid 1px rgba(0, 0, 0, 0.1)}
 div.docscontainer { max-width: 600px; }
 div.docscontainer p, div.docscontainer h1, div.docscontainer h2, div.docscontainer h3, div.docscontainer h4 { margin-top: 0.75em; margin-bottom: 0.25em; }
 div.docscontainer h1 { font-size: 1.75em; line-height: inherit; }
 div.docscontainer h2 { font-size: 1.25em; line-height: inherit; }
 div.docscontainer h3 { font-size: 1.1em; line-height: inherit; }
 div.docscontainer h4 { font-size: 1em; line-height: inherit; }
+.addpackagecontrol {margin: 10px 0;}
+.addpackagecontrol > * {vertical-align: bottom;}
+.addpackagecontrol input {margin-bottom: 0;}
+.errorlist {background-color: #b94a48; display: block; list-style: none;}
 ul.nav li ul { color: #fff; list-style: none; padding: 0; margin: 0 0 0 1em; }
 ul.nav li ul a, ul.nav li ul a:hover, ul.nav li ul a:focus { color: #fff; text-decoration: none; }
 ul.nav li ul li.active { font-style: italic; }

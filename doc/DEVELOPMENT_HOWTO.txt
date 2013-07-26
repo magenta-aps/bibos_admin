@@ -27,8 +27,9 @@ GET THE RIGHT BRANCH
 cd bibos_admin
 git checkout <development>
 
-This only applies if you're not working directly on the master branch. For
-<development> substitute the branch you want to work on.
+This only applies if you're not working directly on the master branch (which
+you probably shouldn't). For <development> substitute the branch you want to 
+work on.
 
 
 INSTALL DJANGO AND OTHER COMPONENTS

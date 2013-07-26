@@ -1,26 +1,32 @@
 {% extends 'documentation/index.html' %}
 
+{% block doc_subtitle %}Admin-systemet{% endblock %}
+
 {% block run_script_active %}class="active"{% endblock %}
 
 {% block specific_content %}
   <h1>Afvikling af Scripts</h1>
   <p>
     For at køre et script på en computer eller en gruppe af computere skal du
-    klikke på "Scripts" i venstremenuen, vælge det script du vil køre, enten
-    fra de globale eller de lokale scripts, og klikke på knappen "Kør script".
+    klikke på "Scripts" i venstremenuen og vælge det script du vil køre. Som
+    <a href="{% url 'doc' 'admin_scripts' %}">beskrevet andetsteds</a> kan 
+    du altid vælge et script fra en af to lister, nemlig
+    globale eller lokale scripts. Når du har valgt det script, du ønsker at
+    køre, skal du blot klikke på knappen "Kør script".
   </p>
   <p>
-    Der vil nu åbne en dialog hvor du bliver bedt om at vælge computere
-    og/eller grupper som du vil afvikle scriptet på. Klik på den enkelte
-    computer eller gruppe for at vælge/afvælge den. Valg af en gruppe vil
-    medføre at scriptet udføres på samtlige maskiner der er med i gruppen.
-    Klik på "Næste" når du har foretaget dine valg.
+    Der kommer nu en dialog, hvor du bliver bedt om at vælge de computere
+    og/eller grupper, som du ønsker at afvikle scriptet på. Klik på den enkelte
+    computer eller gruppe for at vælge/afvælge den. Du kan vælge så mange
+    computere eller grupper, som du ønsker. Valg af en gruppe vil
+    medføre, at scriptet udføres på samtlige maskiner der er med i gruppen.
+    Klik på "Næste", når du har foretaget dine valg.
   </p>
   <p>
     Du vil nu blive bedt om at udfylde parametre for scriptet. Udfyld felterne
-    og klik på "Kør" for at starte afviklingen af scriptet. Dette vil medføre
+    og klik på "Kør" for at starte afviklingen af scriptet. Dette vil medføre,
     at der bliver oprettet et job for hver computer du valgte at udføre
     scriptet. Du kan klikke på linket i den sidste side i dialogen for at gå
-    til joblisten og følge med afviklingen af jobs'ene på de enkelte computere.
+    til joblisten og følge med afviklingen af jobs på de enkelte computere.
   </p>
 {% endblock %}
