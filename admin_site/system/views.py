@@ -18,6 +18,7 @@ from django.views.generic import View, ListView, DetailView, RedirectView
 from django.views.generic import TemplateView
 
 from django.db.models import Q
+from django.db.models import Count
 
 from account.models import UserProfile
 
@@ -765,22 +766,29 @@ class PCUpdate(SiteMixin, UpdateView):
             select={'lower_name': 'lower(name)'}
         ).order_by('lower_name')
 
-        group_set = site.groups.all()
+        waiting_for_packages = False
+        pkg_list_count = pc.package_list.packages.count()
+        if (not pc.is_active) or (pkg_list_count == 0):
+            waiting_for_packages = True
 
-        selected_group_ids = form['pc_groups'].value()
-        context['available_groups'] = group_set.exclude(
-            pk__in=selected_group_ids
-        )
-        context['selected_groups'] = group_set.filter(
-            pk__in=selected_group_ids
-        )
-
-        ii = self.object.custom_packages.install_infos
-        context['package_infos'] = ii.order_by('-do_add', 'package__name')
-
-        a, r = pc.pending_package_updates
-        context['pending_packages_add'] = sorted(a)
-        context['pending_packages_remove'] = sorted(r)
+        context['waiting_for_package_list'] = waiting_for_packages
+        if not waiting_for_packages:
+            group_set = site.groups.all()
+    
+            selected_group_ids = form['pc_groups'].value()
+            context['available_groups'] = group_set.exclude(
+                pk__in=selected_group_ids
+            )
+            context['selected_groups'] = group_set.filter(
+                pk__in=selected_group_ids
+            )        
+    
+            ii = self.object.custom_packages.install_infos
+            context['package_infos'] = ii.order_by('-do_add', 'package__name')
+    
+            a, r = pc.pending_package_updates
+            context['pending_packages_add'] = sorted(a)
+            context['pending_packages_remove'] = sorted(r)
 
         context['active_accordion'] = params.get('accordion', 'details')
 
@@ -1104,7 +1112,9 @@ class GroupUpdate(SiteMixin, SuperAdminOrThisSiteMixin, UpdateView):
         ii = group.custom_packages.install_infos
         context['package_infos'] = ii.order_by('-do_add', 'package__name')
 
-        pc_queryset = site.pcs.all()
+        pc_queryset = site.pcs.filter(is_active=True).annotate(
+            pkg_count=Count('package_list__statuses')
+        ).filter(pkg_count__gt=0)
         form.fields['pcs'].queryset = pc_queryset
 
         selected_pc_ids = form['pcs'].value()
@@ -1248,7 +1258,7 @@ class DocView(TemplateView):
         context['docmenuitems'] = [
             ('', 'BibOS Administration'),
             ('status', 'Status'),
-            ('global_configuration', 'Global konfiguration'),
+            ('site_configuration', 'Site-konfiguration'),
             ('computers', 'Computere'),
             ('groups', 'Grupper'),
             ('jobs', 'Jobs'),
