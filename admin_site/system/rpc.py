@@ -208,6 +208,11 @@ def get_instructions(pc_uid, update_data):
                 package_list=pc.package_list
             )
             p_status.save()
+           
+            pc.package_list.statuses.filter(
+                package__name=pdata['name'],
+                package__version=pdata['version'],
+            ).update(status='installed ok')
 
     remove_pkgs = update_data.get('removed_packages', [])
     if len(remove_pkgs) > 0:

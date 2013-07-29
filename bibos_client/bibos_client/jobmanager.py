@@ -359,16 +359,6 @@ def get_instructions():
 
         bibos_config.save()
 
-    if 'remove_packages' in instructions:
-        cmd = ['apt-get', '-y', 'remove']
-        cmd.extend(instructions['remove_packages'])
-        subprocess.call(cmd)
-
-    if 'install_packages' in instructions:
-        cmd = ['apt-get', '-y', 'install']
-        cmd.extend(instructions['install_packages'])
-        subprocess.call(cmd)
-
     # Import jobs
     if 'jobs' in instructions:
         for j in instructions['jobs']:
