@@ -142,13 +142,22 @@ class Job(models.Model):
     FAILED = 'FAILED'
     RESOLVED = 'RESOLVED'
 
+    STATUS_TRANSLATIONS = {
+        NEW: _('jobstatus:New'),
+        SUBMITTED: _('jobstatus:Submitted'),
+        RUNNING: _('jobstatus:Running'),
+        FAILED: _('jobstatus:Failed'),
+        DONE: _('jobstatus:Done'),
+        RESOLVED: _('jobstatus:Resolved')
+    }
+
     STATUS_CHOICES = (
-        (NEW, _('New')),
-        (SUBMITTED, _('Submitted')),
-        (RUNNING, _('Running')),
-        (DONE, _('Done')),
-        (FAILED, _('Failed')),
-        (RESOLVED, _('Resolved'))
+        (NEW, STATUS_TRANSLATIONS[NEW]),
+        (SUBMITTED, STATUS_TRANSLATIONS[SUBMITTED]),
+        (RUNNING, STATUS_TRANSLATIONS[RUNNING]),
+        (FAILED, STATUS_TRANSLATIONS[FAILED]),
+        (DONE, STATUS_TRANSLATIONS[DONE]),
+        (RESOLVED, STATUS_TRANSLATIONS[RESOLVED])
     )
 
     STATUS_TO_LABEL = {
@@ -183,6 +192,13 @@ class Job(models.Model):
             return Job.STATUS_TO_LABEL[self.status]
 
     @property
+    def status_translated(self):
+        if self.status is None:
+            return ''
+        else:
+            return Job.STATUS_TRANSLATIONS[self.status]
+
+    @property
     def failed(self):
         return self.status == Job.FAILED
 
@@ -208,7 +224,7 @@ class Job(models.Model):
             self.status = Job.RESOLVED
             self.save()
         else:
-            raise Exception(_('Cannot change status from %s to %s') % (
+            raise Exception(_('Cannot change status from {0} to {1}').format(
                 self.status,
                 Job.RESOLVED
             ))

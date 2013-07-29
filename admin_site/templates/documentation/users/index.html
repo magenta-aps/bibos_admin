@@ -1,12 +1,83 @@
 {% extends 'documentation/index.html' %}
 
-{% block doc_subtitle %}Admin-systemet{% endblock %}
-
-{% block admin_users_active %}class="active"{% endblock %}
-
 {% block specific_content %}
   <h1>Administration af brugere</h1>
   <p>
-    Denne del af dokumentationen er under udarbejdelse.
+    Når du klikker på "Brugere" i venstre-menuen får du vist en liste af
+    brugere til højre for venstremenuen. Til højre for listen vil blive vist
+    redigeringsinterfacet for den valgte bruger. Hvis ikke der findes nogen
+    brugere på det valgte site vil der blive vist en opret-bruger dialog i
+    stedet.
+  </p>
+  <h2>Redigering</h2>
+  <p>
+    For at redigere en bruger skal du klikke på den pågældende bruger i listen
+    over brugere. Du har nu mulighed for at ændre brugerens brugernavn,
+    adgangskode, e-mail og brugertype. Felterne er forklart herunder:
+  </p>
+  <p>
+    <ul>
+      <li>
+        <strong>Brugernavn</strong>:
+        Dette er det login brugeren skal bruge når han eller hun logger ind
+        i BibOS-admin. Det må maksimalt være på 30 tegn og kun indeholde tal,
+        bogstaver og specialtegnene <strong>@</strong>, <strong>.</strong>,
+        <strong>+</strong>, <strong>-</strong> og <strong>_</strong>.
+      </li>
+      <li>
+        <strong>Adgangskode</strong>:
+        Her kan man ændre brugerens adgangskode. For at sikre at adgangskoden
+        indtastes korrekt skal den skrives to gange. Hvis ikke felterne
+        udfyldes vil adgangskoden forblive uændret. Ved oprettelse af ny
+        bruger er det påkrævet at angive en adgangskode.
+      </li>
+      <li>
+        <strong>E-mail adresse</strong>:
+        Her skal angives brugerens e-mail-adresse.
+      </li>
+      <li>
+        <strong>Brugertype</strong>:
+        Valgmulighederne i dette felt afhænger af hvilken type bruger man selv
+        er logget ind som. Hvis man er super-admin får man mulighed for at
+        vælge frit mellem de tre muligheder:
+        <ul>
+          <li>
+            <strong>Super-admin</strong>:
+            Super-admin-brugere har adgang til alle sites og kan gøre scripts
+            globale.
+          </li>
+          <li>
+            <strong>Site-bruger</strong>:
+            Almindelig bruger uden specielle rettigheder.
+          </li>
+          <li>
+            <strong>Site-admin</strong>:
+            Bruger med adgang til at tilpasse scripts og brugere for et site.
+          </li>
+        </ul>
+        Som site-admin får man kun mulighed for at vælge mellem site-bruger
+        og site-admin og som site-bruger får man ikke mulighed for at redigere
+        værdien i feltet.
+      </li>
+    </ul>
+  </p>
+  <p>
+    Ændringer træder ikke i kræft før man klikker på knappen "Gem" øverst i
+    skærmbilledet.
+  </p>
+  <h2>Oprettelse af ny bruger</h2>
+  <p>
+    Hvis man vil oprette en bruger skal man klikke på knappen
+    "tilføj ny bruger" over listen med brugere. Dette vil vise en dialog hvor
+    man kan udfylde de samme oplysninger som under redigering af brugere.
+    Ved klik på "Gem" vil brugeren blive oprettet og man vil blive
+    viderestillet til redigeringssiden for den nyoprettede bruger.
+  </p>
+  <h2>Sletning af bruger</h2>
+  <p>
+    Hvis man ønsker at slette en bruger skal man klikke på
+    "Slet bruger"-knappen i øverste højre hjørne. Man vil efterfølgende blive
+    bedt om at bekræfte sletningen og hvis man gør det vil brugeren blive
+    slettet.
   </p>
 {% endblock %}

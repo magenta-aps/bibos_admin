@@ -33,8 +33,12 @@
     </fieldset>
   </div>
 </div>
-  
+
+{% if disable_inputs %}
+  <input type="hidden" name="script-number-of-inputs" class="script-number-of-inputs" value="0" />
+{% else %}
 <hr>
+
 
 <fieldset id="{{ form.prefix|default:'update' }}-script-inputs">
   <label>Input-parametre:</label>
@@ -57,3 +61,4 @@
     </table>
   </div>
 </fieldset>
+{% endif %}

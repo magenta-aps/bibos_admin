@@ -58,10 +58,10 @@ class="active"
       <h3 class="nav-header">Filtrér:</h3>
       <hr>
       <div id="jobsearch-status-selectors">
-      {% for name, value, label in status_choices%}
+      {% for s in status_choices%}
       <label>
-        <input type="checkbox" value="{{ value }}" name="status">
-        <span class="label {{ label }}">{{ name }}</span>
+        <input type="checkbox" value="{{ s.value }}" name="status" {{ s.checked }}>
+        <span class="label {{ s.label }}">{{ s.name }}</span>
       </label>
       {% endfor %}
       </div>
@@ -76,7 +76,7 @@ class="active"
           {% endfor %}
         </ul>
       </div>
-      <a href="javascript:void(0)" class="btn collapsing" data-toggle="collapse" data-target="#demo2"><i class="icon-chevron-down"></i> PCs</a>
+      <a href="javascript:void(0)" class="btn collapsing" data-toggle="collapse" data-target="#demo2"><i class="icon-chevron-down"></i> Computere</a>
       <div id="demo2" class="collapse out{% if selected_pc %} in{% endif %}">
         <ul class="unstyled">
           {% for pc in pcs %}

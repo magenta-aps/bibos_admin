@@ -10,9 +10,9 @@ from django.core.urlresolvers import reverse
 used for labeling in the GUI."""
 
 # States
-NEW = _("New")
-FAIL = _("Fail")
-UPDATE = _("Update")
+NEW = _("status:New")
+FAIL = _("status:Fail")
+UPDATE = _("status:Update")
 OK = ''
 
 # Priorities

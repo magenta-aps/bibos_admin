@@ -77,7 +77,7 @@ $.each(inputs, function() {BibOS.ScriptEdit.addInput('#update-script-inputs', th
         <h3>Tilføj nyt script</h3>
       </div>
       <div class="modal-body">
-        {% include 'system/scripts/form.html' with form=create_form %}
+        {% include 'system/scripts/form.html' with form=create_form disable_inputs="yes" %}
       </div>
       <div class="modal-footer">
         <input type="submit" class="btn btn-primary" value="Gem" />

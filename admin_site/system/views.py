@@ -277,9 +277,20 @@ class JobsView(SiteView):
         context['batches'] = self.object.batches.all()
         context['pcs'] = self.object.pcs.all()
         context['groups'] = self.object.groups.all()
+        preselected = set([
+            Job.NEW,
+            Job.SUBMITTED,
+            Job.RUNNING,
+            Job.FAILED
+        ])
         context['status_choices'] = [
-            (name, value, Job.STATUS_TO_LABEL[value])
-            for (value, name) in Job.STATUS_CHOICES
+            {
+                'name': name,
+                'value': value,
+                'label': Job.STATUS_TO_LABEL[value],
+                'checked':
+                    'checked="checked' if value in preselected else ''
+            } for (value, name) in Job.STATUS_CHOICES
         ]
         params = self.request.GET or self.request.POST
 
@@ -314,7 +325,7 @@ class JobSearch(JSONResponseMixin, SiteView):
                 job.started else None,
             'finished': job.finished.strftime("%Y-%m-%d %H:%M:%S") if
                 job.finished else None,
-            'status': job.status,
+            'status': job.status_translated + '',
             'label': job.status_label,
             'pc_name': job.pc.name,
             'batch_name': job.batch.name,
@@ -644,8 +655,9 @@ class ScriptRun(SiteView):
             # Uniquify
             context['pcs'] = list(set(pcs))
 
+        
         if len(context['pcs']) == 0:
-            context['message'] = _('Du skal angive mindst en PC eller gruppe')
+            context['message'] = _('You must specify at least one group or pc')
             self.step1(context)
             return
 
@@ -666,7 +678,7 @@ class ScriptRun(SiteView):
 
         context['num_pcs'] = len(pcs)
         if context['num_pcs'] == 0:
-            context['message'] = _('Du skal angive mindst en PC eller gruppe')
+            context['message'] = _('You must specify at least one group or pc')
             self.step1(context)
             return
 
@@ -935,9 +947,14 @@ class UserUpdate(UpdateView, UsersMixin, SuperAdminOrThisSiteMixin):
     def get_context_data(self, **kwargs):
         context = super(UserUpdate, self).get_context_data(**kwargs)
         self.add_userlist_to_context(context)
-        context['selected_user'] = self.selected_user
-        context['create_form'] = UserForm(prefix='create')
 
+        loginusertype = self.request.user.bibos_profile.get().type
+
+        context['selected_user'] = self.selected_user
+        context['form'].setup_usertype_choices(loginusertype)
+
+        context['create_form'] = UserForm(prefix='create')
+        context['create_form'].setup_usertype_choices(loginusertype)
         return context
 
     def form_valid(self, form):
@@ -1244,12 +1261,23 @@ class DocView(TemplateView):
             ('install_network', 'Installation via netværk'),
 
             ('', 'BibOS-gateway'),
-            ('gateway_install', 'Installation BibOS-gateway'),
+            ('gateway_install', 'Installation af BibOS-gateway'),
             ('gateway_admin', 'Administration af gateway'),
+            ('', 'Om'),
+            ('om_bibos_admin', 'Om BibOS-Admin')
         ]
         docnames = self.docname.split("/")
         
         context['menu_active'] = docnames[0]
+
+        # Set heading according to chosen item
+        current_heading = None
+        for link, name in context['docmenuitems']:
+            if link == '':
+                current_heading = name
+            elif link == docnames[0]:
+                context['docheading'] = current_heading
+                break
 
         # Add a submenu if it exists
         submenu_template = "documentation/" + docnames[0] + "/__submenu__.html"

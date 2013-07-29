@@ -1,12 +1,32 @@
 {% extends 'documentation/index.html' %}
 
-{% block doc_subtitle %}Admin-systemet{% endblock %}
-
-{% block admin_scripts_active %}class="active"{% endblock %}
-
 {% block specific_content %}
   <h1>Administration af Scripts</h1>
   <p>
-    Denne del af dokumentationen er under udarbejdelse.
+    Når man klikker på Scripts i venstremenuen vil man til højre for
+    venstremenuen få vist en liste af scripts og til højre for denne liste vil
+    man få vist redigeringsinterfacet for scripts.
+  </p>
+  <p>
+    Listen af scripts er delt op i to dele som man kan skifte imellem ved at
+    klikke på fanebladene "Lokale scripts" og "Globale scripts" oven over
+    listen.
+  </p>
+  <p>
+    Lokale scripts dækker over scripts som kun kan bruges på det site man er
+    under mens Globale scripts dækker over scripts der kan bruges på alle
+    sites.
+  </p>
+  <p>
+    For hvert script har du mulighed for følgende:
+    {% include 'documentation/scripts/__submenu__.html' %}
+  </p>
+  <p>
+    Hvis du ønsker at oprette et nyt script skal du klikke på "tilføj nyt
+    script" oven over listen med scripts. Dette vil åbne en dialog hvor du kan
+    udfylde script navn, beskrivelse og uploade script-kode. Når du klikker på
+    gem vil scriptet blive oprettet og du vil blive viderestillet til
+    redigeringssiden for det nyoprettede script, hvor du vil have mulighed for
+    at tilføje parametre til scriptet.
   </p>
 {% endblock %}

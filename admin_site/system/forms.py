@@ -10,7 +10,6 @@ from account.models import UserProfile
 
 from django.utils.translation import ugettext as _
 
-
 class SiteForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(SiteForm, self).__init__(*args, **kwargs)
@@ -101,13 +100,15 @@ class UserForm(forms.ModelForm):
         required=False
     )
 
+    initial_type = None
+
     def __init__(self, *args, **kwargs):
         initial = kwargs.setdefault('initial', {})
         if 'instance' in kwargs and kwargs['instance'] is not None:
             initial['usertype'] = kwargs['instance'].bibos_profile.get().type
         else:
             initial['usertype'] = UserProfile.SITE_USER
-
+        self.initial_type = initial['usertype']
         forms.ModelForm.__init__(self, *args, **kwargs)
 
     class Meta:
@@ -124,26 +125,23 @@ class UserForm(forms.ModelForm):
 
     # Sets the choices in the usertype widget depending on the usertype
     # of the user currently filling out the form
-    def setup_usertype_choices(self, loginuser_type, initial_type=None):
+    def setup_usertype_choices(self, loginuser_type):
+        print "Usertype: ", loginuser_type
         if loginuser_type == UserProfile.SUPER_ADMIN:
             # Superadmins can edit everything
-            pass
+            self.fields['usertype'].choices=UserProfile.type_choices
         elif loginuser_type == UserProfile.SITE_ADMIN:
             # If initial type is super_admin, hardcode to that single choice
-            if initial_type == UserProfile.SUPER_ADMIN:
+            if self.initial_type == UserProfile.SUPER_ADMIN:
                 self.set_usertype_single_choice(UserProfile.SITE_ADMIN)
+                self.fields['usertype'].widget.attrs['readonly']
             else:
                 # Only select between site-admins and site users
                 self.fields['usertype'].choices = UserProfile.NON_ADMIN_CHOICES
         else:
-            # Everybody else only get one choice
-            if initial_type is None:
-                # Can only choose site_user during creation
-                self.set_usertype_single_choice(UserProfile.SITE_USER)
-                self.fields['usertype'].widget.attrs['readonly']
-            else:
-                # And is locked to existing value during editing
-                self.set_usertype_single_choice(initial_type)
+            # Set to read-only single choice
+            self.set_usertype_single_choice(self.initial_type)
+            self.fields['usertype'].widget.attrs['readonly']
 
     def clean(self):
         cleaned_data = self.cleaned_data

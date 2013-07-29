@@ -11,4 +11,10 @@
     konfigurationsnøgle/værdi. Du kan også redigere eller slette eksisterende
     nøgler ved at klikke på værdien for den enkelte nøgle.
   </p>
+  <p>
+    Konfigurationer angivet på en computer vil altid tage præcedens over
+    <a href="{% url 'doc' 'global_configuration' %}">global konfiguration</a>
+    eller <a href="{% url 'doc' 'groups/config' %}">konfiguration på grupper
+    som computeren er medlem af</a>.
+  </p>
 {% endblock %}

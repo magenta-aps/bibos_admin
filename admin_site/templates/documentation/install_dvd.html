@@ -1,39 +1,35 @@
 {% extends 'documentation/index.html' %}
 
-{% block doc_subtitle %}Installation af BibOS{% endblock %}
-
-{% block install_dvd_active %}class="active"{% endblock %}
-
 {% block specific_content %}
   <h1>Installation af BibOS via DVD</h1>
   <p>
     <ol>
       <li>Download et BibOS-iso fra
           <a href="http://{{ view.request.META.HTTP_HOST }}/archive/iso/"
-          >http://{{ view.request.META.HTTP_HOST }}/archive/iso/</a></li>
-      <li>Brænd ISO'et ud på en DVD</li>
-      <li>Boot maskinen du vil installere med DVD'en</li>
-      <li>Vælg "Installation fra lokal USB/DVD"</li>
+          >http://{{ view.request.META.HTTP_HOST }}/archive/iso/</a>.</li>
+      <li>Brænd ISO'et ud på en DVD.</li>
+      <li>Boot maskinen du vil installere med DVD'en.</li>
+      <li>Vælg "Installation fra lokal USB/DVD".</li>
       <li>
         Vælg eventuelt en harddisk du vil installere til, hvis computeren har
-        flere harddiske
+        flere harddiske.
       </li>
       <li>
         Vælg 'y' når du bliver spurgt om du vil slette alt eksisterende data
-        på den valgte harddisk
+        på den valgte harddisk.
       </li>
       <li>
         Kopiering af BibOS til harddisken kører nu færdig. Fjern DVD'en fra
-        maskinen når den genstarter
+        maskinen når den genstarter.
       </li>
       <li>
-        Maskinen skulle gerne automatisk logger ind som superbruger. Klik
-        på ikonet på desktoppen for at færdiggøre installationen og registre
-        maskinen i BibOS-admin
+        Maskinen skulle gerne automatisk logge ind som superbruger. Klik
+        på ikonet på desktoppen for at færdiggøre installationen og registrer
+        maskinen i BibOS-admin.
       </li>
       <li>
         Gå til BibOS-admin og
-        <a href="{% url 'doc' 'activate_pc' %}">aktivér computeren</a>.
+        <a href="{% url 'doc' 'computers/activating' %}">aktivér computeren</a>.
       </li>
       <li>
         Maskinen er nu klar til at blive adminstreret via BibOS-admin.

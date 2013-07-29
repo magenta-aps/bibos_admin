@@ -19,9 +19,9 @@
     <a href="{% url 'doc' 'activate_pc' %}">aktiveret</a> i BibOS-admin.
   </p>
   <p>
-    Installation foretages ved fysisk som superbruger på den maskine man ønsker
-    skal fungere som gateway. Derefter åbner man en konsol og udfører følgende
-    kommando:
+    Installation foretages ved fysisk at logge ind som superbruger på den
+    maskine man ønsker skal fungere som gateway. Derefter åbner man en konsol
+    og udfører følgende kommando:
     <pre>sudo /usr/share/bibos/gateway/install.sh</pre>
     Dette vil automatisk sætte maskinen op til at fungere som en BibOS-gateway.
   </p>
@@ -33,7 +33,8 @@
     >BibOS-netværksinstallationer</a>.
   </p>
   <p>
-    Man kan udføre komandoen senere ved køre følgende kommando som superuser:
+    Man kan vælge at udføre komandoen senere ved køre følgende kommando som
+    superuser:
     <pre>sudo /usr/share/bibos/gateway/rsync_archive.sh</pre>
   </p>
   <p>
@@ -52,5 +53,6 @@
 bibos_push_config_keys gateway_address
 sudo service bibos-broadcast-server restart
 </pre>
+    Udskift 1.2.3.4 i ovenstående med den ønskede IP-adresse.
   </p>
 {% endblock %}

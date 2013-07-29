@@ -33,8 +33,10 @@ var BibOS;
 
       var m = document.cookie.match(/\bbibos-notification\s*=\s*([^;]+)/)
       if(m) {
+        var msg = unescape(m[1]);
+        msg = msg.replace(/^\"(.*)\"$/, '$1');
         notification = $('.bibos-notification').first()
-        notification.html(unescape(m[1])).fadeIn()
+        notification.html(msg).fadeIn()
         document.cookie = 'bibos-notification=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
       }
 

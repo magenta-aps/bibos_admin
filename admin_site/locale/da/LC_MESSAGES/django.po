@@ -1,0 +1,228 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: BibOS2\n"
+"Report-Msgid-Bugs-To: support@magenta-aps.dk\n"
+"POT-Creation-Date: 2013-07-26 15:55+0200\n"
+"PO-Revision-Date: 2013-07-26 15:00+0200\n"
+"Last-Translator: Jørgen Ulrik B. Krag <jubk@magenta-aps.dk>\n"
+"Language: da\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: account/models.py:16
+msgid "Super Admin"
+msgstr "Super-admin"
+
+#: account/models.py:17 account/models.py:23
+msgid "Site User"
+msgstr "Site-bruger"
+
+#: account/models.py:18 account/models.py:24
+msgid "Site Admin"
+msgstr "Site-admin"
+
+#: account/models.py:41
+msgid "Non-admin users MUST be attached to a site"
+msgstr "Brugere der ikke er super-admins skal være tilknyttet et site"
+
+#: bibos_admin/settings.py:56 bibos_admin/settings_development.py:56
+msgid "Danish"
+msgstr ""
+
+#: job/models.py:16 job/models.py:126 job/models.py:258 system/models.py:100
+#: system/models.py:114 system/models.py:191 system/models.py:253
+#: system/models.py:324 system/models.py:337 system/models.py:388
+msgid "name"
+msgstr "Navn"
+
+#: job/models.py:17 system/models.py:102 system/models.py:339
+#: system/models.py:390
+msgid "description"
+msgstr "Beskrivelse"
+
+#: job/models.py:23
+msgid "executable code"
+msgstr "Eksekverbar kode"
+
+#: job/models.py:146
+msgid "jobstatus:New"
+msgstr "Nyt"
+
+#: job/models.py:147
+msgid "jobstatus:Submitted"
+msgstr "Afsendt"
+
+#: job/models.py:148
+msgid "jobstatus:Running"
+msgstr "Kører"
+
+#: job/models.py:149
+msgid "jobstatus:Done"
+msgstr "Udført"
+
+#: job/models.py:150
+msgid "jobstatus:Failed"
+msgstr "Fejlet"
+
+#: job/models.py:151
+msgid "jobstatus:Resolved"
+msgstr "Løst"
+
+#: job/models.py:167
+msgid "log output"
+msgstr "Log output"
+
+#: job/models.py:170
+msgid "started"
+msgstr "Påbegyndt"
+
+#: job/models.py:171
+msgid "finished"
+msgstr "Afsluttet"
+
+#: job/models.py:211
+msgid "Cannot change status from {0} to {1}"
+msgstr "Kan ikke ændre status fra {0} til {1}"
+
+#: job/models.py:218 system/views.py:374
+#, python-format
+msgid "Can only restart jobs with status %s"
+msgstr "Kan kun genstarte jobs der har status %s"
+
+#: job/models.py:252
+msgid "String"
+msgstr "Streng"
+
+#: job/models.py:253
+msgid "Integer"
+msgstr "Heltal"
+
+#: job/models.py:254
+msgid "Date"
+msgstr "Dato"
+
+#: job/models.py:255
+msgid "File"
+msgstr "Fil"
+
+#: job/models.py:259
+msgid "value type"
+msgstr "værdi-type"
+
+#: job/models.py:261
+msgid "position"
+msgstr "placering"
+
+#: job/models.py:262
+msgid "mandatory"
+msgstr "påkrævet"
+
+#: system/forms.py:13 system/forms.py:154
+msgid "Passwords must be identical."
+msgstr "De to adgangskoder skal være ens"
+
+#: system/forms.py:92
+msgid "Password"
+msgstr "Adgangskode"
+
+#: system/forms.py:99
+msgid "Password (again)"
+msgstr "Adgangskode (igen)"
+
+#: system/models.py:13
+msgid "status:New"
+msgstr "Ny"
+
+#: system/models.py:14
+msgid "status:Fail"
+msgstr "Fejlet"
+
+#: system/models.py:15
+msgid "status:Update"
+msgstr "Opdatering"
+
+#: system/models.py:94
+msgid "owner configuration"
+msgstr "ejer-konfiguration"
+
+#: system/models.py:101
+msgid "version"
+msgstr "version"
+
+#: system/models.py:254 system/models.py:325 system/models.py:389
+msgid "uid"
+msgstr "uid"
+
+#: system/models.py:338
+msgid "id"
+msgstr "id"
+
+#: system/models.py:398
+msgid "active"
+msgstr "aktiv"
+
+#: system/models.py:399
+msgid "update required"
+msgstr "opdatering påkrævet"
+
+#: system/models.py:403
+msgid "send package info"
+msgstr "send pakke-informationer"
+
+#: system/models.py:405
+msgid "creation time"
+msgstr "oprettelsestidspunkt"
+
+#: system/models.py:407
+msgid "last seen"
+msgstr "sidst set"
+
+#: system/views.py:264
+#, python-format
+msgid "Configuration for %s updated"
+msgstr "Konfiguration for %s opdateret"
+
+#: system/views.py:603
+#, python-format
+msgid "Script %s updated"
+msgstr "Script %s opdateret"
+
+#: system/views.py:649 system/views.py:670
+msgid "You must specify at least one group or pc"
+msgstr "Du skal angive mindst en pc eller gruppe"
+
+#: system/views.py:811
+#, python-format
+msgid "Computer %s updated"
+msgstr "Computer %s opdateret"
+
+#: system/views.py:831
+#, python-format
+msgid "Marked %s packages for upgrade"
+msgstr "Satte %s pakker til at blive opgraderet"
+
+#: system/views.py:953
+#, python-format
+msgid "User %s updated"
+msgstr "Bruger %s opdateret"
+
+#: system/views.py:987
+#, python-format
+msgid "User %s deleted"
+msgstr "Bruger %s slettet"
+
+#: system/views.py:1120
+#, python-format
+msgid "Group %s updated"
+msgstr "Gruppe %s opdateret"
+
+#: system/views.py:1142
+#, python-format
+msgid "Group %s deleted"
+msgstr "Gruppe %s slettet"
