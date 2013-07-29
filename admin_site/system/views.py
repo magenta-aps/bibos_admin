@@ -1246,7 +1246,7 @@ class DocView(TemplateView):
 
         context = super(DocView, self).get_context_data(**kwargs)
         context['docmenuitems'] = [
-            ('', 'Admin-systemet'),
+            ('', 'BibOS Administration'),
             ('status', 'Status'),
             ('global_configuration', 'Global konfiguration'),
             ('computers', 'Computere'),
