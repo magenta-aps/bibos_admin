@@ -9,7 +9,7 @@ Computere
 {% endblock %}
 
 {% block head_javascripts %}
-<script type="text/javascript">
+  <script type="text/javascript">
     $(document).ready(function() {
       $('.accordion-group:first-child').find('i.icon-chevron-down').toggleClass('icon-chevron-up icon-chevron-down');
       $('.accordion-group:first-child').find('i.icon-chevron-up').toggleClass('icon-chevron-up icon-chevron-down');
@@ -21,7 +21,13 @@ Computere
           };
         });
       });
-      $('button.btn').popover()
+      
+      $('button.btn').popover();
+      
+      $('.jobtable').on('click', 'button', function(event) {
+        $('.jobtable button').not(this).popover('hide');
+      });
+      
     });
   </script>
 {% endblock %}
@@ -225,7 +231,6 @@ class="active"
                     <button class="btn" data-toggle="popover" title="Log"
                       data-original-title="Log" data-html="true"
                       data-placement="bottom"
-                      data-container="body"
                       data-content="<a href='{% url 'restart_job' site.uid job.pk %}'>{% if job.failed %}<i class='icon-refresh'></i> Genstart job</a>{% endif %}<pre>{{job.log_output|escape|escape}}</pre>"
                       onclick="return false"
                     ><i class="icon-info-sign"></i></button>

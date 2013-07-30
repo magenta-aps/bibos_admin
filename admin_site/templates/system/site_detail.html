@@ -8,6 +8,18 @@
 class="active"
 {% endblock %}
 
+{% block head_javascripts %}
+  <script type="text/javascript">
+    $(document).ready(function() {
+      
+      $('.jobtable').on('click', 'button', function(event) {
+        $('.jobtable button').not(this).popover('hide');
+      });
+      
+    });
+  </script>
+{% endblock %}
+
 
 {% block specific_content %}
 
@@ -38,7 +50,7 @@ class="active"
             <td class="{% ifequal orderby_key 'status' %}orderby-highligt{% endifequal %}"><span class="label >{{job.label}}">{{job.status}}</span></td>
             <td class="{% ifequal orderby_key 'pc__name' %}orderby-highligt{% endifequal %}">{{job.pc_name}}</td>
             <td class="{% ifequal orderby_key 'batch__name' %}orderby-highligt{% endifequal %}">{{job.batch_name}}</td>
-            <td><button class="btn" data-toggle="popover" title="Log" data-original-title="Log" data-html="true" data-placement="bottom" data-container="body" data-content="<a href='#'><i class='icon-refresh'></i> Genstart job</a><pre>feglih eæglih selæfihaslehf læasiehf læsaijef læaishjef læiashje flæijas elfihjas leæfijas læefiha slæeifh</pre>"><i class="icon-info-sign"></i></button></td>
+            <td><button class="btn" data-toggle="popover" title="Log" data-original-title="Log" data-html="true" data-placement="bottom" data-content="<a href='#'><i class='icon-refresh'></i> Genstart job</a><pre>feglih eæglih selæfihaslehf læasiehf læsaijef læaishjef læiashje flæijas elfihjas leæfijas læefiha slæeifh</pre>"><i class="icon-info-sign"></i></button></td>
           </tr>
           {% endfor %}
           {% else %}

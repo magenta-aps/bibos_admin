@@ -11,9 +11,15 @@ Jobs
   <script type="text/javascript" src="/media/js/jobs_list.js"></script>
   <script type="text/javascript">
     $(document).ready(function() {
+      
       $('.collapsing').click(function() {
         $(this).find('i').toggleClass('icon-chevron-up icon-chevron-down');
       });
+
+      $('.jobtable').on('click', 'button', function(event) {
+        $('.jobtable button').not(this).popover('hide');
+      });
+
     });
   </script>
 {% endblock %}
@@ -40,15 +46,14 @@ class="active"
         <td>#PC_NAME#</td>
         <td>#BATCH_NAME#</td>
         <td>
-          <button class="btn" data-toggle="popover" title="Log"
+          <button class="btn popoverbtn" data-toggle="popover" title="Log"
                   data-original-title="Log" data-html="true"
                   data-placement="bottom"
-                  data-container="body"
                   data-content="<a href='#RESTART_URL#'><i class='icon-refresh'></i> Genstart job</a><pre>#LOG_OUTPUT#</pre>"><i class="icon-info-sign"></i></button>
         </td>
       </tr>
     </tbody>
-   </table> 
+   </table>
   </div>
   <div id="jobsearchnav" class="sublevelnav">
     <form id="jobsearch-filterform" name="filterform" action="./" method="post">
