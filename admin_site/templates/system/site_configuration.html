@@ -28,6 +28,12 @@ class="active"
           {% csrf_token %}
         </div>
       </div>
+      
+      {% if site %}
+        <p class="well" style="font-size: 14px; line-height: 20px;">
+          <span class="muted">Dette sites ID er</span> <strong>{{ site.uid }}</strong>
+        </p>
+      {% endif %}
 
       {% include 'system/configlist/list.html' with entries=site_configs cnf_id='site_configs' %}
       {% include 'system/configlist/templates.html' %}

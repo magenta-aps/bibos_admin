@@ -12,7 +12,7 @@ class="detailpage"
 
   <ul class="nav nav-list utils utils-global">
     {% ifequal user.get_profile.type 0 %}
-      <li><a href="/"><i class="icon-arrow-left icon-white"></i> Sites</a></li>
+      <li><a href="/sites/"><i class="icon-arrow-left icon-white"></i> Sites</a></li>
       <li class="divider"></li>
     {% endifequal %}
     <li {% block site_active %}{% endblock %}><a href="/site/{{ site.url }}"><i class="icon-eye-open icon-white"></i> Status</a></li>

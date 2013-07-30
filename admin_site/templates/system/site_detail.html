@@ -1,7 +1,7 @@
 {% extends "site_with_navigation.html" %}
 
 {% block specific_title %}
-Status
+{% if site %}<span class="muted">({{ site.uid }})</span>{% endif %} Status
 {% endblock %}
 
 {% block site_active %}
