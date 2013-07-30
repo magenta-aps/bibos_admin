@@ -155,17 +155,17 @@ class="active"
               {% include 'system/package_lists/list.html' with packages=package_infos pl_id='pc_packages'%}
               {% if pending_packages_add %}
               <div><strong>Pakker der venter på at blive installeret på maskinen</strong></div>
-              <ul>
+              <ul class="unstyled well actionlist packagelist">
                 {% for name in pending_packages_add %}
-                  <li>{{ name }}</li>
+                  <li><span class="label">{{ name }}</span></li>
                 {% endfor %}
               </ul>
               {% endif %}
               {% if pending_packages_remove %}
               <div><strong>Pakker der venter på at blive fjernet fra maskinen</strong></div>
-              <ul>
+              <ul class="unstyled well actionlist packagelist">
                 {% for name in pending_packages_remove %}
-                  <li>{{ name }}</li>
+                  <li><span class="label">{{ name }}</span></li>
                 {% endfor %}
               </ul>
               {% endif %}
@@ -224,7 +224,8 @@ class="active"
                   <td>
                     <button class="btn" data-toggle="popover" title="Log"
                       data-original-title="Log" data-html="true"
-                      data-placement="top"
+                      data-placement="bottom"
+                      data-container="body"
                       data-content="<a href='{% url 'restart_job' site.uid job.pk %}'>{% if job.failed %}<i class='icon-refresh'></i> Genstart job</a>{% endif %}<pre>{{job.log_output|escape|escape}}</pre>"
                       onclick="return false"
                     ><i class="icon-info-sign"></i></button>
