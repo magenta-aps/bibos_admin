@@ -1300,4 +1300,13 @@ class DocView(TemplateView):
                 raise Http404
             context['submenu_active'] = docnames[1]
 
+        params = self.request.GET or self.request.POST
+        back_link = params.get('back')
+        if back_link is None:
+            referer = self.request.META.get('HTTP_REFERER')
+            if referer and referer.find("/documentation/") == -1:
+                back_link = referer
+        if back_link:
+            context['back_link'] = back_link
+
         return context
