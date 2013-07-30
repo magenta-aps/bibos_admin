@@ -9,6 +9,9 @@ var BibOS;
     this.cssToLoad = []
   }
 
+  var documentaion_match = /^(https?:\/\/[^\/]+)?\/documentation\//;
+  var back_match = /[\?\&]back=([^\&]+)/;
+
   $.extend(BibOS.prototype, {
     init: function() {
     },
@@ -40,8 +43,50 @@ var BibOS;
         document.cookie = 'bibos-notification=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
       }
 
+      if(location.href.match(documentaion_match))
+        this.setupDocumentationBackLinks();
     },
+    setupDocumentationBackLinks: function() {
+      var ref = document.referrer || '';
+      var back = '';
 
+      var m = ref.match(back_match) || location.href.match(back_match);
+      if(m) {
+        back = unescape(m[1]);
+      } else if(!ref.match(documentaion_match)) {
+        back = ref
+      }
+
+      if(! back)
+        return
+
+      back = escape(back);
+      $('a').each(function() {
+        var href = $(this).attr('href') || '';
+        if(href == '#' || href.match(/^javascript:/))
+          return true;
+        if(href.match(documentaion_match)) {
+          var url_parts = href.split(/[\?#]/);
+          var qstring_parts = (url_parts[1] || '').split('&');
+          var args = []
+          $.each(qstring_parts, function() {
+            if(this != '' && !this.match(/back=/))
+              args.push(this)
+          });
+          args.push('back=' + back);
+          var new_href = [
+            url_parts[0],
+            '?', args.join('&'),
+          ].join('');
+          if(url_parts.length > 2) {
+            url_parts.splice(0, 2);
+            new_href += '#' + url_parts.join("#");
+          }
+          $(this).attr('href', new_href);
+        }
+        return true;
+      })
+    },
     loadResource: function(type, src) {
       if(this.documentReady) {
         var item;
