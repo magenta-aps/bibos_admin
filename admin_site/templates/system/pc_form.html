@@ -9,7 +9,7 @@ Computere
 {% endblock %}
 
 {% block head_javascripts %}
-<script type="text/javascript">
+  <script type="text/javascript">
     $(document).ready(function() {
       $('.accordion-group:first-child').find('i.icon-chevron-down').toggleClass('icon-chevron-up icon-chevron-down');
       $('.accordion-group:first-child').find('i.icon-chevron-up').toggleClass('icon-chevron-up icon-chevron-down');
@@ -21,7 +21,6 @@ Computere
           };
         });
       });
-      $('button.btn').popover()
     });
   </script>
 {% endblock %}
@@ -155,17 +154,17 @@ class="active"
               {% include 'system/package_lists/list.html' with packages=package_infos pl_id='pc_packages'%}
               {% if pending_packages_add %}
               <div><strong>Pakker der venter på at blive installeret på maskinen</strong></div>
-              <ul>
+              <ul class="unstyled well actionlist packagelist">
                 {% for name in pending_packages_add %}
-                  <li>{{ name }}</li>
+                  <li><span class="label">{{ name }}</span></li>
                 {% endfor %}
               </ul>
               {% endif %}
               {% if pending_packages_remove %}
               <div><strong>Pakker der venter på at blive fjernet fra maskinen</strong></div>
-              <ul>
+              <ul class="unstyled well actionlist packagelist">
                 {% for name in pending_packages_remove %}
-                  <li>{{ name }}</li>
+                  <li><span class="label">{{ name }}</span></li>
                 {% endfor %}
               </ul>
               {% endif %}
