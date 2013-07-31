@@ -7,7 +7,7 @@ from views import SiteDetailView, UserCreate, UserUpdate, SiteConfiguration
 from views import ScriptList, ScriptUpdate, ScriptCreate, ScriptDelete
 from views import ScriptRun, PCUpdate, JobRestarter, MarkPackageUpgrade
 from views import ConfigurationEntryCreate, ConfigurationEntryUpdate
-from views import ConfigurationEntryDelete, DocView
+from views import ConfigurationEntryDelete, DocView, JobInfo
 from views import PackageSearch
 
 urlpatterns = patterns(
@@ -53,6 +53,10 @@ urlpatterns = patterns(
     url(r'^site/(?P<site_uid>[ \w]+)/jobs/(?P<pk>\d+)/restart/',
         JobRestarter.as_view(),
         name='restart_job'
+    ),
+    url(r'^site/(?P<site_uid>[ \w]+)/jobs/(?P<pk>\d+)/info/',
+        JobInfo.as_view(),
+        name='job_info'
     ),
     url(r'^site/(?P<slug>[ \w]+)/jobs/', JobsView.as_view(), name='jobs'),
     # Scripts

@@ -19,32 +19,40 @@ class="active"
   
   <div class="container-fluid main sublevelmain" style="overflow-x: auto;">
     
-    <table class="table jobtable">
-          <tr>
-            {% include 'widgets/orderby_th.html' with key='batch__script__name' label='Script' %}
-            {% include 'widgets/orderby_th.html' with key='started' label='Startet' %}
-            {% include 'widgets/orderby_th.html' with key='finished' label='Sluttet' %}
-            {% include 'widgets/orderby_th.html' with key='status' label='Status' %}
-            {% include 'widgets/orderby_th.html' with key='pc__name' label='Computer' %}
-            {% include 'widgets/orderby_th.html' with key='batch__name' label='Batch' %}
-            <th></th>
-          </tr>
-          {% if jobs %}
-          {% for job in jobs %}
-          <tr class="muted">
-            <td class="{% ifequal orderby_key 'batch__script__name' %}orderby-highligt{% endifequal %}">{{job.script_name}}</td>
-            <td class="{% ifequal orderby_key 'started' %}orderby-highligt{% endifequal %}>{{job.started}}"</td>
-            <td class="{% ifequal orderby_key 'finished' %}orderby-highligt{% endifequal %}>{{job.finished}}"</td>
-            <td class="{% ifequal orderby_key 'status' %}orderby-highligt{% endifequal %}"><span class="label >{{job.label}}">{{job.status}}</span></td>
-            <td class="{% ifequal orderby_key 'pc__name' %}orderby-highligt{% endifequal %}">{{job.pc_name}}</td>
-            <td class="{% ifequal orderby_key 'batch__name' %}orderby-highligt{% endifequal %}">{{job.batch_name}}</td>
-            <td><button class="btn" data-toggle="popover" title="Log" data-original-title="Log" data-html="true" data-placement="bottom" data-content="<a href='#'><i class='icon-refresh'></i> Genstart job</a><pre>feglih eæglih selæfihaslehf læasiehf læsaijef læaishjef læiashje flæijas elfihjas leæfijas læefiha slæeifh</pre>"><i class="icon-info-sign"></i></button></td>
-          </tr>
-          {% endfor %}
-          {% else %}
-            <tr><td colspan="7">Der blev ikke fundet nogen fejlede jobs</td></tr>
+    <table class="table jobtable" id="site_status_jobs_table">
+      <tr>
+        {% include 'widgets/orderby_th.html' with key='batch__script__name' label='Script' %}
+        {% include 'widgets/orderby_th.html' with key='started' label='Startet' %}
+        {% include 'widgets/orderby_th.html' with key='finished' label='Sluttet' %}
+        {% include 'widgets/orderby_th.html' with key='status' label='Status' %}
+        {% include 'widgets/orderby_th.html' with key='pc__name' label='Computer' %}
+        {% include 'widgets/orderby_th.html' with key='batch__name' label='Batch' %}
+        <th></th>
+      </tr>
+      {% if jobs %}
+      {% for job in jobs %}
+      <tr class="muted">
+        <td class="{% ifequal orderby_key 'batch__script__name' %}orderby-highligt{% endifequal %}">{{job.script_name}}</td>
+        <td class="{% ifequal orderby_key 'started' %}orderby-highligt{% endifequal %}>{{job.started}}"</td>
+        <td class="{% ifequal orderby_key 'finished' %}orderby-highligt{% endifequal %}>{{job.finished}}"</td>
+        <td class="{% ifequal orderby_key 'status' %}orderby-highligt{% endifequal %}"><span class="label {{job.label}}">{{job.status}}</span></td>
+        <td class="{% ifequal orderby_key 'pc__name' %}orderby-highligt{% endifequal %}">{{job.pc_name}}</td>
+        <td class="{% ifequal orderby_key 'batch__name' %}orderby-highligt{% endifequal %}">{{job.batch_name}}</td>
+        <td>
+          {% if job.has_info %}
+          <button class="btn jobinfobutton" data-pk="{{ job.pk }}"><i class="icon-info-sign"></i></button>
           {% endif %}
-        </table> 
-        
+        </td>
+      </tr>
+      {% endfor %}
+      {% else %}
+        <tr><td colspan="7">Der blev ikke fundet nogen fejlede jobs</td></tr>
+      {% endif %}
+    </table>
+    <script type="text/javascript"><!--
+    $(function() {
+      BibOS.setupJobInfoButtons($('#site_status_jobs_table'));
+    });
+    //--></script>
   </div>
 {% endblock %}

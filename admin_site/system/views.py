@@ -321,6 +321,7 @@ class JobSearch(JSONResponseMixin, SiteView):
             site = joblist[0].batch.site
 
         return [{
+            'pk': job.pk,
             'script_name': job.batch.script.name,
             'started': job.started.strftime("%Y-%m-%d %H:%M:%S") if
                 job.started else None,
@@ -332,7 +333,7 @@ class JobSearch(JSONResponseMixin, SiteView):
             'batch_name': job.batch.name,
             # Yep, it's meant to be double-escaped - it's HTML-escaped
             # content that will be stored in an HTML attribute
-            'log_output': escape(escape(job.log_output)),
+            'has_info': job.has_info,
             'restart_url': '/site/%s/jobs/%s/restart/' % (site.uid, job.pk)
         } for job in joblist]
 
@@ -423,6 +424,21 @@ class JobRestarter(DetailView, SuperAdminOrThisSiteMixin):
     def get_success_url(self):
         return '/site/%s/jobs/' % self.kwargs['site_uid']
 
+class JobInfo(DetailView, LoginRequiredMixin):
+    template_name = 'system/jobs/info.html'
+    model = Job
+
+    def get(self, request, *args, **kwargs):
+        self.site = get_object_or_404(Site, uid=kwargs['site_uid'])
+        return super(JobInfo, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(JobInfo, self).get_context_data(**kwargs)
+        if self.site != self.object.batch.site:
+            raise Http404
+        context['site'] = self.site
+        context['job'] = self.object
+        return context
 
 class ScriptMixin(object):
     script = None

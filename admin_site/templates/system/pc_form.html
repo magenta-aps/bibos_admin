@@ -205,7 +205,7 @@ class="active"
           </div>
           <div id="collapseFive" class="accordion-body collapse {% ifequal active_accordion 'joblist' %}in{% endifequal %}">
             <div class="accordion-inner">
-              <table class="table jobtable">
+              <table id="computer_jobs_table" class="table jobtable">
                 <tr>
                   {% include 'widgets/orderby_th.html' with key='batch__script__name' label='Script' %}
                   {% include 'widgets/orderby_th.html' with key='started' label='Startet' %}
@@ -222,16 +222,18 @@ class="active"
                   <td class="{% ifequal orderby_key 'status' %}orderby-highligt{% endifequal %}"><span class="label {{job.status_label}}">{{job.status}}</span></td>
                   <td class="{% ifequal orderby_key 'batch__name' %}orderby-highligt{% endifequal %}">{{job.batch.name}}</td>
                   <td>
-                    <button class="btn" data-toggle="popover" title="Log"
-                      data-original-title="Log" data-html="true"
-                      data-placement="top"
-                      data-content="<a href='{% url 'restart_job' site.uid job.pk %}'>{% if job.failed %}<i class='icon-refresh'></i> Genstart job</a>{% endif %}<pre>{{job.log_output|escape|escape}}</pre>"
-                      onclick="return false"
-                    ><i class="icon-info-sign"></i></button>
-                    </td>
+                    {% if job.has_info %}
+                    <button class="btn jobinfobutton" data-pk="{{ job.pk }}"><i class="icon-info-sign"></i></button>
+                    {% endif %}
+                  </td>
                 </tr>
                 {% endfor %}
               </table>
+              <script type="text/javascript"><!--
+              $(function() {
+                BibOS.setupJobInfoButtons($('#computer_jobs_table'));
+              });
+              //--></script>
             </div>
           </div>
         </div>

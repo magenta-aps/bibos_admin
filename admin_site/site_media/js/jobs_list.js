@@ -18,20 +18,26 @@ $(function(){
         appendEntries: function(dataList) {
             var container = this.elem
             $.each(dataList, function() {
-                var item = $(BibOS.expandTemplate('job-entry', this))
-                // Remove restart link unless job has failed
-                if(this['label'] != 'label-important') {
-                    var button = item.find('button.btn').first()
-                    var content = button.attr('data-content')
-                    content = content.substr(content.indexOf('<pre>'))
-                    button.attr('data-content', content)
+                var info_button = '';
+                if(this.has_info) {
+                    info_button = '<button ' +
+                        'class="btn jobinfobutton" ' +
+                        'title="Job-info" ' +
+                        'data-pk="' + this.pk + '"'+
+                    '><i class="icon-info-sign"></i></button>'
                 }
-                item.find('.btn').popover()
+                var item = $(BibOS.expandTemplate(
+                    'job-entry',
+                    $.extend(this, {
+                        'jobinfobutton': info_button
+                    })
+                ));
                 item.find('input:checkbox').click(function() {
                     $(this).parents('tr').toggleClass('marked');
                 });
                 item.appendTo(container)
-            })
+            });
+            BibOS.setupJobInfoButtons(container);
         },
 
         replaceEntries: function(dataList) {

@@ -185,6 +185,10 @@ class Job(models.Model):
         return '_'.join(map(unicode, [self.batch, self.id]))
 
     @property
+    def has_info(self):
+        return self.status == Job.FAILED or len(self.log_output) > 1
+
+    @property
     def status_label(self):
         if self.status is None:
             return ''
