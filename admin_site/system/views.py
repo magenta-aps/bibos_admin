@@ -424,6 +424,7 @@ class JobRestarter(DetailView, SuperAdminOrThisSiteMixin):
     def get_success_url(self):
         return '/site/%s/jobs/' % self.kwargs['site_uid']
 
+
 class JobInfo(DetailView, LoginRequiredMixin):
     template_name = 'system/jobs/info.html'
     model = Job
@@ -439,6 +440,7 @@ class JobInfo(DetailView, LoginRequiredMixin):
         context['site'] = self.site
         context['job'] = self.object
         return context
+
 
 class ScriptMixin(object):
     script = None
@@ -672,7 +674,6 @@ class ScriptRun(SiteView):
             # Uniquify
             context['pcs'] = list(set(pcs))
 
-        
         if len(context['pcs']) == 0:
             context['message'] = _('You must specify at least one group or pc')
             self.step1(context)
@@ -790,18 +791,18 @@ class PCUpdate(SiteMixin, UpdateView):
         context['waiting_for_package_list'] = waiting_for_packages
         if not waiting_for_packages:
             group_set = site.groups.all()
-    
+
             selected_group_ids = form['pc_groups'].value()
             context['available_groups'] = group_set.exclude(
                 pk__in=selected_group_ids
             )
             context['selected_groups'] = group_set.filter(
                 pk__in=selected_group_ids
-            )        
-    
+            )
+
             ii = self.object.custom_packages.install_infos
             context['package_infos'] = ii.order_by('-do_add', 'package__name')
-    
+
             a, r = pc.pending_package_updates
             context['pending_packages_add'] = sorted(a)
             context['pending_packages_remove'] = sorted(r)
@@ -1293,7 +1294,7 @@ class DocView(TemplateView):
             ('om_bibos_admin', 'Om BibOS-Admin')
         ]
         docnames = self.docname.split("/")
-        
+
         context['menu_active'] = docnames[0]
 
         # Set heading according to chosen item
