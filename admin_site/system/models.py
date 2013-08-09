@@ -299,7 +299,13 @@ class Site(models.Model):
         self.uid = self.uid.lower()
         # 2. Create related configuration object if necessary.
         is_new = self.id is None
-        if is_new and self.configuration is None:
+
+        try:
+            conf = self.configuration
+        except Configuration.DoesNotExist:
+            conf = None
+            
+        if is_new and conf is None:
             try:
                 self.configuration = Configuration.objects.get(
                     name=self.uid
