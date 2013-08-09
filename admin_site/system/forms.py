@@ -10,6 +10,7 @@ from account.models import UserProfile
 
 from django.utils.translation import ugettext as _
 
+
 class SiteForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(SiteForm, self).__init__(*args, **kwargs)
@@ -129,7 +130,7 @@ class UserForm(forms.ModelForm):
         print "Usertype: ", loginuser_type
         if loginuser_type == UserProfile.SUPER_ADMIN:
             # Superadmins can edit everything
-            self.fields['usertype'].choices=UserProfile.type_choices
+            self.fields['usertype'].choices = UserProfile.type_choices
         elif loginuser_type == UserProfile.SITE_ADMIN:
             # If initial type is super_admin, hardcode to that single choice
             if self.initial_type == UserProfile.SUPER_ADMIN:
