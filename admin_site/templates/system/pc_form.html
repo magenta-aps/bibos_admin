@@ -52,7 +52,8 @@ class="active"
   <div class="container-fluid main sublevelmain">
     
       <h2 class="divideheader">Detaljer om <em>{{ selected_pc.name }}</em> 
-          {% if selected_pc.is_update_required %}<span class="label label-warning">Update venter</span>{% endif %}</h2>
+          {% if selected_pc.is_update_required %}<span class="label
+              label-warning">Opdateringer tilgængelige</span>{% endif %}</h2>
       {% include 'notification.html' %}
     
       <p class="pull-right"><span class="muted">Sidst set:</span> <strong>{{ selected_pc.last_seen | date }} </strong> 
