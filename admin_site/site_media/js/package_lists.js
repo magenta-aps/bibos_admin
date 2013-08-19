@@ -145,6 +145,13 @@
             form.submit()
         }
     });
+    
+    function toggle_package_selection(source) {
+        var element_name = "upgrade_package";
+        var checkboxes = document.getElementsByName(element_name);
+        for each(var checkbox in checkboxes)
+            checkbox.checked = source.checked;
+    }
 
     BibOS.PackageList = new PackageList()
     $(function() { BibOS.PackageList.init() })

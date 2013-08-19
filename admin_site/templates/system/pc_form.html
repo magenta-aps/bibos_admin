@@ -172,6 +172,9 @@ class="active"
               {% if selected_pc.package_list.needs_upgrade_packages %}
               <div><strong>Pakker der kan opgraderes på maskinen</strong></div>
               <ul id="needs_upgrade_packages">
+                  <li> <input type="checkbox"
+                  onClick="toggle_package_selection(this)" />Markér alle</br>
+
                 {% for package in selected_pc.package_list.needs_upgrade_packages %}
                   <li>
                     <label for="upgrade_package-{{ package.pk }}">
