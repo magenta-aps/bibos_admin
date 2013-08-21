@@ -7,7 +7,7 @@ echo "deb http://www.duinsoft.nl/pkg debs all" > /tmp/oracle_java.list
 mv /tmp/oracle_java.list /etc/apt/sources.list.d
 apt-key adv --keyserver keys.gnupg.net --recv-keys 5CB26B26
 apt-get -y update
-apt-get -y install update-sun-jre
+apt-get -y --force-yes install update-sun-jre
 
 exit 0
 

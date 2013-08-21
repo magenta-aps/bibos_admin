@@ -1286,6 +1286,7 @@ class DocView(TemplateView):
             ('install_dvd', 'Installation via DVD'),
             ('install_usb', 'Installation via USB'),
             ('install_network', 'Installation via netværk'),
+            ('postinstall', 'Postinstall-script'),
 
             ('', 'BibOS-gateway'),
             ('gateway_install', 'Installation af BibOS-gateway'),
