@@ -8,6 +8,22 @@ then
     exit -1
 fi
 
+if [[ ($1 == "--disable") || ($1 == "0") ]]
+then
+    # Clean up
+    echo "Cleaning up!"
+    rm -f /usr/share/bibos/bin/auto_logout.sh
+    rm -f /home/.skjult/.config/autostart/auto_logout.sh.desktop
+    QUEUED_JOBS=$(atq)
+    if [[ $QUEUED_JOBS ]]
+    then
+        atrm $(atq | awk '{ print $1; }')
+    fi
+    exit 0
+
+fi
+
+echo "Running at etc"
 
 cat << EOF > /usr/share/bibos/bin/auto_logout.sh
 #!/usr/bin/env bash
