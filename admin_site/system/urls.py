@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, url
+from django.views.generic import RedirectView
 
 from views import SiteList, SiteView, SiteCreate, SiteUpdate, SiteDelete
 from views import AdminIndex, PCsView, GroupsView, UsersView, JobsView
@@ -90,6 +91,8 @@ urlpatterns = patterns(
     url(r'^packages/', PackageSearch.as_view(), name='packages'),
 
     # Documentation
+    url(r'^documentation/pdf_guide/', 
+        RedirectView.as_view(url='/media/docs/bibOS_installationsguide.pdf')),
     url(r'^documentation/(?P<name>[\d\w\/]+)/', DocView.as_view(), name='doc'),
     url(r'^documentation/', DocView.as_view(), name='doc_root'),
 )
