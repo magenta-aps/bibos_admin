@@ -614,7 +614,7 @@ class ScriptUpdate(ScriptMixin, UpdateView, LoginRequiredMixin):
         # Get context from super class
         context = super(ScriptUpdate, self).get_context_data(**kwargs)
         if self.script is not None and self.script.executable_code is not None:
-            context['script_preview'] = self.script.executable_code.read()
+            context['script_preview'] = self.script.executable_code.read(4096)
         context['type_choices'] = Input.VALUE_CHOICES
         self.create_form = ScriptForm()
         self.create_form.prefix = 'create'
