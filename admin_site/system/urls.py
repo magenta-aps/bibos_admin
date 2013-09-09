@@ -8,7 +8,7 @@ from views import SiteDetailView, UserCreate, UserUpdate, SiteConfiguration
 from views import ScriptList, ScriptUpdate, ScriptCreate, ScriptDelete
 from views import ScriptRun, PCUpdate, JobRestarter, MarkPackageUpgrade
 from views import ConfigurationEntryCreate, ConfigurationEntryUpdate
-from views import ConfigurationEntryDelete, DocView, JobInfo
+from views import ConfigurationEntryDelete, JobInfo, TechDocView, DocView
 from views import PackageSearch
 
 urlpatterns = patterns(
@@ -91,8 +91,10 @@ urlpatterns = patterns(
     url(r'^packages/', PackageSearch.as_view(), name='packages'),
 
     # Documentation
-    url(r'^documentation/pdf_guide/', 
+    url(r'^documentation/pdf_guide/',
         RedirectView.as_view(url='/media/docs/bibOS_installationsguide.pdf')),
+    url(r'^documentation/tech/(?P<name>[\d\w\/]+)/', TechDocView.as_view(),
+        name='tech_doc'),
     url(r'^documentation/(?P<name>[\d\w\/]+)/', DocView.as_view(), name='doc'),
     url(r'^documentation/', DocView.as_view(), name='doc_root'),
 )

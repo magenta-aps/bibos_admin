@@ -304,7 +304,7 @@ class Site(models.Model):
             conf = self.configuration
         except Configuration.DoesNotExist:
             conf = None
-            
+
         if is_new and conf is None:
             try:
                 self.configuration = Configuration.objects.get(
