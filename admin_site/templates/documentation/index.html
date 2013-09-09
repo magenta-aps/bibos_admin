@@ -19,7 +19,7 @@ class="detailpage"
   {% for link, name in docmenuitems %}
   {% if link %}
   <li {% ifequal menu_active link %}class="active"{% endifequal %}>
-    <a href="{% url 'doc' link %}"><i class="icon-list-alt icon-white"></i> {{ name }}</a>
+    <a href="{% url 'doc' link %}"><i class="icon-file icon-white"></i> {{ name }}</a>
     {% if menu_active == link and submenu_template %}
     {% include submenu_template %}
     {% endif %}
