@@ -21,7 +21,7 @@ class="detailpage"
   <li {% ifequal menu_active link %}class="active"{% endifequal %}>
     <a href="{% url 'doc' link %}"><i class="icon-file icon-white"></i> {{ name }}</a>
     {% if menu_active == link and submenu_template %}
-    {% include submenu_template %}
+      {% include submenu_template %}
     {% endif %}
   </li>
   {% else %}
