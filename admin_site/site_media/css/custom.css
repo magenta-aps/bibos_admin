@@ -13,7 +13,7 @@ header h1 em {color: #fff; font-style: normal;}
 .profile a.dropdown-toggle {color: #fff;}
 .dark a.dropdown-toggle {color: #000;}
 .nav-list.utils .divider {border: none; background: #666;}
-.utils-global {position: absolute; top: 0; bottom: 0; left: 0; width: 210px; margin: 0; border-radius: 0; box-shadow: -5px -5px 20px #111 inset;}
+.utils-global {position: absolute; top: 0; bottom: 0; left: 0; width: 210px; margin: 0; border-radius: 0; box-shadow: -5px -5px 20px #111 inset; overflow-x: hidden; overflow-y: auto;}
 .main {position: absolute; top: 64px; bottom: 0; left: 250px; right: 0; overflow-x: hidden; overflow-y: auto;}
 .sublevelnav {position: absolute; top: 64px; left: 250px; bottom: 0; width: 250px; background: #fff; overflow-x: hidden; overflow-y: auto; margin: 0;}
 .sublevelnav li a {border-top: solid 1px #ddd; display: block; padding: 10px;}
@@ -93,12 +93,14 @@ ul.addpclist li {cursor: pointer;}
 li.addpctrigger {position: relative;}
 li.addpctrigger:hover ul.addpclist {display: block}
 .bibos-notification, .errorlist { display: none; background-color: #88CC00; box-shadow: 2px 5px 10px #aaa; padding: 0.25em 0.5em 0.25em 0.5em; color: #fff; margin: 0 0 10px; border: solid 1px rgba(0, 0, 0, 0.1)}
-div.docscontainer { max-width: 600px; }
-div.docscontainer p, div.docscontainer h1, div.docscontainer h2, div.docscontainer h3, div.docscontainer h4 { margin-top: 0.75em; margin-bottom: 0.25em; }
-div.docscontainer h1 { font-size: 1.75em; line-height: inherit; }
-div.docscontainer h2 { font-size: 1.25em; line-height: inherit; }
-div.docscontainer h3 { font-size: 1.1em; line-height: inherit; }
-div.docscontainer h4 { font-size: 1em; line-height: inherit; }
+div.docscontainer {padding-bottom: 20px;}
+div.docscontainer * {max-width: 600px;}
+div.docscontainer p, div.docscontainer h1, div.docscontainer h2, div.docscontainer h3, div.docscontainer h4 {margin-top: 0.75em; margin-bottom: 0.25em;}
+div.docscontainer h1 {font-size: 1.75em; line-height: inherit;}
+div.docscontainer h2 {font-size: 1.25em; line-height: inherit;}
+div.docscontainer h3 {font-size: 1.1em; line-height: inherit;}
+div.docscontainer h4 {font-size: 1em; line-height: inherit;}
+div.docscontainer pre {max-width: 100%;}
 .addpackagecontrol {margin: 10px 0;}
 .addpackagecontrol > * {vertical-align: bottom;}
 .addpackagecontrol input {margin-bottom: 0;}
