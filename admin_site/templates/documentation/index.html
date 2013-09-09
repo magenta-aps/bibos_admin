@@ -19,9 +19,9 @@ class="detailpage"
   {% for link, name in docmenuitems %}
   {% if link %}
   <li {% ifequal menu_active link %}class="active"{% endifequal %}>
-    <a href="{% url 'doc' link %}"><i class="icon-list-alt icon-white"></i> {{ name }}</a>
+    <a href="{% url 'doc' link %}"><i class="icon-file icon-white"></i> {{ name }}</a>
     {% if menu_active == link and submenu_template %}
-    {% include submenu_template %}
+      {% include submenu_template %}
     {% endif %}
   </li>
   {% else %}
@@ -32,16 +32,15 @@ class="detailpage"
 </ul>
 
 <div class="container-fluid main">
-<div class="docscontainer">
-{% block specific_content %}
-  <h1>BibOS</h1>
-  <p>
-    BibOS giver dig mulighed for at fjernadministre computere via
-    BibOS-administrationsinterfacet. I menuen til venstre kan du finde
-    dokumentation for de forskellige dele af systemet.
-  </p>
-  
-{% endblock %}
-</div>
+  <div class="docscontainer">
+    {% block specific_content %}
+      <h1>BibOS</h1>
+      <p>
+        BibOS giver dig mulighed for at fjernadministre computere via
+        BibOS-administrationsinterfacet. I menuen til venstre kan du finde
+        dokumentation for de forskellige dele af systemet.
+      </p>
+    {% endblock %}
+  </div>
 </div>
 {% endblock %}
