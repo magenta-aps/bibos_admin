@@ -11,7 +11,7 @@ Teknisk dokumentation
 <ul class="nav-list">
     {% for link, name in url_list %}
     <li {% ifequal doc_active link %}class="active"{% endifequal %}>
-    <a href="{% url 'doc' link %}"><i class="icon-list-alt icon-white"></i> {{ name }}</a>
+    <a href="{% url 'doc' link %}"><i class="icon-file"></i> {{ name }}</a>
     </li>
     {% endfor %}
 
