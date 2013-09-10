@@ -1237,7 +1237,6 @@ class PackageSearch(JSONResponseMixin, ListView):
             } for p in self.object_list])
 
 
-        
 documentation_menu_items = [
     ('', 'BibOS Administration'),
     ('status', 'Status'),
@@ -1351,8 +1350,8 @@ class TechDocView(TemplateView):
         context = super(TechDocView, self).get_context_data(**kwargs)
         context['docmenuitems'] = documentation_menu_items
         overview_urls = {'bibos': 'BibOS Desktop', 'admin': 'BibOS Admin'}
-         
-        overview_items  = { 
+
+        overview_items = {
             'admin': [
                 ('tech/install_guide', 'Installationsvejledning'),
                 ('tech/developer_guide', 'Udviklerdokumentation'),
@@ -1370,7 +1369,7 @@ class TechDocView(TemplateView):
         def get_category(name):
             c = None
             for k in overview_items:
-                if 'tech/' + name in [a for a,b in overview_items[k]]:
+                if 'tech/' + name in [a for a, b in overview_items[k]]:
                     c = k
                     break
             return c
