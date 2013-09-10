@@ -1261,16 +1261,9 @@ documentation_menu_items = [
     ('', 'Om'),
     ('om_bibos_admin', 'Om BibOS-Admin'),
 
-    ('', 'BibOS teknisk dokumentation'),
-    ('tech/create_bibos_image', 'Lav nyt BibOS-image'),
-    ('tech/save_harddisk_image', 'Gem harddisk-image med Clonezilla'),
-    ('tech/build_bibos_cd', 'Byg BibOS-CD fra Clonezilla-image'),
-    ('tech/image_release_notes', 'Release notes'),
-
-    ('', 'BibOS Admin teknisk dokumentation'),
-    ('tech/install_guide', 'Installationsvejledning'),
-    ('tech/developer_guide', 'Udviklerdokumentation'),
-    ('tech/release_notes', 'Release notes'),
+    ('', 'Teknisk dokumentation'),
+    ('tech/bibos', 'BibOS teknisk dokumentation'),
+    ('tech/admin', 'BibOS Admin teknisk dokumentation'),
 
 ]
 
@@ -1354,8 +1347,33 @@ class TechDocView(TemplateView):
     def get_context_data(self, **kwargs):
         if 'name' in kwargs:
             self.docname = kwargs['name']
+            name = self.docname
         context = super(TechDocView, self).get_context_data(**kwargs)
         context['docmenuitems'] = documentation_menu_items
+        overview_urls = {'bibos': 'BibOS Desktop', 'admin': 'BibOS Admin'}
+         
+        overview_items  = { 
+            'admin': [
+                ('tech/install_guide', 'Installationsvejledning'),
+                ('tech/developer_guide', 'Udviklerdokumentation'),
+                ('tech/release_notes', 'Release notes'),
+            ],
+            'bibos': [
+                ('tech/create_bibos_image', 'Lav nyt BibOS-image'),
+                ('tech/save_harddisk_image',
+                 'Gem harddisk-image med Clonezilla'),
+                ('tech/build_bibos_cd', 'Byg BibOS-CD fra Clonezilla-image'),
+                ('tech/image_release_notes', 'Release notes'),
+            ]
+        }
+
+        def get_category(name):
+            c = None
+            for k in overview_items:
+                if 'tech/' + name in [a for a,b in overview_items[k]]:
+                    c = k
+                    break
+            return c
 
         dir = settings.SOURCE_DIR
         image_dir = settings.BIBOS_IMAGE_DIR
@@ -1378,12 +1396,23 @@ class TechDocView(TemplateView):
             'image_release_notes': i('NEWS'),
         }
 
-        if self.docname in url_mapping:
-            filename = url_mapping[self.docname]
+        if name in overview_urls:
+            category = name
+        elif name in url_mapping:
+            # Get category of this document
+            category = get_category(name)
+            # Mark document as active
+            context['doc_active'] = 'tech/' + name
+            # Now supply file contents
+            filename = url_mapping[name]
             with open(filename, "r") as f:
                 context['tech_content'] = f.read()
-            
         else:
             raise Http404
+
+        # Supply info from category
+        context['doc_title'] = overview_urls[category]
+        context['menu_active'] = 'tech/' + category
+        context['url_list'] = overview_items[category]
 
         return context
