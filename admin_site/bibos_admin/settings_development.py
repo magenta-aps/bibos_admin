@@ -16,9 +16,9 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+SOURCE_DIR = os.path.abspath(os.path.join(install_dir, '..'))
 # TODO: This parameter must be removed when we rename the system and factor out
 # BibOS-related stuff.
-SOURCE_DIR = os.path.abspath(os.path.join(install_dir, '..'))
 BIBOS_IMAGE_DIR = os.path.join(
     os.path.abspath(os.path.join(SOURCE_DIR, '..')), 
     'bibos_image')
