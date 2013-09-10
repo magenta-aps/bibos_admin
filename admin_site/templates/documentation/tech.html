@@ -1,0 +1,27 @@
+{% extends 'documentation/index.html' %}
+
+{% block doc_subtitle %}
+Teknisk dokumentation
+{% endblock %}
+
+
+{% block specific_content %}
+<h1> {{ doc_title }} teknisk dokumentation</h1>
+<p>
+<ul class="nav-list">
+    {% for link, name in url_list %}
+    <li {% ifequal doc_active link %}class="active"{% endifequal %}>
+    <a href="{% url 'doc' link %}"><i class="icon-list-alt icon-white"></i> {{ name }}</a>
+    </li>
+    {% endfor %}
+
+</ul>
+
+
+{% if tech_content %}
+<pre>
+{{ tech_content }}
+</pre>
+{% endif %}
+  </p>
+{% endblock %}

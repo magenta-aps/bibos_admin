@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import re
+import os
 import json
 import datetime
 
@@ -19,6 +21,7 @@ from django.views.generic import TemplateView
 
 from django.db.models import Q
 from django.db.models import Count
+from django.conf import settings
 
 from account.models import UserProfile
 
@@ -27,10 +30,8 @@ from forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
 from forms import UserForm, ParameterForm, PCForm
 from job.models import Job, Script, Input, Batch, Parameter
 
-from django.conf import settings
+
 import signals
-import re
-import os
 
 
 def set_notification_cookie(response, message):
@@ -1236,6 +1237,37 @@ class PackageSearch(JSONResponseMixin, ListView):
             } for p in self.object_list])
 
 
+        
+documentation_menu_items = [
+    ('', 'BibOS Administration'),
+    ('status', 'Status'),
+    ('site_configuration', 'Site-konfiguration'),
+    ('computers', 'Computere'),
+    ('groups', 'Grupper'),
+    ('jobs', 'Jobs'),
+    ('scripts', 'Scripts'),
+    ('users', 'Brugere'),
+
+    ('', 'Installation af BibOS'),
+    ('install_dvd', 'Installation via DVD'),
+    ('install_usb', 'Installation via USB'),
+    ('install_network', 'Installation via netværk'),
+    ('postinstall', 'Postinstall-script'),
+    ('pdf_guide', 'Brugervenlig installationsguide (PDF)'),
+
+    ('', 'BibOS-gateway'),
+    ('gateway_install', 'Installation af BibOS-gateway'),
+    ('gateway_admin', 'Administration af gateway'),
+    ('', 'Om'),
+    ('om_bibos_admin', 'Om BibOS-Admin'),
+
+    ('', 'Teknisk dokumentation'),
+    ('tech/bibos', 'BibOS teknisk dokumentation'),
+    ('tech/admin', 'BibOS Admin teknisk dokumentation'),
+
+]
+
+
 class DocView(TemplateView):
     docname = 'status'
 
@@ -1272,29 +1304,7 @@ class DocView(TemplateView):
             self.template_name = templatename
 
         context = super(DocView, self).get_context_data(**kwargs)
-        context['docmenuitems'] = [
-            ('', 'BibOS Administration'),
-            ('status', 'Status'),
-            ('site_configuration', 'Site-konfiguration'),
-            ('computers', 'Computere'),
-            ('groups', 'Grupper'),
-            ('jobs', 'Jobs'),
-            ('scripts', 'Scripts'),
-            ('users', 'Brugere'),
-
-            ('', 'Installation af BibOS'),
-            ('install_dvd', 'Installation via DVD'),
-            ('install_usb', 'Installation via USB'),
-            ('install_network', 'Installation via netværk'),
-            ('postinstall', 'Postinstall-script'),
-            ('pdf_guide', 'Brugervenlig installationsguide (PDF)'),
-
-            ('', 'BibOS-gateway'),
-            ('gateway_install', 'Installation af BibOS-gateway'),
-            ('gateway_admin', 'Administration af gateway'),
-            ('', 'Om'),
-            ('om_bibos_admin', 'Om BibOS-Admin')
-        ]
+        context['docmenuitems'] = documentation_menu_items
         docnames = self.docname.split("/")
 
         context['menu_active'] = docnames[0]
@@ -1327,5 +1337,82 @@ class DocView(TemplateView):
                 back_link = referer
         if back_link:
             context['back_link'] = back_link
+
+        return context
+
+
+class TechDocView(TemplateView):
+    template_name = 'documentation/tech.html'
+
+    def get_context_data(self, **kwargs):
+        if 'name' in kwargs:
+            self.docname = kwargs['name']
+            name = self.docname
+        context = super(TechDocView, self).get_context_data(**kwargs)
+        context['docmenuitems'] = documentation_menu_items
+        overview_urls = {'bibos': 'BibOS Desktop', 'admin': 'BibOS Admin'}
+         
+        overview_items  = { 
+            'admin': [
+                ('tech/install_guide', 'Installationsvejledning'),
+                ('tech/developer_guide', 'Udviklerdokumentation'),
+                ('tech/release_notes', 'Release notes'),
+            ],
+            'bibos': [
+                ('tech/create_bibos_image', 'Lav nyt BibOS-image'),
+                ('tech/save_harddisk_image',
+                 'Gem harddisk-image med Clonezilla'),
+                ('tech/build_bibos_cd', 'Byg BibOS-CD fra Clonezilla-image'),
+                ('tech/image_release_notes', 'Release notes'),
+            ]
+        }
+
+        def get_category(name):
+            c = None
+            for k in overview_items:
+                if 'tech/' + name in [a for a,b in overview_items[k]]:
+                    c = k
+                    break
+            return c
+
+        dir = settings.SOURCE_DIR
+        image_dir = settings.BIBOS_IMAGE_DIR
+        d = lambda f: os.path.join(dir, f)
+        i = lambda f: os.path.join(image_dir, f)
+
+        url_mapping = {
+            'install_guide': d('doc/HOWTO_INSTALL_SERVER.txt'),
+            'developer_guide': d('doc/DEVELOPMENT_HOWTO.txt'),
+            'release_notes': d('NEWS'),
+            'create_bibos_image': i(
+                'doc/HOWTOCreate_a_new_BibOS_image_from_scratch.txt'
+            ),
+            'save_harddisk_image': i(
+                'doc/HOWTO_save_a_bibos_harddisk_image.txt'
+            ),
+            'build_bibos_cd': i(
+                'doc/HOWTOBuild_BibOS_CD_from_clonezilla_image.txt'
+            ),
+            'image_release_notes': i('NEWS'),
+        }
+
+        if name in overview_urls:
+            category = name
+        elif name in url_mapping:
+            # Get category of this document
+            category = get_category(name)
+            # Mark document as active
+            context['doc_active'] = 'tech/' + name
+            # Now supply file contents
+            filename = url_mapping[name]
+            with open(filename, "r") as f:
+                context['tech_content'] = f.read()
+        else:
+            raise Http404
+
+        # Supply info from category
+        context['doc_title'] = overview_urls[category]
+        context['menu_active'] = 'tech/' + category
+        context['url_list'] = overview_items[category]
 
         return context
