@@ -101,6 +101,9 @@ div.docscontainer h2 {font-size: 1.25em; line-height: inherit;}
 div.docscontainer h3 {font-size: 1.1em; line-height: inherit;}
 div.docscontainer h4 {font-size: 1em; line-height: inherit;}
 div.docscontainer pre {max-width: 100%;}
+div.docscontainer .nav-list {list-style: none; padding: 0; margin: 20px 0;}
+div.docscontainer .nav-list>li>a {margin: 0; display: inline-block; padding: 3px 6px; border-radius: 5px;}
+div.docscontainer .nav-list>li>a:hover {background: #666; text-decoration: none; color: #fff; text-shadow: none;}
 .addpackagecontrol {margin: 10px 0;}
 .addpackagecontrol > * {vertical-align: bottom;}
 .addpackagecontrol input {margin-bottom: 0;}
