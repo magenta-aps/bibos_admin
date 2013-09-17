@@ -13,6 +13,20 @@ def get_config(key, filename=DEFAULT_CONFIG_FILE):
     return conf.get_value(key)
 
 
+def has_config(key, filename=DEFAULT_CONFIG_FILE):
+    """Return True if config key exists, False otherwise."""
+    conf = BibOSConfig(filename)
+    exists = False
+    try:
+        # TODO: It would be more elegant to determine this without computing
+        # the value.
+        val = conf.get_value(key)
+        exists = True
+    except KeyError:
+        pass
+    return exists
+
+
 def set_config(key, value, filename=DEFAULT_CONFIG_FILE):
     """Set value of a config key."""
     conf = BibOSConfig(filename)
