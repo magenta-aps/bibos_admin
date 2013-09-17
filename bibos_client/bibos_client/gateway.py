@@ -4,6 +4,8 @@ import socket
 import netifaces
 from socket import AF_INET, SOCK_DGRAM, SOL_SOCKET, SO_BROADCAST
 
+from bibos_utils import bibos_config
+
 MESSAGE = "Hello"
 REPLY_MESSAGE = "BibOS-server:"
 PORT = 42420
@@ -11,6 +13,10 @@ PORT = 42420
 
 def find_gateway(timeout=1):
     result = None
+
+    if bibos_config.has_config('gateway'):
+        # Done
+        return bibos_config.get_config('gateway')
 
     for if_name in netifaces.interfaces():
         if if_name.startswith('eth'):
