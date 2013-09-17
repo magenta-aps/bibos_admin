@@ -5,9 +5,37 @@
     # Attempt to get shared config file from gateway.
     # It this fails, the user must enter the corresponding data (site and 
     # admin_url) manually.
-    ADMIN_SITE="https://$(bibos_find_gateway 2> /dev/null)" 
+    if [ "$(id -u)" != "0" ]
+    then
+        echo "Dette program skal køres som root." 1>&2
+        exit 1
+    fi
+    
+    echo "Indtast gateway, tryk <ENTER> for ingen gateway eller automatisk opsætning"
+    read GATEWAY_IP
+
+    if [[ -z $GATEWAY_IP ]]
+    then
+        # No gateway entered by user
+        GATEWAY_SITE="http://$(bibos_find_gateway 2> /dev/null)" 
+    else
+        # User entered IP address or hostname - test if reachable by ping
+        echo "Checker forbindelsen til gateway ..."
+        ping -c 1 $GATEWAY_IP 2>1 > /dev/null
+        if [[ $? -ne 0 ]]
+        then
+            echo "Ugyldig gateway-adresse ($GATEWAY_IP) - prøv igen."
+            exit -1
+        else
+            echo "OK"
+        fi
+        # Gateway is pingable - we assume that means it's OK.
+        GATEWAY_SITE="http://$GATEWAY_IP"
+        set_bibos_config gateway "$GATEWAY_IP"
+    fi
+
     SHARED_CONFIG="/tmp/bibos.conf"
-    curl -s "$ADMIN_SITE/bibos.conf" -o "$SHARED_CONFIG"
+    curl -s "$GATEWAY_SITE/bibos.conf" -o "$SHARED_CONFIG"
 
     if [[ -f "$SHARED_CONFIG" ]]
     then
