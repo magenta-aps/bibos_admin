@@ -1,3 +1,4 @@
+import os
 import sys
 import re
 import socket
@@ -16,7 +17,11 @@ def find_gateway(timeout=1):
 
     if bibos_config.has_config('gateway'):
         # Done
-        return bibos_config.get_config('gateway')
+        ip = bibos_config.get_config('gateway')
+        rc = os.system("ping -c 1 " + ip + " 2>1 > /dev/null")
+        if rc == 0:
+            result = ip
+        return result
 
     for if_name in netifaces.interfaces():
         if if_name.startswith('eth'):
