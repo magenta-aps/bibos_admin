@@ -18,7 +18,7 @@ def find_gateway(timeout=1):
     if bibos_config.has_config('gateway'):
         # Done
         ip = bibos_config.get_config('gateway')
-        rc = os.system("ping -c 1 " + ip + " 2>1 > /dev/null")
+        rc = os.system("ping -c 1 " + ip + " 2>&1 > /dev/null")
         if rc == 0:
             result = ip
         return result
