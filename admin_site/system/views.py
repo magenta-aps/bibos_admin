@@ -850,6 +850,16 @@ class PCUpdate(SiteMixin, UpdateView):
         return response
 
 
+class PCDelete(DeleteView, SuperAdminOrThisSiteMixin):
+    model = PC
+
+    def get_object(self, queryset=None):
+        return PC.objects.get(uid=self.kwargs['pc_uid'])
+
+    def get_success_url(self):
+        return '/site/{0}/computers/'.format(self.kwargs['site_uid'])
+
+
 class MarkPackageUpgrade(SiteMixin, View):
     def post(self, request, *args, **kwargs):
         site = get_object_or_404(Site, uid=kwargs['site_uid'])
