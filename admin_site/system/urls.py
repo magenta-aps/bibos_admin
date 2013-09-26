@@ -9,7 +9,7 @@ from views import ScriptList, ScriptUpdate, ScriptCreate, ScriptDelete
 from views import ScriptRun, PCUpdate, JobRestarter, MarkPackageUpgrade
 from views import ConfigurationEntryCreate, ConfigurationEntryUpdate
 from views import ConfigurationEntryDelete, JobInfo, TechDocView, DocView
-from views import PackageSearch
+from views import PackageSearch, PCDelete
 
 urlpatterns = patterns(
     '',
@@ -40,6 +40,8 @@ urlpatterns = patterns(
         MarkPackageUpgrade.as_view(), name='mark_upgrade_packages'),
     url(r'^site/(?P<site_uid>[ \w]+)/computers/(?P<pc_uid>\w+)/$',
         PCUpdate.as_view(), name='computer'),
+    url(r'^site/(?P<site_uid>[ \w]+)/computers/(?P<pc_uid>\w+)/delete/$',
+        PCDelete.as_view(), name='computer_delete'),
     url(r'^site/(?P<slug>[^/]+)/groups/$', GroupsView.as_view(),
         name='groups'),
     url(r'^site/(?P<site_uid>[ \w]+)/groups/new/$', GroupCreate.as_view(),
