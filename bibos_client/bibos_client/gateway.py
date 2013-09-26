@@ -26,7 +26,11 @@ def find_gateway(timeout=1):
     for if_name in netifaces.interfaces():
         if if_name.startswith('eth'):
             interface = netifaces.ifaddresses(if_name)
-            broadcast_addr = interface[netifaces.AF_INET][0]['broadcast']
+            if netifaces.AF_INET in interface:
+                broadcast_addr = interface[netifaces.AF_INET][0]['broadcast']
+            else:
+                continue
+            # Now we know this IF is plugged in.
             try:
                 sock = socket.socket(AF_INET, SOCK_DGRAM)
                 sock.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
