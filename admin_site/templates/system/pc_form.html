@@ -56,7 +56,7 @@ class="active"
               label-warning">Opdateringer tilgængelige</span>{% endif %}</h2>
       {% include 'notification.html' %}
     
-      <p class="pull-right"><span class="muted">Sidst set:</span> <strong>{{ selected_pc.last_seen | date }} </strong> 
+      <p class="pull-right"><span class="muted"> &nbsp;Sidst set:</span> <strong>{{ selected_pc.last_seen | date }} </strong> 
       {{ selected_pc.last_seen|time }}</p> 
     <form name="pc_update_form" id="pc_update_form" action="{% url 'computer' site.uid selected_pc.uid %}" method="post">
       {% csrf_token %}
@@ -64,6 +64,7 @@ class="active"
       <button class="btn btn-primary">Gem ændringer</button>
       <button class="btn" onclick="return ((location.href = '{% url 'computer' site.uid selected_pc.uid %}') && false)">Annuller</button>
 
+      <a class="btn btn-danger pull-right" href="/site/{{ site.url }}/computers/{{ selected_pc.uid }}/delete/"><i class="icon-remove icon-white"></i> Slet Computer</a>
       <div class="accordion" id="accordion2">
 
         <div class="accordion-group">
