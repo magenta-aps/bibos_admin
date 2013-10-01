@@ -45,7 +45,14 @@ $.each(inputs, function() {BibOS.ScriptEdit.addInput('#update-script-inputs', th
       {% include 'notification.html' %}
       </div>
       <a href="#runscriptmodal" role="button" class="btn btn-success" data-toggle="modal">Kør script</a>
-      <input type="submit" class="btn btn-primary" value="Gem ændringer" />
+    {% if selected_script.is_global %}
+    {% ifequal user.get_profile.type 0 %}
+    <input type="submit" class="btn btn-primary" value="Gem ændringer" />
+    {% endifequal %}
+    {% else %}
+    <input type="submit" class="btn btn-primary" value="Gem ændringer" />
+    {% endif %}
+
       <button class="btn" onclick="location.href='{% url 'script' site.uid selected_script.pk %}'; return false;">Annuller</button>
 
       <hr>
