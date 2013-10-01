@@ -12,6 +12,9 @@ class="active"
 <script type="text/javascript" src="/media/js/configlist.js"></script>
 {% endblock %}
 
+{% block specific_documentation_links %}
+  <li><a href="{% url 'doc' 'site_configuration' %}"><i class="icon-list-alt icon-white"></i> Site-konfiguration</a></li>
+{% endblock %}
 
 {% block specific_content %}
   <div class="container-fluid main">
