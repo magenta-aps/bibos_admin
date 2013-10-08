@@ -19,8 +19,8 @@ $.each(inputs, function() {BibOS.ScriptEdit.addInput('#update-script-inputs', th
 {% endblock %}
 
 {% block specific_documentation_links %}
-  <li><a href="{% url 'doc' 'scripts' %}"><i class="icon-list-alt icon-white"></i> Administration af scripts</a></li>
-  <li><a href="{% url 'doc' 'scripts/running' %}"><i class="icon-list-alt icon-white"></i> Afvikling af scripts</a></li>
+  <li><a href="{% url 'doc' 'scripts' %}"><i class="icon-question-sign icon-white"></i> Administration af scripts</a></li>
+  <li><a href="{% url 'doc' 'scripts/running' %}"><i class="icon-question-sign icon-white"></i> Afvikling af scripts</a></li>
 {% endblock %}
 
 {% block specific_content %}
@@ -55,7 +55,6 @@ $.each(inputs, function() {BibOS.ScriptEdit.addInput('#update-script-inputs', th
 
       <button class="btn" onclick="location.href='{% url 'script' site.uid selected_script.pk %}'; return false;">Annuller</button>
 
-      <hr>
       {% include 'system/scripts/form.html' with show_code_preview=1 global_script=script.is_global %}
     </form>
 
@@ -73,7 +72,7 @@ $.each(inputs, function() {BibOS.ScriptEdit.addInput('#update-script-inputs', th
     </div>
   </div>  
 
-  <!-- MODAL WINDOW FOR NEW USER REGISTRATION: -->
+  <!-- MODAL WINDOW FOR NEW SCRIPT REGISTRATION: -->
   
   <div id="addNewScript" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 650px">
     <form action="{% url 'new_script' site.uid %}" name="create_script_form"
