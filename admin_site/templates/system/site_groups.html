@@ -4,26 +4,8 @@
 Grupper
 {% endblock %}
 
-{% block head_javascripts %}
-  <!--
-  <script type="text/javascript">
-    $(document).ready(function() {
-      $('.accordion-group:first-child').find('i').toggleClass('icon-chevron-up icon-chevron-down');
-      $('.accordion-toggle').click(function(event){
-        $(this).find('i').toggleClass('icon-chevron-up icon-chevron-down');
-        $('.accordion-group').each(function() {
-          if ($(this).find('.accordion-body').hasClass('in')) {
-            $(this).find('i').removeClass('icon-chevron-up').addClass('icon-chevron-down');
-          };
-        });
-      });
-    });
-  </script>
-  -->
-{% endblock %}
-
 {% block specific_documentation_links %}
-    <li><a href="{% url 'doc' 'groups' %}"><i class="icon-list-alt icon-white"></i> Administration af grupper</a></li>
+    <li><a href="{% url 'doc' 'groups' %}"><i class="icon-question-sign icon-white"></i> Administration af grupper</a></li>
 {% endblock %}
 
 {% block javascripts %}
@@ -42,8 +24,14 @@ class="active"
         <a href="#addNewGroup" role="button" data-toggle="modal" title="tilføj ny gruppe"><i class="icon-plus icon-white"></i> tilføj ny gruppe</a>
       </li>
       {% for group in site.groups.all %}
-      <li {% ifequal group selected_group %}class="active"{% endifequal %}><a
-          href="/site/{{ site.url }}/groups/{{ group.url }}/"><i class="icon-tags"></i> {{ group.name }}</a></li>
+        <li {% ifequal group selected_group %}class="active"{% endifequal %}>
+          {% ifequal group selected_group %}
+            {% if selected_group.is_delete_allowed %}
+              <a class="remove pull-right" href="/site/{{ site.url }}/groups/{{ selected_group.url }}/delete/" title="Slet gruppe"><i class="icon-remove icon-white"></i></a>
+            {% endif %}
+          {% endifequal %}
+          <a class="list-item" href="/site/{{ site.url }}/groups/{{ group.url }}/"><i class="icon-tags"></i> {{ group.name }}</a>
+        </li>
       {% endfor %}
   </ul>
   
@@ -58,9 +46,6 @@ class="active"
     
       <button class="btn btn-primary">Gem ændringer</button>
       <button class="btn" onclick="return BibOS.PackageList.cancelEditing()">Annuller</button>
-      {% if selected_group.is_delete_allowed %}
-      <a class="btn btn-danger pull-right" href="/site/{{ site.url }}/groups/{{ selected_group.url }}/delete/"><i class="icon-remove icon-white"></i> Slet Gruppe</a>
-      {% endif %}
       <div class="accordion" id="accordion2">
         
         <div class="accordion-group">

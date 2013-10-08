@@ -5,24 +5,7 @@ Computere
 {% endblock %}
 
 {% block specific_documentation_links %}
-  <li><a href="{% url 'doc' 'computers' %}"><i class="icon-list-alt icon-white"></i> Administration af computere</a></li>
-{% endblock %}
-
-{% block head_javascripts %}
-  <script type="text/javascript">
-    $(document).ready(function() {
-      $('.accordion-group:first-child').find('i.icon-chevron-down').toggleClass('icon-chevron-up icon-chevron-down');
-      $('.accordion-group:first-child').find('i.icon-chevron-up').toggleClass('icon-chevron-up icon-chevron-down');
-      $('.accordion-toggle').click(function(event){
-        $(this).find('i').toggleClass('icon-chevron-up icon-chevron-down');
-        $('.accordion-group').each(function() {
-          if ($(this).find('.accordion-body').hasClass('in')) {
-            $(this).find('i').removeClass('icon-chevron-up').addClass('icon-chevron-down');
-          };
-        });
-      });
-    });
-  </script>
+  <li><a href="{% url 'doc' 'computers' %}"><i class="icon-question-sign icon-white"></i> Administration af computere</a></li>
 {% endblock %}
 
 {% block javascripts %}
@@ -44,28 +27,34 @@ class="active"
     {% endif %}
     {% for pc in pc_list %}
       <li {% ifequal pc selected_pc %}class="active" %}{% endifequal %}>
-        <a href="/site/{{ site.url }}/computers/{{ pc.uid }}"><i class="icon-hdd"></i> {{ pc.name }}</a>
+        {% ifequal pc selected_pc %}
+          <a class="remove pull-right" href="/site/{{ site.url }}/computers/{{ selected_pc.uid }}/delete/" title="Slet computer"><i class="icon-remove icon-white"></i></a>
+        {% endifequal %}
+        <a class="list-item" href="/site/{{ site.url }}/computers/{{ pc.uid }}"><i class="icon-hdd"></i> {{ pc.name }}</a>
       </li>
     {% endfor %}
   </ul>
   
   <div class="container-fluid main sublevelmain">
     
-      <h2 class="divideheader">Detaljer om <em>{{ selected_pc.name }}</em> 
-          {% if selected_pc.is_update_required %}<span class="label
-              label-warning">Opdateringer tilgængelige</span>{% endif %}</h2>
-      {% include 'notification.html' %}
+    <h2 class="divideheader">Detaljer om <em>{{ selected_pc.name }}</em> 
+      {% if selected_pc.is_update_required %}
+        <span class="label label-warning">Opdateringer tilgængelige</span>
+      {% endif %}
+    </h2>
+    {% include 'notification.html' %}
     
-      <p class="pull-right"><span class="muted"> &nbsp;Sidst set:</span> <strong>{{ selected_pc.last_seen | date }} </strong> 
-      {{ selected_pc.last_seen|time }}</p> 
+    {% if selected_pc.last_seen %} 
+      <p class="pull-right"><span class="muted"> &nbsp;Sidst set:</span> <strong>{{ selected_pc.last_seen|date }} </strong> {{ selected_pc.last_seen|time }}</p>
+    {% endif %}
+    
     <form name="pc_update_form" id="pc_update_form" action="{% url 'computer' site.uid selected_pc.uid %}" method="post">
       {% csrf_token %}
 
       <button class="btn btn-primary">Gem ændringer</button>
       <button class="btn" onclick="return ((location.href = '{% url 'computer' site.uid selected_pc.uid %}') && false)">Annuller</button>
-
-      <a class="btn btn-danger pull-right" href="/site/{{ site.url }}/computers/{{ selected_pc.uid }}/delete/"><i class="icon-remove icon-white"></i> Slet Computer</a>
-      <div class="accordion" id="accordion2">
+      
+      <div class="accordion clearfix" id="accordion2">
 
         <div class="accordion-group">
           <div class="accordion-heading">

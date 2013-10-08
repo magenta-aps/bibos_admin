@@ -18,7 +18,8 @@ header h1 em {color: #fff; font-style: normal;}
 .sublevelnav {position: absolute; top: 64px; left: 250px; bottom: 0; width: 250px; background: #fff; overflow-x: hidden; overflow-y: auto; margin: 0;}
 .sublevelnav li a {border-top: solid 1px #ddd; display: block; padding: 10px;}
 .sublevelnav li:first-child a {border: none;}
-.sublevelnav li a:hover {background: #08c; color: #fff; text-decoration: none;}
+.sublevelnav li a.list-item:hover {background: #08c; color: #fff; text-decoration: none;}
+.sublevelnav a.remove:hover, .sublevelnav a.remove:active, .sublevelnav a.remove:focus {background: #c44; border: none;}
 .sublevelmain {left: 500px;}
 .inertnav {background: #ccc; border-radius: 5px; padding: 15px 20px;}
 .inertnav li {padding: 2px 0; color: #666;}
