@@ -1267,6 +1267,7 @@ documentation_menu_items = [
     ('', 'BibOS-gateway'),
     ('gateway_install', 'Installation af BibOS-gateway'),
     ('gateway_admin', 'Administration af gateway'),
+    ('gateway_use', 'Anvendelse af gateway på BibOS-maskiner'),
     ('', 'Om'),
     ('om_bibos_admin', 'Om BibOS-Admin'),
 
