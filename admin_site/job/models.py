@@ -286,11 +286,16 @@ class Input(models.Model):
         return self.name
 
 
+def upload_file_name(instance, filename):
+    return '/'.join(['site_media/parameter_uploads', str(instance.pk),
+                     filename])
+
+
 class Parameter(models.Model):
     """An input parameter for a job, a script, etc."""
 
     string_value = models.CharField(max_length=4096, null=True, blank=True)
-    file_value = models.FileField(upload_to='site_media/parameter_uploads',
+    file_value = models.FileField(upload_to=upload_file_name,
                                   null=True,
                                   blank=True)
     # which input does this belong to?
