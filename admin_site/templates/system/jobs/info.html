@@ -1,0 +1,7 @@
+{% if job.failed %}
+<div><i class='icon-refresh'></i>&nbsp;<a href='{% url 'restart_job' site.uid job.pk %}'>Genstart&nbsp;job</a></div>
+{% endif %}
+{% if job.log_output %}
+<div>Log output</div>
+<pre>{{job.log_output|escape}}</pre>
+{% endif %}

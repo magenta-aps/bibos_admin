@@ -1,4 +1,4 @@
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 # Django settings for bibos_admin project.
 
 import os
@@ -17,15 +17,24 @@ ADMINS = (
 MANAGERS = ADMINS
 
 
+SOURCE_DIR = os.path.abspath(os.path.join(install_dir, '..'))
+# TODO: This parameter must be removed when we rename the system and factor out
+# BibOS-related stuff.
+BIBOS_IMAGE_DIR = os.path.join(
+    os.path.abspath(os.path.join(SOURCE_DIR, '..')), 
+    'bibos_image')
+
+
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', 
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', 
         # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': os.path.join(install_dir, '.database.db'),
+        'NAME': 'bibos_admin',
         # Or path to database file if using sqlite3.                      
         # The following settings are not used with sqlite3:
-        'USER': '',
-        'PASSWORD': '',
+        'USER': 'bibos_admin',
+        #'PASSWORD': '',
         'HOST': '',                      
         # Empty for localhost through domain sockets or '127.0.0.1' for localhost
         # through TCP.
@@ -46,6 +55,10 @@ TIME_ZONE = 'Europe/Copenhagen'
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'da-DK'
+
+LOCALE_PATHS = [
+    os.path.join(install_dir, 'locale')
+]
 
 SITE_ID = 1
 
@@ -97,7 +110,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = '-se@l&$nrn)m=e^q^g7-j!)ul!mxe&ar@3^2%kpnor_lj2%ybe'
+SECRET_KEY = '-se@l&$nxyzrn)m=e^q^abcg7-j!)ul!mxe&ar@3fsdff^2%kpnor_lj2%ybe'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (

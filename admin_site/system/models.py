@@ -10,9 +10,9 @@ from django.core.urlresolvers import reverse
 used for labeling in the GUI."""
 
 # States
-NEW = _("New")
-FAIL = _("Fail")
-UPDATE = _("Update")
+NEW = _("status:New")
+FAIL = _("status:Fail")
+UPDATE = _("status:Update")
 OK = ''
 
 # Priorities
@@ -254,6 +254,20 @@ class Site(models.Model):
     uid = models.CharField(_('uid'), max_length=255, unique=True)
     configuration = models.ForeignKey(Configuration)
 
+    @staticmethod
+    def get_system_site():
+        try:
+            site = Site.objects.get(uid='system')
+        except Site.DoesNotExist:
+            site = Site.objects.create(
+                name='system',
+                uid='system',
+                configuration=Configuration.objects.create(
+                    name='system_site_configuration'
+                )
+            )
+        return site
+
     @property
     def users(self):
         profiles = [
@@ -285,7 +299,13 @@ class Site(models.Model):
         self.uid = self.uid.lower()
         # 2. Create related configuration object if necessary.
         is_new = self.id is None
-        if is_new:
+
+        try:
+            conf = self.configuration
+        except Configuration.DoesNotExist:
+            conf = None
+
+        if is_new and conf is None:
             try:
                 self.configuration = Configuration.objects.get(
                     name=self.uid

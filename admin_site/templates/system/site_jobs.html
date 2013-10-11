@@ -22,6 +22,12 @@ Jobs
 class="active"
 {% endblock %}
 
+{% block specific_documentation_links %}
+  <li><a href="{% url 'doc' 'jobs' %}"><i class="icon-question-sign icon-white"></i> Hjælp til joblisten</a></li>
+  <li><a href="{% url 'doc' 'scripts' %}"><i class="icon-question-sign icon-white"></i> Administration af scripts</a></li>
+  <li><a href="{% url 'doc' 'scripts/running' %}"><i class="icon-question-sign icon-white"></i> Afvikling af scripts</a></li>
+{% endblock %}
+
 {% block specific_content %}
   <div class="template-container">
    <table>
@@ -33,15 +39,10 @@ class="active"
         <td><span class="label #LABEL#">#STATUS#</span></td>
         <td>#PC_NAME#</td>
         <td>#BATCH_NAME#</td>
-        <td>
-          <button class="btn" data-toggle="popover" title="Log"
-                  data-original-title="Log" data-html="true"
-                  data-placement="bottom"
-                  data-content="<a href='#RESTART_URL#'><i class='icon-refresh'></i> Genstart job</a><pre>#LOG_OUTPUT#</pre>"><i class="icon-info-sign"></i></button>
-        </td>
+        <td>#JOBINFOBUTTON#</td>
       </tr>
     </tbody>
-   </table> 
+   </table>
   </div>
   <div id="jobsearchnav" class="sublevelnav">
     <form id="jobsearch-filterform" name="filterform" action="./" method="post">
@@ -49,18 +50,14 @@ class="active"
       <input type="hidden" name="pc" value="{{ selected_pc }}" />
       <input type="hidden" name="group" value="{{ selected_group }}" />
       <input type="hidden" name="orderby" value="-pk" />
-      <h3 class="nav-header">
-        Filtrér:
-        <div style="float: right;">
-          <input class="btn btn-primary" type="button" onclick="BibOS.JobList.reset()" value="Nulstil filtre" />
-        </div>
-      </h3>
+      <input class="btn btn-primary pull-right" type="button" onclick="BibOS.JobList.reset()" value="Nulstil filtre" />
+      <h3 class="nav-header">Filtrér:</h3>
       <hr>
       <div id="jobsearch-status-selectors">
-      {% for name, value, label in status_choices%}
+      {% for s in status_choices%}
       <label>
-        <input type="checkbox" value="{{ value }}" name="status">
-        <span class="label {{ label }}">{{ name }}</span>
+        <input type="checkbox" value="{{ s.value }}" name="status" {{ s.checked }}>
+        <span class="label {{ s.label }}">{{ s.name }}</span>
       </label>
       {% endfor %}
       </div>
@@ -75,7 +72,7 @@ class="active"
           {% endfor %}
         </ul>
       </div>
-      <a href="javascript:void(0)" class="btn collapsing" data-toggle="collapse" data-target="#demo2"><i class="icon-chevron-down"></i> PCs</a>
+      <a href="javascript:void(0)" class="btn collapsing" data-toggle="collapse" data-target="#demo2"><i class="icon-chevron-down"></i> Computere</a>
       <div id="demo2" class="collapse out{% if selected_pc %} in{% endif %}">
         <ul class="unstyled">
           {% for pc in pcs %}

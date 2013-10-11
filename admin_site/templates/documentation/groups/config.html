@@ -1,0 +1,21 @@
+{% extends 'documentation/index.html' %}
+
+{% block specific_content %}
+  <h1>Konfiguration af gruppe</h1>
+  <p>
+    For at ændre konfigurations-nøgler/-værdier på en gruppe skal du
+    klikke dig ind på gruppen og trykke på fanebladet "Konfigurationer".
+  </p>
+  <p>
+    Klik på knappen "tilføj konfiguration" for at tilføje en ny
+    konfigurationsnøgle/værdi. Du kan også redigere eller slette eksisterende
+    nøgler ved at klikke på værdien for den enkelte nøgle.
+  </p>
+  <p>
+    Bemærk at ændringer for konfigurationer på en gruppe vil påvirke alle
+    computere der er medlem af gruppen, <em>med mindre</em> den pågælgende
+    konfigurationsnøgle er blevet
+    <a href="{% url 'doc' 'computers/config' %}">special-tilpasset
+    på den enkelte computer</a>.
+  </p>
+{% endblock %}

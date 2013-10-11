@@ -25,8 +25,8 @@ class="active"
         <form action="{% url 'delete_user' site.uid selected_user.username %}" name="update_user_form" id="update_user_form" method="post">
           {% csrf_token %}
           <p>Er du sikker på at du vil slette brugeren {{ selected_user.username }}{% if selected_user.email %} &lt;{{ selected_user.email }}&gt;{% endif %}?</p>
-          <input type="submit" value="Bekræft sletning" />
-          <input type="button" onclick="location.href='{% url 'user' site.uid selected_user.username %}'" value="Annullér" />
+          <input class="btn btn-primary" type="submit" value="Bekræft sletning" />
+          <input class="btn" type="button" onclick="location.href='{% url 'user' site.uid selected_user.username %}'" value="Annullér" />
         </form>
       </div>
     </div>
