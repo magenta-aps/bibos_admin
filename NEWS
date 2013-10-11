@@ -1,3 +1,34 @@
+* Version 2.1.0, October 11, 2013
+
+New in this version:
+
+A lot of bugs have been fixed, and the design has been thoroughly
+polished. 
+
+A brief summary:
+
+- Spaces and other special characters are now allowed (though discouraged, 
+  in the case of spaces *strongly* discouraged) in URLs.
+- JQuery is hosted locally and not loaded from another host.
+- "System" site is added to host system scripts.
+- Scripts to install LibreOffice 4 and Oracle's Java are added.
+- The documentation has been finished.
+- Technical documentation in source code is included on the admin site as
+  well.
+- Localization infrastructure is introduced to permit translation (currently
+  Danish is only supported locale).
+- Creative Commons Attribution-ShareAlike license has been added for
+  the documentation.
+- bibos-client has been changed to support wireless networks.
+- System now supports fixed gateway/proxy configured by IP address, not just
+  auto-detection.
+- Computers may be deleted from the admin system.
+- Only superadmins may edit global scripts.
+
+Executive summary:
+
+- Status moves from "beta" to "production".
+
 * Version 2.0.2, July 12, 2013
 
 New in this version:
