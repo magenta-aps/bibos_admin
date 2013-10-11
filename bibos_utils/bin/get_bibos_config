@@ -15,12 +15,16 @@ def print_usage():
 
 args = len(sys.argv)
 val = None
+# We fail unless we explicitly succeed
+rc = 1
 
 try:
     if args > 2:
         val = get_config(sys.argv[1], sys.argv[2])
+        rc = 0
     elif args == 2:
         val = get_config(sys.argv[1])
+        rc = 0
     else:
         print_usage()
 except KeyError as ke:
@@ -30,7 +34,6 @@ except Exception as e:
     if DEBUG:
         raise
 
-
-
-if val is not None:
+if val:
     print val
+sys.exit(rc)

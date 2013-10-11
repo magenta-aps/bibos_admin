@@ -1,0 +1,38 @@
+{% extends 'documentation/index.html' %}
+
+{% block specific_content %}
+  <h1>Gruppe-redigering: Stam-oplysninger og computere</h1>
+  <p>
+    Som standard når du klikker dig ind på en gruppe vil du få vist
+    computerens stamdata og hvilke computere der er med i gruppen. Her kan du
+    ændre gruppens navn, beskrivelse og id, samt tilføje eller fjerne computere
+    fra gruppen. Ændringer foretaget på siden træder ikke i kræft før du
+    klikker på "Gem ændringer"-knappen i toppen af skærmbilledet.
+  </p>
+  <h2>Tilføj/fjern computere</h2>
+  <p>
+    Til højre i skærmbilledet vises en liste over computere der er med i
+    gruppen. Du kan redigere medlemmerne af gruppen som beskrevet herunder.
+  </p>
+  <h3>Tilføj computer</h3>
+  <p>
+    Du tilføjer computere ved at føre musen hen over "tilføj ny computer". Hvis
+    der findes computere som endnu ikke er medlem af gruppen vil de dukke op i
+    en liste under muse-markøren. Klik på en computer for at knytte computeren
+    til gruppen.
+  </p>
+  <h3>Fjern computer</h3>
+  <p>
+    For at fjerne en computer skal du klikke på den i listen over
+    tilknyttede computere og vælge "Fjern computer".
+  </p>
+  <p>
+    Husk at ændringer til listen over computere ikke bliver permanente før du
+    har klikket på "Gem ændringer" øverst i skærmbilledet.
+  </p>
+  <p>
+    Bemærk at medlemskab af grupper kan have indflydelse på medlems-computernes
+    konfiguration og pakker. Det at tilføje/fjerne computere til en gruppen kan
+    altså betyde at computerne installerer eller afinstallerer pakker.
+  </p>
+{% endblock %}

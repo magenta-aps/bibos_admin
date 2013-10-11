@@ -9,6 +9,7 @@
       <p>
         <label for="{{ form.username.id_for_label }}">Brugernavn:</label>
         {{ form.username.errors }}
+        <div class="muted">{{ form.username.help_text }}</div>
         {{ form.username }}
       </p>
       <p>

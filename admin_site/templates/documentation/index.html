@@ -1,0 +1,46 @@
+{% extends 'sitebase.html' %}
+
+{% block header_title %}
+{% if docheading %}
+  BibOS documentation: {{ docheading }}
+{% else %}
+  BibOS dokumentation
+{% endif %}
+{% endblock %}
+
+{% block header_class %}
+class="detailpage"
+{% endblock %}
+
+{% block content %}
+<h3>Dokumentation</h3>
+<ul class="nav nav-list utils utils-global">
+  <li><a href="{{ back_link|default:'/' }}"><i class="icon-arrow-left icon-white"></i> Tilbage til admin</a></li>
+  {% for link, name in docmenuitems %}
+  {% if link %}
+  <li {% ifequal menu_active link %}class="active"{% endifequal %}>
+    <a href="{% url 'doc' link %}"><i class="icon-file icon-white"></i> {{ name }}</a>
+    {% if menu_active == link and submenu_template %}
+      {% include submenu_template %}
+    {% endif %}
+  </li>
+  {% else %}
+  <li class="divider"></li>
+  <li class="nav-header">{{ name }}</li>
+  {% endif %}
+  {% endfor %}
+</ul>
+
+<div class="container-fluid main">
+  <div class="docscontainer">
+    {% block specific_content %}
+      <h1>BibOS</h1>
+      <p>
+        BibOS giver dig mulighed for at fjernadministre computere via
+        BibOS-administrationsinterfacet. I menuen til venstre kan du finde
+        dokumentation for de forskellige dele af systemet.
+      </p>
+    {% endblock %}
+  </div>
+</div>
+{% endblock %}

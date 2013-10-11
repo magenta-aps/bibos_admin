@@ -16,9 +16,9 @@
       <ul class="unstyled" >
       {% for script in local_scripts %}
         {% ifequal script selected_script %}
-        <li class="active"><a href="{% url 'script' site.uid script.pk %}"><i class="icon-list"></i> {{ script.name }}</a></li>
+        <li class="active"><a href="{% url 'script' site.uid script.pk %}" class="list-item"><i class="icon-list"></i> {{ script.name }}</a></li>
         {% else %}
-        <li><a href="{% url 'script' site.uid script.pk %}" class= ><i class="icon-list"></i> {{ script.name }}</a></li>
+        <li><a href="{% url 'script' site.uid script.pk %}" class="list-item"><i class="icon-list"></i> {{ script.name }}</a></li>
         {% endifequal %}
       {% endfor %}
       </ul>
@@ -31,9 +31,9 @@
       <ul class="unstyled">
       {% for script in global_scripts %}
         {% ifequal script selected_script %}
-        <li class="active"><a href="{% url 'script' site.uid script.pk %}"><i class="icon-list"></i> {{ script.name }}</a></li>
+        <li class="active"><a href="{% url 'script' site.uid script.pk %}" class="list-item"><i class="icon-list"></i> {{ script.name }}</a></li>
         {% else %}
-        <li><a href="{% url 'script' site.uid script.pk %}" class= ><i class="icon-list"></i> {{ script.name }}</a></li>
+        <li><a href="{% url 'script' site.uid script.pk %}" class="list-item"><i class="icon-list"></i> {{ script.name }}</a></li>
         {% endifequal %}
       {% endfor %}
       </ul>

@@ -1,0 +1,22 @@
+{% extends 'documentation/index.html' %}
+
+{% block specific_content %}
+  <h1>Tilpasning af pakker på en gruppe</h1>
+  <p>
+    For at tilpasse pakker for en gruppe skal du klikke dig ind på
+    gruppen og klikke på fanebladet "Pakker".
+  </p>
+  <h2>Valg af pakker</h2>
+  <p>
+    Tilpasning af pakker på en gruppe foregår på samme måde som
+    <a href="{% url 'doc' 'computers/packages' %}#package_selection">tilpasning
+    af pakker for computere</a>.
+  </p>
+  <p>
+    Bemærk at tilvalg/fravalg af pakker på den enkelte computer altid vil tage
+    præcedens over pakkevalg foretaget på en gruppe. For eksempel, hvis en
+    gruppe angiver at en given pakke skal installeres, men en computer i
+    gruppen er konfigureret til at pakken skal afinstalleres, så vil pakken
+    ikke blive installeret på computeren.
+  </p>
+{% endblock %}

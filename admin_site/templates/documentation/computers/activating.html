@@ -1,0 +1,26 @@
+{% extends 'documentation/index.html' %}
+
+{% block doc_subtitle %}Admin-systemet{% endblock %}
+
+{% block specific_content %}
+  <h1>Aktivering af PC</h1>
+  <p>
+    Når du har installeret BibOS på en PC, vil den dukke op i listen over nye
+    computere under <a href="{% url 'doc' 'getting_started' %}">site-status</a>.
+    Før du kan begynde at arbejde med maskinen, er det nødvendigt at aktivere den.
+    Det gør du ved at klikke på computeren og sætte et hak i fluebenet "Aktiv" og klikke på "Gem ændringer".
+    Maskinen vil efterfølgende (inden for 10 minutter) uploade sin liste af installerede pakker og være klar til brug.
+  </p>
+  <p>
+    Bortset fra selve tilmeldingen vil administrationssitet altid ignorere alle
+    henvendelser fra maskiner, der ikke er aktiveret. Dette er dels en praktisk
+    foranstaltning (der er ingen grund til at begynde at opdatere en maskine, før man ved,
+    at den er parat), dels en sikkerhedsforanstaltning.
+  <p>
+    <b>Bemærk:</b> En af grundene til, at alle computere skal aktiveres manuelt,
+    er at forhindre fremmede computere i at "koble sig på" dit site
+    uden dit eller din organisations
+    vidende. Du skal derfor kun aktivere en PC, hvis du ved, at den skal være
+    der.
+  </p>
+{% endblock %}

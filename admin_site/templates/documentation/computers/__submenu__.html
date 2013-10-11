@@ -1,0 +1,17 @@
+<ul>
+    <li {% ifequal submenu_active 'edit' %}class="active"{% endifequal %}>
+      <a href="{% url 'doc' 'computers/edit' %}"> Generel redigering</a>
+    </li>
+    <li {% ifequal submenu_active 'config' %}class="active"{% endifequal %}>
+      <a href="{% url 'doc' 'computers/config' %}"> Konfiguration</a>
+    </li>
+    <li {% ifequal submenu_active 'packages' %}class="active"{% endifequal %}>
+      <a href="{% url 'doc' 'computers/packages' %}"> Pakker</a>
+    </li>
+    <li {% ifequal submenu_active 'jobs' %}class="active"{% endifequal %}>
+      <a href="{% url 'doc' 'computers/jobs' %}"> Jobhistorik</a>
+    </li>
+    <li {% ifequal submenu_active 'activating' %}class="active"{% endifequal %}>
+      <a href="{% url 'doc' 'computers/activating' %}"> Aktivering</a>
+    </li>
+</ul>

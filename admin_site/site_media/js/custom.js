@@ -7,7 +7,11 @@ var BibOS;
     this.loadedItems = {}
     this.scriptsToLoad = []
     this.cssToLoad = []
+    this.shownJobInfo = -1;
   }
+
+  var documentaion_match = /^(https?:\/\/[^\/]+)?\/documentation\//;
+  var back_match = /[\?\&]back=([^\&]+)/;
 
   $.extend(BibOS.prototype, {
     init: function() {
@@ -33,13 +37,60 @@ var BibOS;
 
       var m = document.cookie.match(/\bbibos-notification\s*=\s*([^;]+)/)
       if(m) {
+        var msg = unescape(m[1]);
+        msg = msg.replace(/^\"(.*)\"$/, '$1');
         notification = $('.bibos-notification').first()
-        notification.html(unescape(m[1])).fadeIn()
+        notification.html(msg).fadeIn()
         document.cookie = 'bibos-notification=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
       }
 
+      if(location.href.match(documentaion_match))
+        this.setupDocumentationBackLinks();
+      $('body').on('click', function(e) {
+        return t.onBodyClick(e);
+      })
     },
+    setupDocumentationBackLinks: function() {
+      var ref = document.referrer || '';
+      var back = '';
 
+      var m = ref.match(back_match) || location.href.match(back_match);
+      if(m) {
+        back = unescape(m[1]);
+      } else if(!ref.match(documentaion_match)) {
+        back = ref
+      }
+
+      if(! back)
+        return
+
+      back = escape(back);
+      $('a').each(function() {
+        var href = $(this).attr('href') || '';
+        if(href == '#' || href.match(/^javascript:/))
+          return true;
+        if(href.match(documentaion_match)) {
+          var url_parts = href.split(/[\?#]/);
+          var qstring_parts = (url_parts[1] || '').split('&');
+          var args = []
+          $.each(qstring_parts, function() {
+            if(this != '' && !this.match(/back=/))
+              args.push(this)
+          });
+          args.push('back=' + back);
+          var new_href = [
+            url_parts[0],
+            '?', args.join('&'),
+          ].join('');
+          if(url_parts.length > 2) {
+            url_parts.splice(0, 2);
+            new_href += '#' + url_parts.join("#");
+          }
+          $(this).attr('href', new_href);
+        }
+        return true;
+      })
+    },
     loadResource: function(type, src) {
       if(this.documentReady) {
         var item;
@@ -172,6 +223,68 @@ var BibOS;
       if(!inserted)
         lastInsert(elem)
     },
+    setupJobInfoButtons: function(rootElem) {
+      var t = this;
+      $(rootElem).find('.jobinfobutton').on('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        t.showJobInfo(this)
+      })
+    },
+    showJobInfo: function(triggerElem) {
+      var t = this;
+      triggerElem = $(triggerElem);
+      var id = triggerElem.attr('data-pk');
+      var popover = $('#jobinfo-popover');
+      if(id == this.shownJobInfo && popover.is(":visible")) {
+        popover.hide();
+        return false;
+      }
+      var title = triggerElem.attr('title') || 'Job-info';
+      $('#jobinfo-title').html(title);
+      $('#jobinfo-content').html("Loading...");
+      this.positionJobInfo(triggerElem);
+      popover.show()
+      this.shownJobInfo = id;
+      var url = location.href.match(/^(https?:\/\/[^\/]+\/site\/[^\/]+\/)/);
+      if (url) {
+        url = url[1] + 'jobs/' + id + '/info/';
+      } else {
+        return false;
+      }
+      $.ajax({
+        'type': 'GET',
+        'url': url,
+        'success': function(data) {
+          $('#jobinfo-content').html(data)
+          t.positionJobInfo(triggerElem)
+        },
+        'error': function() {
+          $('#jobinfo-popover').hide();
+        }
+      })
+      return false
+    },
+    positionJobInfo: function(refElem) {
+      var offset = refElem.offset();
+      var popover = $('#jobinfo-popover');
+      popover.css({top: 0, left: 0});
+      // Move left according to popover width
+      offset.left -= popover.outerWidth();
+      // Then right according to placement of arrow
+      offset.left += 42;
+      // And finally move to middle of trigger-element
+      offset.left += (refElem.outerWidth() / 2);
+      offset.top += refElem.outerHeight() + 5;
+      $('#jobinfo-popover').css( {
+        'top': offset.top + "px",
+        'left': offset.left + "px",
+      });
+    },
+    onBodyClick: function(e) {
+      $('#jobinfo-popover').hide();
+      return true;
+    }
   })
   window.BibOS = window.BibOS || new BibOS();
   var b = window.BibOS;

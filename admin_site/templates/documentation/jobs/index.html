@@ -1,0 +1,36 @@
+{% extends 'documentation/index.html' %}
+
+{% block specific_content %}
+  <h1>Jobs-oversigt</h1>
+  <p>
+    Jobs-oversigten giver et overblik over afviklingen af jobs på
+    BibOS-computere for det valgte site. Til venstre kan man vælge diverse
+    filtre der gør listen mere overskuelig og til højre vises en liste over
+    jobs der matcher de valgte filtre.
+  </p>
+  <h2>Filtre</h2>
+  <p>
+    Ved at klikke på afkrydsningsfelterne ud for de forskellige statuser kan du
+    filtrere de viste jobs ud fra deres status. Som standard er alle statuser
+    på nær "Udført" og "Løst" angivet.
+  </p>
+  <p>
+    Under afkrydsningsfelterne kan du vælge filtre ud fra batches, computere
+    og grupper. For at filtrere på disse skal du klikke på den kategori du vil
+    filtrere og efterfølgende klikke på et element i den liste der bliver
+    foldet ud. Det valgte element vil blive markeret med grønt. Du kan klikke
+    på det igen for at fjerne markeringen. Det er kun muligt at vælge et
+    element i hver kategori.
+  </p>
+  <h2>Joblisten</h2>
+  <p>
+    Joblisten viser script-navn, starttidspunkt, sluttidspunkt, status,
+    computernavn og batchnavn for hvert job der matcher de valgte filtrre. Man
+    kan ændre sorteringen ved at klikke på overskrifterne over tabellen.
+  </p>
+  <p>
+    Hvis man klikker på det lille ikon til højre i listen får man mulighed for
+    at se log-output for jobs der er blevet afviklet, samt et link man kan
+    klikke på for at genstarte jobbet hvis der er tale om et fejlet job.
+  </p>
+{% endblock %}

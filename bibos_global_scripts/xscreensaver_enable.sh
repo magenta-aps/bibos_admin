@@ -4,8 +4,8 @@
 # enable screensaver for user by default.
 
 
-apt-get remove gnome-screensaver
-apt-get install xscreensaver xscreensaver-data xscreensaver-gl
+apt-get -y remove gnome-screensaver
+apt-get -y install xscreensaver xscreensaver-data xscreensaver-gl
 
 mkdir -p /home/.skjult/.config/autostart
 

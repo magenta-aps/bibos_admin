@@ -1,0 +1,20 @@
+{% extends 'documentation/index.html' %}
+
+{% block specific_content %}
+  <h1>Konfiguration af computer</h1>
+  <p>
+    For at ændre konfigurations-nøgler/-værdier på en computer skal du
+    klikke dig ind på computeren og trykke på fanebladet "Konfigurationer".
+  </p>
+  <p>
+    Klik på knappen "tilføj konfiguration" for at tilføje en ny
+    konfigurationsnøgle/værdi. Du kan også redigere eller slette eksisterende
+    nøgler ved at klikke på værdien for den enkelte nøgle.
+  </p>
+  <p>
+    Konfigurationer angivet på en computer vil altid tage præcedens over
+    <a href="{% url 'doc' 'site_configuration' %}">site-konfiguration</a>
+    eller <a href="{% url 'doc' 'groups/config' %}">konfiguration på grupper
+    som computeren er medlem af</a>.
+  </p>
+{% endblock %}
