@@ -2,8 +2,8 @@
 
 # Remove xscreensaver and reinstate Gnome screensaver.
 
-apt-get remove xscreensaver xscreensaver-data-extra xscreensaver-gl-extra
-apt-get install gnome-screensaver
+apt-get -y remove xscreensaver xscreensaver-data-extra xscreensaver-gl-extra
+apt-get -y install gnome-screensaver
 
 rm -f /home/.skjult/.config/autostart/xscreensaver.desktop
 

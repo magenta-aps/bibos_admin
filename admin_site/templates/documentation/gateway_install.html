@@ -1,0 +1,59 @@
+{% extends 'documentation/index.html' %}
+
+{% block doc_subtitle %}BibOS-gateway{% endblock %}
+
+{% block install_gateway_active %}class="active"{% endblock %}
+
+{% block specific_content %}
+  <h1>Installation af BibOS-gateway</h1>
+  <p>
+    Man installerer en BibOS-gateway ved at opgradere en eksisterende
+    BibOS-maskine til at fungere som gateway for det lokalnetværk den er på.
+  </p>
+  <p>
+    For at en maskine kan fungere som gateway skal den som minimum have adgang
+    permanent adgang via internettet til adresserne
+    <strong>dk.archive.ubuntu.com</strong> og
+    <strong>{{ view.request.META.HTTP_HOST }}</strong>. Det er også et krav at
+    maskinen altid er tændt og at den er
+    <a href="{% url 'doc' 'computers/activating' %}">aktiveret</a> i
+    BibOS-admin.
+  </p>
+  <p>
+    Installation foretages ved fysisk at logge ind som superbruger på den
+    maskine man ønsker skal fungere som gateway. Derefter åbner man en konsol
+    og udfører følgende kommando:
+    <pre>sudo /usr/share/bibos/gateway/install.sh</pre>
+    Dette vil automatisk sætte maskinen op til at fungere som en BibOS-gateway.
+  </p>
+  <p>
+    Som sidste den af installation bliver man spurgt om man vil synkronisere
+    BibOS-images over på maskinen. Dette er nødvendigt for at man kan bruge
+    gateway-maskinen som kilde til
+    <a href="{% url 'doc' 'install_network' %}"
+    >BibOS-netværksinstallationer</a>.
+  </p>
+  <p>
+    Man kan vælge at udføre komandoen senere ved køre følgende kommando som
+    superuser:
+    <pre>sudo /usr/share/bibos/gateway/rsync_archive.sh</pre>
+  </p>
+  <p>
+    Når gateway-maskinen er sat op kan man eventuelt
+    <a href="{% url 'doc' 'gateway_admin' %}"
+       title="Tilpas gateway konfiguration">tilpasse dens konfiguration</a>.
+  </p>
+  <p>
+    OBS! En BibOS-gateway vil som udgangspunkt fortælle klienterne at de skal
+    henvende sig på IP-adressen for det første netkort på maskinen. Hvis
+    maskinen har flere netkort kan det være nødvendigt at konfigurere hvilket
+    netkort der skal bruges til at modtage/svare på broadcast-forespørgsler
+    fra klienterne. Man kan ændre IP'en gateway'en lytter på/svarer med ved at
+    udføre følgende kommandoer:
+    <pre>sudo set_bibos_config gateway_address 1.2.3.4
+bibos_push_config_keys gateway_address
+sudo service bibos-broadcast-server restart
+</pre>
+    Udskift 1.2.3.4 i ovenstående med den ønskede IP-adresse.
+  </p>
+{% endblock %}

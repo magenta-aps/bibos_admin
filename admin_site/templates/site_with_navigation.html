@@ -12,23 +12,35 @@ class="detailpage"
 
   <ul class="nav nav-list utils utils-global">
     {% ifequal user.get_profile.type 0 %}
-      <li><a href="/"><i class="icon-arrow-left icon-white"></i> Sites</a></li>
+      <li><a href="/sites/"><i class="icon-arrow-left icon-white"></i> Sites</a></li>
       <li class="divider"></li>
     {% endifequal %}
     <li {% block site_active %}{% endblock %}><a href="/site/{{ site.url }}"><i class="icon-eye-open icon-white"></i> Status</a></li>
     <li class="divider"></li>
     <li class="nav-header">Maskiner</li>
-    <li {% block configuration_active %}{% endblock %}><a href="/site/{{ site.url }}/configuration/"><i class="icon-cog icon-white"></i> Global konfiguration</a></li>
+    <li {% block configuration_active %}{% endblock %}><a href="/site/{{ site.url }}/configuration/"><i class="icon-cog icon-white"></i> Site-konfiguration</a></li>
     <li {% block computers_active %}{% endblock %}><a href="/site/{{ site.url }}/computers/"><i class="icon-hdd icon-white"></i> Computere</a></li>
     <li {% block groups_active %}{% endblock %}><a href="/site/{{ site.url }}/groups/"><i class="icon-tags icon-white"></i> Grupper</a></li>
+    <li class="divider"></li>
     <li class="nav-header">Scripting</li>
     <li {% block jobs_active %}{% endblock %}><a href="/site/{{ site.url }}/jobs/"><i class="icon-list-alt icon-white"></i> Jobs</a></li>
     <li {% block scripts_active %}{% endblock %}><a href="/site/{{ site.url }}/scripts/"><i class="icon-list icon-white"></i> Scripts</a></li>
     <li class="divider"></li>
     <li {% block users_active %}{% endblock %}><a href="/site/{{site.url}}/users/"><i class="icon-user icon-white"></i> Brugere</a></li>
+    <li class="divider"></li>
+    <li class="nav-header">Dokumentation</li>
+    {% block specific_documentation_links %}
+    {% endblock %}
+    <li><a href="{% url 'doc_root' %}">Læs dokumentation ...</a></li>
   </ul>
 
   {% block specific_content %}
   {% endblock %}
+
+  <div id="jobinfo-popover" class="popover fade bottom in">
+    <div class="arrow"></div>
+    <h3 id="jobinfo-title" class="popover-title">Job info</h3>
+    <div id="jobinfo-content" class="popover-content"></div>
+  </div>
 
 {% endblock %}

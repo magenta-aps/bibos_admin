@@ -1,0 +1,24 @@
+{% extends 'documentation/index.html' %}
+
+{% block getting_started_active %}class="active"{% endblock %}
+
+{% block specific_content %}
+  <h1>Site-status</h1>
+  <p>
+    Når du logger ind i BibOS-admin bliver du præsenteret for status-billedet
+    for det site, som  din BibOS-bruger er tilknyttet. Hvis du er superadmin, har du adgang til alle sites og skal derfor først vælge det site du vil redigere.
+  </p>
+  <h2>Computere</h2>
+  <p>
+    I oversigts-listen for et site kan du ude til venstre se en liste af
+    computere, der kræver din opmærksomhed. Det kan være nyinstallerede
+    computere,
+    <a href="{% url 'doc' 'computers/activating' %}">der venter på at blive aktiverede</a>,
+    computere, der har <a href="{% url 'doc' 'computers/jobs' %}">jobs der er fejlet eller</a>
+    computere, der har <a href="{% url 'doc' 'computers/packages' %}">pakker der kan opgraderes</a>.
+  </p>
+  <p>Du kan klikke på den enkelte computer for at gå til computeren og rette det pågældende problem.</p>
+  <h2>Jobs</h2>
+  <p>Til højre for listen af computere finder du en liste over fejlede jobs. Du kan klikke på pilene over listen for at ændre sorteringen.</p>
+  <p>Hvis du klikker på det lille info-ikon der optræder til højre i listen for hvert job kan du se output'et fra jobbet og eventuelt genstarte det.</p>
+{% endblock %}

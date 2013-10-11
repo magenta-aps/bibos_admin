@@ -1,0 +1,29 @@
+{% extends 'documentation/index.html' %}
+
+{% block specific_content %}
+  <h1>Afvikling af Scripts</h1>
+  <p>
+    For at køre et script på en computer eller en gruppe af computere skal du
+    klikke på "Scripts" i venstremenuen og vælge det script du vil køre. Bemærk
+    at det kan være nødvendigt at skifte mellem fanerne "Lokale scripts" og
+    "Globale scripts" for at finde det script du leder efter. Når du har
+    valgt det script, du ønsker at køre, skal du klikke på knappen
+    "Kør script".
+  </p>
+  <p>
+    Der kommer nu en dialog, hvor du bliver bedt om at vælge de computere
+    og/eller grupper, som du ønsker at afvikle scriptet på. Klik på den enkelte
+    computer eller gruppe for at vælge/afvælge den. Du kan vælge så mange
+    computere eller grupper, som du ønsker. Valg af en gruppe vil
+    medføre, at scriptet udføres på samtlige maskiner der er med i gruppen.
+    Klik på "Næste", når du har foretaget dine valg.
+  </p>
+  <p>
+    Du vil nu blive bedt om at udfylde parametre for scriptet. Udfyld felterne
+    og klik på "Kør" for at starte afviklingen af scriptet. Dette vil medføre,
+    at der bliver oprettet et job for hver computer du valgte at udføre
+    scriptet på. Du kan klikke på linket i den sidste side i dialogen for at gå
+    til <a href="{% url 'doc' 'jobs' %}">joblisten</a> og følge med
+    i afviklingen af jobs på de enkelte computere.
+  </p>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends 'documentation/index.html' %}
+
+{% block specific_content %}
+  <h1>Administration af BibOS-gateway</h1>
+  <p>
+    Det er muligt at tilpasse følgende på en BibOS gateway via
+    konfigurations-parametre:
+    <ul>
+      <li>
+        Tilføje ekstra adresser der skal være tilgængelige gennem proxyen.
+      </li>
+      <li>
+        Ændring hostname og port på den upstream proxy som gateway'en gør
+        brug af.
+      </li>
+      <li>
+        Tilføje adresser som gateway'en vil kontakte direkte uden at gå
+        igennem upstream proxy'en.
+      </li>
+      <li>
+        Ændre password der bliver brugt ved requests til upstream proxy
+        server.
+      </li>
+    </ul>
+  </p>
+  <p>
+    Som standard er en BibOS gateway konfigureret til at bruge den centrale
+    BibOS-server som upstream proxy. Den vil sende trafik til alle tilladte
+    adresser på nær <em>dk.archive.ubuntu.com</em> igennem denne proxy.
+  </p>
+  <p>
+    Du kan ændre dette ved at logge ind i BibOS-admin, finde frem til
+    gateway'ens konfiguration og tilføje/ændre følgende nøgler:
+    <ul>
+      <li>
+        <strong>proxy_allowed_hosts</strong>:
+        En kommasepareret liste af host-navne som det er tilladt at tilgå
+        gemmen proxyen.
+      </li>
+      <li>
+        <strong>proxy_upstream_host</strong>,
+        <strong>proxy_upstream_port</strong>:
+        Hostnavn og port på den upstream proxy gateway'en vil bruge til
+        internettrafik. Request til upstream proxy'en vil blive sendt med
+        gateway'ens uid som password og dens konfigurerede
+        <strong>proxy_upstream_password</strong> som password.
+      </li>
+      <li>
+        <strong>proxy_upstream_password</strong>: Password der bliver brugt
+        ved henvendelse til upstream proxy server.
+      </li>
+      <li>
+        <strong>proxy_direct_hosts</strong>:
+        En kommasepareret liste af host-navne som gateway'en vil kontakte
+        direkte uden at gå igennem upstream proxy'en.
+      </li>
+    </ul>
+  </p>
+  <p>
+    Når man har ændret i ovenstående konfiguration skal man have ændret
+    konfigurations-filerne lokalt på gateway'en og genstarte gateway'ens
+    proxy.
+    Dette gøres ved at afvikle scriptet
+    <em>/usr/share/bibos/gateway/update_proxy_config.py</em> som root på
+    maskinen. Dette kan gøres ved at logge ind på maskinen som
+    superuser og udføre følgende kommando i en shell:
+<pre>
+sudo /usr/share/bibos/gateway/update_proxy_config.py
+</pre>
+    Man kan også vælge at lave et script i BibOS-admin og køre det på
+    maskinen. Et sådant script kan se ud som følger:
+<pre>
+#!/bin/bash
+
+# Script til opdatering af proxy-konfiguration på en BibOS gateway
+# Afvikles uden parametre.
+
+/usr/share/bibos/gateway/update_proxy_config.py
+</pre>
+  </p>
+{% endblock %}

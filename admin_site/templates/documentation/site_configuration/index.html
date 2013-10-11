@@ -1,0 +1,22 @@
+{% extends 'documentation/index.html' %}
+
+{% block specific_content %}
+  <h1>Global konfiguration</h1>
+  <p>
+    På denne side har du mulighed for at ændre konfigurationsparametre, der skal
+    gælde for alle maskiner, der er tilknyttet det valgte site. Bemærk at
+    tilpassede konfigurations-værdier på grupper eller på de enkelte computere
+    vil tage precedens over værdier der angives her.
+  </p>
+  <p>
+    Klik på knappen "tilføj konfiguration" for at tilføje en ny
+    konfigurationsnøgle/værdi. For rette eller slette en værdi skal du klikke
+    på værdien for den enkelte nøgle.
+  </p>
+  <p>
+    De globale konfigurationer fungerer som et udgangspunkt for en maskines
+    opsætning, men kan overstyres via tilpassede konfigurationsnøgler/værdier
+    på <a href="{% url 'doc' 'groups/config' %}">grupper</a> og på de
+    <a href="{% url 'doc' 'computers/config' %}">enkelte computere</a>.
+  </p>
+{% endblock %}

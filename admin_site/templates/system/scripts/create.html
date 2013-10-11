@@ -18,6 +18,12 @@ $.each(inputs, function() {BibOS.ScriptEdit.addInput('#create-script-inputs', th
 </script>
 {% endblock %}
 
+{% block specific_documentation_links %}
+  <li><a href="{% url 'doc' 'scripts' %}"><i class="icon-question-sign icon-white"></i> Administration af scripts</a></li>
+  <li><a href="{% url 'doc' 'scripts/running' %}"><i class="icon-question-sign icon-white"></i> Afvikling af scripts</a></li>
+{% endblock %}
+
+
 {% block specific_content %}
   <div class="sublevelnav">
     <div class="listutils"><a href="{% url 'new_script' site.uid %}" title="Tilføj nyt script"><i class="icon-plus icon-white"></i> tilføj nyt script</a></div>

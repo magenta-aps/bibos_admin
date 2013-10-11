@@ -1,10 +1,13 @@
+# -*- coding: utf-8 -*-
+import re
+import os
 import json
 import datetime
 
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils.decorators import method_decorator
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
@@ -14,8 +17,11 @@ from django.utils.html import escape
 
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import View, ListView, DetailView, RedirectView
+from django.views.generic import TemplateView
 
 from django.db.models import Q
+from django.db.models import Count
+from django.conf import settings
 
 from account.models import UserProfile
 
@@ -24,9 +30,9 @@ from forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
 from forms import UserForm, ParameterForm, PCForm
 from job.models import Job, Script, Input, Batch, Parameter
 
-from django.conf import settings
+
 import signals
-import re
+
 
 def set_notification_cookie(response, message):
     def js_escape(c):
@@ -43,6 +49,7 @@ def set_notification_cookie(response, message):
         ''.join([js_escape(c) for c in message])
     )
 
+
 # Mixin class to require login
 class LoginRequiredMixin(View):
     """Subclass in all views where login is required."""
@@ -50,6 +57,43 @@ class LoginRequiredMixin(View):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(LoginRequiredMixin, self).dispatch(*args, **kwargs)
+
+
+class SuperAdminOnlyMixin(View):
+    """Only allows access to super admins."""
+    check_function = user_passes_test(lambda u: u.get_profile().type ==
+                                      UserProfile.SUPER_ADMIN, login_url='/')
+
+    @method_decorator(login_required)
+    @method_decorator(check_function)
+    def dispatch(self, *args, **kwargs):
+        return super(SuperAdminOnlyMixin, self).dispatch(*args, **kwargs)
+
+
+class SuperAdminOrThisSiteMixin(View):
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        """Limit access to super users or users belonging to THIS site."""
+        site = None
+        slug_field = None
+        # Find out which field is used as site slug
+        if 'site_uid' in kwargs:
+            slug_field = 'site_uid'
+        elif 'slug' in kwargs:
+            slug_field = 'slug'
+        # If none given, give up
+        if slug_field:
+            site = get_object_or_404(Site, uid=kwargs[slug_field])
+        check_function = user_passes_test(
+            lambda u:
+            (u.get_profile().type == UserProfile.SUPER_ADMIN) or
+            (site and site == u.get_profile().site), login_url='/'
+        )
+        wrapped_super = check_function(
+            super(SuperAdminOrThisSiteMixin, self).dispatch
+        )
+        return wrapped_super(*args, **kwargs)
 
 
 # Mixin class for list selection (single select).
@@ -143,14 +187,14 @@ class AdminIndex(RedirectView, LoginRequiredMixin):
 
 
 # Site overview list to be displayed for super user
-class SiteList(ListView, LoginRequiredMixin):
+class SiteList(ListView, SuperAdminOnlyMixin):
     """Displays list of sites."""
     model = Site
     context_object_name = 'site_list'
 
 
 # Base class for Site-based passive (non-form) views
-class SiteView(DetailView, LoginRequiredMixin):
+class SiteView(DetailView, SuperAdminOrThisSiteMixin):
     """Base class for all views based on a single site."""
     model = Site
     slug_field = 'uid'
@@ -235,9 +279,20 @@ class JobsView(SiteView):
         context['batches'] = self.object.batches.all()
         context['pcs'] = self.object.pcs.all()
         context['groups'] = self.object.groups.all()
+        preselected = set([
+            Job.NEW,
+            Job.SUBMITTED,
+            Job.RUNNING,
+            Job.FAILED
+        ])
         context['status_choices'] = [
-            (name, value, Job.STATUS_TO_LABEL[value])
-            for (value, name) in Job.STATUS_CHOICES
+            {
+                'name': name,
+                'value': value,
+                'label': Job.STATUS_TO_LABEL[value],
+                'checked':
+                    'checked="checked' if value in preselected else ''
+            } for (value, name) in Job.STATUS_CHOICES
         ]
         params = self.request.GET or self.request.POST
 
@@ -267,16 +322,19 @@ class JobSearch(JSONResponseMixin, SiteView):
             site = joblist[0].batch.site
 
         return [{
+            'pk': job.pk,
             'script_name': job.batch.script.name,
-            'started': str(job.started) if job.started else None,
-            'finished': str(job.finished) if job.started else None,
-            'status': job.status,
+            'started': job.started.strftime("%Y-%m-%d %H:%M:%S") if
+                job.started else None,
+            'finished': job.finished.strftime("%Y-%m-%d %H:%M:%S") if
+                job.finished else None,
+            'status': job.status_translated + '',
             'label': job.status_label,
             'pc_name': job.pc.name,
             'batch_name': job.batch.name,
             # Yep, it's meant to be double-escaped - it's HTML-escaped
             # content that will be stored in an HTML attribute
-            'log_output': escape(escape(job.log_output)),
+            'has_info': job.has_info,
             'restart_url': '/site/%s/jobs/%s/restart/' % (site.uid, job.pk)
         } for job in joblist]
 
@@ -319,7 +377,7 @@ class JobSearch(JSONResponseMixin, SiteView):
         return json.dumps(result)
 
 
-class JobRestarter(DetailView, LoginRequiredMixin):
+class JobRestarter(DetailView, SuperAdminOrThisSiteMixin):
     template_name = 'system/jobs/restart.html'
     model = Job
 
@@ -357,7 +415,7 @@ class JobRestarter(DetailView, LoginRequiredMixin):
             return self.status_fail_response()
 
         new_job = self.object.restart()
-        response =  HttpResponseRedirect(self.get_success_url())
+        response = HttpResponseRedirect(self.get_success_url())
         set_notification_cookie(
             response,
             "Job %s restarted as job %s" % (self.object.pk, new_job.pk)
@@ -366,6 +424,23 @@ class JobRestarter(DetailView, LoginRequiredMixin):
 
     def get_success_url(self):
         return '/site/%s/jobs/' % self.kwargs['site_uid']
+
+
+class JobInfo(DetailView, LoginRequiredMixin):
+    template_name = 'system/jobs/info.html'
+    model = Job
+
+    def get(self, request, *args, **kwargs):
+        self.site = get_object_or_404(Site, uid=kwargs['site_uid'])
+        return super(JobInfo, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(JobInfo, self).get_context_data(**kwargs)
+        if self.site != self.object.batch.site:
+            raise Http404
+        context['site'] = self.site
+        context['job'] = self.object
+        return context
 
 
 class ScriptMixin(object):
@@ -378,7 +453,10 @@ class ScriptMixin(object):
         # Add the global and local script lists
         self.scripts = Script.objects.filter(
             Q(site=self.site) | Q(site=None)
+        ).exclude(
+            site__name='system'
         )
+
         if 'script_pk' in kwargs:
             self.script = get_object_or_404(Script, pk=kwargs['script_pk'])
 
@@ -496,7 +574,7 @@ class ScriptList(ScriptMixin, SiteView):
             )
 
 
-class ScriptCreate(ScriptMixin, CreateView):
+class ScriptCreate(ScriptMixin, CreateView, SuperAdminOrThisSiteMixin):
     template_name = 'system/scripts/create.html'
     form_class = ScriptForm
 
@@ -529,7 +607,7 @@ class ScriptCreate(ScriptMixin, CreateView):
         return '/site/%s/scripts/%s/' % (self.site.uid, self.script.pk)
 
 
-class ScriptUpdate(ScriptMixin, UpdateView):
+class ScriptUpdate(ScriptMixin, UpdateView, LoginRequiredMixin):
     template_name = 'system/scripts/update.html'
     form_class = ScriptForm
 
@@ -537,7 +615,7 @@ class ScriptUpdate(ScriptMixin, UpdateView):
         # Get context from super class
         context = super(ScriptUpdate, self).get_context_data(**kwargs)
         if self.script is not None and self.script.executable_code is not None:
-            context['script_preview'] = self.script.executable_code.read()
+            context['script_preview'] = self.script.executable_code.read(4096)
         context['type_choices'] = Input.VALUE_CHOICES
         self.create_form = ScriptForm()
         self.create_form.prefix = 'create'
@@ -598,7 +676,7 @@ class ScriptRun(SiteView):
             context['pcs'] = list(set(pcs))
 
         if len(context['pcs']) == 0:
-            context['message'] = _('Du skal angive mindst en PC eller gruppe')
+            context['message'] = _('You must specify at least one group or pc')
             self.step1(context)
             return
 
@@ -619,35 +697,22 @@ class ScriptRun(SiteView):
 
         context['num_pcs'] = len(pcs)
         if context['num_pcs'] == 0:
-            context['message'] = _('Du skal angive mindst en PC eller gruppe')
+            context['message'] = _('You must specify at least one group or pc')
             self.step1(context)
             return
 
         if not form.is_valid():
             self.step2(context)
         else:
-            # Create batch
-            now_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            batch = Batch(site=context['site'], script=context['script'],
-                          name=' '.join([context['script'].name, now_str]))
-            batch.save()
-            context['batch'] = batch
+            args = []
+            for i in range(0, context['script'].inputs.count()):
+                args.append(form.cleaned_data['parameter_%s' % i])
 
-            # Add parameters
-            for i, inp in enumerate(
-                context['script'].inputs.all().order_by('position')
-            ):
-                value = form.cleaned_data['parameter_%s' % i]
-                if(inp.value_type == Input.FILE):
-                    p = Parameter(input=inp, batch=batch, file_value=value)
-                else:
-                    p = Parameter(input=inp, batch=batch, string_value=value)
-                p.save()
-
-            # Create a job ofr each pc
-            for pc_pk in pcs:
-                job = Job(batch=batch, pc=PC.objects.get(pk=pc_pk))
-                job.save()
+            context['batch'] = context['script'].run_on(
+                context['site'],
+                PC.objects.filter(pk__in=pcs),
+                *args
+            )
 
     def get_context_data(self, **kwargs):
         context = super(ScriptRun, self).get_context_data(**kwargs)
@@ -719,22 +784,29 @@ class PCUpdate(SiteMixin, UpdateView):
             select={'lower_name': 'lower(name)'}
         ).order_by('lower_name')
 
-        group_set = site.groups.all()
+        waiting_for_packages = False
+        pkg_list_count = pc.package_list.packages.count()
+        if (not pc.is_active) or (pkg_list_count == 0):
+            waiting_for_packages = True
 
-        selected_group_ids = form['pc_groups'].value()
-        context['available_groups'] = group_set.exclude(
-            pk__in=selected_group_ids
-        )
-        context['selected_groups'] = group_set.filter(
-            pk__in=selected_group_ids
-        )
+        context['waiting_for_package_list'] = waiting_for_packages
+        if not waiting_for_packages:
+            group_set = site.groups.all()
 
-        ii = self.object.custom_packages.install_infos
-        context['package_infos'] = ii.order_by('-do_add', 'package__name')
+            selected_group_ids = form['pc_groups'].value()
+            context['available_groups'] = group_set.exclude(
+                pk__in=selected_group_ids
+            )
+            context['selected_groups'] = group_set.filter(
+                pk__in=selected_group_ids
+            )
 
-        a, r = pc.pending_package_updates
-        context['pending_packages_add'] = sorted(a)
-        context['pending_packages_remove'] = sorted(r)
+            ii = self.object.custom_packages.install_infos
+            context['package_infos'] = ii.order_by('-do_add', 'package__name')
+
+            a, r = pc.pending_package_updates
+            context['pending_packages_add'] = sorted(a)
+            context['pending_packages_remove'] = sorted(r)
 
         context['active_accordion'] = params.get('accordion', 'details')
 
@@ -776,6 +848,16 @@ class PCUpdate(SiteMixin, UpdateView):
             _('Computer %s updated') % self.object.name
         )
         return response
+
+
+class PCDelete(DeleteView, SuperAdminOrThisSiteMixin):
+    model = PC
+
+    def get_object(self, queryset=None):
+        return PC.objects.get(uid=self.kwargs['pc_uid'])
+
+    def get_success_url(self):
+        return '/site/{0}/computers/'.format(self.kwargs['site_uid'])
 
 
 class MarkPackageUpgrade(SiteMixin, View):
@@ -837,7 +919,7 @@ class UsersView(SelectionMixin, SiteView):
             ))
         else:
             return HttpResponseRedirect(
-                '/site/%s/users/new/' % context['site'].uid,
+                '/site/%s/new_user/' % context['site'].uid,
             )
 
 
@@ -854,7 +936,7 @@ class UsersMixin(object):
         return context
 
 
-class UserCreate(CreateView, UsersMixin, LoginRequiredMixin):
+class UserCreate(CreateView, UsersMixin, SuperAdminOrThisSiteMixin):
     model = User
     form_class = UserForm
     lookup_field = 'username'
@@ -889,7 +971,7 @@ class UserCreate(CreateView, UsersMixin, LoginRequiredMixin):
         )
 
 
-class UserUpdate(UpdateView, UsersMixin, LoginRequiredMixin):
+class UserUpdate(UpdateView, UsersMixin, SuperAdminOrThisSiteMixin):
     model = User
     form_class = UserForm
     template_name = 'system/users/update.html'
@@ -901,9 +983,14 @@ class UserUpdate(UpdateView, UsersMixin, LoginRequiredMixin):
     def get_context_data(self, **kwargs):
         context = super(UserUpdate, self).get_context_data(**kwargs)
         self.add_userlist_to_context(context)
-        context['selected_user'] = self.selected_user
-        context['create_form'] = UserForm(prefix='create')
 
+        loginusertype = self.request.user.bibos_profile.get().type
+
+        context['selected_user'] = self.selected_user
+        context['form'].setup_usertype_choices(loginusertype)
+
+        context['create_form'] = UserForm(prefix='create')
+        context['create_form'].setup_usertype_choices(loginusertype)
         return context
 
     def form_valid(self, form):
@@ -926,7 +1013,7 @@ class UserUpdate(UpdateView, UsersMixin, LoginRequiredMixin):
         )
 
 
-class UserDelete(DeleteView, UsersMixin, LoginRequiredMixin):
+class UserDelete(DeleteView, UsersMixin, SuperAdminOrThisSiteMixin):
     model = User
     template_name = 'system/users/delete.html'
 
@@ -954,7 +1041,7 @@ class UserDelete(DeleteView, UsersMixin, LoginRequiredMixin):
         return response
 
 
-class SiteCreate(CreateView, LoginRequiredMixin):
+class SiteCreate(CreateView, SuperAdminOnlyMixin):
     model = Site
     form_class = SiteForm
     slug_field = 'uid'
@@ -963,7 +1050,7 @@ class SiteCreate(CreateView, LoginRequiredMixin):
         return '/sites/'
 
 
-class SiteUpdate(UpdateView, LoginRequiredMixin):
+class SiteUpdate(UpdateView, SuperAdminOnlyMixin):
     model = Site
     form_class = SiteForm
     slug_field = 'uid'
@@ -972,7 +1059,7 @@ class SiteUpdate(UpdateView, LoginRequiredMixin):
         return '/sites/'
 
 
-class SiteDelete(DeleteView, LoginRequiredMixin):
+class SiteDelete(DeleteView, SuperAdminOnlyMixin):
     model = Site
     slug_field = 'uid'
 
@@ -980,7 +1067,8 @@ class SiteDelete(DeleteView, LoginRequiredMixin):
         return '/sites/'
 
 
-class ConfigurationEntryCreate(SiteMixin, CreateView, LoginRequiredMixin):
+class ConfigurationEntryCreate(SiteMixin, CreateView,
+                               SuperAdminOrThisSiteMixin):
     model = ConfigurationEntry
     form_class = ConfigurationEntryForm
 
@@ -995,7 +1083,8 @@ class ConfigurationEntryCreate(SiteMixin, CreateView, LoginRequiredMixin):
         return '/site/{0}/configuration/'.format(self.kwargs['site_uid'])
 
 
-class ConfigurationEntryUpdate(SiteMixin, UpdateView, LoginRequiredMixin):
+class ConfigurationEntryUpdate(SiteMixin, UpdateView,
+                               SuperAdminOrThisSiteMixin):
     model = ConfigurationEntry
     form_class = ConfigurationEntryForm
 
@@ -1003,14 +1092,15 @@ class ConfigurationEntryUpdate(SiteMixin, UpdateView, LoginRequiredMixin):
         return '/site/{0}/configuration/'.format(self.kwargs['site_uid'])
 
 
-class ConfigurationEntryDelete(SiteMixin, DeleteView, LoginRequiredMixin):
+class ConfigurationEntryDelete(SiteMixin, DeleteView,
+                               SuperAdminOrThisSiteMixin):
     model = ConfigurationEntry
 
     def get_success_url(self):
         return '/site/{0}/configuration/'.format(self.kwargs['site_uid'])
 
 
-class GroupCreate(SiteMixin, CreateView, LoginRequiredMixin):
+class GroupCreate(SiteMixin, CreateView, SuperAdminOrThisSiteMixin):
     model = PCGroup
     form_class = GroupForm
     slug_field = 'uid'
@@ -1032,7 +1122,7 @@ class GroupCreate(SiteMixin, CreateView, LoginRequiredMixin):
         return super(GroupCreate, self).form_valid(form)
 
 
-class GroupUpdate(SiteMixin, LoginRequiredMixin, UpdateView):
+class GroupUpdate(SiteMixin, SuperAdminOrThisSiteMixin, UpdateView):
     template_name = 'system/site_groups.html'
     form_class = GroupForm
     model = PCGroup
@@ -1050,7 +1140,9 @@ class GroupUpdate(SiteMixin, LoginRequiredMixin, UpdateView):
         ii = group.custom_packages.install_infos
         context['package_infos'] = ii.order_by('-do_add', 'package__name')
 
-        pc_queryset = site.pcs.all()
+        pc_queryset = site.pcs.filter(is_active=True).annotate(
+            pkg_count=Count('package_list__statuses')
+        ).filter(pkg_count__gt=0)
         form.fields['pcs'].queryset = pc_queryset
 
         selected_pc_ids = form['pcs'].value()
@@ -1087,7 +1179,7 @@ class GroupUpdate(SiteMixin, LoginRequiredMixin, UpdateView):
         return super(GroupUpdate, self).form_invalid(form)
 
 
-class GroupDelete(SiteMixin, LoginRequiredMixin, DeleteView):
+class GroupDelete(SiteMixin, SuperAdminOrThisSiteMixin, DeleteView):
     model = PCGroup
 
     def get_object(self, queryset=None):
@@ -1153,3 +1245,184 @@ class PackageSearch(JSONResponseMixin, ListView):
                 'description': p.description,
                 'version': p.version
             } for p in self.object_list])
+
+
+documentation_menu_items = [
+    ('', 'BibOS Administration'),
+    ('status', 'Status'),
+    ('site_configuration', 'Site-konfiguration'),
+    ('computers', 'Computere'),
+    ('groups', 'Grupper'),
+    ('jobs', 'Jobs'),
+    ('scripts', 'Scripts'),
+    ('users', 'Brugere'),
+
+    ('', 'Installation af BibOS'),
+    ('install_dvd', 'Installation via DVD'),
+    ('install_usb', 'Installation via USB'),
+    ('install_network', 'Installation via netværk'),
+    ('postinstall', 'Postinstall-script'),
+    ('pdf_guide', 'Brugervenlig installationsguide (PDF)'),
+
+    ('', 'BibOS-gateway'),
+    ('gateway_install', 'Installation af BibOS-gateway'),
+    ('gateway_admin', 'Administration af gateway'),
+    ('gateway_use', 'Anvendelse af gateway på BibOS-maskiner'),
+    ('', 'Om'),
+    ('om_bibos_admin', 'Om BibOS-Admin'),
+
+    ('', 'Teknisk dokumentation'),
+    ('tech/bibos', 'BibOS teknisk dokumentation'),
+    ('tech/admin', 'BibOS Admin teknisk dokumentation'),
+
+]
+
+
+class DocView(TemplateView):
+    docname = 'status'
+
+    def template_exists(self, subpath):
+        fullpath = os.path.join(settings.TEMPLATE_DIRS[0], subpath)
+        return os.path.isfile(fullpath)
+
+    def get_context_data(self, **kwargs):
+        if 'name' in self.kwargs:
+            self.docname = self.kwargs['name']
+        else:
+            # This will be mapped to documentation/index.html
+            self.docname = 'index'
+
+        if self.docname.find("..") != -1:
+            raise Http404
+
+        # Try <docname>.html and <docname>/index.html
+        name_templates = [
+            'documentation/{0}.html',
+            'documentation/{0}/index.html'
+        ]
+
+        templatename = None
+        for nt in name_templates:
+            expanded = nt.format(self.docname)
+            if self.template_exists(expanded):
+                templatename = expanded
+                break
+
+        if templatename is None:
+            raise Http404
+        else:
+            self.template_name = templatename
+
+        context = super(DocView, self).get_context_data(**kwargs)
+        context['docmenuitems'] = documentation_menu_items
+        docnames = self.docname.split("/")
+
+        context['menu_active'] = docnames[0]
+
+        # Set heading according to chosen item
+        current_heading = None
+        for link, name in context['docmenuitems']:
+            if link == '':
+                current_heading = name
+            elif link == docnames[0]:
+                context['docheading'] = current_heading
+                break
+
+        # Add a submenu if it exists
+        submenu_template = "documentation/" + docnames[0] + "/__submenu__.html"
+        if self.template_exists(submenu_template):
+            context['submenu_template'] = submenu_template
+
+        if len(docnames) > 1 and docnames[1]:
+            # Don't allow direct access to submenus
+            if docnames[1] == '__submenu__':
+                raise Http404
+            context['submenu_active'] = docnames[1]
+
+        params = self.request.GET or self.request.POST
+        back_link = params.get('back')
+        if back_link is None:
+            referer = self.request.META.get('HTTP_REFERER')
+            if referer and referer.find("/documentation/") == -1:
+                back_link = referer
+        if back_link:
+            context['back_link'] = back_link
+
+        return context
+
+
+class TechDocView(TemplateView):
+    template_name = 'documentation/tech.html'
+
+    def get_context_data(self, **kwargs):
+        if 'name' in kwargs:
+            self.docname = kwargs['name']
+            name = self.docname
+        context = super(TechDocView, self).get_context_data(**kwargs)
+        context['docmenuitems'] = documentation_menu_items
+        overview_urls = {'bibos': 'BibOS Desktop', 'admin': 'BibOS Admin'}
+
+        overview_items = {
+            'admin': [
+                ('tech/install_guide', 'Installationsvejledning'),
+                ('tech/developer_guide', 'Udviklerdokumentation'),
+                ('tech/release_notes', 'Release notes'),
+            ],
+            'bibos': [
+                ('tech/create_bibos_image', 'Lav nyt BibOS-image'),
+                ('tech/save_harddisk_image',
+                 'Gem harddisk-image med Clonezilla'),
+                ('tech/build_bibos_cd', 'Byg BibOS-CD fra Clonezilla-image'),
+                ('tech/image_release_notes', 'Release notes'),
+            ]
+        }
+
+        def get_category(name):
+            c = None
+            for k in overview_items:
+                if 'tech/' + name in [a for a, b in overview_items[k]]:
+                    c = k
+                    break
+            return c
+
+        dir = settings.SOURCE_DIR
+        image_dir = settings.BIBOS_IMAGE_DIR
+        d = lambda f: os.path.join(dir, f)
+        i = lambda f: os.path.join(image_dir, f)
+
+        url_mapping = {
+            'install_guide': d('doc/HOWTO_INSTALL_SERVER.txt'),
+            'developer_guide': d('doc/DEVELOPMENT_HOWTO.txt'),
+            'release_notes': d('NEWS'),
+            'create_bibos_image': i(
+                'doc/HOWTOCreate_a_new_BibOS_image_from_scratch.txt'
+            ),
+            'save_harddisk_image': i(
+                'doc/HOWTO_save_a_bibos_harddisk_image.txt'
+            ),
+            'build_bibos_cd': i(
+                'doc/HOWTOBuild_BibOS_CD_from_clonezilla_image.txt'
+            ),
+            'image_release_notes': i('NEWS'),
+        }
+
+        if name in overview_urls:
+            category = name
+        elif name in url_mapping:
+            # Get category of this document
+            category = get_category(name)
+            # Mark document as active
+            context['doc_active'] = 'tech/' + name
+            # Now supply file contents
+            filename = url_mapping[name]
+            with open(filename, "r") as f:
+                context['tech_content'] = f.read()
+        else:
+            raise Http404
+
+        # Supply info from category
+        context['doc_title'] = overview_urls[category]
+        context['menu_active'] = 'tech/' + category
+        context['url_list'] = overview_items[category]
+
+        return context

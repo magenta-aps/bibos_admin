@@ -8,14 +8,23 @@ Brugere
 class="active"
 {% endblock %}
 
+{% block specific_documentation_links %}
+  <li><a href="{% url 'doc' 'users' %}"><i class="icon-question-sign icon-white"></i> Administration af brugere</a></li>
+{% endblock %}
+
+
 {% block specific_content %}
 
   <ul class="sublevelnav">
     <li class="listutils"><a href="#addNewUser" role="button" data-toggle="modal" title="Tilføj ny bruger"><i class="icon-plus icon-white"></i> tilføj ny bruger</a></li>
 
     {% for user in user_list %}
-    <li {% ifequal user selected_user %}class="active"{% endifequal %}><a
-        href="/site/{{ site.url }}/users/{{ user.username }}"><i class="icon-user"></i> {{ user.username }}</a></li>
+      <li {% ifequal user selected_user %}class="active"{% endifequal %}>
+        {% ifequal user selected_user %}
+          <a class="remove pull-right" href="{% url 'delete_user' site.uid selected_user.username %}" title="Slet bruger"><i class="icon icon-remove icon-white"></i></a>
+        {% endifequal %}
+        <a class="list-item" href="/site/{{ site.url }}/users/{{ user.username }}"><i class="icon-user"></i> {{ user.username }}</a>
+      </li>
     {% endfor %}
   </ul>
   
@@ -30,10 +39,6 @@ class="active"
           <hr>      
           {% include 'system/users/form.html' with form_id='update_user_form' %}
         </form>
-      </div>
-      <hr>
-      <div>
-        <a href="{% url 'delete_user' site.uid selected_user.username %}"><i class="icon icon-remove"></i> Slet bruger</a>
       </div>
     </div>
   </div>

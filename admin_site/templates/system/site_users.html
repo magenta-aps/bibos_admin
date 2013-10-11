@@ -15,8 +15,12 @@ class="active"
     <!-- <li class="listutils"><a href="/site/{{ site.uid }}/users/new/" title="Tilføj ny bruger"><i class="icon-plus icon-white"></i> tilføj ny bruger</a></li> -->
 
     {% for user in user_list %}
-    <li {% ifequal user selected_user %}class="active"{% endifequal %}><a
-        href="/site/{{ site.url }}/users/{{ user.username }}"><i class="icon-user"></i> {{ user.username }}</a></li>
+      <li {% ifequal user selected_user %}class="active"{% endifequal %}>
+        {% ifequal user selected_user %}
+          <a class="remove" href="#" title="Slet bruger"><i class="icon-remove icon-white"></i></a>
+        {% endifequal %}
+        <a class="list-item" href="/site/{{ site.url }}/users/{{ user.username }}"><i class="icon-user"></i> {{ user.username }}</a>
+      </li>
     {% endfor %}
   </ul>
   
@@ -64,10 +68,6 @@ class="active"
         
         </fieldset>
       </form>
-      <hr>
-      <div>
-        <a href="#"><i class="icon icon-remove"></i> Slet bruger</a>
-      </div>
     </div>
   </div>
   
