@@ -1,0 +1,18 @@
+
+{% extends "site_with_navigation.html" %}
+
+{% block specific_title %}
+Slet computer
+{% endblock %}
+
+{% block specific_content %}
+  <div class="container-fluid main">
+    <p>Ønsker du virkelig at slette denne maskine? Hele computerens jobhistorik
+    vil også blive slettet.</p>
+    <form action="" method="post">{% csrf_token %}
+      {{ form.as_p }}
+      <input class="btn btn-primary" type="submit" value="Ja" />
+      <a class="btn" href="javascript:history.go(-1)">Nej</a>
+    </form>
+  </div>
+{% endblock %}

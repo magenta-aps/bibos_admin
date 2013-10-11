@@ -1,59 +1,110 @@
-<div class="row-fluid">
-  <div class="span6">
-    <fieldset>
-      {{ form.name.errors }}
-      <label for="{{ form.name.id_for_label }}">Navn:</label>
-      {{ form.name }}        
-      {{ form.description.errors }}
-      <label for="{{ form.description.id_for_label }}">Beskrivelse:</label>
-      {{ form.description }}
-      <label for="id_{% if form.prefix %}{{ form.prefix }}-{% endif %}site">
-        <input
-          type="checkbox"
-          id="id_{% if form.prefix %}{{ form.prefix }}-{% endif %}site"
-          name="{% if form.prefix %}{{ form.prefix }}-{% endif %}site"
-          value="{{ site.id }}"
-          {% if not global_script %}checked="checked"{% endif %}
-        >
-        Lokalt script for {{ site.uid }}
-      </label>
-      
-    </fieldset>
+{% if disable_inputs != "yes" %}
+<div class="accordion clearfix" id="accordion2">
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle btn" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+        Detaljer <i class="icon-chevron-down pull-right"></i>
+      </a>
+    </div>
+    <div id="collapseOne" class="accordion-body collapse in">
+      <div class="accordion-inner">
+{% endif %}
+  
+        <fieldset>
+          <div class="row-fluid">
+            <div class="span6">
+              {{ form.name.errors }}
+              <label for="{{ form.name.id_for_label }}">Navn:</label>
+              {{ form.name }}        
+              {{ form.description.errors }}
+              <label for="id_{% if form.prefix %}{{ form.prefix }}-{% endif %}site">
+                <input
+                  type="checkbox"
+                  id="id_{% if form.prefix %}{{ form.prefix }}-{% endif %}site"
+                  name="{% if form.prefix %}{{ form.prefix }}-{% endif %}site"
+                  value="{{ site.id }}"
+                  {% if not global_script %}checked="checked"{% endif %}
+                >
+                Lokalt script for {{ site.uid }}
+              </label>
+            </div>
+            <div class="span6">
+              <label for="{{ form.description.id_for_label }}">Beskrivelse:</label>
+              {{ form.description }}
+            </div>
+          </div>
+        </fieldset>
+        
+{% if disable_inputs != "yes" %}
+      </div>
+    </div>
   </div>
   
-  <div class="span6">
-    <fieldset>
-      {% if show_code_preview %}
-      Kode-preview:
-      <pre>{{script_preview |escape}}</pre>
-      {% endif %}
-      {{ form.executable_code.errors }}
-      <label for="{{ form.executable_code.id_for_label }}">Upload scriptkode:</label>
-      {{ form.executable_code }}
-    </fieldset>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle btn" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+        Kode-preview <i class="icon-chevron-down pull-right"></i>
+      </a>
+    </div>
+    <div id="collapseTwo" class="accordion-body collapse">
+      <div class="accordion-inner">
+{% endif %}
+  
+        <fieldset>
+          {% if show_code_preview %}
+          Kode-preview:
+          <pre>{{script_preview |escape}}</pre>
+          {% endif %}
+          {{ form.executable_code.errors }}
+          <label for="{{ form.executable_code.id_for_label }}">Upload scriptkode:</label>
+          {{ form.executable_code }}
+        </fieldset>
+        
+{% if disable_inputs != "yes" %}
+      </div>
+    </div>
   </div>
+  
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle btn" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">
+        Input-parametre <i class="icon-chevron-down pull-right"></i>
+      </a>
+    </div>
+    <div id="collapseThree" class="accordion-body collapse">
+      <div class="accordion-inner">
+{% endif %}
+  
+        {% if disable_inputs %}
+          <input type="hidden" name="script-number-of-inputs" class="script-number-of-inputs" value="0" />
+        {% else %}
+          <fieldset id="{{ form.prefix|default:'update' }}-script-inputs">
+            <label>Input-parametre:</label>
+            <input type="hidden" name="script-number-of-inputs" class="script-number-of-inputs" value="0" />
+            <div class="well">
+              <table class="table table-condensed">
+                <thead>
+                  <tr>
+                    <th>Navn</th>
+                    <th>Type</th>
+                  </tr>
+                </thead>
+                <tbody id="script-input-container">
+                  <tr class="script-input-add">
+                    <td colspan="3">
+                      <a href="javascript:void(0)" onclick="BibOS.ScriptEdit.addInput('#{{ form.prefix|default:'update' }}-script-inputs', {})" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj parameter</a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </fieldset>
+        {% endif %}
+  
+{% if disable_inputs != "yes" %}
+      </div>
+    </div>
+  </div>
+  
 </div>
-  
-<hr>
-
-<fieldset id="{{ form.prefix|default:'update' }}-script-inputs">
-  <label>Input-parametre:</label>
-  <input type="hidden" name="script-number-of-inputs" class="script-number-of-inputs" value="0" />
-  <div class="well">
-    <table class="table table-condensed">
-      <thead>
-        <tr>
-          <th>Navn</th>
-          <th>Type</th>
-        </tr>
-      </thead>
-      <tbody id="script-input-container">
-        <tr class="script-input-add">
-          <td colspan="3">
-            <a href="javascript:void(0)" onclick="BibOS.ScriptEdit.addInput('#{{ form.prefix|default:'update' }}-script-inputs', {})" title="Tilføj ny konfiguration"><i class="icon-plus"></i> tilføj parameter</a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</fieldset>
+{% endif %}

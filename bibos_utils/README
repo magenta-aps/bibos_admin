@@ -1,7 +1,7 @@
-bibos_utils
------------
+This directory contains bibos-utils, a Python library which contains
+client-side utilities for the BibOS Admin system. The code was prepared by 
+Magenta ApS (http://www.magenta-aps.dk) as part of a larger Ubuntu installation 
+project in the Danish library sector.
 
-This package contains a number of Python libraries which are shared between the
-Bibos client image and admin system.
-
-TODO: Document the different modules.
+This library is available to you according to the conditions in version 3 of
+the GNU General Public License. See the LICENSE file for details.

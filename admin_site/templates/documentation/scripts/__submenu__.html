@@ -1,0 +1,11 @@
+<ul>
+    <li {% ifequal submenu_active 'edit' %}class="active"{% endifequal %}>
+      <a href="{% url 'doc' 'scripts/edit' %}"> Redigering af script</a>
+    </li>
+    <li {% ifequal submenu_active 'parameters' %}class="active"{% endifequal %}>
+      <a href="{% url 'doc' 'scripts/parameters' %}"> Redigering af parametre</a>
+    </li>
+    <li {% ifequal submenu_active 'running' %}class="active"{% endifequal %}>
+      <a href="{% url 'doc' 'scripts/running' %}"> Afvikling af scripts</a>
+    </li>
+</ul>

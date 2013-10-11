@@ -1,0 +1,41 @@
+{% extends 'documentation/index.html' %}
+
+{% block specific_content %}
+  <h1>Redigering af script-parametre</h1>
+  <p>
+    Script-parametre gør det muligt at angive parametre når et script skal
+    køres. Der er fire typer parametre man kan vælge i mellem:
+    <ul>
+      <li>
+        <strong>Streng</strong>:
+        Giver mulighed for at angive en tekst-streng, for eksempel en sti eller
+        en titel.
+      </li>
+      <li>
+        <strong>Heltal</strong>:
+        Giver mulighed for at angive et positivt eller negativt heltal
+      </li>
+      <li>
+        <strong>Dato</strong>:
+        Giver mulighed for at angive en dato og et tidspunkt
+      </li>
+      <li>
+        <strong>Fil</strong>:
+        Giver mulighed for at uploade en fil der vil blive sendt med når
+        scriptet skal afvikles. Scriptet vil modtage Fil-parametre som en sti
+        i det lokale filsystem der peger på filen.
+      </li>
+    </ul>
+  </p>
+  <p>
+    For at tilføje en input-parameter til et script skal man klikke på knappen
+    "tilføj parameter". Dette vil tilføje en ny række i listen over parametre,
+    hvor man kan udfylde navn og type for parametren. Hvis man ønsker at fjerne
+    en parameter skal man klikke på "fjern"-linket til højre i listen.
+  </p>
+  <p>
+    Man skal klikke på knappen "Gem ændringer" øverst på
+    script-redigerings-siden før ændringer foretaget til parametre træder i
+    kræft.
+  </p>
+{% endblock %}

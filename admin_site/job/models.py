@@ -1,11 +1,14 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 from django.core.exceptions import FieldError
 from django.core.urlresolvers import reverse
 
 from system.models import PC, Site
 
 import datetime
+import re
+import os.path
 
 
 class Script(models.Model):
@@ -26,6 +29,86 @@ class Script(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    @staticmethod
+    def get_system_script(name):
+        try:
+            script = Script.objects.get(description=name)
+        except Script.DoesNotExist:
+            system_site = Site.get_system_site()
+
+            full_script_path = os.path.join(
+                settings.MEDIA_ROOT,
+                'system_scripts/',
+                name
+            )
+
+            if(os.path.isfile(full_script_path)):
+                args = []
+                title = name
+                title_matcher = re.compile('BIBOS_SCRIPT_TITLE:\s*([^\n]+)')
+                arg_matcher = re.compile(
+                    'BIBOS_SCRIPT_ARG:(' +
+                        '|'.join([v for v, n in Input.VALUE_CHOICES]) +
+                    ')',
+                    flags=re.IGNORECASE
+                )
+
+                fh = open(full_script_path, 'r')
+                for line in fh.readlines():
+                    m = arg_matcher.search(line)
+                    if m is not None:
+                        args.append(m.group(1).upper())
+                    else:
+                        m = title_matcher.search(line)
+                        if m is not None:
+                            title = m.group(1)
+                fh.close()
+
+                script = Script.objects.create(
+                    name=title,
+                    description=name,
+                    executable_code='system_scripts/' + name,
+                    site=system_site
+                )
+                script.save()
+
+                for position, vtype in enumerate(args):
+                    Input.objects.create(
+                        name=script.name + " arg " + str(position + 1),
+                        position=position,
+                        value_type=vtype,
+                        mandatory=True,
+                        script=script
+                    )
+            else:
+                script = None
+        return script
+
+    def run_on(self, site, pc_list, *args):
+        now_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        batch = Batch(site=site, script=self,
+                      name=' '.join([self.name, now_str]))
+        batch.save()
+
+        # Add parameters
+        for i, inp in enumerate(self.inputs.all().order_by('position')):
+            if i < len(args):
+                value = args[i]
+                if(inp.value_type == Input.FILE):
+                    p = Parameter(input=inp, batch=batch, file_value=value)
+                else:
+                    p = Parameter(input=inp, batch=batch, string_value=value)
+                p.save()
+
+        for pc in pc_list:
+            job = Job(batch=batch, pc=pc)
+            job.save()
+
+        return batch
+
+    def run_on_pc(self, pc, *args):
+        return self.run_on(pc.site, [pc], *args)
 
     def get_absolute_url(self, **kwargs):
         if 'site_uid' in kwargs:
@@ -59,13 +142,22 @@ class Job(models.Model):
     FAILED = 'FAILED'
     RESOLVED = 'RESOLVED'
 
+    STATUS_TRANSLATIONS = {
+        NEW: _('jobstatus:New'),
+        SUBMITTED: _('jobstatus:Submitted'),
+        RUNNING: _('jobstatus:Running'),
+        FAILED: _('jobstatus:Failed'),
+        DONE: _('jobstatus:Done'),
+        RESOLVED: _('jobstatus:Resolved')
+    }
+
     STATUS_CHOICES = (
-        (NEW, _('New')),
-        (SUBMITTED, _('Submitted')),
-        (RUNNING, _('Running')),
-        (DONE, _('Done')),
-        (FAILED, _('Failed')),
-        (RESOLVED, _('Resolved'))
+        (NEW, STATUS_TRANSLATIONS[NEW]),
+        (SUBMITTED, STATUS_TRANSLATIONS[SUBMITTED]),
+        (RUNNING, STATUS_TRANSLATIONS[RUNNING]),
+        (FAILED, STATUS_TRANSLATIONS[FAILED]),
+        (DONE, STATUS_TRANSLATIONS[DONE]),
+        (RESOLVED, STATUS_TRANSLATIONS[RESOLVED])
     )
 
     STATUS_TO_LABEL = {
@@ -81,7 +173,9 @@ class Job(models.Model):
     # Use built-in ID field for ID.
     status = models.CharField(max_length=10, choices=STATUS_CHOICES,
                               default=NEW)
-    log_output = models.CharField(_('log output'), max_length=4096, blank=True)
+    log_output = models.CharField(_('log output'),
+                                  max_length=128000,
+                                  blank=True)
     started = models.DateTimeField(_('started'), null=True)
     finished = models.DateTimeField(_('finished'), null=True)
     batch = models.ForeignKey(Batch, related_name='jobs')
@@ -91,6 +185,10 @@ class Job(models.Model):
         return '_'.join(map(unicode, [self.batch, self.id]))
 
     @property
+    def has_info(self):
+        return self.status == Job.FAILED or len(self.log_output) > 1
+
+    @property
     def status_label(self):
         if self.status is None:
             return ''
@@ -98,15 +196,39 @@ class Job(models.Model):
             return Job.STATUS_TO_LABEL[self.status]
 
     @property
+    def status_translated(self):
+        if self.status is None:
+            return ''
+        else:
+            return Job.STATUS_TRANSLATIONS[self.status]
+
+    @property
     def failed(self):
         return self.status == Job.FAILED
+
+    @property
+    def as_instruction(self):
+        parameters = []
+
+        for param in self.batch.parameters.order_by("input__position"):
+            parameters.append({
+                'type': param.input.value_type,
+                'value': param.transfer_value
+            })
+
+        return {
+            'id': self.pk,
+            'status': self.status,
+            'parameters': parameters,
+            'executable_code': self.batch.script.executable_code.read()
+        }
 
     def resolve(self):
         if self.failed:
             self.status = Job.RESOLVED
             self.save()
         else:
-            raise Exception(_('Cannot change status from %s to %s') % (
+            raise Exception(_('Cannot change status from {0} to {1}').format(
                 self.status,
                 Job.RESOLVED
             ))
@@ -153,7 +275,7 @@ class Input(models.Model):
         (FILE, _('File'))
     )
 
-    name = models.CharField(_('name'), max_length=255, unique=True)
+    name = models.CharField(_('name'), max_length=255)
     value_type = models.CharField(_('value type'), choices=VALUE_CHOICES,
                                   max_length=10)
     position = models.IntegerField(_('position'))

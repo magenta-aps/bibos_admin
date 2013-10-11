@@ -4,22 +4,8 @@
 Computere
 {% endblock %}
 
-{% block head_javascripts %}
-<script type="text/javascript">
-    $(document).ready(function() {
-      $('.accordion-group:first-child').find('i.icon-chevron-down').toggleClass('icon-chevron-up icon-chevron-down');
-      $('.accordion-group:first-child').find('i.icon-chevron-up').toggleClass('icon-chevron-up icon-chevron-down');
-      $('.accordion-toggle').click(function(event){
-        $(this).find('i').toggleClass('icon-chevron-up icon-chevron-down');
-        $('.accordion-group').each(function() {
-          if ($(this).find('.accordion-body').hasClass('in')) {
-            $(this).find('i').removeClass('icon-chevron-up').addClass('icon-chevron-down');
-          };
-        });
-      });
-      $('button.btn').popover()
-    });
-  </script>
+{% block specific_documentation_links %}
+  <li><a href="{% url 'doc' 'computers' %}"><i class="icon-question-sign icon-white"></i> Administration af computere</a></li>
 {% endblock %}
 
 {% block javascripts %}
@@ -41,26 +27,34 @@ class="active"
     {% endif %}
     {% for pc in pc_list %}
       <li {% ifequal pc selected_pc %}class="active" %}{% endifequal %}>
-        <a href="/site/{{ site.url }}/computers/{{ pc.uid }}"><i class="icon-hdd"></i> {{ pc.name }}</a>
+        {% ifequal pc selected_pc %}
+          <a class="remove pull-right" href="/site/{{ site.url }}/computers/{{ selected_pc.uid }}/delete/" title="Slet computer"><i class="icon-remove icon-white"></i></a>
+        {% endifequal %}
+        <a class="list-item" href="/site/{{ site.url }}/computers/{{ pc.uid }}"><i class="icon-hdd"></i> {{ pc.name }}</a>
       </li>
     {% endfor %}
   </ul>
   
   <div class="container-fluid main sublevelmain">
     
-      <h2 class="divideheader">Detaljer om <em>{{ selected_pc.name }}</em> 
-          {% if selected_pc.is_update_required %}<span class="label label-warning">Update venter</span>{% endif %}</h2>
-      {% include 'notification.html' %}
+    <h2 class="divideheader">Detaljer om <em>{{ selected_pc.name }}</em> 
+      {% if selected_pc.is_update_required %}
+        <span class="label label-warning">Opdateringer tilgængelige</span>
+      {% endif %}
+    </h2>
+    {% include 'notification.html' %}
     
-      <p class="pull-right"><span class="muted">Sidst set:</span> <strong>{{ selected_pc.last_seen | date }} </strong> 
-      {{ selected_pc.last_seen|time }}</p> 
+    {% if selected_pc.last_seen %} 
+      <p class="pull-right"><span class="muted"> &nbsp;Sidst set:</span> <strong>{{ selected_pc.last_seen|date }} </strong> {{ selected_pc.last_seen|time }}</p>
+    {% endif %}
+    
     <form name="pc_update_form" id="pc_update_form" action="{% url 'computer' site.uid selected_pc.uid %}" method="post">
       {% csrf_token %}
 
       <button class="btn btn-primary">Gem ændringer</button>
       <button class="btn" onclick="return ((location.href = '{% url 'computer' site.uid selected_pc.uid %}') && false)">Annuller</button>
-
-      <div class="accordion" id="accordion2">
+      
+      <div class="accordion clearfix" id="accordion2">
 
         <div class="accordion-group">
           <div class="accordion-heading">
@@ -91,9 +85,18 @@ class="active"
                   
                 </fieldset>
                 <fieldset class="span6">
+                  {% if waiting_for_package_list %}
+                    <p>
+                      Det er ikke muligt at redigere grupper for denne
+                      computer, da den ikke har uploadet sin pakkeliste endnu.
+                      <a href="./?accordion=packages#package_wait_explanation"
+                      >Klik her for yderligere information</a>.
+                    </p>
+                  {% else %}
                   {{ form.pc_groups.errors }}
                   <label>Grupper:</label>
                   {% include 'system/pcgrouplist/list.html' with submit_name='pc_groups' %}
+                  {% endif %}
                 </fieldset>
               </div>
             </div>
@@ -123,27 +126,45 @@ class="active"
           </div>
           <div id="collapseThree" class="accordion-body collapse {% ifequal active_accordion 'packages' %}in{% endifequal %}">
             <div class="accordion-inner">
+            {% if waiting_for_package_list %}
+              <p id="package_wait_explanation">
+                Det vil først være muligt at tilpasse pakker på denne computer
+                når BibOS administrations-systemet har modtaget en liste over
+                installerede pakker fra computeren. Dette kræver at computeren
+                er tændt, at den er blevet
+                <a href="{%url 'doc' 'computers/activating' %}">aktiveret</a>
+                og at den har adgang til BibOS-admin, enten via direkte
+                internetforbindelse eller gennem en BibOS gateway.
+              </p>
+              <p>
+                Der kan gå op til fem minutter fra ovenstående betingelser er
+                opfyldt indtil admin-systemet modtager pakke-listen.
+              </p>
+            {% else %}
               <div><strong>Tilpasning af pakker kun på denne maskine</strong></div>
               {% include 'system/package_lists/list.html' with packages=package_infos pl_id='pc_packages'%}
               {% if pending_packages_add %}
               <div><strong>Pakker der venter på at blive installeret på maskinen</strong></div>
-              <ul>
+              <ul class="unstyled well actionlist packagelist">
                 {% for name in pending_packages_add %}
-                  <li>{{ name }}</li>
+                  <li><span class="label">{{ name }}</span></li>
                 {% endfor %}
               </ul>
               {% endif %}
               {% if pending_packages_remove %}
               <div><strong>Pakker der venter på at blive fjernet fra maskinen</strong></div>
-              <ul>
+              <ul class="unstyled well actionlist packagelist">
                 {% for name in pending_packages_remove %}
-                  <li>{{ name }}</li>
+                  <li><span class="label">{{ name }}</span></li>
                 {% endfor %}
               </ul>
               {% endif %}
               {% if selected_pc.package_list.needs_upgrade_packages %}
               <div><strong>Pakker der kan opgraderes på maskinen</strong></div>
               <ul id="needs_upgrade_packages">
+                   <input type="checkbox" onClick="toggle_package_selection(this)" />
+                   <strong>Markér alle</strong></br>
+                  
                 {% for package in selected_pc.package_list.needs_upgrade_packages %}
                   <li>
                     <label for="upgrade_package-{{ package.pk }}">
@@ -164,6 +185,7 @@ class="active"
                 {% endfor %}
               </ul>
               {% endif %}
+            {% endif %}
             </div>
           </div>
         </div>
@@ -176,7 +198,7 @@ class="active"
           </div>
           <div id="collapseFive" class="accordion-body collapse {% ifequal active_accordion 'joblist' %}in{% endifequal %}">
             <div class="accordion-inner">
-              <table class="table jobtable">
+              <table id="computer_jobs_table" class="table jobtable">
                 <tr>
                   {% include 'widgets/orderby_th.html' with key='batch__script__name' label='Script' %}
                   {% include 'widgets/orderby_th.html' with key='started' label='Startet' %}
@@ -193,16 +215,18 @@ class="active"
                   <td class="{% ifequal orderby_key 'status' %}orderby-highligt{% endifequal %}"><span class="label {{job.status_label}}">{{job.status}}</span></td>
                   <td class="{% ifequal orderby_key 'batch__name' %}orderby-highligt{% endifequal %}">{{job.batch.name}}</td>
                   <td>
-                    <button class="btn" data-toggle="popover" title="Log"
-                      data-original-title="Log" data-html="true"
-                      data-placement="top"
-                      data-content="<a href='{% url 'restart_job' site.uid job.pk %}'>{% if job.failed %}<i class='icon-refresh'></i> Genstart job</a>{% endif %}<pre>{{job.log_output|escape|escape}}</pre>"
-                      onclick="return false"
-                    ><i class="icon-info-sign"></i></button>
-                    </td>
+                    {% if job.has_info %}
+                    <button class="btn jobinfobutton" data-pk="{{ job.pk }}"><i class="icon-info-sign"></i></button>
+                    {% endif %}
+                  </td>
                 </tr>
                 {% endfor %}
               </table>
+              <script type="text/javascript"><!--
+              $(function() {
+                BibOS.setupJobInfoButtons($('#computer_jobs_table'));
+              });
+              //--></script>
             </div>
           </div>
         </div>
