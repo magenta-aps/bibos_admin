@@ -28,9 +28,6 @@ header h1 em {color: #fff; font-style: normal;}
 .divideheader em {color: #fff; font-style: normal;}
 h2.divideheader {margin-top: 20px; border-radius: 0.25em;}
 .divideheader .label {margin-left: 20px; position: relative; bottom: 2px;}
-.accordion {margin-top: 20px;}
-.accordion-group {border: none; padding: 0;}
-.accordion-toggle {text-align: left;}
 .searchfilter .btn {display: block; text-align: left;}
 .well .table {margin-bottom: 0;}
 .table th {border-top: none;}
