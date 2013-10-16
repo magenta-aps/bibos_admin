@@ -54,184 +54,160 @@ class="active"
       <button class="btn btn-primary">Gem ændringer</button>
       <button class="btn" onclick="return ((location.href = '{% url 'computer' site.uid selected_pc.uid %}') && false)">Annuller</button>
       
-      <div class="accordion clearfix" id="accordion2">
+      <ul class="nav nav-tabs">
+        <li class="active">
+          <a href="#pc-details" data-toggle="tab">Detaljer</a>
+        </li>
+        <li>
+          <a href="#pc-configs" data-toggle="tab">Konfigurationer</a>
+        </li>
+        <li>
+          <a href="#pc-packages" data-toggle="tab">Pakker</a>
+        </li>
+        <li>
+          <a href="#pc-jobs" data-toggle="tab">Jobhistorik</a>
+        </li>
+      </ul>
 
-        <div class="accordion-group">
-          <div class="accordion-heading">
-            <a class="accordion-toggle btn" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
-              Detaljer <i class="icon-chevron-down pull-right"></i>
-            </a>
-          </div>
-          <div id="collapseOne" class="accordion-body collapse {% ifequal active_accordion 'details' %}in{% endifequal %}">
-            <div class="accordion-inner">
-              <div class="row-fluid">
-                <fieldset class="span6">
-                  <label for="id_name">Navn:</label>
-                  {{ form.name.errors }}
-                  {{ form.name }}
-                  
-                  <label for="id_description">Beskrivelse:</label>
-                  {{ form.description.errors }}
-                  {{ form.description }}
-                  
-                  <label for="id_distribution">Distribution:</label>
-                  {{ form.distribution.errors }}
-                  {{ form.distribution }}
+      <div id="pc-details" class="tabcontent active">
+        <div class="row-fluid">
+          <fieldset class="span6">
+            <label for="id_name">Navn:</label>
+            {{ form.name.errors }}
+            {{ form.name }}
+            
+            <label for="id_description">Beskrivelse:</label>
+            {{ form.description.errors }}
+            {{ form.description }}
+            
+            <label for="id_distribution">Distribution:</label>
+            {{ form.distribution.errors }}
+            {{ form.distribution }}
 
-                  <label class="checkbox" for="id_is_active">
-                    {{ form.is_active.errors }}
-                    {{ form.is_active }} Aktiv
-                  </label>
-                  
-                </fieldset>
-                <fieldset class="span6">
-                  {% if waiting_for_package_list %}
-                    <p>
-                      Det er ikke muligt at redigere grupper for denne
-                      computer, da den ikke har uploadet sin pakkeliste endnu.
-                      <a href="./?accordion=packages#package_wait_explanation"
-                      >Klik her for yderligere information</a>.
-                    </p>
-                  {% else %}
-                  {{ form.pc_groups.errors }}
-                  <label>Grupper:</label>
-                  {% include 'system/pcgrouplist/list.html' with submit_name='pc_groups' %}
-                  {% endif %}
-                </fieldset>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="accordion-group">
-          <div class="accordion-heading">
-            <a class="accordion-toggle btn" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
-              Konfigurationer <i class="icon-chevron-down pull-right"></i>
-            </a>
-          </div>
-          <div id="collapseTwo" class="accordion-body collapse {% ifequal active_accordion 'config' %}in{% endifequal %}">
-            <div class="accordion-inner">
-              <fieldset>
-                {% include 'system/configlist/list.html' with entries=selected_pc.configuration.entries.all  cnf_id='pc_config' %}
-              </fieldset>
-            </div>
-          </div>
-        </div>
-        
-        <div class="accordion-group">
-          <div class="accordion-heading">
-            <a class="accordion-toggle btn" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">
-              Pakker <i class="icon-chevron-down pull-right"></i>
-            </a>
-          </div>
-          <div id="collapseThree" class="accordion-body collapse {% ifequal active_accordion 'packages' %}in{% endifequal %}">
-            <div class="accordion-inner">
+            <label class="checkbox" for="id_is_active">
+              {{ form.is_active.errors }}
+              {{ form.is_active }} Aktiv
+            </label>
+            
+          </fieldset>
+          <fieldset class="span6">
             {% if waiting_for_package_list %}
-              <p id="package_wait_explanation">
-                Det vil først være muligt at tilpasse pakker på denne computer
-                når BibOS administrations-systemet har modtaget en liste over
-                installerede pakker fra computeren. Dette kræver at computeren
-                er tændt, at den er blevet
-                <a href="{%url 'doc' 'computers/activating' %}">aktiveret</a>
-                og at den har adgang til BibOS-admin, enten via direkte
-                internetforbindelse eller gennem en BibOS gateway.
-              </p>
               <p>
-                Der kan gå op til fem minutter fra ovenstående betingelser er
-                opfyldt indtil admin-systemet modtager pakke-listen.
+                Det er ikke muligt at redigere grupper for denne
+                computer, da den ikke har uploadet sin pakkeliste endnu.
+                <a href="./?accordion=packages#package_wait_explanation"
+                >Klik her for yderligere information</a>.
               </p>
             {% else %}
-              <div><strong>Tilpasning af pakker kun på denne maskine</strong></div>
-              {% include 'system/package_lists/list.html' with packages=package_infos pl_id='pc_packages'%}
-              {% if pending_packages_add %}
-              <div><strong>Pakker der venter på at blive installeret på maskinen</strong></div>
-              <ul class="unstyled well actionlist packagelist">
-                {% for name in pending_packages_add %}
-                  <li><span class="label">{{ name }}</span></li>
-                {% endfor %}
-              </ul>
-              {% endif %}
-              {% if pending_packages_remove %}
-              <div><strong>Pakker der venter på at blive fjernet fra maskinen</strong></div>
-              <ul class="unstyled well actionlist packagelist">
-                {% for name in pending_packages_remove %}
-                  <li><span class="label">{{ name }}</span></li>
-                {% endfor %}
-              </ul>
-              {% endif %}
-              {% if selected_pc.package_list.needs_upgrade_packages %}
-              <div><strong>Pakker der kan opgraderes på maskinen</strong></div>
-              <ul id="needs_upgrade_packages">
-                   <input type="checkbox" onClick="toggle_package_selection(this)" />
-                   <strong>Markér alle</strong></br>
-                  
-                {% for package in selected_pc.package_list.needs_upgrade_packages %}
-                  <li>
-                    <label for="upgrade_package-{{ package.pk }}">
-                      <input type="checkbox" id="upgrade_package-{{ package.pk }}" name="upgrade_package" value="{{ package.name }}" />
-                      {{ package.name }}
-                    </label>
-                  </li>
-                {% endfor %}
-              </ul>
-              <input type="button" value="Opgrader de valgte pakker"
-                     onclick="BibOS.PackageList.markUpgradePackages('#needs_upgrade_packages', '#upgrade_packages_form')" />
-              {% endif %}
-              {% if selected_pc.package_list.pending_upgrade_packages %}
-              <div><strong>Pakker der venter på at blive opgraderet</strong></div>
-              <ul>
-                {% for package in selected_pc.package_list.pending_upgrade_packages %}
-                  <li>{{ package.name }}</li>
-                {% endfor %}
-              </ul>
-              {% endif %}
+            {{ form.pc_groups.errors }}
+            <label>Grupper:</label>
+            {% include 'system/pcgrouplist/list.html' with submit_name='pc_groups' %}
             {% endif %}
-            </div>
-          </div>
+          </fieldset>
         </div>
-
-        <div class="accordion-group">
-          <div class="accordion-heading">
-            <a class="accordion-toggle btn" data-toggle="collapse" data-parent="#accordion2" href="#collapseFive">
-              Jobhistorik <i class="icon-chevron-down pull-right"></i>
-            </a>
-          </div>
-          <div id="collapseFive" class="accordion-body collapse {% ifequal active_accordion 'joblist' %}in{% endifequal %}">
-            <div class="accordion-inner">
-              <table id="computer_jobs_table" class="table jobtable">
-                <tr>
-                  {% include 'widgets/orderby_th.html' with key='batch__script__name' label='Script' %}
-                  {% include 'widgets/orderby_th.html' with key='started' label='Startet' %}
-                  {% include 'widgets/orderby_th.html' with key='finished' label='Sluttet' %}
-                  {% include 'widgets/orderby_th.html' with key='status' label='Status' %}
-                  {% include 'widgets/orderby_th.html' with key='batch__name' label='Batch' %}
-                  <th></th>
-                </tr>
-                {% for job in joblist %}
-                <tr class="muted">
-                  <td class="{% ifequal orderby_key 'batch__script__name' %}orderby-highligt{% endifequal %}">{{job.batch.script.name}}</td>
-                  <td class="{% ifequal orderby_key 'started' %}orderby-highligt{% endifequal %}">{{job.started|default:'&nbsp'}}</td>
-                  <td class="{% ifequal orderby_key 'finished' %}orderby-highligt{% endifequal %}">{{job.finished|default:'&nbsp'}}</td>
-                  <td class="{% ifequal orderby_key 'status' %}orderby-highligt{% endifequal %}"><span class="label {{job.status_label}}">{{job.status}}</span></td>
-                  <td class="{% ifequal orderby_key 'batch__name' %}orderby-highligt{% endifequal %}">{{job.batch.name}}</td>
-                  <td>
-                    {% if job.has_info %}
-                    <button class="btn jobinfobutton" data-pk="{{ job.pk }}"><i class="icon-info-sign"></i></button>
-                    {% endif %}
-                  </td>
-                </tr>
-                {% endfor %}
-              </table>
-              <script type="text/javascript"><!--
-              $(function() {
-                BibOS.setupJobInfoButtons($('#computer_jobs_table'));
-              });
-              //--></script>
-            </div>
-          </div>
-        </div>
-        
       </div>
+
+      <div id="pc-configs" class="tabcontent">
+        <fieldset>
+          {% include 'system/configlist/list.html' with entries=selected_pc.configuration.entries.all  cnf_id='pc_config' %}
+        </fieldset>
+      </div>
+
+      <div id="pc-packages" class="tabcontent">
+        {% if waiting_for_package_list %}
+          <p id="package_wait_explanation">
+            Det vil først være muligt at tilpasse pakker på denne computer
+            når BibOS administrations-systemet har modtaget en liste over
+            installerede pakker fra computeren. Dette kræver at computeren
+            er tændt, at den er blevet
+            <a href="{%url 'doc' 'computers/activating' %}">aktiveret</a>
+            og at den har adgang til BibOS-admin, enten via direkte
+            internetforbindelse eller gennem en BibOS gateway.
+          </p>
+          <p>
+            Der kan gå op til fem minutter fra ovenstående betingelser er
+            opfyldt indtil admin-systemet modtager pakke-listen.
+          </p>
+        {% else %}
+          <div><strong>Tilpasning af pakker kun på denne maskine</strong></div>
+          {% include 'system/package_lists/list.html' with packages=package_infos pl_id='pc_packages'%}
+          {% if pending_packages_add %}
+          <div><strong>Pakker der venter på at blive installeret på maskinen</strong></div>
+          <ul class="unstyled well actionlist packagelist">
+            {% for name in pending_packages_add %}
+              <li><span class="label">{{ name }}</span></li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          {% if pending_packages_remove %}
+          <div><strong>Pakker der venter på at blive fjernet fra maskinen</strong></div>
+          <ul class="unstyled well actionlist packagelist">
+            {% for name in pending_packages_remove %}
+              <li><span class="label">{{ name }}</span></li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          {% if selected_pc.package_list.needs_upgrade_packages %}
+          <div><strong>Pakker der kan opgraderes på maskinen</strong></div>
+          <ul id="needs_upgrade_packages">
+               <input type="checkbox" onClick="toggle_package_selection(this)" />
+               <strong>Markér alle</strong></br>
+              
+            {% for package in selected_pc.package_list.needs_upgrade_packages %}
+              <li>
+                <label for="upgrade_package-{{ package.pk }}">
+                  <input type="checkbox" id="upgrade_package-{{ package.pk }}" name="upgrade_package" value="{{ package.name }}" />
+                  {{ package.name }}
+                </label>
+              </li>
+            {% endfor %}
+          </ul>
+          <input type="button" value="Opgrader de valgte pakker"
+                 onclick="BibOS.PackageList.markUpgradePackages('#needs_upgrade_packages', '#upgrade_packages_form')" />
+          {% endif %}
+          {% if selected_pc.package_list.pending_upgrade_packages %}
+          <div><strong>Pakker der venter på at blive opgraderet</strong></div>
+          <ul>
+            {% for package in selected_pc.package_list.pending_upgrade_packages %}
+              <li>{{ package.name }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+        {% endif %}
+      </div>
+
+      <div id="pc-jobs" class="tabcontent">
+        <table id="computer_jobs_table" class="table jobtable">
+          <tr>
+            {% include 'widgets/orderby_th.html' with key='batch__script__name' label='Script' %}
+            {% include 'widgets/orderby_th.html' with key='started' label='Startet' %}
+            {% include 'widgets/orderby_th.html' with key='finished' label='Sluttet' %}
+            {% include 'widgets/orderby_th.html' with key='status' label='Status' %}
+            {% include 'widgets/orderby_th.html' with key='batch__name' label='Batch' %}
+            <th></th>
+          </tr>
+          {% for job in joblist %}
+          <tr class="muted">
+            <td class="{% ifequal orderby_key 'batch__script__name' %}orderby-highligt{% endifequal %}">{{job.batch.script.name}}</td>
+            <td class="{% ifequal orderby_key 'started' %}orderby-highligt{% endifequal %}">{{job.started|default:'&nbsp'}}</td>
+            <td class="{% ifequal orderby_key 'finished' %}orderby-highligt{% endifequal %}">{{job.finished|default:'&nbsp'}}</td>
+            <td class="{% ifequal orderby_key 'status' %}orderby-highligt{% endifequal %}"><span class="label {{job.status_label}}">{{job.status}}</span></td>
+            <td class="{% ifequal orderby_key 'batch__name' %}orderby-highligt{% endifequal %}">{{job.batch.name}}</td>
+            <td>
+              {% if job.has_info %}
+              <button class="btn jobinfobutton" data-pk="{{ job.pk }}"><i class="icon-info-sign"></i></button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+        <script type="text/javascript"><!--
+        $(function() {
+          BibOS.setupJobInfoButtons($('#computer_jobs_table'));
+        });
+        //--></script>
+      </div>
+        
     </form>
 
     <form name="upgrade_packages_form" id="upgrade_packages_form"
