@@ -292,7 +292,7 @@ def upload_file_name(instance, filename):
     size = 32
     random_dirname = ''.join(
         random.choice(
-            string.ascii_lowercase+string.digits
+            string.ascii_lowercase + string.digits
         ) for x in range(size)
     )
     return '/'.join(['parameter_uploads', random_dirname, filename])
