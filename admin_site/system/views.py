@@ -808,8 +808,6 @@ class PCUpdate(SiteMixin, UpdateView):
             context['pending_packages_add'] = sorted(a)
             context['pending_packages_remove'] = sorted(r)
 
-        context['active_accordion'] = params.get('accordion', 'details')
-
         orderby = params.get('orderby', '-pk')
         if not orderby in JobSearch.VALID_ORDER_BY:
             orderby = '-pk'
@@ -825,10 +823,7 @@ class PCUpdate(SiteMixin, UpdateView):
             context['orderby_key'] = orderby
             context['orderby_direction'] = 'asc'
 
-        context['orderby_base_url'] = ''.join([
-            pc.get_absolute_url(),
-            '?accordion=joblist&'
-        ])
+        context['orderby_base_url'] = pc.get_absolute_url()
 
         context['selected_pc'] = pc
 
@@ -868,7 +863,7 @@ class MarkPackageUpgrade(SiteMixin, View):
             request.POST.getlist('packages', [])
         )
         response = HttpResponseRedirect(
-            '/site/%s/computers/%s/?accordion=packages' % (
+            '/site/%s/computers/%s/#pc-packages' % (
                 site.uid,
                 pc.uid
             )
