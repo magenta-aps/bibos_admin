@@ -4,7 +4,7 @@
       <a href="#script-details" data-toggle="tab">Detaljer</a>
     </li>
     <li>
-      <a href="#script-preview" data-toggle="tab">Kode-preview</a>
+      <a href="#script-preview" data-toggle="tab">Kode</a>
     </li>
     <li>
       <a href="#script-parameters" data-toggle="tab">Inputparametre</a>
@@ -45,7 +45,7 @@
   
     <fieldset>
       {% if show_code_preview %}
-      Kode-preview:
+      Kode:
       <pre>{{script_preview |escape}}</pre>
       {% endif %}
       {{ form.executable_code.errors }}
