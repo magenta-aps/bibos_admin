@@ -26,8 +26,11 @@ header h1 em {color: #fff; font-style: normal;}
 .inertnav li:hover {background: #ddd;}
 .divideheader {background: #444; color: #ddd; padding: 0 20px; margin-top: 40px; font-size: 21px;}
 .divideheader em {color: #fff; font-style: normal;}
-h2.divideheader {margin-top: 20px; border-radius: 0.25em;}
+h2.divideheader {margin-top: 20px;}
 .divideheader .label {margin-left: 20px; position: relative; bottom: 2px;}
+.accordion {margin-top: 20px;}
+.accordion-group {border: none; padding: 0;}
+.accordion-toggle {text-align: left;}
 .searchfilter .btn {display: block; text-align: left;}
 .well .table {margin-bottom: 0;}
 .table th {border-top: none;}
@@ -43,13 +46,13 @@ h3.nav-header {margin: 0; padding: 0;}
 .jobtable .popover-content a {margin-bottom: 10px; display: inline-block;}
 .jobtable tr td {border-top: solid 1px #ccc;}
 .jobtable tr.marked td, .jobtable tr.marked:hover td {background: #08c; color: #fff;}
-.scripttabs {margin: 0 !important; background: #444; padding: 0 10px !important; border: none;}
+.scripttabs {margin: 0; background: #444; padding: 10px 10px 0; border: none;}
 .scripttabs>li {margin: 0;}
-.scripttabs>li>a, .scripttabs>.active>a, .scripttabs>.active>a:hover, .scripttabs>.active>a:focus {border: none; margin: 0; padding: 10px;}
+.scripttabs>li>a, .scripttabs>.active>a, .scripttabs>.active>a:hover, .scripttabs>.active>a:focus {border: none; margin: 0;}
 .scripttabs>li>a {color: #fff;}
 .scripttabs>li>a:hover, .scripttabs>li>a:focus {background: #08c;}
 .scripttabs>.active>a {background: #fff !important; color: #444 !important;}
-#localscripts, #globalscripts {position: absolute; bottom: 0; top: 90px; left: 0px; width: 250px; overflw-x: hidden; overflow-y: auto;}
+#localscripts, #globalscripts {position: absolute; bottom: 0; top: 90px; left: 0px; width: 250px; overflw-X: hidden; overflow-y: auto;}
 .actionlist {padding: 5px;}
 .actionlist a {border-top: solid 1px #ddd; padding: 10px; display: block;}
 .actionlist li:first-child a {border: none;}
@@ -62,7 +65,7 @@ header.detailpage h1.siteheader {margin-left: 20px;}
 .packagelist > li > .btn-group > a {border: none; padding: 5px;}
 div.runscriptdialogheader {display: none;}
 li.selected {background-color: #D5D5D5;}
-.table th.orderby {cursor: pointer; text-align: left; border-radius: 5px;}
+.table th.orderby {cursor: pointer; text-align: center; border-radius: 5px;}
 .orderby:hover {background: #08c; color: #fff;}
 li.addpackagecontrol {display: block;}
 li.addpackagecontrol label, li.addpackagecontrol a {display: inline}
@@ -109,7 +112,8 @@ div.docscontainer .nav-list>li>a:hover {background: #666; text-decoration: none;
 ul.nav li ul { color: #fff; list-style: none; padding: 0; margin: 0 0 0 1em; }
 ul.nav li ul a, ul.nav li ul a:hover, ul.nav li ul a:focus { color: #fff; text-decoration: none; }
 ul.nav li ul li.active { font-style: italic; }
-#jobinfo-popover { position: absolute; display: none; z-index: 10000; width: auto; min-width: 20em; max-width: 60em;}
+#jobinfo-popover {position: absolute; display: none; z-index: 10000; width: auto; min-width: 20em; max-width: 60em;}
 .nav-tabs {margin: 1em 0 0; padding: 0 20px;}
 .tabcontent {display: none; background: #fff; padding: 20px; border-radius: 0.25em;}
 .tabcontent.active {display: block;}
+.scriptDescription textarea {width: 95%; min-height: 20em;}
