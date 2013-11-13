@@ -48,13 +48,13 @@
 {% endif %}
   
     <fieldset>
-      {% if show_code_preview %}
-      Kode:
-      <pre>{{script_preview |escape}}</pre>
-      {% endif %}
       {{ form.executable_code.errors }}
       <label for="{{ form.executable_code.id_for_label }}">Upload scriptkode:</label>
       {{ form.executable_code }}
+      {% if show_code_preview %}
+      <label style="padding-top: 10px;">Kode:</label>
+      <pre>{{script_preview |escape}}</pre>
+      {% endif %}
     </fieldset>
         
 {% if disable_inputs != "yes" %}
