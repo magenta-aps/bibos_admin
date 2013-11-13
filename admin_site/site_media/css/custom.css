@@ -46,7 +46,7 @@ h3.nav-header {margin: 0; padding: 0;}
 .jobtable .popover-content a {margin-bottom: 10px; display: inline-block;}
 .jobtable tr td {border-top: solid 1px #ccc;}
 .jobtable tr.marked td, .jobtable tr.marked:hover td {background: #08c; color: #fff;}
-.scripttabs {margin: 0; background: #444; padding: 10px 10px 0; border: none;}
+.scripttabs {margin: 0 !important; background: #444; padding: 10px 10px 0 !important; border: none;}
 .scripttabs>li {margin: 0;}
 .scripttabs>li>a, .scripttabs>.active>a, .scripttabs>.active>a:hover, .scripttabs>.active>a:focus {border: none; margin: 0;}
 .scripttabs>li>a {color: #fff;}
