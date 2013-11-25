@@ -1,3 +1,14 @@
+* Version 2.1.1, November 25, 2013
+
+New in this version: 
+
+- File parameters were renamed when running scripts more than once, #9100.
+- User interface bug would hide group list if a group had many computers in it,
+  #9097.
+- Major overhaul of user interface.
+- Update synchronization improved (not fixed).
+
+
 * Version 2.1.0, October 11, 2013
 
 New in this version:
