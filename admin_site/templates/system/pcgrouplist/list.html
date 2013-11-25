@@ -5,7 +5,7 @@
   {% endfor %}
   <li class="addgrouptrigger">
     <a href="#" title="Tilføj ny gruppe"><i class="icon-plus"></i> tilføj ny gruppe</a>
-    <ul class="addgrouplist">
+    <ul class="addgrouplist addlist">
       {% for group in available_groups %}
         {% include 'system/pcgrouplist/item.html' with pk=group.pk name=group.name %}
       {% endfor %}
