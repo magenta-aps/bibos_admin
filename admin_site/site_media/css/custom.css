@@ -46,7 +46,7 @@ h3.nav-header {margin: 0; padding: 0;}
 .jobtable .popover-content a {margin-bottom: 10px; display: inline-block;}
 .jobtable tr td {border-top: solid 1px #ccc;}
 .jobtable tr.marked td, .jobtable tr.marked:hover td {background: #08c; color: #fff;}
-.scripttabs {margin: 0; background: #444; padding: 10px 10px 0; border: none;}
+.scripttabs {margin: 0 !important; background: #444; padding: 10px 10px 0 !important; border: none;}
 .scripttabs>li {margin: 0;}
 .scripttabs>li>a, .scripttabs>.active>a, .scripttabs>.active>a:hover, .scripttabs>.active>a:focus {border: none; margin: 0;}
 .scripttabs>li>a {color: #fff;}
@@ -55,9 +55,10 @@ h3.nav-header {margin: 0; padding: 0;}
 #localscripts, #globalscripts {position: absolute; bottom: 0; top: 90px; left: 0px; width: 250px; overflw-X: hidden; overflow-y: auto;}
 .actionlist {padding: 5px;}
 .actionlist a {border-top: solid 1px #ddd; padding: 10px; display: block;}
-.actionlist li:first-child a {border: none;}
+.actionlist > li:first-child a {border: none;}
 .actionlist .btn-group {display: block;}
 .actionlist a:hover {background: #08c; color: #fff; text-decoration: none; border-radius: 5px;}
+.actionlist .profile {margin-right: 0;}
 .template-container {display: none;}
 header.detailpage h1.siteheader {margin-left: 20px;}
 .packagelist > li {display: inline-block;}
@@ -85,8 +86,10 @@ li.addpackagecontrol label, li.addpackagecontrol a {display: inline}
 .sublevelnav li.active a,
 #jobsearch-filterform .collapse .selected a,
 .orderby.active {background-color: #8c0; color: #fff;}
+ul.addlist {min-width: 80%; box-shadow: 0 10px 10px #999; padding: 0;}
 ul.addgrouplist {display: none; max-height: 300px; overflow-y: auto; position: absolute; background-color: #fff;}
 ul.addgrouplist li {cursor: pointer;}
+ul.addlist li a {border-top: solid 1px #ddd !important;}
 li.addgrouptrigger {position: relative;}
 li.addgrouptrigger:hover ul.addgrouplist {display: block}
 ul.addpclist {display: none; max-height: 300px; overflow-y: auto; position: absolute; background-color: #fff;}
@@ -112,4 +115,8 @@ div.docscontainer .nav-list>li>a:hover {background: #666; text-decoration: none;
 ul.nav li ul { color: #fff; list-style: none; padding: 0; margin: 0 0 0 1em; }
 ul.nav li ul a, ul.nav li ul a:hover, ul.nav li ul a:focus { color: #fff; text-decoration: none; }
 ul.nav li ul li.active { font-style: italic; }
-#jobinfo-popover { position: absolute; display: none; z-index: 10000; width: auto; min-width: 20em; max-width: 60em; }
+#jobinfo-popover {position: absolute; display: none; z-index: 10000; width: auto; min-width: 20em; max-width: 60em;}
+.nav-tabs {margin: 1em 0 0; padding: 0 20px;}
+.tabcontent {display: none; background: #fff; padding: 20px; border-radius: 0.25em;}
+.tabcontent.active {display: block;}
+.scriptDescription textarea {width: 95%; min-height: 20em;}
