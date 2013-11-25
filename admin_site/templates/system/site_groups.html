@@ -46,68 +46,52 @@ class="active"
     
       <button class="btn btn-primary">Gem ændringer</button>
       <button class="btn" onclick="return BibOS.PackageList.cancelEditing()">Annuller</button>
-      <div class="accordion" id="accordion2">
-        
-        <div class="accordion-group">
-          <div class="accordion-heading">
-            <a class="accordion-toggle btn" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
-              Detaljer <i class="icon-chevron-down pull-right"></i>
-            </a>
-          </div>
-          <div id="collapseOne" class="accordion-body collapse in">
-            <div class="accordion-inner">
-              <div class="row-fluid">
-                <fieldset class="span6">
-                  {% csrf_token %}
-                  <label for="id_name">Navn:</label>
-                  {{ form.name.errors }}
-                  {{ form.name }}
-
-                  <label for="id_uid">Id:</label>
-                  {{ form.uid.errors }}
-                  {{ form.uid }}
-
-                  <label for="id_description">Beskrivelse:</label>
-                  {{ form.description.errors }}
-                  {{ form.description }}
-                </fieldset>
-                <fieldset class="span6">
-                  <label for="id_pcs">Computere i denne gruppe:</label>
-                  {{ form.pcs.errors }}
-                  {% include 'system/pclist/list.html' with submit_name='pcs' %}
-                </fieldset>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="accordion-group">
-          <div class="accordion-heading">
-            <a class="accordion-toggle btn" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
-              Konfigurationer <i class="icon-chevron-down pull-right"></i>
-            </a>
-          </div>
-          <div id="collapseTwo" class="accordion-body collapse">
-            <div class="accordion-inner">
-              {% include 'system/configlist/list.html' with entries=selected_group.configuration.entries.all cnf_id='group_configuration' %}
-            </div>
-          </div>
-        </div>
-        <div class="accordion-group">
-          <div class="accordion-heading">
-            <a class="accordion-toggle btn" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">
-              Pakker <i class="icon-chevron-down pull-right"></i>
-            </a>
-          </div>
-          <div id="collapseThree" class="accordion-body collapse">
-            <div class="accordion-inner">
-              {% include 'system/package_lists/list.html' with packages=package_infos pl_id='group_packages'%}
-            </div>
-          </div>
-        </div>
-        
-      </div>
       
+      <ul class="nav nav-tabs">
+        <li class="active">
+          <a href="#group-details" data-toggle="tab">Detaljer</a>
+        </li>
+        <li>
+          <a href="#group-configs" data-toggle="tab">Konfigurationer</a>
+        </li>
+        <li>
+          <a href="#group-packages" data-toggle="tab">Pakker</a>
+        </li>
+      </ul>
+      
+      <div id="group-details" class="tabcontent active">
+        <div class="row-fluid">
+          <fieldset class="span6">
+            {% csrf_token %}
+            <label for="id_name">Navn:</label>
+            {{ form.name.errors }}
+            {{ form.name }}
+
+            <label for="id_uid">Id:</label>
+            {{ form.uid.errors }}
+            {{ form.uid }}
+
+            <label for="id_description">Beskrivelse:</label>
+            {{ form.description.errors }}
+            {{ form.description }}
+          </fieldset>
+          <fieldset class="span6">
+            <label for="id_pcs">Computere i denne gruppe:</label>
+            {{ form.pcs.errors }}
+            {% include 'system/pclist/list.html' with submit_name='pcs' %}
+          </fieldset>
+        </div>
+      </div>
+
+      <div id="group-configs" class="tabcontent">
+        {% include 'system/configlist/list.html' with entries=selected_group.configuration.entries.all cnf_id='group_configuration' %}
+      </div>
+  
+        
+      <div id="group-packages" class="tabcontent">
+        {% include 'system/package_lists/list.html' with packages=package_infos pl_id='group_packages'%}
+      </div>
+
     </form>
 
     <div id="addNewGroup" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
