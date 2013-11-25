@@ -160,6 +160,8 @@ def send_status_info(pc_uid, package_data, job_data, update_required):
         updates, security_updates = update_required
         if security_updates > 0:
             pc.is_update_required = True
+            # Please tell us WHICH packages next time
+            pc.do_send_package_info = True
         elif pc.is_update_required:
             pc.is_update_required = False
 
