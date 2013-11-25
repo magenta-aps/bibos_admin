@@ -7,6 +7,8 @@ from django.core.urlresolvers import reverse
 from system.models import PC, Site
 
 import datetime
+import random
+import string
 import re
 import os.path
 
@@ -21,7 +23,7 @@ class Script(models.Model):
     # script OR a single extractable .zip or .tar.gz file with all necessary
     # data.
     executable_code = models.FileField(_('executable code'),
-                                       upload_to='site_media/script_uploads')
+                                       upload_to='script_uploads')
 
     @property
     def is_global(self):
@@ -286,11 +288,21 @@ class Input(models.Model):
         return self.name
 
 
+def upload_file_name(instance, filename):
+    size = 32
+    random_dirname = ''.join(
+        random.choice(
+            string.ascii_lowercase + string.digits
+        ) for x in range(size)
+    )
+    return '/'.join(['parameter_uploads', random_dirname, filename])
+
+
 class Parameter(models.Model):
     """An input parameter for a job, a script, etc."""
 
     string_value = models.CharField(max_length=4096, null=True, blank=True)
-    file_value = models.FileField(upload_to='site_media/parameter_uploads',
+    file_value = models.FileField(upload_to=upload_file_name,
                                   null=True,
                                   blank=True)
     # which input does this belong to?
