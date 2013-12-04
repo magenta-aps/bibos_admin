@@ -426,7 +426,7 @@ class PC(models.Model):
         That is, the point of departure is NOT the packages present in the
         distribution, but the packages present on the PC itself.
         """
-        wanted_packages = current_packages
+        wanted_packages = self.current_packages
 
         for group in self.pc_groups.all():
             iis = group.custom_packages.install_infos
