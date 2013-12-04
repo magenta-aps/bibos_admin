@@ -17,8 +17,7 @@ Get them with apt-get install or by whatever means necessary for your platform.
 GRAB THE CODE
 +++++++++++++
 
-git clone platon:/home/git/bibos_admin  # TODO: Replace with github URL when
-                                        # releasing this.
+git clone https://github.com/magenta-aps/bibos_admin.git
 
 
 GET THE RIGHT BRANCH
