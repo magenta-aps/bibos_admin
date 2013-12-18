@@ -390,8 +390,6 @@ def check_outstanding_packages():
 
 
 def report_job_results(joblist):
-    if len(joblist) < 1:
-        return
     (remote_url, uid) = get_url_and_uid()
     remote = BibOSAdmin(remote_url)
     remote.send_status_info(uid, None, joblist,
@@ -409,8 +407,6 @@ def get_pending_job_dirs():
 
 def run_pending_jobs():
     dirs = get_pending_job_dirs()
-    if len(dirs) < 1:
-        return
     if LOCK.i_am_locking():
         results = []
 
@@ -420,7 +416,6 @@ def run_pending_jobs():
             results.append(job.report_data)
 
         report_job_results(results)
-
     else:
         print >>os.sys.stderr, "Aquire the lock before running jobs"
 
