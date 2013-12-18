@@ -1,4 +1,14 @@
+* Version 2.1.1.3, December 17, 2013 (hotfix)
+
+New in this version:
+
+- bibos-client fixed so that it always sends status info - not only when jobs
+  are executed, cf. ticket #9634.
+- Server fixed so that packages pending for installation are always installed,
+  even if we ask the client to upgrade its package info - also cf. #9634.
+
 * Version 2.1.1.1, December 4, 2013
+
 
 New in this version:
 
