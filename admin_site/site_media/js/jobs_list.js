@@ -12,6 +12,9 @@ $(function(){
             $('#jobsearch-status-selectors input:checkbox').change(function() {
                 jobsearch.search();
             })
+            $('#jobsearch-length-limitation input:radio').change(function() {
+                jobsearch.search();
+            })
             jobsearch.search();
         },
 
