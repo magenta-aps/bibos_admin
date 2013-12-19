@@ -60,6 +60,8 @@ class="active"
         <span class="label {{ s.label }}">{{ s.name }}</span>
       </label>
       {% endfor %}
+      <input type="checkbox" value="{{ jobs_to_display }}" checked="checked"
+      name="do_limit"><span class="label label-info">Kun første {{ jobs_to_display }}</span></input>
       </div>
       <hr>
       <a href="javascript:void(0)" class="btn collapsing" data-toggle="collapse" data-target="#demo1"><i class="icon-chevron-down"></i> Batches</a>

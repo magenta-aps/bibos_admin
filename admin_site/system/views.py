@@ -273,8 +273,7 @@ class SiteConfiguration(SiteView):
 # of SiteView.
 class JobsView(SiteView):
     template_name = 'system/site_jobs.html'
-    paginate_by = 20
-
+    
     def get_context_data(self, **kwargs):
         # First, get basic context from superclass
         context = super(JobsView, self).get_context_data(**kwargs)
@@ -296,6 +295,7 @@ class JobsView(SiteView):
                     'checked="checked' if value in preselected else ''
             } for (value, name) in Job.STATUS_CHOICES
         ]
+        context['jobs_to_display'] = settings.JOBS_TO_DISPLAY
         params = self.request.GET or self.request.POST
 
         for k in ['batch', 'pc', 'group']:
@@ -308,7 +308,6 @@ class JobsView(SiteView):
 
 class JobSearch(JSONResponseMixin, SiteView):
     http_method_names = ['get', 'post']
-    paginate_by = 20
     VALID_ORDER_BY = []
     for i in ['pk', 'batch__script__name', 'started', 'finished', 'status',
               'pc__name', 'batch__name']:
@@ -364,10 +363,8 @@ class JobSearch(JSONResponseMixin, SiteView):
         orderby = params.get('orderby', '-pk')
         if not orderby in JobSearch.VALID_ORDER_BY:
             orderby = '-pk'
-        print "HER!"
-        limit = int(self.request.GET.get('limit', '0'))
+        limit = int(params.get('do_limit', '0'))
 
-        print "LIMIT: ", limit
         if limit:
             context['job_list'] = Job.objects.filter(**query).order_by(
                 orderby,
