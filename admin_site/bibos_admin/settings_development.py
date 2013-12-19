@@ -23,9 +23,6 @@ BIBOS_IMAGE_DIR = os.path.join(
     os.path.abspath(os.path.join(SOURCE_DIR, '..')), 
     'bibos_image')
 
-# Length of job list if not all jobs are shown
-JOBS_TO_DISPLAY = 10
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', 

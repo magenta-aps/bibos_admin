@@ -295,7 +295,6 @@ class JobsView(SiteView):
                     'checked="checked' if value in preselected else ''
             } for (value, name) in Job.STATUS_CHOICES
         ]
-        context['jobs_to_display'] = settings.JOBS_TO_DISPLAY
         params = self.request.GET or self.request.POST
 
         for k in ['batch', 'pc', 'group']:
