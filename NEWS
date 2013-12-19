@@ -1,3 +1,51 @@
+* Version 2.1.1.3, December 17, 2013 (hotfix)
+
+New in this version:
+
+- bibos-client fixed so that it always sends status info - not only when jobs
+  are executed, cf. ticket #9634.
+- Server fixed so that packages pending for installation are always installed,
+  even if we ask the client to upgrade its package info - also cf. #9634.
+
+* Version 2.1.1.1, December 4, 2013
+
+
+New in this version:
+
+- The system defined "wanted packages" as packages in the *distribution*
+  plus/minus the packages that were explicitly added or removed through the
+  admin interface. This means that packages that were installed manually or
+  through a script on the individual computer would be removed because they
+  were neither in the distribution nor in the add list, and packages in the
+  distribution that were removed on the individual computer would be added.
+
+  Since the gateway needs a number of packages that were not added through the
+  admin interface, this means it was basically nuked as soon as the
+  synchronization started working, as we've seen with ticket #9383.
+
+  From now on, the system will define "wanted packages" as *all packages
+  currently present on the machine* plus all packages explicitly added in the
+  admin system, minus all packages explicitly removed through the admin system.
+
+  This creates a new problem, namely that packages which were added (or removed)
+  through a group will no longer be automatically removed (or added,
+  respectively) when a computer is removed from the group. That should probably
+  be dealt with by a special field which specifies whether a package was added
+  through group membership and should be removed if it's no longer demanded by
+  any group. This is a task for a future version of the system.
+
+
+* Version 2.1.1, November 25, 2013
+
+New in this version: 
+
+- File parameters were renamed when running scripts more than once, #9100.
+- User interface bug would hide group list if a group had many computers in it,
+  #9097.
+- Major overhaul of user interface.
+- Update synchronization improved (not fixed).
+
+
 * Version 2.1.0, October 11, 2013
 
 New in this version:

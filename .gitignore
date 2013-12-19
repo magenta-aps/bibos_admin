@@ -15,6 +15,7 @@
 /bibos_client/dist/
 
 *.pyc
+*.swp
 .bash_history
 .viminfo
 .vim
