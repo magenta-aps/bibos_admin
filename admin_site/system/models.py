@@ -418,9 +418,15 @@ class PC(models.Model):
 
     @property
     def wanted_packages(self):
-        wanted_packages = set(
-            self.distribution.package_list.names_of_installed_package
-        )
+        """Wanted packages are all packages present on the system (including
+        manually installed) PLUS all packages *explicitly* added through the
+        admin system, MINUS all packages *explicitly* removed through the admin
+        system.
+
+        That is, the point of departure is NOT the packages present in the
+        distribution, but the packages present on the PC itself.
+        """
+        wanted_packages = self.current_packages
 
         for group in self.pc_groups.all():
             iis = group.custom_packages.install_infos

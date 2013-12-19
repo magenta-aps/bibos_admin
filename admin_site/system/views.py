@@ -5,6 +5,7 @@ import json
 import datetime
 
 from django.core.urlresolvers import reverse
+from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -272,7 +273,7 @@ class SiteConfiguration(SiteView):
 # of SiteView.
 class JobsView(SiteView):
     template_name = 'system/site_jobs.html'
-
+    
     def get_context_data(self, **kwargs):
         # First, get basic context from superclass
         context = super(JobsView, self).get_context_data(**kwargs)
@@ -306,7 +307,6 @@ class JobsView(SiteView):
 
 class JobSearch(JSONResponseMixin, SiteView):
     http_method_names = ['get', 'post']
-
     VALID_ORDER_BY = []
     for i in ['pk', 'batch__script__name', 'started', 'finished', 'status',
               'pc__name', 'batch__name']:
@@ -362,11 +362,19 @@ class JobSearch(JSONResponseMixin, SiteView):
         orderby = params.get('orderby', '-pk')
         if not orderby in JobSearch.VALID_ORDER_BY:
             orderby = '-pk'
+        limit = int(params.get('do_limit', '0'))
 
-        context['job_list'] = Job.objects.filter(**query).order_by(
-            orderby,
-            'pk'
-        )
+        if limit:
+            context['job_list'] = Job.objects.filter(**query).order_by(
+                orderby,
+                'pk'
+            )[:limit]
+        else:
+            context['job_list'] = Job.objects.filter(**query).order_by(
+                orderby,
+                'pk'
+            )
+
         return context
 
     def convert_context_to_json(self, context):

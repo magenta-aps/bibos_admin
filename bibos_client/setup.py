@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='bibos_client',
-    version='0.0.2.3',
+    version='0.0.2.4',
     description='Clients for the BibOS system',
     url='https://github.com/magenta-aps/',
     author='C. Agger and J.U.B. Krag, Magenta ApS',
