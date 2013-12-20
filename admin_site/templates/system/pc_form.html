@@ -21,16 +21,23 @@ class="active"
 
 {% block specific_content %}
 
+<script type="text/javascript">
+    $(document).ready( function() {
+            var el = document.getElementById("{{ selected_pc.uid }}");
+            el.scrollIntoView(true);
+            });
+</script>
   <ul class="sublevelnav">
     {% if not pc_list.all%}
       <li>Der er ingen computere</li>
     {% endif %}
     {% for pc in pc_list %}
-      <li {% ifequal pc selected_pc %}class="active" %}{% endifequal %}>
+    <li {% ifequal pc selected_pc %}class="active" %}{% endifequal %}>
         {% ifequal pc selected_pc %}
           <a class="remove pull-right" href="/site/{{ site.url }}/computers/{{ selected_pc.uid }}/delete/" title="Slet computer"><i class="icon-remove icon-white"></i></a>
         {% endifequal %}
-        <a class="list-item" href="/site/{{ site.url }}/computers/{{ pc.uid }}"><i class="icon-hdd"></i> {{ pc.name }}</a>
+        <div id="{{pc.uid}}"> <a class="list-item" href="/site/{{ site.url }}/computers/{{ pc.uid }}"><i class="icon-hdd"></i> {{ pc.name }}</a>
+        </div>
       </li>
     {% endfor %}
   </ul>
