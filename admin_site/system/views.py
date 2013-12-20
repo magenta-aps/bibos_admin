@@ -284,7 +284,8 @@ class JobsView(SiteView):
             Job.NEW,
             Job.SUBMITTED,
             Job.RUNNING,
-            Job.FAILED
+            Job.FAILED,
+            Job.DONE,
         ])
         context['status_choices'] = [
             {
