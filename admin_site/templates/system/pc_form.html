@@ -191,7 +191,7 @@ class="active"
             <td class="{% ifequal orderby_key 'batch__script__name' %}orderby-highligt{% endifequal %}">{{job.batch.script.name}}</td>
             <td class="{% ifequal orderby_key 'started' %}orderby-highligt{% endifequal %}">{{job.started|default:'&nbsp'}}</td>
             <td class="{% ifequal orderby_key 'finished' %}orderby-highligt{% endifequal %}">{{job.finished|default:'&nbsp'}}</td>
-            <td class="{% ifequal orderby_key 'status' %}orderby-highligt{% endifequal %}"><span class="label {{job.status_label}}">{{job.status}}</span></td>
+            <td class="{% ifequal orderby_key 'status' %}orderby-highligt{% endifequal %}"><span class="label {{job.status_label}}">{{job.status_translated}}</span></td>
             <td class="{% ifequal orderby_key 'batch__name' %}orderby-highligt{% endifequal %}">{{job.batch.name}}</td>
             <td>
               {% if job.has_info %}
