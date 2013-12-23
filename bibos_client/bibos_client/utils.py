@@ -11,9 +11,32 @@ import csv
 import urlparse
 import re
 import subprocess
+import fcntl
 
 from bibos_utils.bibos_config import BibOSConfig
 from bibos_client.admin_client import BibOSAdmin
+
+
+class filelock(object):
+    """Utility class to implement locks with Unix system calls. This is to
+    avoid the problem with stale locks not detected by the filelock module.
+    """
+    def __init__(self, file_name):
+        self.file_name = file_name
+        self.file_descriptor = None
+
+    def acquire(self):
+        assert not self.file_descriptor
+        self.file_descriptor = file(self.file_name, 'w')
+        fcntl.lockf(self.file_descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+    def release(self):
+        assert self.file_descriptor
+        fcntl.lockf(self.file_descriptor, fcntl.LOCK_UN)
+        self.file_descriptor = None
+
+    def i_am_locking(self):
+        return self.file_descriptor is not None
 
 
 def get_upgrade_packages():
