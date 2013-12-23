@@ -11,8 +11,8 @@ import re
 import subprocess
 import bibos_client.bibos_proxy_setup
 import tempfile
+import fcntl
 
-from lockfile import FileLock, AlreadyLocked
 from bibos_utils.bibos_config import BibOSConfig
 
 from admin_client import BibOSAdmin
@@ -31,9 +31,31 @@ Directory structure for storing BibOS jobs:
 """
 
 JOBS_DIR = '/var/lib/bibos/jobs'
-LOCK = FileLock(JOBS_DIR + '/running')
+LOCK = filelock(JOBS_DIR + '/running')
 PACKAGE_LIST_FILE = '/var/lib/bibos/current_packages.list'
 PACKAGE_LINE_MATCHER = re.compile('ii\s+(\S+)\s+(\S+)\s+(.*)')
+
+
+class filelock(object):
+    """Utility class to implement locks with Unix system calls. This is to
+    avoid the problem with stale locks not detected by the filelock module.
+    """
+    def __init__(self, file_name):
+        self.file_name = file_name
+        self.file_descriptor = None
+
+    def acquire(self):
+        assert not self.file_descriptor
+        self.file_descriptor = file(self.file_name, 'w')
+        fcntl.lockf(self.file_descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+    def release(self):
+        assert self.file_descriptor
+        fcntl.lockf(self.file_descriptor, fcntl.LOCK_UN)
+        self.file_descriptor = None
+
+    def i_am_locking(self):
+        return self.file_descriptor is not None
 
 
 class LocalJob(dict):
@@ -422,13 +444,13 @@ def run_pending_jobs():
 
 def update_and_run():
     try:
-        LOCK.acquire(0)
+        LOCK.acquire()
         try:
             get_instructions()
             run_pending_jobs()
         finally:
             LOCK.release()
-    except AlreadyLocked:
+    except IOError:
         print "Couldn't get lock"
 
 
