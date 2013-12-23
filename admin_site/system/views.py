@@ -273,7 +273,7 @@ class SiteConfiguration(SiteView):
 # of SiteView.
 class JobsView(SiteView):
     template_name = 'system/site_jobs.html'
-    
+
     def get_context_data(self, **kwargs):
         # First, get basic context from superclass
         context = super(JobsView, self).get_context_data(**kwargs)
