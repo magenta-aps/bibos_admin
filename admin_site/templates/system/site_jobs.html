@@ -60,7 +60,18 @@ class="active"
         <span class="label {{ s.label }}">{{ s.name }}</span>
       </label>
       {% endfor %}
-      </div>
+  </div>
+  <div id="jobsearch-length-limitation">
+      <hr>
+      <input type="radio" value="20"  checked="checked" name="do_limit">
+      <span class="label">  Første 20</span></input><br>
+      <input type="radio" value="50"  name="do_limit">
+      <span class="label">  Første 50</span></input><br>
+      <input type="radio" value="100"  name="do_limit">
+      <span class="label">  Første 100</span></input><br>
+      <input type="radio" value="0"  name="do_limit">
+      <span class="label">  Alle</span></input>
+  </div>
       <hr>
       <a href="javascript:void(0)" class="btn collapsing" data-toggle="collapse" data-target="#demo1"><i class="icon-chevron-down"></i> Batches</a>
       <div id="demo1" class="collapse out{% if selected_batch %} in{% endif %}">
