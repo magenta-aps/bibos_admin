@@ -1,3 +1,14 @@
+* Version 2.1.2, December 23, 2013
+
+New in this version:
+
+- Performance problem in jobs list is solved by allowing user to choose between
+  different lengths (cf. ticket #9301).
+- Status label to be shown translated on PC job lists (ticket #9339).
+- Stay on selected PC even if it's in the bottom of a very long list of
+  computers (ticket #9342).
+
+
 * Version 2.1.1.3, December 17, 2013 (hotfix)
 
 New in this version:
