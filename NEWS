@@ -1,3 +1,21 @@
+* Version 2.2.0, December 27, 2013
+
+New in this version:
+
+- Stale locks are avoided by introducing Unix-style file locking instead.
+  Previously, a crashed job would leave a dangling log on the client computers,
+  which in turn would cause the job manager to terminate immediately, because
+  it thought that another instance was running. This meant that the admin
+  system would lose all contact with the machine and the lock had to be removed
+  manually for the admin system's control with it to resume - yielding bugs
+  such as #9320. With the new locking style, a lock set by a process will always
+  disappear when the process terminates. This means that crashing jobs can no
+  longer cause a client computer to lose contact with the admin server.
+
+This is the first "final release" following the critical bug fixes in the 2.1.*
+series, and this version concludes the first phase of the BibOS Admin project.
+
+
 * Version 2.1.2, December 23, 2013
 
 New in this version:
@@ -18,8 +36,8 @@ New in this version:
 - Server fixed so that packages pending for installation are always installed,
   even if we ask the client to upgrade its package info - also cf. #9634.
 
-* Version 2.1.1.1, December 4, 2013
 
+* Version 2.1.1.1, December 4, 2013
 
 New in this version:
 
@@ -87,6 +105,7 @@ A brief summary:
 Executive summary:
 
 - Status moves from "beta" to "production".
+
 
 * Version 2.0.2, July 12, 2013
 
