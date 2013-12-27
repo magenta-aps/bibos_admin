@@ -60,7 +60,7 @@ source bin/virtualenv  # To set up paths for Django etc.
 
 python manage.py test
 
-This is maninly a sanity check. The test should always pass.
+This is mainly a sanity check. The test should always pass.
 
 
 CREATE THE DATABASE
@@ -99,7 +99,7 @@ groups, etc.
 
 NOTE: The system was written in Django and consists of a Django site with three
 apps: "account", "system" and "job". Most of the actual functionality is
-concentrated in the "system" and "job" apps. Some knowledge of Django is
+concentrated in the "system"  app. Some knowledge of Django is
 required to understand how the system is designed. Refer to the graphical
 object model (BibOS.dia) for an explanation of the site's object structure.
 
@@ -108,7 +108,7 @@ CLIENT STUFF
 ++++++++++++
 
 You can make a source distribution for the bibos_client package located in the
-root of the bibos_admin source tree; this is what you should use to register
+root of the bibos_admin source tree. This is what you should use to register
 new computers in the admin system.
 
 
