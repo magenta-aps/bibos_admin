@@ -11,12 +11,12 @@ import re
 import subprocess
 import bibos_client.bibos_proxy_setup
 import tempfile
+import fcntl
 
-from lockfile import FileLock, AlreadyLocked
 from bibos_utils.bibos_config import BibOSConfig
 
 from admin_client import BibOSAdmin
-from utils import upload_packages
+from utils import upload_packages, filelock
 
 """
 Directory structure for storing BibOS jobs:
@@ -31,7 +31,7 @@ Directory structure for storing BibOS jobs:
 """
 
 JOBS_DIR = '/var/lib/bibos/jobs'
-LOCK = FileLock(JOBS_DIR + '/running')
+LOCK = filelock(JOBS_DIR + '/running')
 PACKAGE_LIST_FILE = '/var/lib/bibos/current_packages.list'
 PACKAGE_LINE_MATCHER = re.compile('ii\s+(\S+)\s+(\S+)\s+(.*)')
 
@@ -422,13 +422,13 @@ def run_pending_jobs():
 
 def update_and_run():
     try:
-        LOCK.acquire(0)
+        LOCK.acquire()
         try:
             get_instructions()
             run_pending_jobs()
         finally:
             LOCK.release()
-    except AlreadyLocked:
+    except IOError:
         print "Couldn't get lock"
 
 
