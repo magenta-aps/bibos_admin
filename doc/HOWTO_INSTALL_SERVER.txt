@@ -7,7 +7,7 @@ Required system packages
 
 To be installed with apt-get install or similar devices. These
 instructions will more or less work on all Debian-like systems, but
-they have only been tested on Ubuntu 12.04 LTS. YMMV.
+they have only been tested on Ubuntu 12.04 LTS. Your mileage may vary.
 
     git
     python-pip
