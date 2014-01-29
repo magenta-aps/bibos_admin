@@ -1,0 +1,100 @@
+PREPARE THE ADMIN SYSTEM
+========================
+
+
+Create distribution
++++++++++++++++++++
+
+You need to create a "distribution" in the BibOS Admin system.  This is
+done in django-admin.  
+
+The distribution ID needs to be a string with no spaces and preferrably
+no special characters. It should reflect the operating system on the
+corresponding clients, e.g. "ubuntu12.04".
+
+
+Create Site 
++++++++++++
+
+You need to create a "site" to which you can attach your client. The
+name of the site should describe your location, and the ID should be a
+simple, lowercase string with no spaces or special characters, e.g.
+"aarhus".
+
+
+Finalize the distribution
++++++++++++++++++++++++++
+
+This step is to be performed *after* you have registred a computer in the
+admin system as described below. To finalize the distribution:
+
+* Create a completely vanilla installation of the operating system you
+  wish to define your "distribution", maybe with some additional
+  packages which you wish to install on all your computers.
+
+* Register the computer in the admin system as described below.
+
+* When the registration is done, execute the command 
+
+    bibos_upload_dist_packages
+
+  in a command shell. This will upload the list of installed packages
+  and register them as definition of this distribution.
+
+* IMPORTANT: In the admin system's Django settings file, (e.g. in
+  admin_system/bibos_admin/settings.py in the installed source code)
+  close your distribution by adding its ID to the list
+  CLOSED_DISTRIBUTIONS. 
+
+
+REGISTER A CLIENT COMPUTER
+==========================
+
+
+Install bibos-client package
+++++++++++++++++++++++++++++
+
+First, you need to install the BibOS Admin client on the PC you wish to
+control from the admin system.
+
+We recommend that you install this from PyPI using pip.
+
+Enter the following commands in a bash shell:
+
+    # If not installed already
+    sudo apt-get install python-pip
+    sudo apt-get install build-essential
+    sudo apt-get install curl
+    sudo apt-get install python-dev
+
+    # This is what we want:
+    sudo pip install bibos-client
+
+
+After succesfully installing bibos-client, run the registration script
+in order to connect with the admin system.
+
+    sudo register_new_bibos_client.sh
+
+
+Guide to the steps:
+
+# Do not enter a gateway IP unless you *know* you will be using a gateway.
+# Enter a new host name for your computer if you want. If not, your PC
+  will be registered with its current name.
+# Enter the ID for the site you wish to register the PC on (e.g.
+  "aarhus").
+# Enter the ID for the distribution (e.g. "ubuntu12.04").
+# Enter the URL of your admin system (e.g. "http://localhost:8000" if
+  you're a developer or "http://yourdomain.com/your_admin_dir".
+
+The registration will now proceed, and your new PC will show up in the
+admin system as "New" in the corresponding site's status list.
+
+In order to start running scripts etc. on the computer, you need to
+manually approve it's registration by "activating" it in the admin
+system. View the details on the new computer and check the box marked
+"Aktiv" or "Active". The PC will now start uploading its package info
+and is under the control of the admin system.
+
+
