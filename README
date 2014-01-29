@@ -18,14 +18,17 @@ HOWTO SETUP DEVELOPMENT SERVER
 =============================+
 
 This guide describes how to get the admin site up and running for
-development purposes, i.e. with no Apache or proxy setup. If you wish
-to set up a production environment, please follow the instructions in
-doc/HOWTO_INSTALL_SERVER.txt. If you wish to learn to use the system, please
-install server and use the on-site documentation.
+development purposes, i.e. with no Apache or proxy setup. If you wish to
+set up a production environment, please follow the instructions in
+doc/HOWTO_INSTALL_SERVER.txt. If you wish to learn to use the system,
+please install server and use the on-site documentation.
+
+Also check the guide to installing the client and preparing the server farther
+below.
 
 
-You should normally be able to  install the development server in  10 minutes 
-or less. An Internet connection is required.
+You should normally be able to  install the development server in  10
+minutes or less. An Internet connection is required.
 
 
 
@@ -35,9 +38,9 @@ PRE-REQUISITES
 Python 2.7
 SQLite 3
 python-virtualenv
-git
 
-Get them with apt-get install or by whatever means necessary for your platform.
+Get them with apt-get install or by whatever means necessary for your
+platform.
 
 
 GRAB THE CODE
@@ -52,9 +55,9 @@ GET THE RIGHT BRANCH
 cd bibos_admin
 git checkout <development>
 
-This only applies if you're not working directly on the master branch (which
-you probably shouldn't). For <development> substitute the branch you want to 
-work on.
+This only applies if you're not working directly on the master branch
+(which you probably shouldn't). For <development> substitute the branch
+you want to work on.
 
 
 INSTALL DJANGO AND OTHER COMPONENTS
@@ -64,8 +67,8 @@ cd admin_site
 
 scripts/install.sh
 
-This requires an Internet connection. It should run its course with a number of
-warnings but no errors.
+This requires an Internet connection. It should run its course with a
+number of warnings but no errors.
 
 
 SOFT-LINK THE SETTINGS FILE
@@ -86,7 +89,7 @@ source bin/virtualenv  # To set up paths for Django etc.
 
 python manage.py test
 
-This is maninly a sanity check. The test should always pass.
+This is mainly a sanity check. The test should always pass.
 
 
 CREATE THE DATABASE
@@ -120,22 +123,117 @@ Edit the user you just created. Scroll to the bottom of the screen and choose
 ENJOY
 +++++
 
-Go to http://localhost:8080 to start using the system - create sites, create
-groups, etc.
+Go to http://localhost:8080 to start using the system - create sites,
+create groups, etc. See further explanation below.
 
-NOTE: The system was written in Django and consists of a Django site with three
-apps: "account", "system" and "job". Most of the actual functionality is
-concentrated in the "system" and "job" apps. Some knowledge of Django is
-required to understand how the system is designed. Refer to the graphical
-object model (BibOS.dia) for an explanation of the site's object structure.
+NOTE: The system was written in Django and consists of a Django site
+with three apps: "account", "system" and "job". Most of the actual
+functionality is concentrated in the "system"  app. Some knowledge of
+Django is required to understand how the system is designed. Refer to
+the graphical object model (BibOS.dia) for an explanation of the site's
+object structure.
 
 
-CLIENT STUFF
-++++++++++++
 
-You can make a source distribution for the bibos_client package located in the
-root of the bibos_admin source tree; this is what you should use to register
-new computers in the admin system.
+PREPARE THE ADMIN SYSTEM
+========================
+
+
+Create distribution
++++++++++++++++++++
+
+You need to create a "distribution" in the BibOS Admin system.  This is
+done in django-admin.  
+
+The distribution ID needs to be a string with no spaces and preferrably
+no special characters. It should reflect the operating system on the
+corresponding clients, e.g. "ubuntu12.04".
+
+
+Create Site 
++++++++++++
+
+You need to create a "site" to which you can attach your client. The
+name of the site should describe your location, and the ID should be a
+simple, lowercase string with no spaces or special characters, e.g.
+"aarhus".
+
+
+Finalize the distribution
++++++++++++++++++++++++++
+
+This step is to be performed *after* you have registred a computer in the
+admin system as described below. To finalize the distribution:
+
+* Create a completely vanilla installation of the operating system you
+  wish to define your "distribution", maybe with some additional
+  packages which you wish to install on all your computers.
+
+* Register the computer in the admin system as described below.
+
+* When the registration is done, execute the command 
+
+    bibos_upload_dist_packages
+
+  in a command shell. This will upload the list of installed packages
+  and register them as definition of this distribution.
+
+* IMPORTANT: In the admin system's Django settings file, (e.g. in
+  admin_system/bibos_admin/settings.py in the installed source code)
+  close your distribution by adding its ID to the list
+  CLOSED_DISTRIBUTIONS. 
+
+
+REGISTER A CLIENT COMPUTER
+==========================
+
+
+Install bibos-client package
+++++++++++++++++++++++++++++
+
+First, you need to install the BibOS Admin client on the PC you wish to
+control from the admin system.
+
+We recommend that you install this from PyPI using pip.
+
+Enter the following commands in a bash shell:
+
+    # If not installed already
+    sudo apt-get install python-pip
+    sudo apt-get install build-essential
+    sudo apt-get install curl
+    sudo apt-get install python-dev
+
+    # This is what we want:
+    sudo pip install bibos-client
+
+
+After succesfully installing bibos-client, run the registration script
+in order to connect with the admin system.
+
+    sudo register_new_bibos_client.sh
+
+
+Guide to the steps:
+
+# Do not enter a gateway IP unless you *know* you will be using a gateway.
+# Enter a new host name for your computer if you want. If not, your PC
+  will be registered with its current name.
+# Enter the ID for the site you wish to register the PC on (e.g.
+  "aarhus").
+# Enter the ID for the distribution (e.g. "ubuntu12.04").
+# Enter the URL of your admin system (e.g. "http://localhost:8000" if
+  you're a developer or "http://yourdomain.com/your_admin_dir".
+
+The registration will now proceed, and your new PC will show up in the
+admin system as "New" in the corresponding site's status list.
+
+In order to start running scripts etc. on the computer, you need to
+manually approve it's registration by "activating" it in the admin
+system. View the details on the new computer and check the box marked
+"Aktiv" or "Active". The PC will now start uploading its package info
+and is under the control of the admin system.
+
 
 
 
