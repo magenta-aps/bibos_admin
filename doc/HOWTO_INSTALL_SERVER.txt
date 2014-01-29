@@ -6,8 +6,8 @@ Required system packages
 ++++++++++++++++++++++++
 
 To be installed with apt-get install or similar devices. These
-instructions will more or less work on all Debian-like systems, but
-they have only been tested on Ubuntu 12.04 LTS. Your mileage may vary.
+instructions will more or less work on all Debian-like systems, but they
+have only been tested on Ubuntu 12.04 LTS. Your mileage may vary.
 
     git
     python-pip
@@ -29,8 +29,8 @@ Installation procedure
 ++++++++++++++++++++++
 
 We recommend that you install this in the home directory of a dedicated
-user, e.g. /home/bibos. In that way, everything can be set up and
-tested without root privileges.
+user, e.g. /home/bibos. In that way, everything can be set up and tested
+without root privileges.
 
 Check out source code, run install scripts, install PostgreSQL DB
 driver:
@@ -65,8 +65,9 @@ Now create database and user:
     postgres@bibos:~$ psql -c "grant all on database bibos_admin to bibos_admin" 
 
 We will not set a password for the database; instead we set local IP
-connections as trusted in /etc/postgresql/9.1/main/pg_hba.conf. This 
-will allow all local connections and deny all attempts at remote connection.
+connections as trusted in /etc/postgresql/9.1/main/pg_hba.conf. This
+will allow all local connections and deny all attempts at remote
+connection.
 
 Now change DATABASES in bibos_admin/settings.py to look like this:
 
@@ -96,6 +97,7 @@ Import the current available package names to the database:
 
 /home/bibos/bibos_admin/admin_site/scripts/import_package_names.py \
     'http://packages.ubuntu.com/precise/allpackages?format=txt.gz'
+
 
 Apache Setup
 ++++++++++++
