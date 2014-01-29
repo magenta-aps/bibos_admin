@@ -11,7 +11,8 @@ Python 2.7
 SQLite 3
 python-virtualenv
 
-Get them with apt-get install or by whatever means necessary for your platform.
+Get them with apt-get install or by whatever means necessary for your
+platform.
 
 
 GRAB THE CODE
@@ -26,9 +27,9 @@ GET THE RIGHT BRANCH
 cd bibos_admin
 git checkout <development>
 
-This only applies if you're not working directly on the master branch (which
-you probably shouldn't). For <development> substitute the branch you want to 
-work on.
+This only applies if you're not working directly on the master branch
+(which you probably shouldn't). For <development> substitute the branch
+you want to work on.
 
 
 INSTALL DJANGO AND OTHER COMPONENTS
@@ -38,8 +39,8 @@ cd admin_site
 
 scripts/install.sh
 
-This requires an Internet connection. It should run its course with a number of
-warnings but no errors.
+This requires an Internet connection. It should run its course with a
+number of warnings but no errors.
 
 
 SOFT-LINK THE SETTINGS FILE
@@ -49,8 +50,8 @@ pushd bibos_admin/
 ln -s settings_development.py settings.py
 popd
 
-This gives you the development settings. Most importantly, this features an
-SQLite database.
+This gives you the development settings. Most importantly, this features
+an SQLite database.
 
 
 RUN THE TEST SUITE
@@ -86,30 +87,32 @@ Log on to the admin site's user section:
 
 http://localhost:8080/admin/auth/user/
 
-Edit the user you just created. Scroll to the bottom of the screen and choose
-"Super admin" as the user profile type.
+Edit the user you just created. Scroll to the bottom of the screen and
+choose "Super admin" as the user profile type.
 
 
 
 ENJOY
 +++++
 
-Go to http://localhost:8080 to start using the system - create sites, create
-groups, etc.
+Go to http://localhost:8080 to start using the system - create sites,
+create groups, etc.
 
-NOTE: The system was written in Django and consists of a Django site with three
-apps: "account", "system" and "job". Most of the actual functionality is
-concentrated in the "system"  app. Some knowledge of Django is
-required to understand how the system is designed. Refer to the graphical
-object model (BibOS.dia) for an explanation of the site's object structure.
+NOTE: The system was written in Django and consists of a Django site
+with three apps: "account", "system" and "job". Most of the actual
+functionality is concentrated in the "system"  app. Some knowledge of
+Django is required to understand how the system is designed. Refer to
+the graphical object model (BibOS.dia) for an explanation of the site's
+object structure.
 
 
 CLIENT STUFF
 ++++++++++++
 
-You can make a source distribution for the bibos_client package located in the
-root of the bibos_admin source tree. This is what you should use to register
-new computers in the admin system.
+You can make a source distribution for the bibos_client package located
+in the root of the bibos_admin source tree. This is what you should use
+to register new computers in the admin system. See the HOWTO on
+attaching clients for further information.
 
 
 
