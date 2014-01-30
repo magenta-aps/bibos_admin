@@ -79,6 +79,21 @@ class Configuration(models.Model):
         finally:
             e.save()
 
+    def get(self, key, default=None):
+        """Return value of the entry corresponding to key if it exists, None
+        otherwise."""
+        result = None
+        try:
+            e = self.entries.get(key=key)
+            result = e.value
+        except ConfigurationEntry.DoesNotExist:
+            if default is not None:
+                result = default
+            else:
+                raise
+
+        return result
+
     def __unicode__(self):
         return self.name
 
