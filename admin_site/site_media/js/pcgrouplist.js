@@ -50,7 +50,7 @@
                 },
                 li,
                 function() {
-                    li.detach().insertBefore(container.children('li').last())
+                    li.detach().insertAfter(container.children('li').last())
                 }
             )
             return false;
