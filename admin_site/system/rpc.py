@@ -160,10 +160,17 @@ def send_status_info(pc_uid, package_data, job_data, update_required):
         updates, security_updates = update_required
         if security_updates > 0:
             pc.is_update_required = True
-            # Please tell us WHICH packages next time
-            #pc.do_send_package_info = True
+            # See if things have changed and we need to update the package
+            # lists.
+            old_updates = pc.configuration.get('updates', 0)
+            old_security = pc.configuration.get('security_updates', 0)
+            if (security_updates != old_security) or (updates != old_updates):
+                pc.do_send_package_info = True
         elif pc.is_update_required:
             pc.is_update_required = False
+        # Save update info in configuration
+        pc.configuration.update_entry('updates', updates)
+        pc.configuration.update_entry('security_updates', security_updates)
 
     pc.save()
 
