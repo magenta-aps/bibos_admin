@@ -51,7 +51,7 @@ class="active"
         {% ifequal pc selected_pc %}
           <a class="remove pull-right" href="/site/{{ site.url }}/computers/{{ selected_pc.uid }}/delete/" title="Slet computer"><i class="icon-remove icon-white"></i></a>
         {% endifequal %}
-        <div id="{{pc.uid}}"> <a class="list-item" href="/site/{{ site.url }}/computers/{{ pc.uid }}"><i class="icon-hdd"></i> {{ pc.name }}</a>
+        <div id="{{pc.uid}}"> <a class="list-item" href="/site/{{ site.url }}/computers/{{ pc.uid }}" onclick="spin();"><i class="icon-hdd"></i> {{ pc.name }}</a>
         </div>
       </li>
     {% endfor %}
