@@ -1,14 +1,14 @@
 {% if orderby_key == key %}
 <th
   class="orderby order-{{ key }} {{ orderby_direction }} active"
-  onclick="spin(); location.href='{{ orderby_base_url }}orderby={% if orderby_direction != 'desc' %}-{% endif %}{{ key }}'"
+  onclick="spin(); location.href='{{ orderby_base_url }}orderby={% if orderby_direction != 'desc' %}-{% endif %}{{ key }}&#pc-jobs'"
   >{{ label }}<br>
   <i class="icon icon-chevron-{% if orderby_direction == 'desc' %}up{% else %}down{% endif %}"></i>
 </th>
 {% else %}
 <th
   class="orderby order-{{ key }} desc"
-  onclick="spin(); location.href='{{ orderby_base_url }}orderby={{ key }}'"
+  onclick="spin(); location.href='{{ orderby_base_url }}orderby={{ key }}&#pc-jobs'"
   >{{ label }}</a><br>
   <i class="icon icon-chevron-down"></i>
 </th>
