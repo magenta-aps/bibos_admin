@@ -8,7 +8,7 @@
 {% else %}
 <th
   class="orderby order-{{ key }} desc"
-  onclick="location.href='{{ orderby_base_url }}orderby={{ key }}'"
+  onclick="spin(); location.href='{{ orderby_base_url }}orderby={{ key }}'"
   >{{ label }}</a><br>
   <i class="icon icon-chevron-down"></i>
 </th>
