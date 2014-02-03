@@ -51,7 +51,7 @@ class="active"
         {% ifequal pc selected_pc %}
           <a class="remove pull-right" href="/site/{{ site.url }}/computers/{{ selected_pc.uid }}/delete/" title="Slet computer"><i class="icon-remove icon-white"></i></a>
         {% endifequal %}
-        <div id="{{pc.uid}}"> <a class="list-item" href="/site/{{ site.url }}/computers/{{ pc.uid }}"><i class="icon-hdd"></i> {{ pc.name }}</a>
+        <div id="{{pc.uid}}"> <a class="list-item" href="/site/{{ site.url }}/computers/{{ pc.uid }}" onclick="spin();"><i class="icon-hdd"></i> {{ pc.name }}</a>
         </div>
       </li>
     {% endfor %}
@@ -228,11 +228,6 @@ class="active"
           $(function() {
             BibOS.setupJobInfoButtons($('#computer_jobs_table'));
           });
-          
-          /* Show a spinner while we wait for a new page to load*/
-          function spin() {
-            $('body').append('<div class="overlay"><div class="windows8"><div class="wBall" id="wBall_1"><div class="wInnerBall"></div></div><div class="wBall" id="wBall_2"><div class="wInnerBall"></div></div><div class="wBall" id="wBall_3"><div class="wInnerBall"></div></div><div class="wBall" id="wBall_4"><div class="wInnerBall"></div></div><div class="wBall" id="wBall_5"><div class="wInnerBall"></div></div></div></div>');
-          };
         //--></script>
         
       </div>
