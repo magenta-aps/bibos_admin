@@ -1,8 +1,5 @@
 {% if submit_name %}
 <ul class="unstyled well actionlist" id="id_{{ submit_name }}">
-  {% for group in selected_groups %}
-    {% include 'system/pcgrouplist/item.html' with pk=group.pk name=group.name selected='yes' %}
-  {% endfor %}
   <li class="addgrouptrigger">
     <a href="#" title="Tilføj ny gruppe"><i class="icon-plus"></i> tilføj ny gruppe</a>
     <ul class="addgrouplist addlist">
@@ -11,6 +8,9 @@
       {% endfor %}
     </ul>
   </li>
+  {% for group in selected_groups %}
+    {% include 'system/pcgrouplist/item.html' with pk=group.pk name=group.name selected='yes' %}
+  {% endfor %}
 </ul>
 <script type="text/javascript"><!--
 $(function() {
