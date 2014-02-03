@@ -6,8 +6,9 @@
 
 {% block content %}
   <div class="container">
+    <div class="addsitetrigger"><a href="/sites/new/" title="Tilføj nyt site"><i class="icon-plus"></i> tilføj nyt site</a></div>
     <div class="itemlist">
-      {% for site in site_list %}     
+      {% for site in site_list %}
         <div class="btn-group">
           <a href="/site/{{site.url}}" class="btn btn-large">
             <i class="icon-home"></i> {{site.name}}
@@ -25,6 +26,5 @@
         </div>
       {% endfor %}      
     </div>
-    <div><a href="/sites/new/" title="Tilføj nyt site"><i class="icon-plus"></i> tilføj nyt site</a></div>
   </div>
 {% endblock %}
