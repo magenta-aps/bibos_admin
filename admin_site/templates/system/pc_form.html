@@ -21,12 +21,27 @@ class="active"
 
 {% block specific_content %}
 
-<script type="text/javascript">
+  <script type="text/javascript">
     $(document).ready( function() {
-            var el = document.getElementById("{{ selected_pc.uid }}");
-            el.scrollIntoView(true);
-            });
-</script>
+      var el = document.getElementById("{{ selected_pc.uid }}");
+      el.scrollIntoView(true);
+    });
+  
+    $(function(){
+      var hash = window.location.hash;
+      if (hash) {
+        $('ul.nav a[href="' + hash + '"]').tab('show');
+        console.log($('#computer_jobs_table').scrollTop());
+      };
+      $('.nav-tabs a').click(function (e) {
+        $(this).tab('show');
+        var scrollmem = $('.main').scrollTop();
+        window.location.hash = this.hash;
+        $('.main').scrollTop(scrollmem);
+      });
+    });
+  </script>
+
   <ul class="sublevelnav">
     {% if not pc_list.all%}
       <li>Der er ingen computere</li>
@@ -36,7 +51,7 @@ class="active"
         {% ifequal pc selected_pc %}
           <a class="remove pull-right" href="/site/{{ site.url }}/computers/{{ selected_pc.uid }}/delete/" title="Slet computer"><i class="icon-remove icon-white"></i></a>
         {% endifequal %}
-        <div id="{{pc.uid}}"> <a class="list-item" href="/site/{{ site.url }}/computers/{{ pc.uid }}"><i class="icon-hdd"></i> {{ pc.name }}</a>
+        <div id="{{pc.uid}}"> <a class="list-item" href="/site/{{ site.url }}/computers/{{ pc.uid }}" onclick="spin();"><i class="icon-hdd"></i> {{ pc.name }}</a>
         </div>
       </li>
     {% endfor %}
@@ -186,11 +201,11 @@ class="active"
       <div id="pc-jobs" class="tabcontent">
         <table id="computer_jobs_table" class="table jobtable">
           <tr>
-            {% include 'widgets/orderby_th.html' with key='batch__script__name' label='Script' %}
-            {% include 'widgets/orderby_th.html' with key='started' label='Startet' %}
-            {% include 'widgets/orderby_th.html' with key='finished' label='Sluttet' %}
-            {% include 'widgets/orderby_th.html' with key='status' label='Status' %}
-            {% include 'widgets/orderby_th.html' with key='batch__name' label='Batch' %}
+            {% include 'widgets/orderby_th.html' with key='batch__script__name' label='Script' anchor='#pc-jobs' %}
+            {% include 'widgets/orderby_th.html' with key='started' label='Startet' anchor='#pc-jobs' %}
+            {% include 'widgets/orderby_th.html' with key='finished' label='Sluttet' anchor='#pc-jobs' %}
+            {% include 'widgets/orderby_th.html' with key='status' label='Status' anchor='#pc-jobs' %}
+            {% include 'widgets/orderby_th.html' with key='batch__name' label='Batch' anchor='#pc-jobs' %}
             <th></th>
           </tr>
           {% for job in joblist %}
@@ -208,11 +223,13 @@ class="active"
           </tr>
           {% endfor %}
         </table>
+        
         <script type="text/javascript"><!--
-        $(function() {
-          BibOS.setupJobInfoButtons($('#computer_jobs_table'));
-        });
+          $(function() {
+            BibOS.setupJobInfoButtons($('#computer_jobs_table'));
+          });
         //--></script>
+        
       </div>
         
     </form>

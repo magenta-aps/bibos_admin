@@ -832,7 +832,7 @@ class PCUpdate(SiteMixin, UpdateView):
             context['orderby_key'] = orderby
             context['orderby_direction'] = 'asc'
 
-        context['orderby_base_url'] = pc.get_absolute_url()
+        context['orderby_base_url'] = pc.get_absolute_url() + '?'
 
         context['selected_pc'] = pc
 
