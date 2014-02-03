@@ -1,3 +1,14 @@
+* Version 2.2.1, February 3, 2014
+
+New in this version:
+
+- Package lists are only synchronized between client and server if number of
+  updates changes (solves performance issue cf. ticket #9611).
+- Design bug when adding to long list of groups fixed, cf. ticket #9097.
+- Crash when trying to sort job list under PC fixed (ticket #9548).
+- Developer documentation updated and improved.
+
+
 * Version 2.2.0, December 27, 2013
 
 New in this version:
