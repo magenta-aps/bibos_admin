@@ -157,15 +157,17 @@ def send_status_info(pc_uid, package_data, job_data, update_required):
 
     # 4. Check if update is required.
     if update_required is not None:
-        updates, security_updates = update_required
+        updates, security_updates = map(int, update_required)
         if security_updates > 0:
             pc.is_update_required = True
             # See if things have changed and we need to update the package
             # lists.
-            old_updates = pc.configuration.get('updates', 0)
-            old_security = pc.configuration.get('security_updates', 0)
-            if (security_updates != old_security) or (updates != old_updates):
+            old_updates = int(pc.configuration.get('updates', 0))
+            old_security = int(pc.configuration.get('security_updates', 0))
+            if (security_updates > old_security) or (updates > old_updates):
                 pc.do_send_package_info = True
+            else:
+                pc.do_send_package_info = False
         elif pc.is_update_required:
             pc.is_update_required = False
         # Save update info in configuration
