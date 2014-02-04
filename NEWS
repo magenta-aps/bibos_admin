@@ -1,3 +1,11 @@
+* Version 2.2.2, February 4, 2014
+
+New in this version:
+
+- Fixed type bug (comparison between integers and strings) which caused the
+  performance issue to regress (ticket #9611).
+
+
 * Version 2.2.1, February 3, 2014
 
 New in this version:
