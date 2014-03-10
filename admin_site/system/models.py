@@ -242,6 +242,20 @@ class PackageList(models.Model):
         else:
             return 0
 
+    def flag_needs_upgrade(self, package_names):
+        if len(package_names):
+            qs = self.statuses.filter(
+                package__name__in=package_names,
+                status=PackageStatus.UPGRADE_PENDING
+            )
+            num = len(qs)
+            qs.update(
+                status=PackageStatus.NEEDS_UPGRADE
+            )
+            return num
+        else:
+            return 0
+
     def __unicode__(self):
         return self.name
 
