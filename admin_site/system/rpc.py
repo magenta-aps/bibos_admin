@@ -144,6 +144,18 @@ def send_status_info(pc_uid, package_data, job_data, update_required):
         pc.custom_packages.update_by_package_names(
             names(pc.pending_packages_remove),
             names(pc.pending_packages_add))
+        # Update the "submitted_for_installation" and "submitted_for_removal"
+        # queues.
+
+        current = pc.current_packages
+        for p in pc.submitted_for_installation.all():
+            if p in current:
+                pc.submitted_for_installation.remove(p)
+
+        for p in pc.submitted_for_removal.all():
+            if p in current:
+                pc.submitted_for_removal.remove(p)
+
         # We just got the package info update we requested, so clear the flag
         # until we need a new update.
         pc.do_send_package_info = False
@@ -187,6 +199,13 @@ def get_instructions(pc_uid, update_data):
     jobs, which will be scheduled for execution and executed upon receipt.
     These jobs will generally take the form of bash scripts."""
 
+    """
+    TODO: This function is too long! Best practices is that all functions
+    should fit in a single computer screen, roughly = 1 A4 printed sheet.
+
+    It would be good to factor out the complex parts to separate, aptly named
+    functions.
+    """
     pc = PC.objects.get(uid=pc_uid)
 
     pc.last_seen = datetime.datetime.now()
@@ -266,13 +285,16 @@ def get_instructions(pc_uid, update_data):
         sc = Script.get_system_script('remove_packages.sh')
         sc.run_on_pc(pc, ','.join(to_remove))
         for p in remove_packages:
-            p.submitted_for_removal.add(p)
+            pc.submitted_for_removal.add(p)
 
     if len(to_install):
         sc = Script.get_system_script('install_or_upgrade_packages.sh')
         sc.run_on_pc(pc, ','.join(to_install))
         for p in install_packages:
-            p.submitted_for_installation.add(p)
+            pc.submitted_for_installation.add(p)
+    if len(install_packages) or len(remove_packages):
+        pc.do_send_package_info = True
+        pc.save()
 
     jobs = []
     for job in pc.jobs.filter(status=Job.NEW):

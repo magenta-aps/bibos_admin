@@ -814,8 +814,10 @@ class PCUpdate(SiteMixin, UpdateView):
             context['package_infos'] = ii.order_by('-do_add', 'package__name')
 
             a, r = pc.pending_package_updates
-            context['pending_packages_add'] = sorted([p.name for p in a])
-            context['pending_packages_remove'] = sorted([p.name for p in r])
+            a = [p.name for p in a]
+            r = [p.name for p in r]
+            context['pending_packages_add'] = sorted(a)
+            context['pending_packages_remove'] = sorted(r)
 
         orderby = params.get('orderby', '-pk')
         if not orderby in JobSearch.VALID_ORDER_BY:
