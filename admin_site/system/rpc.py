@@ -262,7 +262,7 @@ def get_instructions(pc_uid, update_data):
     # installed, as apt-get will upgrade any package in the package list
     # for apt-get install.
     for p in pc.package_list.pending_upgrade_packages:
-        to_install.add(p.name)
+        to_install.append(p.name)
 
     # Make sure packages added to be upgraded now are no longer pending.
     pc.package_list.flag_needs_upgrade(
