@@ -458,7 +458,7 @@ class PC(models.Model):
     submitted_for_removal = models.ManyToManyField(
         Package,
         related_name='removed_from',
-        blank=False)
+        blank=True)
 
     @property
     def current_packages(self):
