@@ -217,6 +217,14 @@ class PackageList(models.Model):
         ).values_list('package__name', flat=True)
 
     @property
+    def installed_packages(self):
+        return [s.package for s in self.statuses.filter(
+                        Q(status__startswith='install') |
+                        Q(status=PackageStatus.NEEDS_UPGRADE) |
+                        Q(status=PackageStatus.UPGRADE_PENDING)
+        )]
+
+    @property
     def needs_upgrade_packages(self):
         return [s.package for s in self.statuses.filter(
             status=PackageStatus.NEEDS_UPGRADE
@@ -237,6 +245,20 @@ class PackageList(models.Model):
             num = len(qs)
             qs.update(
                 status=PackageStatus.UPGRADE_PENDING
+            )
+            return num
+        else:
+            return 0
+
+    def flag_needs_upgrade(self, package_names):
+        if len(package_names):
+            qs = self.statuses.filter(
+                package__name__in=package_names,
+                status=PackageStatus.UPGRADE_PENDING
+            )
+            num = len(qs)
+            qs.update(
+                status=PackageStatus.NEEDS_UPGRADE
             )
             return num
         else:
@@ -427,9 +449,20 @@ class PC(models.Model):
         auto_now_add=True)
     last_seen = models.DateTimeField(_('last seen'), null=True, blank=True)
 
+    # Management of packages submitted for addition and removal as custom
+    # packages.
+    submitted_for_installation = models.ManyToManyField(
+        Package,
+        related_name='added_to',
+        blank=True)
+    submitted_for_removal = models.ManyToManyField(
+        Package,
+        related_name='removed_from',
+        blank=True)
+
     @property
     def current_packages(self):
-        return set(self.package_list.names_of_installed_package)
+        return set(self.package_list.installed_packages)
 
     @property
     def wanted_packages(self):
@@ -445,18 +478,18 @@ class PC(models.Model):
 
         for group in self.pc_groups.all():
             iis = group.custom_packages.install_infos
-            for do_add, name in iis.values_list('do_add', 'package__name'):
-                if do_add:
-                    wanted_packages.add(name)
+            for ii in iis.all():
+                if ii.do_add:
+                    wanted_packages.add(ii.package)
                 else:
-                    wanted_packages.discard(name)
+                    wanted_packages.discard(ii.package)
 
         iis = self.custom_packages.install_infos
-        for do_add, name in iis.values_list('do_add', 'package__name'):
-            if do_add:
-                wanted_packages.add(name)
+        for ii in iis.all():
+            if ii.do_add:
+                wanted_packages.add(ii.package)
             else:
-                wanted_packages.discard(name)
+                wanted_packages.discard(ii.package)
 
         return wanted_packages
 

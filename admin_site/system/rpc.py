@@ -11,11 +11,13 @@ from models import PC, Site, Distribution, Configuration, ConfigurationEntry
 from models import PackageList, Package, PackageStatus, CustomPackages
 from job.models import Job, Script
 
+# simple utility to extract names from a list of packages
+names = lambda l: [p.name for p in l]
+
 
 def register_new_computer(name, uid, distribution, site, configuration):
     """Register a new computer with the admin system - after registration, the
     computer will be submitted for approval."""
-
     try:
         new_pc = PC.objects.get(uid=uid)
         package_list = new_pc.package_list
@@ -139,8 +141,21 @@ def send_status_info(pc_uid, package_data, job_data, update_required):
                     status=pd['status']
                 )
         # Assume no packages are any longer "pending".
-        pc.custom_packages.update_by_package_names(pc.pending_packages_remove,
-                                                   pc.pending_packages_add)
+        pc.custom_packages.update_by_package_names(
+            names(pc.pending_packages_remove),
+            names(pc.pending_packages_add))
+        # Update the "submitted_for_installation" and "submitted_for_removal"
+        # queues.
+
+        current = pc.current_packages
+        for p in pc.submitted_for_installation.all():
+            if p in current:
+                pc.submitted_for_installation.remove(p)
+
+        for p in pc.submitted_for_removal.all():
+            if p in current:
+                pc.submitted_for_removal.remove(p)
+
         # We just got the package info update we requested, so clear the flag
         # until we need a new update.
         pc.do_send_package_info = False
@@ -184,6 +199,13 @@ def get_instructions(pc_uid, update_data):
     jobs, which will be scheduled for execution and executed upon receipt.
     These jobs will generally take the form of bash scripts."""
 
+    """
+    TODO: This function is too long! Best practices is that all functions
+    should fit in a single computer screen, roughly = 1 A4 printed sheet.
+
+    It would be good to factor out the complex parts to separate, aptly named
+    functions.
+    """
     pc = PC.objects.get(uid=pc_uid)
 
     pc.last_seen = datetime.datetime.now()
@@ -230,13 +252,22 @@ def get_instructions(pc_uid, update_data):
         pc.package_list.statuses.filter(package__name__in=remove_pkgs).delete()
 
     # Get list of packages to install and remove.
-    to_install, to_remove = pc.pending_package_updates
+    install_packages, remove_packages = pc.pending_package_updates
+    to_install = names([p for p in install_packages if not
+                        p in pc.submitted_for_installation.all()])
+    to_remove = names([p for p in remove_packages if not
+                       p in pc.submitted_for_removal.all()])
 
     # Add packages that are pending update to the list of packages we want
     # installed, as apt-get will upgrade any package in the package list
     # for apt-get install.
     for p in pc.package_list.pending_upgrade_packages:
-        to_install.add(p.name)
+        to_install.append(p.name)
+
+    # Make sure packages added to be upgraded now are no longer pending.
+    pc.package_list.flag_needs_upgrade(
+        [p.name for p in pc.package_list.pending_upgrade_packages]
+    )
 
     # Make sure packages we just installed are not flagged for removal
     for name in [p['name'] for p in update_pkgs]:
@@ -253,10 +284,17 @@ def get_instructions(pc_uid, update_data):
     if len(to_remove):
         sc = Script.get_system_script('remove_packages.sh')
         sc.run_on_pc(pc, ','.join(to_remove))
+        for p in remove_packages:
+            pc.submitted_for_removal.add(p)
 
     if len(to_install):
         sc = Script.get_system_script('install_or_upgrade_packages.sh')
         sc.run_on_pc(pc, ','.join(to_install))
+        for p in install_packages:
+            pc.submitted_for_installation.add(p)
+    if len(install_packages) or len(remove_packages):
+        pc.do_send_package_info = True
+        pc.save()
 
     jobs = []
     for job in pc.jobs.filter(status=Job.NEW):
