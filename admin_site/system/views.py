@@ -814,6 +814,8 @@ class PCUpdate(SiteMixin, UpdateView):
             context['package_infos'] = ii.order_by('-do_add', 'package__name')
 
             a, r = pc.pending_package_updates
+            a = [p.name for p in a]
+            r = [p.name for p in r]
             context['pending_packages_add'] = sorted(a)
             context['pending_packages_remove'] = sorted(r)
 
