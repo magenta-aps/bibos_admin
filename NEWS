@@ -1,3 +1,13 @@
+* Version 2.2.3.1,  June 3, 2014
+
+Hotfix. New in this version:
+
+- During update of package info, clear lists of submitted packages instead of
+  cycling through them. Note, this is an optimistic strategy. The goal is to
+  avoid the catastrophic performance problems which were presumably due to the
+  recalculation of these lists against all installed packages.
+
+
 * Version 2.2.3,  May 28, 2014
 
 New in this version:
