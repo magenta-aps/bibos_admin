@@ -146,15 +146,10 @@ def send_status_info(pc_uid, package_data, job_data, update_required):
             names(pc.pending_packages_add))
         # Update the "submitted_for_installation" and "submitted_for_removal"
         # queues.
+        # Start by assuming we can simply clear them.
 
-        current = pc.current_packages
-        for p in pc.submitted_for_installation.all():
-            if p in current:
-                pc.submitted_for_installation.remove(p)
-
-        for p in pc.submitted_for_removal.all():
-            if p in current:
-                pc.submitted_for_removal.remove(p)
+        pc.submitted_for_installation.clear()
+        pc.submitted_for_removal.clear()
 
         # We just got the package info update we requested, so clear the flag
         # until we need a new update.
