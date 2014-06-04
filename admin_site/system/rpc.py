@@ -238,10 +238,10 @@ def get_instructions(pc_uid, update_data):
     for p in pc.package_list.pending_upgrade_packages:
         to_install.add(p.name)
 
-     # Make sure packages added to be upgraded now are no longer pending.
-     pc.package_list.flag_needs_upgrade(
-         [p.name for p in pc.package_list.pending_upgrade_packages]
-     )
+    # Make sure packages added to be upgraded now are no longer pending.
+    pc.package_list.flag_needs_upgrade(
+        [p.name for p in pc.package_list.pending_upgrade_packages]
+    )
 
     # Make sure packages we just installed are not flagged for removal
     for name in [p['name'] for p in update_pkgs]:
