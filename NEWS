@@ -1,3 +1,17 @@
+* Version 2.2.4,  June 13, 2014
+
+Rollback of model changes in hotfix 2.2.3.2, retain failed upgrade management.
+
+- The model changes, i.e. the bookkeeping with added and removed packages,
+  caused serious performance problems. These have been rolled back.
+- The changes that set "pending upgrade" packages back to "upgrade possible",
+  i.e. to avoid automatic generation of new job upon failure, has been
+  retained. This solves the problem the libraries were having in practise.
+
+This version should be considered stable. At the time of writing, we're not
+aware of any serious issues.
+
+
 * Version 2.2.3.1,  June 3, 2014
 
 Hotfix. New in this version:
