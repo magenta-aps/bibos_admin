@@ -35,7 +35,7 @@ var BibOS;
         t.loadStylesheet(this)
       })
 	
-      $('#editconfig_value').attr('maxlength', 500)
+      $('#editconfig_value').attr('maxlength', 4096)
 	
       var m = document.cookie.match(/\bbibos-notification\s*=\s*([^;]+)/)
       if(m) {
