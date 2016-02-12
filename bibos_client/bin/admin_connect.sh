@@ -8,4 +8,6 @@ sudo pip install netifaces
 sudo pip install lockfile
 sudo pip install bibos-client
 sudo mkdir -p /var/lib/bibos/jobs/
+# Set version in configuration
+sudo set_bibos_config bibos_version "admin_connect"
 sudo register_new_bibos_client.sh
