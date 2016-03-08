@@ -81,9 +81,32 @@
     fi
 
     # - distribution
-    #   Use preinstalled default if any, otherwise prompt user
-    
-    DISTRO=$(get_bibos_config distribution)
+    # Detect OS version and prompt user for verification	
+
+    DISTRO=""
+    if [[ -r /etc/os-release ]]; then
+    	. /etc/os-release
+        if [[ "$ID" = ubuntu ]]; then
+		if [[ "$VERSION_ID" = "14.04" ]]; then
+			DISTRO="BIBOS14.04" #$(get_bibos_config distribution14.04)
+		else if [[ "$VERSION_ID" = "12.04" ]]; then
+			DISTRO="BIBOS12.04" #$(get_bibos_config distribution12.04)
+		else
+			echo "Ubuntu versionen er ikke understøttet af BibOS systemet. Du kan alligevel godt forsøge at tilmelde PC'en til admin systemet."
+			echo "Indtast ID for PC'ens distribution:"
+			read DISTRO
+		fi
+        else
+		echo "Dette er ikke en Ubuntu maskine. BibOS systemet understøtter kun Ubuntu. Du kan alligevel godt forsøge at tilmelde PC'en til admin systemet."	
+		echo "Indtast ID for PC'ens distribution:"
+	        read DISTRO
+	fi
+    else
+    	echo "Vi kan ikke se hvilket Ubuntu system der er installeret."
+        echo "Indtast venligst ID for PC'ens distribution:"
+        read DISTRO
+    fi
+
     echo $DISTRO
 
     if [[ -z $DISTRO ]]
