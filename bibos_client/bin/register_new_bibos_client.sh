@@ -88,9 +88,9 @@
     	. /etc/os-release
         if [[ "$ID" = ubuntu ]]; then
 		if [[ "$VERSION_ID" = "14.04" ]]; then
-			DISTRO="BIBOS14.04" #$(get_bibos_config distribution14.04)
+			DISTRO=$(get_bibos_config distribution14.04)
 		else if [[ "$VERSION_ID" = "12.04" ]]; then
-			DISTRO="BIBOS12.04" #$(get_bibos_config distribution12.04)
+			DISTRO=$(get_bibos_config distribution12.04)
 		else
 			echo "Ubuntu versionen er ikke understøttet af BibOS systemet. Du kan alligevel godt forsøge at tilmelde PC'en til admin systemet."
 			echo "Indtast ID for PC'ens distribution:"
@@ -107,14 +107,16 @@
         read DISTRO
     fi
 
-    echo $DISTRO
-
     if [[ -z $DISTRO ]]
     then
         echo "Indtast ID for PC'ens distribution"
         read DISTRO
     fi
+
+    echo $DISTRO
+
     sudo set_bibos_config distribution $DISTRO
+
     # - admin_url
     #   Get from gateway, otherwise prompt user.
     if [[ -n "$HAS_GATEWAY" ]]
