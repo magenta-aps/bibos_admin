@@ -102,7 +102,7 @@
 	        read DISTRO
 	fi
     else
-    	echo "Vi kan ikke se hvilket Ubuntu system der er installeret."
+    	echo "Vi kan ikke se hvilket operativ system der er installeret."
         echo "Indtast venligst ID for PC'ens distribution:"
         read DISTRO
     fi
