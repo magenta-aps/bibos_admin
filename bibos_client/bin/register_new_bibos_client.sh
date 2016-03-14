@@ -89,7 +89,7 @@
         if [[ "$ID" = ubuntu ]]; then
 		if [[ "$VERSION_ID" = "14.04" ]]; then
 			DISTRO="BIBOS14.04" 
-		else if [[ "$VERSION_ID" = "12.04" ]]; then
+		elif [[ "$VERSION_ID" = "12.04" ]]; then
 			DISTRO="BIBOS12.04" 
 		else
 			echo "Ubuntu versionen er ikke understøttet af BibOS systemet. Du kan alligevel godt forsøge at tilmelde PC'en til admin systemet."
@@ -113,7 +113,7 @@
         read DISTRO
     fi
 
-    echo $DISTRO
+    echo "Distributions ID: "$DISTRO
 
     sudo set_bibos_config distribution $DISTRO
 
