@@ -1,3 +1,36 @@
+* Version 2.2.4,  June 13, 2014
+
+Rollback of model changes in hotfix 2.2.3.2, retain failed upgrade management.
+
+- The model changes, i.e. the bookkeeping with added and removed packages,
+  caused serious performance problems. These have been rolled back.
+- The changes that set "pending upgrade" packages back to "upgrade possible",
+  i.e. to avoid automatic generation of new job upon failure, has been
+  retained. This solves the problem the libraries were having in practise.
+
+This version should be considered stable. At the time of writing, we're not
+aware of any serious issues.
+
+
+* Version 2.2.3.1,  June 3, 2014
+
+Hotfix. New in this version:
+
+- During update of package info, clear lists of submitted packages instead of
+  cycling through them. Note, this is an optimistic strategy. The goal is to
+  avoid the catastrophic performance problems which were presumably due to the
+  recalculation of these lists against all installed packages.
+
+
+* Version 2.2.3,  May 28, 2014
+
+New in this version:
+
+- Prevent package upgrades from looping upon failure. This is done by removing
+  submitted package upgrades from the "to upgrade" list, so they're not picked
+  up next time the job manager runs.
+
+
 * Version 2.2.2, February 4, 2014
 
 New in this version:
