@@ -34,7 +34,9 @@ var BibOS;
       $.each(this.cssToLoad, function() {
         t.loadStylesheet(this)
       })
-
+	
+      $('#editconfig_value').attr('maxlength', 4096)
+	
       var m = document.cookie.match(/\bbibos-notification\s*=\s*([^;]+)/)
       if(m) {
         var msg = unescape(m[1]);
