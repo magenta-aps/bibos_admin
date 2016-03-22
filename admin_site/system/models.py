@@ -102,7 +102,7 @@ class ConfigurationEntry(models.Model):
     """A single configuration entry - always part of an entire
     configuration."""
     key = models.CharField(max_length=32)
-    value = models.CharField(max_length=255)
+    value = models.CharField(max_length=4096)
     owner_configuration = models.ForeignKey(
         Configuration,
         related_name='entries',
