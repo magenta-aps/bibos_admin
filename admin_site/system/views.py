@@ -767,7 +767,7 @@ class PCsView(SelectionMixin, SiteView):
             return super(PCsView, self).render_to_response(context)
 
 
-class PCUpdate(SiteMixin, UpdateView):
+class PCUpdate(SiteMixin, UpdateView, LoginRequiredMixin):
     template_name = 'system/pc_form.html'
     form_class = PCForm
     slug_field = 'uid'
