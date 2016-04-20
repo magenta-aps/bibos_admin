@@ -10,7 +10,7 @@ passwords.
 
 We wish to implement this in BibOS. As it is easy to imagine many other
 kinds of security related threats, we will implement the general concept
-of Security Event.
+of a Security Event.
 
 A security event basically has a Type (keyboard connected), a time and
 place (date and computer on which it happened), and technical
@@ -24,8 +24,8 @@ Changes to the model
 
 A new Django model will be introduced in the Bibos Admin system. This
 model will be called SecurityEvent and will basically have the following
-fields (further analysis or actual implementation may show further
-fields to be needed):
+fields (further analysis or actual implementation may show more fields
+to be needed):
 
 * Type - the kind of security event. Link to SecurityProblem, described
   below 
@@ -98,6 +98,9 @@ SecurityProblem script and the programmer promises it obeys the protocol
 for such scripts - meaning, the user will only be allowed to select one
 of those scripts for the SecurityProblems. 
 
+**Note:** Usability and design, and estimates, of these changes should
+come from a designer, most likely Frank. The above is only a suggestion.
+
 
 Changes in the JobManager protocol
 ++++++++++++++++++++++++++++++++++
@@ -113,7 +116,7 @@ Basically, it currently performs these functions: ::
 It should be modified to also run the new function
 handle_security_events().
 
-This will, in turn, call to new functions, one called
+This will, in turn, call two new functions, one called
 collect_security_events() and one called send_security_events().
 
 The first of these will collect the security events occured since last
