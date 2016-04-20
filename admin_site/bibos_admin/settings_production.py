@@ -3,7 +3,9 @@
 
 import os
 
-from wsgi import install_dir, lib_dir
+install_dir = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..')
+)
 
 
 DEBUG = True
