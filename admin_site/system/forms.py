@@ -73,6 +73,7 @@ class ScriptForm(forms.ModelForm):
 
     class Meta:
         model = Script
+        fields = '__all__'
 
 
 class ConfigurationEntryForm(forms.ModelForm):
@@ -106,7 +107,7 @@ class UserForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         initial = kwargs.setdefault('initial', {})
         if 'instance' in kwargs and kwargs['instance'] is not None:
-            initial['usertype'] = kwargs['instance'].bibos_profile.get().type
+            initial['usertype'] = kwargs['instance'].bibos_profile.type
         else:
             initial['usertype'] = UserProfile.SITE_USER
         self.initial_type = initial['usertype']

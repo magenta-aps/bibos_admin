@@ -3,8 +3,9 @@
 
 import os
 
-from wsgi import install_dir, lib_dir
-
+install_dir = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..')
+)
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -20,19 +21,22 @@ SOURCE_DIR = os.path.abspath(os.path.join(install_dir, '..'))
 # TODO: This parameter must be removed when we rename the system and factor out
 # BibOS-related stuff.
 BIBOS_IMAGE_DIR = os.path.join(
-    os.path.abspath(os.path.join(SOURCE_DIR, '..')), 
+    os.path.abspath(os.path.join(SOURCE_DIR, '..')),
     'bibos_image')
+
+# Make this unique, and don't share it with anybody.
+SECRET_KEY = '-se@l&$nrn)m=e^q^gsadasdasdasd7-j!)ul!mxe&ar@3^2%kpnor_lj2%ybe'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', 
+        'ENGINE': 'django.db.backends.sqlite3',
         # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': os.path.join(install_dir, '.database.db'),
-        # Or path to database file if using sqlite3.                      
+        # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': '',
         'PASSWORD': '',
-        'HOST': '',                      
+        'HOST': '',
         # Empty for localhost through domain sockets or '127.0.0.1' for localhost
         # through TCP.
         'PORT': '',                      # Set to empty string for default.
@@ -105,9 +109,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
-
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = '-se@l&$nrn)m=e^q^g7-j!)ul!mxe&ar@3^2%kpnor_lj2%ybe'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
