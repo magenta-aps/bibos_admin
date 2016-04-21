@@ -37,8 +37,6 @@ DATABASES = {
         'USER': '',
         'PASSWORD': '',
         'HOST': '',
-        # Empty for localhost through domain sockets or '127.0.0.1' for localhost
-        # through TCP.
         'PORT': '',                      # Set to empty string for default.
     }
 }
@@ -107,14 +105,12 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -133,15 +129,12 @@ ROOT_URLCONF = 'bibos_admin.urls'
 WSGI_APPLICATION = 'bibos_admin.wsgi.application'
 
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(install_dir, 'templates'),
 )
 
 LOCAL_APPS = (
     'system',
-    'job',
     'account',
 )
 
@@ -237,4 +230,4 @@ DEFAULT_DIRECT_PROXY_HOSTS = [
     'bibos-admin.ventiltest.dk'
 ]
 
-CLOSED_DISTRIBUTIONS = [ 'BIBOS', 'BIBOS12.04', 'BIBOS14.04', ]
+CLOSED_DISTRIBUTIONS = ['BIBOS', 'BIBOS12.04', 'BIBOS14.04']

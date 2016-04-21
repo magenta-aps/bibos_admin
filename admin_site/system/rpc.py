@@ -3,13 +3,12 @@
 
 import datetime
 import system.proxyconf
-from django.db.models import Q
 
 from django.conf import settings
 
 from models import PC, Site, Distribution, Configuration, ConfigurationEntry
 from models import PackageList, Package, PackageStatus, CustomPackages
-from job.models import Job, Script
+from models import Job, Script
 
 
 def register_new_computer(name, uid, distribution, site, configuration):
@@ -88,7 +87,7 @@ def upload_dist_packages(distribution_uid, package_data):
                     description=pd['description']
                 )
             finally:
-                status = PackageStatus.objects.create(
+                PackageStatus.objects.create(
                     package=p,
                     package_list=distribution.package_list,
                     status=pd['status']
@@ -133,7 +132,7 @@ def send_status_info(pc_uid, package_data, job_data, update_required):
                     description=pd['description']
                 )
             finally:
-                status = PackageStatus.objects.create(
+                PackageStatus.objects.create(
                     package=p,
                     package_list=pc.package_list,
                     status=pd['status']

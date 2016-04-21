@@ -2,14 +2,14 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
-from system.models import Site
-from job.models import SecurityProblem
+from system.models import Site, SecurityProblem
 
 
 class UserProfile(models.Model):
     """BibOS Admin specific user profile."""
     # This is the user to which the profile belongs
-    user = models.OneToOneField(User, unique=True, related_name='bibos_profile')
+    user = models.OneToOneField(User, unique=True,
+                                related_name='bibos_profile')
 
     SUPER_ADMIN = 0
     SITE_USER = 1

@@ -22,7 +22,7 @@ from account.models import UserProfile
 from models import Site, PC, PCGroup, ConfigurationEntry, Package
 from forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
 from forms import UserForm, ParameterForm, PCForm
-from job.models import Job, Script, Input
+from models import Job, Script, Input
 
 
 def set_notification_cookie(response, message):

@@ -1,11 +1,10 @@
 import datetime
 
 from django import forms
-from django.forms.models import inlineformset_factory
 from django.contrib.auth.models import User
 
 from models import Site, PCGroup, ConfigurationEntry, PC
-from job.models import Script, Input
+from models import Script, Input
 from account.models import UserProfile
 
 from django.utils.translation import ugettext as _

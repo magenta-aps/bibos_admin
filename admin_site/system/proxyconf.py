@@ -1,5 +1,5 @@
 from django.template import Context, loader as template_loader
-from random import sample, choice
+from random import choice
 from bibos_admin import settings
 from models import PC, ConfigurationEntry
 

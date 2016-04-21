@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, url
 from django.views.generic import RedirectView
 
-from views import SiteList, SiteView, SiteCreate, SiteUpdate, SiteDelete
+from views import SiteList, SiteCreate, SiteUpdate, SiteDelete
 from views import AdminIndex, PCsView, GroupsView, UsersView, JobsView
 from views import GroupCreate, GroupUpdate, GroupDelete, JobSearch, UserDelete
 from views import SiteDetailView, UserCreate, UserUpdate, SiteConfiguration
@@ -56,11 +56,11 @@ urlpatterns = patterns(
     url(r'^site/(?P<site_uid>[^/]+)/jobs/(?P<pk>\d+)/restart/',
         JobRestarter.as_view(),
         name='restart_job'
-    ),
+        ),
     url(r'^site/(?P<site_uid>[^/]+)/jobs/(?P<pk>\d+)/info/',
         JobInfo.as_view(),
         name='job_info'
-    ),
+        ),
     url(r'^site/(?P<slug>[^/]+)/jobs/', JobsView.as_view(), name='jobs'),
     # Scripts
     url(r'^site/(?P<slug>[^/]+)/scripts/(?P<script_pk>\d+)/delete/',
