@@ -393,4 +393,4 @@ class SecurityEvent(models.Model):
     complete_log = models.TextField(null=True, Blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES,
                               default=NEW)
-    assigned_user = models.ForeignKey(User)
+    assigned_user = models.ForeignKey(User, null=True, Blank=True)
