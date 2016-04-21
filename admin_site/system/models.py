@@ -5,6 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
+import job.models as job_models
 
 """The following variables define states of objects like jobs or PCs. It is
 used for labeling in the GUI."""
@@ -31,7 +32,6 @@ class Configuration(models.Model):
 
     def update_from_request(self, req_params, submit_name):
         seen_set = set()
-        new_ids = []
 
         existing_set = set(cnf.pk for cnf in self.entries.all())
 
@@ -194,7 +194,7 @@ class PackageInstallInfo(models.Model):
     do_add = models.BooleanField(default=True)
     package = models.ForeignKey(Package)
     custom_packages = models.ForeignKey(CustomPackages,
-                                     related_name='install_infos')
+                                        related_name='install_infos')
 
     def __unicode__(self):
         return self.package.name
@@ -271,7 +271,7 @@ class PackageStatus(models.Model):
     status = models.CharField(max_length=255)
     package = models.ForeignKey(Package)
     package_list = models.ForeignKey(PackageList,
-                                    related_name='statuses')
+                                     related_name='statuses')
 
     def __unicode__(self):
         return self.package.name + u': ' + self.status
@@ -282,6 +282,10 @@ class Site(models.Model):
     name = models.CharField(_('name'), max_length=255)
     uid = models.CharField(_('uid'), max_length=255, unique=True)
     configuration = models.ForeignKey(Configuration)
+
+    security_alerts = models.ManyToManyField(job_models.SecurityProblem,
+                                             related_name='alert_sites',
+                                             blank=True)
 
     @staticmethod
     def get_system_site():
@@ -303,8 +307,7 @@ class Site(models.Model):
             u.bibos_profile for u in User.objects.all().extra(
             select={'lower_name': 'lower(username)'}
         ).order_by('lower_name')
-                if u.bibos_profile.site == self
-                and u.bibos_profile.type != 0
+                if u.bibos_profile.site == self and u.bibos_profile.type != 0
         ]
         return [p.user for p in profiles]
 
@@ -376,6 +379,9 @@ class PCGroup(models.Model):
     site = models.ForeignKey(Site, related_name='groups')
     configuration = models.ForeignKey(Configuration)
     custom_packages = models.ForeignKey(CustomPackages)
+    security_alerts = models.ManyToManyField(job_models.SecurityProblem,
+                                             related_name='alert_groups',
+                                             blank=True)
 
     @property
     def url(self):
@@ -436,9 +442,9 @@ class PC(models.Model):
     # This field is used to communicate to the JobManager on each PC that it
     # should send an update of installed packages next time it contacts us.
     do_send_package_info = models.BooleanField(_('send package info'),
-                                                 default=True)
+                                               default=True)
     creation_time = models.DateTimeField(_('creation time'),
-        auto_now_add=True)
+                                         auto_now_add=True)
     last_seen = models.DateTimeField(_('last seen'), null=True, blank=True)
 
     @property
@@ -506,8 +512,7 @@ class PC(models.Model):
         else:
             # Get a list of all jobs associated with this PC and see if any of
             # them failed.
-            from job.models import Job
-            failed_jobs = self.jobs.filter(status=Job.FAILED)
+            failed_jobs = self.jobs.filter(status=job_models.Job.FAILED)
             if len(failed_jobs) > 0:
                 # Only UNHANDLED failed jobs, please.
                 return self.Status(FAIL, IMPORTANT)

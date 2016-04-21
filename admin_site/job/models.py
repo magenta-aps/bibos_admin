@@ -1,8 +1,8 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
-from django.core.exceptions import FieldError
 from django.core.urlresolvers import reverse
+from django.contrib.models import User
 
 from system.models import PC, Site
 
@@ -24,6 +24,8 @@ class Script(models.Model):
     # data.
     executable_code = models.FileField(_('executable code'),
                                        upload_to='script_uploads')
+    is_security_script = models.BooleanField(_('security script'),
+                                             default=False, null=False)
 
     @property
     def is_global(self):
@@ -51,7 +53,7 @@ class Script(models.Model):
                 title_matcher = re.compile('BIBOS_SCRIPT_TITLE:\s*([^\n]+)')
                 arg_matcher = re.compile(
                     'BIBOS_SCRIPT_ARG:(' +
-                        '|'.join([v for v, n in Input.VALUE_CHOICES]) +
+                    '|'.join([v for v, n in Input.VALUE_CHOICES]) +
                     ')',
                     flags=re.IGNORECASE
                 )
@@ -317,3 +319,78 @@ class Parameter(models.Model):
             return self.file_value.url
         else:
             return self.string_value
+
+
+class SecurityProblem(models.Model):
+    """A security problem and the method (script) to handle it."""
+
+    # Problem levels.
+
+    NORMAL = 'Normal'
+    HIGH = 'High'
+    CRITICAL = 'Critical'
+
+    LEVEL_TRANSLATIONS = {
+        NORMAL: _('securitylevel:Normal'),
+        HIGH: _('securitylevel:High'),
+        CRITICAL: _('securitylevel:Critical'),
+    }
+
+    LEVEL_CHOICES = (
+        (NORMAL, LEVEL_TRANSLATIONS[NORMAL]),
+        (HIGH, LEVEL_TRANSLATIONS[HIGH]),
+        (CRITICAL, LEVEL_TRANSLATIONS[CRITICAL]),
+    )
+
+    LEVEL_TO_LABEL = {
+        NORMAL: 'label-success',
+        HIGH: 'label-warning',
+        CRITICAL: 'label-important',
+    }
+
+    name = models.CharField(_('name'), max_length=255)
+    uid = models.CharField(_('uid'), max_length=255)
+    description = models.CharField(_('description'), max_length=1024,
+                                   blank=True)
+    level = models.CharField(max_length=10, choices=LEVEL_CHOICES,
+                             default=HIGH)
+    site = models.ForeignKey(Site, related_name='security_problems')
+    script = models.ForeignKey(Script, related_name='security_problems')
+
+
+class SecurityEvent(models.Model):
+    """A security event is an instance of a security problem."""
+
+    # Event status choices
+    NEW = 'NEW'
+    ASSIGNED = 'ASSIGNED'
+    RESOLVED = 'RESOLVED'
+
+    STATUS_TRANSLATIONS = {
+        NEW: _('eventstatus:New'),
+        ASSIGNED: _('eventstatus:Assigned'),
+        RESOLVED: _('eventstatus:Resolved')
+    }
+
+    STATUS_CHOICES = (
+        (NEW, STATUS_TRANSLATIONS[NEW]),
+        (ASSIGNED, STATUS_TRANSLATIONS[ASSIGNED]),
+        (RESOLVED, STATUS_TRANSLATIONS[RESOLVED])
+    )
+
+    STATUS_TO_LABEL = {
+        NEW: 'label-important',
+        ASSIGNED: 'label-warning',
+        RESOLVED: 'label-success'
+    }
+    problem = models.ForeignKey(SecurityProblem, null=False)
+    # The time the problem was reported in the log file
+    ocurred_time = models.DateTimeField(_('occurred'))
+    # The time the problem was submitted to the system
+    reported_time = models.DateTimeField(_('reported'))
+    pc = models.ForeignKey(PC)
+    summary = models.CharField(max_length=4096, null=False, blank=False)
+    complete_log = models.TextField(null=True, Blank=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES,
+                              default=NEW)
+    assigned_user = models.ForeignKey(User)
