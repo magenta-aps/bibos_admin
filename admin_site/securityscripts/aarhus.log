@@ -1,0 +1,16 @@
+Apr 4 10:31:27 bibos-hb-031 kernel: [ 8901.500656] usb 3-4: USB disconnect, device number 3
+Apr 4 10:31:27 bibos-hb-031 acpid: input device has been disconnected
+Apr 4 10:31:39 bibos-hb-031 kernel: [ 8913.730433] usb 3-4: new low-speed USB device number 6 using xhci_hcd
+Apr 4 10:31:39 bibos-hb-031 kernel: [ 8913.753735] usb 3-4: New USB device found, idVendor=04b3, idProduct=3025
+Apr 4 10:31:39 bibos-hb-031 kernel: [ 8913.753744] usb 3-4: New USB device strings: Mfr=1, Product=2, SerialNumber=0
+Apr 4 10:31:39 bibos-hb-031 kernel: [ 8913.753749] usb 3-4: Product: USB NetVista Full Width Keyboard.
+Apr 4 10:31:39 bibos-hb-031 kernel: [ 8913.753753] usb 3-4: Manufacturer: LITE-ON Technology
+Apr 4 10:31:39 bibos-hb-031 kernel: [ 8913.754009] usb 3-4: ep 0x81 - rounding interval to 128 microframes, ep desc says 192 microframes
+Apr 4 10:31:39 bibos-hb-031 kernel: [ 8913.759582] input: LITE-ON Technology USB NetVista Full Width Keyboard. as /devices/pci0000:00/0000:00:14.0/usb3/3-4/3-4:1.0/input/input13
+Apr 4 10:31:39 bibos-hb-031 kernel: [ 8913.759750] hid-generic 0003:04B3:3025.0003: input,hidraw1: USB HID v1.10 Keyboard [LITE-ON Technology USB NetVista Full Width Keyboard.] on usb-0000:00:14.0-4/input0
+Apr 4 10:31:39 bibos-hb-031 mtp-probe: checking bus 3, device 6: "/sys/devices/pci0000:00/0000:00:14.0/usb3/3-4"
+Apr 4 10:31:39 bibos-hb-031 mtp-probe: bus: 3, device: 6 was not an MTP device
+Apr 4 10:31:39 bibos-hb-031 laptop-mode: Laptop mode
+Apr 4 10:31:39 bibos-hb-031 laptop-mode: enabled, not active
+Apr 4 10:31:39 bibos-hb-031 laptop-mode: Laptop mode
+Apr 4 10:31:39 bibos-hb-031 laptop-mode: enabled, not active
