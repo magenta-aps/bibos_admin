@@ -1,0 +1,143 @@
+{% extends "site_with_navigation.html" %}
+
+{% block specific_title %}
+Sikkerhedsadvarsler
+{% endblock %}
+
+{% block head_javascripts %}
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('.collapsing').click(function() {
+        $(this).find('i').toggleClass('icon-chevron-up icon-chevron-down');
+      });
+    });
+  </script>
+{% endblock %}
+
+{% block security_active %}
+class="active"
+{% endblock %}
+
+{% block specific_documentation_links %}
+  <li><a href="{% url 'doc' 'scripts/running' %}"><i class="icon-question-sign icon-white"></i>Hjælp til sikkerhed</a></li>
+{% endblock %}
+
+{% block specific_content %}
+  <div class="template-container">
+   <table>
+    <tbody id="jobitem-template">
+      <tr class="muted">
+        <td>Advarsel</td>
+        <td>Tid</td>
+      </tr>
+    </tbody>
+   </table>
+  </div>
+  <div id="jobsearchnav" class="sublevelnav">
+    <form id="jobsearch-filterform" name="filterform" action="./" method="post">
+      
+      <h3 class="nav-header">Filtrér:</h3>
+      <hr>
+      <div>
+        <label>
+          <input type="checkbox" value="" name="" checked="checked">
+          <span class="label label-important">Alvorsgrad: Rød</span>
+        </label>
+        <label>
+          <input type="checkbox" value="" name="" checked="checked">
+          <span class="label label-warning">Alvorsgrad: Orange</span>
+        </label>
+        <label>
+          <input type="checkbox" value="" name="" checked="checked">
+          <span class="label label-gentle-warning">Alvorsgrad: Gul</span>
+        </label>
+      </div>
+      <hr>
+      <div>
+        <label>
+          <input type="checkbox" value="" name="">
+          <span class="label">Vis læste (arkiveret)</span>
+        </label>
+      </div>
+      <hr>
+      <div>
+          <label>
+            <input type="radio" value="20"  checked="checked" name="do_limit">
+            <span class="label">Første 20</span>
+          </label>
+          <label>
+            <input type="radio" value="50"  name="do_limit">
+            <span class="label">Første 50</span>
+          </label>
+          <label>
+            <input type="radio" value="100"  name="do_limit">
+            <span class="label">Første 100</span>
+          </label>
+          <label>
+            <input type="radio" value="0"  name="do_limit">
+            <span class="label">Alle</span>
+          </label>
+      </div>
+    </form>
+  </div>
+  <div class="container-fluid main sublevelmain" style="overflow-x: auto;">
+    {% include 'notification.html' %}
+    <table class="table table-hover warn-table">
+      <thead>
+        <tr>
+          <th><i class="icon-warning-sign"></i> Advarsel</th>
+          <th>Tid</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="seclevel-danger" onclick="$('#warnModal').modal()">
+          <td>Brug af <em>sudo</em> på klient</td>
+          <td>Idag 11:13</td>
+        </tr>
+        <tr class="seclevel-warning" onclick="$('#warnModal').modal()">
+          <td>USB disconnected (tastatur)</td>
+          <td>Idag 09:47</td>
+        </tr>
+        <tr class="seclevel-gentle-warning" onclick="$('#warnModal').modal()">
+          <td>Maskine svarer ikke</td>
+          <td>12. maj 18:23</td>
+        </tr>
+        <tr onclick="$('#warnModal').modal()">
+          <td>Maskine svarer ikke (Læst)</td>
+          <td>12. februar 22:14</td>
+        </tr>
+        <tr onclick="$('#warnModal').modal()">
+          <td>Maskine svarer ikke (Læst)</td>
+          <td>9. september 2014 22:14</td>
+        </tr>
+        <tr class="muted">
+          <td colspan="2">Loading data...</td>
+        </tr>
+      </tbody>
+    </table> 
+  </div>
+  
+  <div id="warnModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="warnModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel">USB disconnected (tastatur)</h3>
+    </div>
+    <div class="modal-body">
+      <p><i class="icon-warning-sign"></i> Der er sket noget uhensigtsmæssigt</p>
+      <p>Her er en uddybende besked om uhensigtsmæssigheden og nogle data, du kan kigge på.</p>
+      <dl class="dl-horizontal">
+        <dt>Tid</dt>
+        <dd>11:34 18. mar. 2016</dd>
+        <dt>Lokation</dt>
+        <dd>Afdeling C</dd>
+        <dt>Maskine</dt>
+        <dd><a hre="#">Public computer #253</a></dd>
+      </dl>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Luk</button>
+      <button class="btn btn-primary">Markér som læst</button>
+    </div>
+  </div>
+  
+{% endblock %}

@@ -11,8 +11,16 @@ from views import ConfigurationEntryCreate, ConfigurationEntryUpdate
 from views import ConfigurationEntryDelete, JobInfo, TechDocView, DocView
 from views import PackageSearch, PCDelete
 
+# Used by mockup for security events UI -- REMOVE
+from django.views.generic import TemplateView
+
 urlpatterns = patterns(
     '',
+    
+    # Mockup for security events UI -- REMOVE
+    url(r'^site/somesite/security/$', TemplateView.as_view(template_name='system/site_security.html')),
+    url(r'^site/somesite/security/warning_info/$', TemplateView.as_view(template_name='system/security/security_info.html')),
+    
     url(r'^$', AdminIndex.as_view(), name='index'),
     url(r'^sites/$', SiteList.as_view(), name='sites'),
     url(r'^sites/new/$', SiteCreate.as_view(), name='new_site'),
@@ -62,6 +70,7 @@ urlpatterns = patterns(
         name='job_info'
         ),
     url(r'^site/(?P<slug>[^/]+)/jobs/', JobsView.as_view(), name='jobs'),
+    
     # Scripts
     url(r'^site/(?P<slug>[^/]+)/scripts/(?P<script_pk>\d+)/delete/',
         ScriptDelete.as_view(),
