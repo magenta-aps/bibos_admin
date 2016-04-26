@@ -3,6 +3,7 @@
 import os
 import sys
 import linecache
+from datetime import datetime
 
 syslog = "/var/log/syslog"
 totalNumberOfLines = len(open(syslog).readlines())
@@ -13,7 +14,7 @@ for i in range(totalNumberOfLines - 10 + 1, totalNumberOfLines+1):
      lines += str(linecache.getline(syslog,i),)
 
 securityEventFile = open("/etc/bibos/security/event.txt", "a")
-
+securityEventFile.write("Timestamp: " + datetime.now().strftime('%Y%m%d%H%M') + "\n")
 #Ignore first argument
 iterargs = iter(sys.argv)
 next(iterargs)
