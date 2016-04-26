@@ -10,8 +10,9 @@ then
     exit
 fi
 
-virtualenv .
-source bin/activate
+rm -rf python-env
+virtualenv python-env
+source python-env/bin/activate
 
 DIR=$(dirname ${BASH_SOURCE[0]})
 PYTHON_PACKAGES=$(cat "$DIR/PYTHON_DEPENDENCIES")
