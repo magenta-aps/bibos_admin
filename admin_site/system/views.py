@@ -22,7 +22,7 @@ from account.models import UserProfile
 from models import Site, PC, PCGroup, ConfigurationEntry, Package
 from forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
 from forms import UserForm, ParameterForm, PCForm
-from models import Job, Script, Input, SecurityProblem, SecurityEvent
+from models import Job, Script, Input, SecurityProblem
 
 
 def set_notification_cookie(response, message):
@@ -283,7 +283,7 @@ class JobsView(SiteView):
                 'value': value,
                 'label': Job.STATUS_TO_LABEL[value],
                 'checked':
-                    'checked="checked' if value in preselected else ''
+                'checked="checked' if value in preselected else ''
             } for (value, name) in Job.STATUS_CHOICES
         ]
         params = self.request.GET or self.request.POST
@@ -1209,6 +1209,40 @@ class SecurityProblemsView(SelectionMixin, SiteView):
             return HttpResponseRedirect(
                 '/site/%s/new_security_problem/' % context['site'].uid,
             )
+
+
+class SecurityProblemCreate(SiteMixin, CreateView, SuperAdminOrThisSiteMixin):
+    model = SecurityProblem
+    # form_class = <hopefully_not_necessary>
+
+    def get_success_url(self):
+        return '/site/{0}/security_problem/'.format(self.kwargs['site_uid'])
+
+
+class SecurityProblemUpdate(SiteMixin, UpdateView, SuperAdminOrThisSiteMixin):
+    model = SecurityProblem
+    # form_class = <hopefully_not_necessary>
+
+    def get_success_url(self):
+        return '/site/{0}/security_problem/'.format(self.kwargs['site_uid'])
+
+
+class SecurityProblemDelete(SiteMixin, DeleteView, SuperAdminOrThisSiteMixin):
+    model = SecurityProblem
+    # form_class = <hopefully_not_necessary>
+
+    def get_success_url(self):
+        return '/site/{0}/security_problem/'.format(self.kwargs['site_uid'])
+
+
+class SecurityEventsView(SiteView):
+    template_name = 'system/site_jobs.html'
+
+    def get_context_data(self, **kwargs):
+        # First, get basic context from superclass
+        context = super(SecurityEventsView, self).get_context_data(**kwargs)
+        # TODO: Supply extra info as (probably not) needed.
+        return context
 
 
 class PackageSearch(JSONResponseMixin, ListView):
