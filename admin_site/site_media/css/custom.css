@@ -120,16 +120,12 @@ ul.nav li ul li.active { font-style: italic; }
 .tabcontent {display: none; background: #fff; padding: 20px; border-radius: 0.25em;}
 .tabcontent.active {display: block;}
 .scriptDescription textarea {width: 95%; min-height: 20em;}
-.warn-table tr {
-    cursor: pointer;
-}
-.warn-table tr:hover,
-.warn-table tr:active {
-    color: #333;
-}
+.warn-table tr {cursor: pointer;}
+.warn-table tr:hover, .warn-table tr:active {color: #333;}
+.label-warning, .badge-warning {color: #333;}
 .label-gentle-warning, .badge-gentle-warning {background-color: #F8F006; color: #333;}
 .seclevel-danger {color: #fff; background-color: #b94a48;}
-.seclevel-warning {color: #fff; background-color: #f89406;}
+.seclevel-warning {color: #333; background-color: #f89406;}
 .seclevel-gentle-warning {color: #333; background-color: #F8F006;}
 .overlay {position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5);}
 .windows8 {position:absolute; top: 50%; left: 50%; width:90px; height:90px; margin: -45px 0 0 -45px;}

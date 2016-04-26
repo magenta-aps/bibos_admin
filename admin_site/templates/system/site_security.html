@@ -39,24 +39,32 @@ class="active"
       <h3 class="nav-header">Filtrér:</h3>
       <hr>
       <div>
-        <label>
+        <label class="checkbox">
           <input type="checkbox" value="" name="" checked="checked">
           <span class="label label-important">Alvorsgrad: Rød</span>
         </label>
-        <label>
+        <label class="checkbox">
           <input type="checkbox" value="" name="" checked="checked">
           <span class="label label-warning">Alvorsgrad: Orange</span>
         </label>
-        <label>
+        <label class="checkbox">
           <input type="checkbox" value="" name="" checked="checked">
           <span class="label label-gentle-warning">Alvorsgrad: Gul</span>
         </label>
       </div>
       <hr>
       <div>
-        <label>
+        <label class="checkbox">
+          <input type="checkbox" value="" name="" checked="checked">
+          <span>Vis ikke-hånterede</span>
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" value="" name="" checked="checked">
+          <span>Vis hånterede</span>
+        </label>
+        <label class="checkbox">
           <input type="checkbox" value="" name="">
-          <span class="label">Vis læste (arkiveret)</span>
+          <span>Vis løste (arkiveret)</span>
         </label>
       </div>
       <hr>
@@ -87,31 +95,37 @@ class="active"
         <tr>
           <th><i class="icon-warning-sign"></i> Advarsel</th>
           <th>Tid</th>
+          <th>Håndteres af</th>
         </tr>
       </thead>
       <tbody>
         <tr class="seclevel-danger" onclick="$('#warnModal').modal()">
           <td>Brug af <em>sudo</em> på klient</td>
           <td>Idag 11:13</td>
+          <td>[ Mig ]</td>
         </tr>
         <tr class="seclevel-warning" onclick="$('#warnModal').modal()">
           <td>USB disconnected (tastatur)</td>
           <td>Idag 09:47</td>
+          <td>Katrine Nordskov</td>
         </tr>
         <tr class="seclevel-gentle-warning" onclick="$('#warnModal').modal()">
           <td>Maskine svarer ikke</td>
           <td>12. maj 18:23</td>
+          <td class="muted">Ingen</td>
         </tr>
         <tr onclick="$('#warnModal').modal()">
           <td>Maskine svarer ikke (Læst)</td>
           <td>12. februar 22:14</td>
+          <td>Bjarke Søndermark</td>
         </tr>
         <tr onclick="$('#warnModal').modal()">
           <td>Maskine svarer ikke (Læst)</td>
           <td>9. september 2014 22:14</td>
+          <td class="muted">Ingen</td>
         </tr>
         <tr class="muted">
-          <td colspan="2">Loading data...</td>
+          <td colspan="3">Loading data...</td>
         </tr>
       </tbody>
     </table> 
@@ -132,11 +146,14 @@ class="active"
         <dd>Afdeling C</dd>
         <dt>Maskine</dt>
         <dd><a hre="#">Public computer #253</a></dd>
+        <dt>Håndteres af</dt>
+        <dd><span class="muted">Ingen</span> / <a href="#">Bjarke Søndermark</a></dd>
       </dl>
     </div>
     <div class="modal-footer">
       <button class="btn" data-dismiss="modal" aria-hidden="true">Luk</button>
-      <button class="btn btn-primary">Markér som læst</button>
+      <button class="btn btn-primary">Jeg håndterer det</button>
+      <button class="btn btn-primary" disabled="disabled">Markér som løst</button>
     </div>
   </div>
   
