@@ -1,20 +1,13 @@
 # -*- coding: utf-8 -*-
-import re
 import os
 import json
-import datetime
 
-from django.core.urlresolvers import reverse
-from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils.decorators import method_decorator
-from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
-from django.template import Context
-from django.utils.html import escape
 
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import View, ListView, DetailView, RedirectView
@@ -29,10 +22,7 @@ from account.models import UserProfile
 from models import Site, PC, PCGroup, ConfigurationEntry, Package
 from forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
 from forms import UserForm, ParameterForm, PCForm
-from job.models import Job, Script, Input, Batch, Parameter
-
-
-import signals
+from models import Job, Script, Input
 
 
 def set_notification_cookie(response, message):
@@ -62,7 +52,7 @@ class LoginRequiredMixin(View):
 
 class SuperAdminOnlyMixin(View):
     """Only allows access to super admins."""
-    check_function = user_passes_test(lambda u: u.get_profile().type ==
+    check_function = user_passes_test(lambda u: u.bibos_profile.type ==
                                       UserProfile.SUPER_ADMIN, login_url='/')
 
     @method_decorator(login_required)
@@ -88,8 +78,8 @@ class SuperAdminOrThisSiteMixin(View):
             site = get_object_or_404(Site, uid=kwargs[slug_field])
         check_function = user_passes_test(
             lambda u:
-            (u.get_profile().type == UserProfile.SUPER_ADMIN) or
-            (site and site == u.get_profile().site), login_url='/'
+            (u.bibos_profile.type == UserProfile.SUPER_ADMIN) or
+            (site and site == u.bibos_profile.site), login_url='/'
         )
         wrapped_super = check_function(
             super(SuperAdminOrThisSiteMixin, self).dispatch
@@ -175,7 +165,7 @@ class AdminIndex(RedirectView, LoginRequiredMixin):
         """Redirect based on user. This view will use the RequireLogin mixin,
         so we'll always have a logged-in user."""
         user = self.request.user
-        profile = user.get_profile()
+        profile = user.bibos_profile
 
         if profile.type == UserProfile.SUPER_ADMIN:
             # Redirect to list of sites
@@ -217,7 +207,7 @@ class SiteDetailView(SiteView):
         params = self.request.GET or self.request.POST
 
         orderby = params.get('orderby', '-pk')
-        if not orderby in JobSearch.VALID_ORDER_BY:
+        if orderby not in JobSearch.VALID_ORDER_BY:
             orderby = '-pk'
         context['orderby'] = orderby
 
@@ -326,9 +316,9 @@ class JobSearch(JSONResponseMixin, SiteView):
             'pk': job.pk,
             'script_name': job.batch.script.name,
             'started': job.started.strftime("%Y-%m-%d %H:%M:%S") if
-                job.started else None,
+            job.started else None,
             'finished': job.finished.strftime("%Y-%m-%d %H:%M:%S") if
-                job.finished else None,
+            job.finished else None,
             'status': job.status_translated + '',
             'label': job.status_label,
             'pc_name': job.pc.name,
@@ -361,7 +351,7 @@ class JobSearch(JSONResponseMixin, SiteView):
             query['pc__pc_groups'] = group
 
         orderby = params.get('orderby', '-pk')
-        if not orderby in JobSearch.VALID_ORDER_BY:
+        if orderby not in JobSearch.VALID_ORDER_BY:
             orderby = '-pk'
         limit = int(params.get('do_limit', '0'))
 
@@ -484,7 +474,7 @@ class ScriptMixin(object):
         context['local_scripts'] = sorted(self.scripts.filter(site=self.site),
                                           key=lambda s: s.name.lower())
         context['global_scripts'] = sorted(self.scripts.filter(site=None),
-                                          key=lambda s: s.name.lower())
+                                           key=lambda s: s.name.lower())
 
         context['script_inputs'] = self.script_inputs
 
@@ -818,7 +808,7 @@ class PCUpdate(SiteMixin, UpdateView, LoginRequiredMixin):
             context['pending_packages_remove'] = sorted(r)
 
         orderby = params.get('orderby', '-pk')
-        if not orderby in JobSearch.VALID_ORDER_BY:
+        if orderby not in JobSearch.VALID_ORDER_BY:
             orderby = '-pk'
         context['joblist'] = pc.jobs.order_by('status', 'pk').order_by(
             orderby,
@@ -960,7 +950,7 @@ class UserCreate(CreateView, UsersMixin, SuperAdminOrThisSiteMixin):
         self.object = form.save()
 
         site = get_object_or_404(Site, uid=self.kwargs['site_uid'])
-        profile = self.object.bibos_profile.create(
+        UserProfile.objects.create(
             user=self.object,
             type=form.cleaned_data['usertype'],
             site=site
@@ -988,7 +978,7 @@ class UserUpdate(UpdateView, UsersMixin, SuperAdminOrThisSiteMixin):
         context = super(UserUpdate, self).get_context_data(**kwargs)
         self.add_userlist_to_context(context)
 
-        loginusertype = self.request.user.bibos_profile.get().type
+        loginusertype = self.request.user.bibos_profile.type
 
         context['selected_user'] = self.selected_user
         context['form'].setup_usertype_choices(loginusertype)
@@ -1000,8 +990,7 @@ class UserUpdate(UpdateView, UsersMixin, SuperAdminOrThisSiteMixin):
     def form_valid(self, form):
         self.object = form.save()
 
-        site = get_object_or_404(Site, uid=self.kwargs['site_uid'])
-        profile = self.object.bibos_profile.get(site=site)
+        profile = self.object.bibos_profile
         profile.type = form.cleaned_data['usertype']
         response = super(UserUpdate, self).form_valid(form)
         set_notification_cookie(
@@ -1391,8 +1380,12 @@ class TechDocView(TemplateView):
 
         dir = settings.SOURCE_DIR
         image_dir = settings.BIBOS_IMAGE_DIR
-        d = lambda f: os.path.join(dir, f)
-        i = lambda f: os.path.join(image_dir, f)
+
+        def d(f):
+            os.path.join(dir, f)
+
+        def i(f):
+            os.path.join(image_dir, f)
 
         url_mapping = {
             'install_guide': d('doc/HOWTO_INSTALL_SERVER.txt'),

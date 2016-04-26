@@ -11,7 +11,7 @@ class="detailpage"
 {% block content %}
 
   <ul class="nav nav-list utils utils-global">
-    {% ifequal user.get_profile.type 0 %}
+    {% ifequal user.bibos_profile.type 0 %}
       <li><a href="/sites/"><i class="icon-arrow-left icon-white"></i> Sites</a></li>
       <li class="divider"></li>
     {% endifequal %}

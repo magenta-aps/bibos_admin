@@ -3,8 +3,9 @@
 
 import os
 
-from wsgi import install_dir, lib_dir
-
+install_dir = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..')
+)
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -20,21 +21,22 @@ SOURCE_DIR = os.path.abspath(os.path.join(install_dir, '..'))
 # TODO: This parameter must be removed when we rename the system and factor out
 # BibOS-related stuff.
 BIBOS_IMAGE_DIR = os.path.join(
-    os.path.abspath(os.path.join(SOURCE_DIR, '..')), 
+    os.path.abspath(os.path.join(SOURCE_DIR, '..')),
     'bibos_image')
+
+# Make this unique, and don't share it with anybody.
+SECRET_KEY = '-se@l&$nrn)m=e^q^gsadasdasdasd7-j!)ul!mxe&ar@3^2%kpnor_lj2%ybe'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', 
+        'ENGINE': 'django.db.backends.sqlite3',
         # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': os.path.join(install_dir, '.database.db'),
-        # Or path to database file if using sqlite3.                      
+        # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': '',
         'PASSWORD': '',
-        'HOST': '',                      
-        # Empty for localhost through domain sockets or '127.0.0.1' for localhost
-        # through TCP.
+        'HOST': '',
         'PORT': '',                      # Set to empty string for default.
     }
 }
@@ -103,17 +105,12 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
-
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = '-se@l&$nrn)m=e^q^g7-j!)ul!mxe&ar@3^2%kpnor_lj2%ybe'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -132,15 +129,12 @@ ROOT_URLCONF = 'bibos_admin.urls'
 WSGI_APPLICATION = 'bibos_admin.wsgi.application'
 
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(install_dir, 'templates'),
 )
 
 LOCAL_APPS = (
     'system',
-    'job',
     'account',
 )
 
@@ -236,4 +230,4 @@ DEFAULT_DIRECT_PROXY_HOSTS = [
     'bibos-admin.ventiltest.dk'
 ]
 
-CLOSED_DISTRIBUTIONS = [ 'BIBOS', 'BIBOS12.04', 'BIBOS14.04', ]
+CLOSED_DISTRIBUTIONS = ['BIBOS', 'BIBOS12.04', 'BIBOS14.04']

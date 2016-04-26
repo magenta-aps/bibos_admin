@@ -4,7 +4,8 @@ from django.contrib import admin
 from models import Configuration, ConfigurationEntry, PackageList, Package
 from models import Site, Distribution, PCGroup, PC, CustomPackages
 from models import PackageInstallInfo, PackageStatus
-
+# Job-related stuff
+from models import Script, Batch, Job, Input, Parameter
 ar = admin.site.register
 
 
@@ -45,6 +46,31 @@ class PCGroupAdmin(admin.ModelAdmin):
     inlines = [PCInline]
 
 
+class JobInline(admin.TabularInline):
+    fields = ['pc']
+    model = Job
+    extra = 1
+
+
+class ParameterInline(admin.TabularInline):
+    model = Parameter
+    extra = 1
+
+
+class BatchAdmin(admin.ModelAdmin):
+    fields = ['site', 'name', 'script']
+    inlines = [JobInline, ParameterInline]
+
+
+class InputInline(admin.TabularInline):
+    model = Input
+    extra = 1
+
+
+class ScriptAdmin(admin.ModelAdmin):
+    inlines = [InputInline]
+
+
 ar(Configuration, ConfigurationAdmin)
 ar(PackageList)
 ar(CustomPackages, CustomPackagesAdmin)
@@ -53,3 +79,8 @@ ar(Distribution)
 ar(PCGroup, PCGroupAdmin)
 ar(PC)
 ar(Package)
+# Job related stuff
+ar(Script, ScriptAdmin)
+ar(Batch, BatchAdmin)
+ar(Job)
+ar(Parameter)

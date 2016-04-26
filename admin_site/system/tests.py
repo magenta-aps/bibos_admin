@@ -23,12 +23,12 @@ class SimpleTest(TestCase):
 
 def pep8_test(filepath):
     def do_test(self):
-        #print "PATH:", filepath
+        # print "PATH:", filepath
         arglist = ['--exclude=lib', filepath]
         pep8.process_options(arglist)
         pep8.input_dir(filepath)
         output = pep8.get_statistics()
-        #print "PEP8 OUTPUT: " + str(output)
+        # print "PEP8 OUTPUT: " + str(output)
         self.assertEqual(len(output), 0)
 
     return do_test
@@ -37,7 +37,8 @@ def pep8_test(filepath):
 class Pep8Test(TestCase):
     """Test that the template system a well as the default clients and plugins
     are PEP8-compliant."""
-    j = lambda dir: os.path.join(parent_directory, dir)
+    def j(dir):
+        os.path.join(parent_directory, dir)
 
     test_system = pep8_test(j('system'))
     test_job = pep8_test(j('job'))
