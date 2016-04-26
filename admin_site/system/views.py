@@ -22,7 +22,7 @@ from account.models import UserProfile
 from models import Site, PC, PCGroup, ConfigurationEntry, Package
 from forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
 from forms import UserForm, ParameterForm, PCForm
-from models import Job, Script, Input
+from models import Job, Script, Input, SecurityProblem, SecurityEvent
 
 
 def set_notification_cookie(response, message):
@@ -1189,6 +1189,26 @@ class GroupDelete(SiteMixin, SuperAdminOrThisSiteMixin, DeleteView):
             _('Group %s deleted') % name
         )
         return response
+
+
+class SecurityProblemsView(SelectionMixin, SiteView):
+
+    template_name = 'system/security_problems.html'
+    selection_class = SecurityProblem
+
+    def get_list(self):
+        return self.object.security_problems
+
+    def render_to_response(self, context):
+        if('selected_security_problem' in context):
+            return HttpResponseRedirect('/site/%s/security_problem/%s/' % (
+                context['site'].uid,
+                context['selected_security_problem'].username
+            ))
+        else:
+            return HttpResponseRedirect(
+                '/site/%s/new_security_problem/' % context['site'].uid,
+            )
 
 
 class PackageSearch(JSONResponseMixin, ListView):
