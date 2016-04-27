@@ -30,6 +30,12 @@ Directory structure for storing BibOS jobs:
 /var/lib/bibos/jobs/<id>/output.log - Logfile with output from the job
 """
 
+"""
+Directory structure for BibOS security events:
+/etc/bibos/security/event.csv - Security event log file.
+/etc/bibos/security/scripts/ - Scripts to be executed by the jobmanager.
+/etc/bibos/security/check/ - security_check_YYYYMMDDHHmm.csv files containing the events to be sent to the admin system.
+"""
 JOBS_DIR = '/var/lib/bibos/jobs'
 LOCK = filelock(JOBS_DIR + '/running')
 PACKAGE_LIST_FILE = '/var/lib/bibos/current_packages.list'
@@ -419,6 +425,9 @@ def run_pending_jobs():
     else:
         print >>os.sys.stderr, "Aquire the lock before running jobs"
 
+def handle_security_events():
+    collect_security_events()
+    send_security_events()
 
 def update_and_run():
     try:
@@ -426,6 +435,7 @@ def update_and_run():
         try:
             get_instructions()
             run_pending_jobs()
+            handle_security_events()
         finally:
             LOCK.release()
     except IOError:
