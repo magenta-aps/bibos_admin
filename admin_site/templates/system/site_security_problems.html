@@ -1,0 +1,164 @@
+{% extends "site_with_navigation.html" %}
+
+{% block specific_title %}
+Definerede sikkerhedsproblemer
+{% endblock %}
+
+{% block specific_documentation_links %}
+    <li><a href="{% url 'doc' 'groups' %}"><i class="icon-question-sign icon-white"></i> Definition af sikkerhedsproblemer</a></li>
+{% endblock %}
+
+{% block javascripts %}
+
+{% endblock %}
+
+{% block security_problems_active %}
+class="active"
+{% endblock %}
+
+{% block specific_content %}
+  <ul class="sublevelnav">
+    <li class="listutils">
+      <a href="#addNewSecProblem" role="button" data-toggle="modal" title="Definér nyt sikkerhedsproblem"><i class="icon-plus icon-white"></i> definér nyt sikkerhedsproblem</a>
+    </li>
+    <li>
+      <a class="remove pull-right" href="#" title="Slet gruppe"><i class="icon-remove icon-white"></i></a>
+      <a class="list-item" href="#"><i class="icon-exclamation-sign"></i> Keyboard frakobling</a>
+    </li>
+    <li class="active">
+      <a class="remove pull-right" href="#" title="Slet gruppe"><i class="icon-remove icon-white"></i></a>
+      <a class="list-item" href="#"><i class="icon-exclamation-sign"></i> Brug af sudo</a>
+    </li>
+    <li>
+      <a class="remove pull-right" href="#" title="Slet gruppe"><i class="icon-remove icon-white"></i></a>
+      <a class="list-item" href="#"><i class="icon-exclamation-sign"></i> Minecraft-installering</a>
+    </li>
+  </ul>
+  
+  <div class="container-fluid main sublevelmain">
+    
+    <h2 class="divideheader">
+        Detaljer om <em>Brug af sudo</em>
+        <a class="pull-right" href="/site/somesite/security/" title="Se alle advarsler for dette sikkerhedsproblem"><span class="badge badge-important"><icon class="icon-fire icon-white"></icon></span></a>
+    </h2>
+    {% include 'notification.html' %}
+    
+    <form name="updategroupform" id="updategroupform"
+      method="post" class="row-fluid">
+      <p>
+        <button class="btn btn-primary">Gem ændringer</button>
+        <button class="btn">Annuller</button>
+      </p>
+      <div>
+        <div class="row-fluid">
+          <fieldset class="span6">
+            
+            <label>Navn:</label>
+            <input type="text" value="Brug af sudo">
+            
+            <label>Problemmeddelelse:</label>
+            <textarea>sudo er blevet benyttet på klient-maskine</textarea>
+            
+            <label>Alvorsgrad:</label>
+            <select>
+                <option>Rød (meget alvorlig)</option>
+                <option>Orange (noget alvorlig)</option>
+                <option>Gul (lidt alvorlig)</option>
+            </select>
+            
+            <label>Script:</label>
+            <select>
+                <option>Script A</option>
+                <option>Script B</option>
+                <option>Script C</option>
+            </select>
+            
+            <label>Overvåg følgende grupper:</label>
+            {% include 'system/pcgrouplist/list.html' with submit_name='pc_groups' %}
+            
+          </fieldset>
+          <fieldset class="span6">
+            
+            <label>Modtager(e) af email-advarsel</label>
+            {% include 'system/pcgrouplist/list.html' with submit_name='pc_groups' %}
+            
+            <label class="checkbox">
+                <input type="checkbox" checked="checked">
+                Advar øjeblikkeligt ved opstået problem
+            </label>
+            
+            <label class="checkbox">
+                <input type="checkbox">
+                Advar i email-rapport én gang dagligt
+            </label>
+          </fieldset>
+        </div>
+        
+      </div>
+
+    </form>
+
+    <div id="addNewSecProblem" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <form>
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">×</button>
+          <h3>Definér nyt sikkerhedsproblem</h3>
+        </div>
+        <div class="modal-body">
+            
+            <div class="row-fluid">
+                <fieldset class="span6">
+                  
+                  <label>Navn:</label>
+                  <input type="text" value="" placeholder="Kort og beskrivende navn">
+                  
+                  <label>Problemmeddelelse:</label>
+                  <textarea placeholder="Kort beskrivelse, som bruges i sikkerhedsadvarsler"></textarea>
+                  
+                  <label>Alvorsgrad:</label>
+                  <select>
+                      <option>-- Angiv alvorsgrad --</option>
+                      <option>Rød (meget alvorlig)</option>
+                      <option>Orange (noget alvorlig)</option>
+                      <option>Gul (lidt alvorlig)</option>
+                  </select>
+                  
+                  <label>Script:</label>
+                  <select>
+                      <option>-- Vælg script til problemet --</option>
+                      <option>Script A</option>
+                      <option>Script B</option>
+                      <option>Script C</option>
+                  </select>
+                  
+                  <label>Overvåg følgende grupper:</label>
+                  {% include 'system/pcgrouplist/list.html' with submit_name='pc_groups' %}
+                  
+                </fieldset>
+                <fieldset class="span6">
+                  
+                  <label>Modtager(e) af email-advarsel</label>
+                  {% include 'system/pcgrouplist/list.html' with submit_name='pc_groups' %}
+                  
+                  <label class="checkbox">
+                      <input type="checkbox">
+                      Advar øjeblikkeligt ved opstået problem
+                  </label>
+                  
+                  <label class="checkbox">
+                      <input type="checkbox">
+                      Advar i email-rapport én gang dagligt
+                  </label>
+                </fieldset>
+              </div>
+            
+        </div>
+        <div class="modal-footer">
+          <input type="submit" class="btn btn-primary" value="Gem" />
+          <input type="reset" class="btn" data-dismiss="modal" value="Annuller" />
+        </div>
+      </form>
+    </div>
+
+  </div>
+{% endblock %}

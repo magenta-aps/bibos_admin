@@ -20,6 +20,7 @@ urlpatterns = patterns(
     # Mockup for security events UI -- REMOVE
     url(r'^site/somesite/security/$', TemplateView.as_view(template_name='system/site_security.html')),
     url(r'^site/somesite/security/warning_info/$', TemplateView.as_view(template_name='system/security/security_info.html')),
+    url(r'^site/somesite/security_problems/$', TemplateView.as_view(template_name='system/site_security_problems.html')),
     
     url(r'^$', AdminIndex.as_view(), name='index'),
     url(r'^sites/$', SiteList.as_view(), name='sites'),
