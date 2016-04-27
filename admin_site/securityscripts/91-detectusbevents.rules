@@ -1,1 +1,1 @@
-ATTR{idVendor}=="046d", ACTION=="add", RUN+="/usr/local/bin/detectusbevents.sh"
+ACTION=="add", SUBSYSTEM=="usb", DRIVER=="usb", RUN+="/etc/bibos/security/securityEvent.py 'Product:' 'Manufacturer:' 'input:'"
