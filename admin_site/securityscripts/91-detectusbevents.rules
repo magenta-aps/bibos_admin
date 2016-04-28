@@ -1,1 +1,1 @@
-ACTION=="add", SUBSYSTEM=="usb", DRIVER=="usb", RUN+="/etc/bibos/security/securityEvent.py 'Product:' 'Manufacturer:' 'input:'"
+ACTION=="add", SUBSYSTEM=="usb", DRIVER=="usb", RUN+="/etc/bibos/security/usbSecurityEvent.py 'input:'"
