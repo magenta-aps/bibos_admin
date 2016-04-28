@@ -25,20 +25,17 @@ with open(fname) as f:
             lines += str(''.join(data[-numberOflines:]))
             break
 
-securityEventFile = open("/etc/bibos/security/event.txt", "a")
-securityEventFile.write("Timestamp: " + datetime.now().strftime('%Y%m%d%H%M') + "\n")
+security_event = []
 #Ignore first argument
-iterargs = iter(sys.argv)
-next(iterargs)
-for arg in iterargs:    
+for i in range(1, len(sys.argv)):
         #find keyword
         #select text from keyword until end of line        
-        before_keyword, keyword, after_keyword = lines.partition(arg)        
+        before_keyword, keyword, after_keyword = lines.partition(sys.argv[i])        
         if(after_keyword != ""):
             splittet_lines = after_keyword.splitlines()
             if(len(splittet_lines) > 0):
-                securityEventFile.write(arg)        
-                securityEventFile.write(splittet_lines[0]+"\n")
+                #securityEventFile.write(arg)        
+                #securityEventFile.write(splittet_lines[0]+"\n")
 
-securityEventFile.write(lines+"\n")    
-securityEventFile.close()
+#securityEventFile.write(lines+"\n")    
+#securityEventFile.close()
