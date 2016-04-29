@@ -316,3 +316,10 @@ def push_config_keys(pc_uid, config_dict):
             pc.configuration.update_entry(key, value)
 
     return True
+
+def push_security_events(pc_uid, csv_data):
+    print 'Success'
+    for data in csv_data:
+        print data
+        
+    return 0

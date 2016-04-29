@@ -454,7 +454,9 @@ def send_security_events():
     for line in securitycheck_file:
         csv_data.append(line)
     try:
-        instructions = remote.push_security_events(uid, csv_data)        
+        result = remote.push_security_events(uid, csv_data)
+        if(result = 0)
+            print 'Juhuuu'        
     except Exception as e:
         print >> os.sys.stderr, "Error while sending security events:" + str(e)       
         return False
