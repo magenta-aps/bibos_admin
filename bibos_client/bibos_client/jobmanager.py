@@ -32,15 +32,17 @@ Directory structure for storing BibOS jobs:
 
 """
 Directory structure for BibOS security events:
-/etc/bibos/security/event.csv - Security event log file.
-/etc/bibos/security/scripts/ - Scripts to be executed by the jobmanager.
-/etc/bibos/security/check/ - security_check_YYYYMMDDHHmm.csv files containing the events to be sent to the admin system.
+/etc/bibos/security/securityevent.csv - Security event log file.
+/etc/bibos/security/ - Scripts to be executed by the jobmanager.
+/etc/bibos/security/security_check_YYYYMMDDHHmm.csv - files containing the events to be sent to the admin system.
 """
+SECURITY_DIR = '/etc/bibos/security'
 JOBS_DIR = '/var/lib/bibos/jobs'
 LOCK = filelock(JOBS_DIR + '/running')
 PACKAGE_LIST_FILE = '/var/lib/bibos/current_packages.list'
 PACKAGE_LINE_MATCHER = re.compile('ii\s+(\S+)\s+(\S+)\s+(.*)')
 
+last_security_check = datetime.now().strftime('%Y%m%d%H%M')
 
 class LocalJob(dict):
     def __init__(self, id=None, path=None, data=None):
@@ -258,7 +260,7 @@ class LocalJob(dict):
                 )
             log.close()
         else:
-            print >>os.sys.stderr, "Will not run job without aquired lock"
+            print >> os.sys.stderr, "Will not run job without aquired lock"
 
 
 def get_url_and_uid():
@@ -340,7 +342,7 @@ def get_instructions():
         if tmpfilename:
             subprocess.call(['mv', tmpfilename, PACKAGE_LIST_FILE])
     except Exception as e:
-        print >>os.sys.stderr, "Error while getting instructions:" + str(e)
+        print >> os.sys.stderr, "Error while getting instructions:" + str(e)
         if tmpfilename:
             subprocess.call(['rm', tmpfilename])
         return False
@@ -378,7 +380,7 @@ def get_instructions():
             # Send full package info to server.
             upload_packages()
         except Exception as e:
-            print >>os.sys.stderr, "Package upload failed" + str(e)
+            print >> os.sys.stderr, "Package upload failed" + str(e)
 
 
 def check_outstanding_packages():
@@ -391,7 +393,7 @@ def check_outstanding_packages():
         package_updates, security_updates = map(int, err.split(';'))
         return (package_updates, security_updates)
     except Exception as e:
-        print >>os.sys.stderr, "apt-check failed" + str(e)
+        print >> os.sys.stderr, "apt-check failed" + str(e)
         return None
 
 
@@ -423,7 +425,40 @@ def run_pending_jobs():
 
         report_job_results(results)
     else:
-        print >>os.sys.stderr, "Aquire the lock before running jobs"
+        print >> os.sys.stderr, "Aquire the lock before running jobs"
+
+def collect_security_events():        
+    now = datetime.now().strftime('%Y%m%d%H%M')
+    
+    csv_file = open(SECURITY_DIR + "/securityevent.csv", "r")
+    securitycheck_file = open(SECURITY_DIR + "/security_check_" + now + ".csv", "w")
+    
+    for line in csv_file:
+        csv_split = line.split(",")    
+        if(datetime.strptime(csv_split[0], '%Y%m%d%H%M') >= datetime.strptime(last_security_check, '%Y%m%d%H%M')):
+            securitycheck_file.write(line)
+    
+    csv_file.close()
+    securitycheck_file.close()
+    
+    last_security_check = now
+
+def send_security_events():
+    (remote_url, uid) = get_url_and_uid()
+    remote = BibOSAdmin(remote_url)
+    
+    now = datetime.now().strftime('%Y%m%d%H%M')
+    
+    securitycheck_file = open(SECURITY_DIR + "/security_check_" + now + ".csv", "r")
+    csv_data = []
+    for line in securitycheck_file:
+        csv_data.append(line)
+    try:
+        instructions = remote.push_security_events(uid, csv_data)        
+    except Exception as e:
+        print >> os.sys.stderr, "Error while sending security events:" + str(e)       
+        return False
+    
 
 def handle_security_events():
     collect_security_events()

@@ -92,8 +92,8 @@ class BibOSAdmin(object):
     def push_config_keys(self, pc_uid, config_dict):
         return self._rpc_srv.push_config_keys(pc_uid, config_dict)
 
-    def push_security_events(self, csv_data):
-        return self._rpc_srv.push_security_events(self, csv_data)
+    def push_security_events(self, pc_uid, csv_data):
+        return self._rpc_srv.push_security_events(self, pc_uid, csv_data)
 
 if __name__ == '__main__':
     """Simple test suite."""
