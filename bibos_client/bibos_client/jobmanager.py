@@ -13,6 +13,8 @@ import bibos_client.bibos_proxy_setup
 import tempfile
 import fcntl
 
+from datetime import timedelta
+
 from bibos_utils.bibos_config import BibOSConfig
 
 from admin_client import BibOSAdmin
@@ -42,7 +44,7 @@ LOCK = filelock(JOBS_DIR + '/running')
 PACKAGE_LIST_FILE = '/var/lib/bibos/current_packages.list'
 PACKAGE_LINE_MATCHER = re.compile('ii\s+(\S+)\s+(\S+)\s+(.*)')
 
-last_security_check = datetime.now().strftime('%Y%m%d%H%M')
+LAST_SECURITY_CHECK = ""
 
 class LocalJob(dict):
     def __init__(self, id=None, path=None, data=None):
@@ -262,7 +264,6 @@ class LocalJob(dict):
         else:
             print >> os.sys.stderr, "Will not run job without aquired lock"
 
-
 def get_url_and_uid():
     config = BibOSConfig()
     uid = config.get_value('uid')
@@ -303,7 +304,7 @@ def get_local_package_diffs():
     # Create a temporary file
     tmpfilename = tempfile.mkstemp()[1]
 
-    # Generate a new file list
+    # Generate a new file listdatetime
     subprocess.call(
         "dpkg -l | grep '^ii ' > %s" % tmpfilename,
         shell=True
@@ -427,27 +428,32 @@ def run_pending_jobs():
     else:
         print >> os.sys.stderr, "Aquire the lock before running jobs"
 
-def collect_security_events():        
-    now = datetime.now().strftime('%Y%m%d%H%M')
+def collect_security_events(): 
+    global LAST_SECURITY_CHECK
+    
+    if(LAST_SECURITY_CHECK == ""):
+        LAST_SECURITY_CHECK = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y%m%d%H%M')
+               
+    now = datetime.datetime.now().strftime('%Y%m%d%H%M')
     
     csv_file = open(SECURITY_DIR + "/securityevent.csv", "r")
     securitycheck_file = open(SECURITY_DIR + "/security_check_" + now + ".csv", "w")
     
     for line in csv_file:
         csv_split = line.split(",")    
-        if(datetime.strptime(csv_split[0], '%Y%m%d%H%M') >= datetime.strptime(last_security_check, '%Y%m%d%H%M')):
+        if(datetime.datetime.strptime(csv_split[0], '%Y%m%d%H%M') >= datetime.datetime.strptime(LAST_SECURITY_CHECK, '%Y%m%d%H%M')):
             securitycheck_file.write(line)
     
     csv_file.close()
     securitycheck_file.close()
     
-    last_security_check = now
+    LAST_SECURITY_CHECK = now
 
 def send_security_events():
     (remote_url, uid) = get_url_and_uid()
     remote = BibOSAdmin(remote_url)
     
-    now = datetime.now().strftime('%Y%m%d%H%M')
+    now = datetime.datetime.now().strftime('%Y%m%d%H%M')
     
     securitycheck_file = open(SECURITY_DIR + "/security_check_" + now + ".csv", "r")
     csv_data = []
@@ -455,7 +461,7 @@ def send_security_events():
         csv_data.append(line)
     try:
         result = remote.push_security_events(uid, csv_data)
-        if(result = 0)
+        if(result == 0):
             print 'Juhuuu'        
     except Exception as e:
         print >> os.sys.stderr, "Error while sending security events:" + str(e)       

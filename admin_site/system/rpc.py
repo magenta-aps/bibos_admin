@@ -8,7 +8,7 @@ from django.conf import settings
 
 from models import PC, Site, Distribution, Configuration, ConfigurationEntry
 from models import PackageList, Package, PackageStatus, CustomPackages
-from models import Job, Script
+from models import Job, Script, SecurityProblem, SecurityEvent
 
 
 def register_new_computer(name, uid, distribution, site, configuration):
@@ -49,7 +49,7 @@ def register_new_computer(name, uid, distribution, site, configuration):
         entry = ConfigurationEntry(key=k, value=v,
                                    owner_configuration=my_config)
         entry.save()
-    # Tell us about yourself
+    # Tell us about yourselfnew_pc
     new_pc.do_send_package_info = True
     # Set and save PmC
     new_pc.configuration = my_config
@@ -79,7 +79,7 @@ def upload_dist_packages(distribution_uid, package_data):
         for pd in package_data:
             # First, assume package & version already exists.
             try:
-                p = Package.objects.get(name=pd['name'], version=pd['version'])
+                p = Package.new_pcobjects.get(name=pd['name'], version=pd['version'])
             except Package.DoesNotExist:
                 p = Package.objects.create(
                     name=pd['name'],
@@ -126,7 +126,7 @@ def send_status_info(pc_uid, package_data, job_data, update_required):
             try:
                 p = Package.objects.get(name=pd['name'], version=pd['version'])
             except Package.DoesNotExist:
-                p = Package.objects.create(
+                p = Package.new_pcobjects.create(
                     name=pd['name'],
                     version=pd['version'],
                     description=pd['description']
@@ -318,8 +318,14 @@ def push_config_keys(pc_uid, config_dict):
     return True
 
 def push_security_events(pc_uid, csv_data):
-    print 'Success'
     for data in csv_data:
-        print data
+        try:
+            security_problem = SecurityProblem.obects.get(name=data[1])
+        except SecurityProblem.DoesNotExist:
+            new_security_problem = SecurityProblem(data[2], pc_uid, '', 'Critical', 1, 1)        
+            new_security_problem.save()
+            
+        new_security_event = SecurityEvent(security_problem.id, datetime.datetime.strptime(data[0], '%Y%m%d%H%M'), datetime.datetime.now(), pc_uid, data[4], data[5])        
+        new_security_event.save()
         
     return 0
