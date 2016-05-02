@@ -79,7 +79,8 @@ def upload_dist_packages(distribution_uid, package_data):
         for pd in package_data:
             # First, assume package & version already exists.
             try:
-                p = Package.new_pcobjects.get(name=pd['name'], version=pd['version'])
+                p = Package.new_pcobjects.get(name=pd['name'],
+                                              version=pd['version'])
             except Package.DoesNotExist:
                 p = Package.objects.create(
                     name=pd['name'],
@@ -317,22 +318,23 @@ def push_config_keys(pc_uid, config_dict):
 
     return True
 
+
 def push_security_events(pc_uid, csv_data):
     pc = PC.objects.get(uid=pc_uid)
-    
-    for data in csv_data:                      
+
+    for data in csv_data:
         csv_split = data.split(",")
         try:
-            #How do we handle if security problem does not exists?
-            security_problem = SecurityProblem.objects.get(name=csv_split[1])        
-            
+            # How do we handle if security problem does not exists?
+            security_problem = SecurityProblem.objects.get(name=csv_split[1])
+
             new_security_event = SecurityEvent(problem=security_problem, pc=pc)
             new_security_event.ocurred_time = datetime.datetime.strptime(csv_split[0], '%Y%m%d%H%M')
             new_security_event.reported_time = datetime.datetime.now()
             new_security_event.summary = csv_split[4]
-            new_security_event.complete_log = csv_split[5]            
+            new_security_event.complete_log = csv_split[5]
             new_security_event.save()
         except IndexError:
             return False
-        
+
     return 0
