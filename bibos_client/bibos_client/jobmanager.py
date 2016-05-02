@@ -428,13 +428,11 @@ def run_pending_jobs():
     else:
         print >> os.sys.stderr, "Aquire the lock before running jobs"
 
-def collect_security_events(): 
+def collect_security_events(now): 
     global LAST_SECURITY_CHECK
     
     if(LAST_SECURITY_CHECK == ""):
-        LAST_SECURITY_CHECK = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y%m%d%H%M')
-               
-    now = datetime.datetime.now().strftime('%Y%m%d%H%M')
+        LAST_SECURITY_CHECK = (datetime.datetime.now() - datetime.timedelta(minutes=5)).strftime('%Y%m%d%H%M')                    
     
     csv_file = open(SECURITY_DIR + "/securityevent.csv", "r")
     securitycheck_file = open(SECURITY_DIR + "/security_check_" + now + ".csv", "w")
@@ -449,28 +447,33 @@ def collect_security_events():
     
     LAST_SECURITY_CHECK = now
 
-def send_security_events():
+def send_security_events(now):
     (remote_url, uid) = get_url_and_uid()
-    remote = BibOSAdmin(remote_url)
-    
-    now = datetime.datetime.now().strftime('%Y%m%d%H%M')
+    remote = BibOSAdmin(remote_url)    
     
     securitycheck_file = open(SECURITY_DIR + "/security_check_" + now + ".csv", "r")
     csv_data = []
     for line in securitycheck_file:
         csv_data.append(line)
+        
+    securitycheck_file.close()
+    
+    #If no new data to sent -> return
+    if(len(csv_data) == 0):
+        return False
+    
     try:
         result = remote.push_security_events(uid, csv_data)
-        if(result == 0):
-            print 'Juhuuu'        
+        return result      
     except Exception as e:
         print >> os.sys.stderr, "Error while sending security events:" + str(e)       
         return False
     
 
 def handle_security_events():
-    collect_security_events()
-    send_security_events()
+    now = datetime.datetime.now().strftime('%Y%m%d%H%M')
+    collect_security_events(now)
+    send_security_events(now)
 
 def update_and_run():
     try:

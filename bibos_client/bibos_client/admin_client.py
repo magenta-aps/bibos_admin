@@ -25,7 +25,7 @@ class ProxyTransport(xmlrpclib.Transport):
     See checkProxySetting() below.
 
     Written from scratch but inspired by xmlrpc_urllib_transport.py
-    file from http://starship.python.net/crew/jjkunce/ by jjk.
+    file from http://starship.python.net/crew/jjkunce/ byself,  jjk.
 
     A. Ellerton 2006-07-06
     """
@@ -93,7 +93,7 @@ class BibOSAdmin(object):
         return self._rpc_srv.push_config_keys(pc_uid, config_dict)
 
     def push_security_events(self, pc_uid, csv_data):
-        return self._rpc_srv.push_security_events(self, pc_uid, csv_data)
+        return self._rpc_srv.push_security_events(pc_uid, csv_data)
 
 if __name__ == '__main__':
     """Simple test suite."""
