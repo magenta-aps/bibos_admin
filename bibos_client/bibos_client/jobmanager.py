@@ -44,8 +44,6 @@ LOCK = filelock(JOBS_DIR + '/running')
 PACKAGE_LIST_FILE = '/var/lib/bibos/current_packages.list'
 PACKAGE_LINE_MATCHER = re.compile('ii\s+(\S+)\s+(\S+)\s+(.*)')
 
-LAST_SECURITY_CHECK = ""
-
 class LocalJob(dict):
     def __init__(self, id=None, path=None, data=None):
         if id is None and data is not None and 'id' in data:
@@ -429,37 +427,44 @@ def run_pending_jobs():
         print >> os.sys.stderr, "Aquire the lock before running jobs"
 
 def collect_security_events(now): 
-    global LAST_SECURITY_CHECK
     
-    if(LAST_SECURITY_CHECK == ""):
-        LAST_SECURITY_CHECK = (datetime.datetime.now() - datetime.timedelta(minutes=5)).strftime('%Y%m%d%H%M')                    
-    
+    check_file = open(SECURITY_DIR + "/lastcheck.txt", "r+")
+
+    last_security_check = datetime.datetime.now()
+    if check_file.read() == "":	
+	check_file.write(last_security_check)
+    else:
+	last_security_check = check_file.read()
+
     csv_file = open(SECURITY_DIR + "/securityevent.csv", "r")
-    securitycheck_file = open(SECURITY_DIR + "/security_check_" + now + ".csv", "w")
     
+    data = ""
     for line in csv_file:
         csv_split = line.split(",")    
-        if(datetime.datetime.strptime(csv_split[0], '%Y%m%d%H%M') >= datetime.datetime.strptime(LAST_SECURITY_CHECK, '%Y%m%d%H%M')):
-            securitycheck_file.write(line)
-    
-    csv_file.close()
+        if datetime.datetime.strptime(csv_split[0], '%Y%m%d%H%M') >= datetime.datetime.strptime(last_security_check, '%Y%m%d%H%M'):
+	   data += line
+
+    # Check if any new events occured
+    if data != "":
+	    securitycheck_file = open(SECURITY_DIR + "/security_check_" + now + ".csv", "w")
+	    securitycheck_file.write(data)
+	    csv_file.close()
+
     securitycheck_file.close()
-    
-    LAST_SECURITY_CHECK = now
+    os.remove("securityevent.csv")
 
 def send_security_events(now):
     (remote_url, uid) = get_url_and_uid()
     remote = BibOSAdmin(remote_url)    
     
     securitycheck_file = open(SECURITY_DIR + "/security_check_" + now + ".csv", "r")
-    csv_data = []
-    for line in securitycheck_file:
-        csv_data.append(line)
+
+    csv_data = [line for line in securitycheck_file]
         
     securitycheck_file.close()
     
     #If no new data to sent -> return
-    if(len(csv_data) == 0):
+    if len(csv_data) == 0:
         return False
     
     try:
