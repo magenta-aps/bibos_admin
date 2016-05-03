@@ -331,8 +331,8 @@ def push_security_events(pc_uid, csv_data):
             new_security_event = SecurityEvent(problem=security_problem, pc=pc)
             new_security_event.ocurred_time = datetime.datetime.strptime(csv_split[0], '%Y%m%d%H%M')
             new_security_event.reported_time = datetime.datetime.now()
-            new_security_event.summary = csv_split[4]
-            new_security_event.complete_log = csv_split[5]
+            new_security_event.summary = csv_split[2]
+            new_security_event.complete_log = csv_split[3]
             new_security_event.save()
         except IndexError:
             return False
