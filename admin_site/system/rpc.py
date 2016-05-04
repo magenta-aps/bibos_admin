@@ -80,7 +80,7 @@ def upload_dist_packages(distribution_uid, package_data):
             # First, assume package & version already exists.
             try:
                 p = Package.objects.get(name=pd['name'],
-                                              version=pd['version'])
+                                        version=pd['version'])
             except Package.DoesNotExist:
                 p = Package.objects.create(
                     name=pd['name'],
