@@ -3,8 +3,6 @@ import csv
 import xmlrpclib
 import urllib2
 
-from bibos_utils.bibos_config import BibOSConfig
-
 
 def get_default_admin(verbose=False):
     conf_data = BibOSConfig().get_data()
@@ -118,7 +116,7 @@ if __name__ == '__main__':
                                       bibos_config.get_data())
 
     # Find list of all packages for status.
-    #os.system('get_package_data /tmp/packages.csv')
+    # os.system('get_package_data /tmp/packages.csv')
 
     with open('/tmp/packages.csv') as f:
         package_reader = csv.reader(f, delimiter=';')

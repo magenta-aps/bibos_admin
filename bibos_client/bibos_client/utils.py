@@ -2,9 +2,6 @@
 """This file contains utilities for communicating with the BibOS admin
 system."""
 
-import hashlib
-import uuid
-import netifaces
 import os
 import sys
 import csv

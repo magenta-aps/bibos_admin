@@ -1,5 +1,4 @@
 import os
-import sys
 import re
 import socket
 import netifaces
@@ -40,8 +39,8 @@ def find_gateway(timeout=1):
                 m = re.match("^" + REPLY_MESSAGE + "(.+)", data)
                 if m is not None:
                     result = m.group(1)
-            except Exception as inst:
-                #sys.stderr.write("Exception: " + str(inst) + "\n")
+            except Exception:
+                # sys.stderr.write("Exception: " + str(inst) + "\n")
                 return None
         if result is not None:
             break

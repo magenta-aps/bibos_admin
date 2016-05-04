@@ -5,7 +5,7 @@
 import os
 from bibos_client.gateway import find_gateway
 
-if not 'http_proxy' in os.environ:
+if 'http_proxy' not in os.environ:
     gw = find_gateway(timeout=1)
     if gw is not None:
         proxy_url = "http://%s:8000" % gw
