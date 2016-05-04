@@ -428,44 +428,58 @@ def run_pending_jobs():
 
 def collect_security_events(now): 
     
-    check_file = open(SECURITY_DIR + "/lastcheck.txt", "r+")
+    try:
+        check_file = open(SECURITY_DIR + "/lastcheck.txt", "r")
+    except IOError:
+	# File does not exists, so we create it.
+        os.mknod(SECURITY_DIR + "/lastcheck.txt")
+        check_file = open(SECURITY_DIR + "/lastcheck.txt", "r")
 
-    last_security_check = datetime.datetime.now()
-    if check_file.read() == "":	
-	check_file.write(last_security_check)
-    else:
-	last_security_check = check_file.read()
+    last_security_check = datetime.datetime.strptime(now, '%Y%m%d%H%M')
+    last_check = check_file.read()
+    if last_check:
+	last_security_check = datetime.datetime.strptime(last_check, '%Y%m%d%H%M')
+   
+    check_file.close()
 
-    csv_file = open(SECURITY_DIR + "/securityevent.csv", "r")
-    
+    check_file = open(SECURITY_DIR + "/lastcheck.txt", "w")
+    check_file.write(now)
+    check_file.close()
+   
+    try:	
+    	csv_file = open(SECURITY_DIR + "/securityevent.csv", "r")
+    except IOError:
+	# File does not exist. No events occured, since last check.
+        return False
+
     data = ""
     for line in csv_file:
         csv_split = line.split(",")    
-        if datetime.datetime.strptime(csv_split[0], '%Y%m%d%H%M') >= datetime.datetime.strptime(last_security_check, '%Y%m%d%H%M'):
+        if datetime.datetime.strptime(csv_split[0], '%Y%m%d%H%M') >= last_security_check:
 	   data += line
 
     # Check if any new events occured
     if data != "":
 	    securitycheck_file = open(SECURITY_DIR + "/security_check_" + now + ".csv", "w")
-	    securitycheck_file.write(data)
-	    csv_file.close()
+	    securitycheck_file.write(data)	
+	    securitycheck_file.close()
 
-    securitycheck_file.close()
-    os.remove("securityevent.csv")
+    csv_file.close()
+    os.remove(SECURITY_DIR + "/securityevent.csv")
 
 def send_security_events(now):
     (remote_url, uid) = get_url_and_uid()
     remote = BibOSAdmin(remote_url)    
     
-    securitycheck_file = open(SECURITY_DIR + "/security_check_" + now + ".csv", "r")
+    try:
+    	securitycheck_file = open(SECURITY_DIR + "/security_check_" + now + ".csv", "r")
+    except IOError:
+	# File does not exist. No events occured, since last check.
+        return False
 
     csv_data = [line for line in securitycheck_file]
         
     securitycheck_file.close()
-    
-    #If no new data to sent -> return
-    if len(csv_data) == 0:
-        return False
     
     try:
         result = remote.push_security_events(uid, csv_data)
