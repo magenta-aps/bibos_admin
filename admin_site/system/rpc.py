@@ -49,7 +49,7 @@ def register_new_computer(name, uid, distribution, site, configuration):
         entry = ConfigurationEntry(key=k, value=v,
                                    owner_configuration=my_config)
         entry.save()
-    # Tell us about yourselfnew_pc
+    # Tell us about yourself
     new_pc.do_send_package_info = True
     # Set and save PmC
     new_pc.configuration = my_config
@@ -79,7 +79,7 @@ def upload_dist_packages(distribution_uid, package_data):
         for pd in package_data:
             # First, assume package & version already exists.
             try:
-                p = Package.new_pcobjects.get(name=pd['name'],
+                p = Package.objects.get(name=pd['name'],
                                               version=pd['version'])
             except Package.DoesNotExist:
                 p = Package.objects.create(
@@ -127,7 +127,7 @@ def send_status_info(pc_uid, package_data, job_data, update_required):
             try:
                 p = Package.objects.get(name=pd['name'], version=pd['version'])
             except Package.DoesNotExist:
-                p = Package.new_pcobjects.create(
+                p = Package.objects.create(
                     name=pd['name'],
                     version=pd['version'],
                     description=pd['description']
