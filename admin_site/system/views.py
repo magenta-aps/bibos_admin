@@ -1236,13 +1236,80 @@ class SecurityProblemDelete(SiteMixin, DeleteView, SuperAdminOrThisSiteMixin):
 
 
 class SecurityEventsView(SiteView):
-    template_name = 'system/site_jobs.html'
+    template_name = 'system/site_security.html'
 
     def get_context_data(self, **kwargs):
         # First, get basic context from superclass
         context = super(SecurityEventsView, self).get_context_data(**kwargs)
         # TODO: Supply extra info as (probably not) needed.
         return context
+
+
+class SecurityEventSearch(JSONResponseMixin, SiteView):
+    http_method_names = ['get', 'post']
+    VALID_ORDER_BY = []
+    for i in [
+        'pk', 'problem__name', 'occurred_time', 'assigned_user__username'
+    ]:
+        VALID_ORDER_BY.append(i)
+        VALID_ORDER_BY.append('-' + i)
+
+    @staticmethod
+    def get_event_display_data(eventlist, site=None):
+        if len(eventlist) == 0:
+            return []
+
+        if site is None:
+            site = eventlist[0].batch.site
+
+        return [{
+            'pk': event.pk,
+            'problem_name': event.problem.name,
+            'occurred': event.occurred_time.strftime("%Y-%m-%d %H:%M:%S"),
+            'status': event.status + '',
+            'pc_name': event.pc.name,
+            'assigned_user': event.assigned_user
+        } for event in eventlist]
+
+    def post(self, request, *args, **kwargs):
+        return self.get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        # First, get basic context from superclass
+        context = super(SecurityEventSearch, self).get_context_data(**kwargs)
+        params = self.request.GET or self.request.POST
+        query = {'site': context['site']}
+
+        if 'level' in params:
+            query['level__in'] = params.getlist('level')
+
+        if 'status' in params:
+            query['status__in'] = params.getlist('status')
+
+        orderby = params.get('orderby', '-pk')
+        if orderby not in SecurityEventSearch.VALID_ORDER_BY:
+            orderby = '-pk'
+        limit = int(params.get('do_limit', '0'))
+
+        if limit:
+            context['job_list'] = Job.objects.filter(**query).order_by(
+                orderby,
+                'pk'
+            )[:limit]
+        else:
+            context['job_list'] = Job.objects.filter(**query).order_by(
+                orderby,
+                'pk'
+            )
+
+        return context
+
+    def convert_context_to_json(self, context):
+        result = SecurityEventSearch.get_event_display_data(
+            context['event_list'],
+            site=context['site']
+        )
+        return json.dumps(result)
 
 
 class PackageSearch(JSONResponseMixin, ListView):
