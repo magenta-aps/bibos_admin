@@ -165,7 +165,8 @@ XMLRPC_METHODS = (
     ('system.rpc.upload_dist_packages', 'upload_dist_packages'),
     ('system.rpc.get_instructions', 'get_instructions'),
     ('system.rpc.get_proxy_setup', 'get_proxy_setup'),
-    ('system.rpc.push_config_keys', 'push_config_keys')
+    ('system.rpc.push_config_keys', 'push_config_keys'),
+    ('system.rpc.push_security_events', 'push_security_events')
 )
 
 # A sample logging configuration. The only tangible logging

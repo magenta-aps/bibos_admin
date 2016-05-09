@@ -1,14 +1,14 @@
 # This module contains the implementation of the XML-RPC API used by the
 # client.
 
-import datetime
 import system.proxyconf
 
+from datetime import datetime
 from django.conf import settings
 
 from models import PC, Site, Distribution, Configuration, ConfigurationEntry
 from models import PackageList, Package, PackageStatus, CustomPackages
-from models import Job, Script
+from models import Job, Script, SecurityProblem, SecurityEvent
 
 
 def register_new_computer(name, uid, distribution, site, configuration):
@@ -79,7 +79,8 @@ def upload_dist_packages(distribution_uid, package_data):
         for pd in package_data:
             # First, assume package & version already exists.
             try:
-                p = Package.objects.get(name=pd['name'], version=pd['version'])
+                p = Package.objects.get(name=pd['name'],
+                                        version=pd['version'])
             except Package.DoesNotExist:
                 p = Package.objects.create(
                     name=pd['name'],
@@ -109,7 +110,7 @@ def send_status_info(pc_uid, package_data, job_data, update_required):
         # Fail silently
         return 0
 
-    pc.last_seen = datetime.datetime.now()
+    pc.last_seen = datetime.now()
     pc.save()
 
     # 2. Update package lists with package data
@@ -185,7 +186,7 @@ def get_instructions(pc_uid, update_data):
 
     pc = PC.objects.get(uid=pc_uid)
 
-    pc.last_seen = datetime.datetime.now()
+    pc.last_seen = datetime.now()
     pc.save()
 
     if not pc.is_active:
@@ -316,3 +317,25 @@ def push_config_keys(pc_uid, config_dict):
             pc.configuration.update_entry(key, value)
 
     return True
+
+
+def push_security_events(pc_uid, csv_data):
+    pc = PC.objects.get(uid=pc_uid)
+
+    for data in csv_data:
+        csv_split = data.split(",")
+        try:
+            security_problem = SecurityProblem.objects.get(uid=csv_split[1])
+
+            new_security_event = SecurityEvent(problem=security_problem, pc=pc)
+            new_security_event.ocurred_time = (
+                                            datetime.strptime(csv_split[0],
+                                                              '%Y%m%d%H%M'))
+            new_security_event.reported_time = datetime.now()
+            new_security_event.summary = csv_split[2]
+            new_security_event.complete_log = csv_split[3]
+            new_security_event.save()
+        except IndexError:
+            return False
+
+    return 0

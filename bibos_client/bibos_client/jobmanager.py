@@ -4,14 +4,13 @@ import os.path
 import stat
 import urllib2
 import json
-import datetime
 import urlparse
 import glob
 import re
 import subprocess
-import bibos_client.bibos_proxy_setup
 import tempfile
-import fcntl
+
+from datetime import datetime
 
 from bibos_utils.bibos_config import BibOSConfig
 
@@ -30,6 +29,14 @@ Directory structure for storing BibOS jobs:
 /var/lib/bibos/jobs/<id>/output.log - Logfile with output from the job
 """
 
+"""
+Directory structure for BibOS security events:
+/etc/bibos/security/securityevent.csv - Security event log file.
+/etc/bibos/security/ - Scripts to be executed by the jobmanager.
+/etc/bibos/security/security_check_YYYYMMDDHHmm.csv -
+files containing the events to be sent to the admin system.
+"""
+SECURITY_DIR = '/etc/bibos/security'
 JOBS_DIR = '/var/lib/bibos/jobs'
 LOCK = filelock(JOBS_DIR + '/running')
 PACKAGE_LIST_FILE = '/var/lib/bibos/current_packages.list'
@@ -111,11 +118,11 @@ class LocalJob(dict):
         self.save_property_to_file('status', self.status_path)
 
     def mark_started(self):
-        self['started'] = str(datetime.datetime.now())
+        self['started'] = str(datetime.now())
         self.save_property_to_file('started', self.started_path)
 
     def mark_finished(self):
-        self['finished'] = str(datetime.datetime.now())
+        self['finished'] = str(datetime.now())
         self.save_property_to_file('finished', self.finished_path)
 
     def load_local_parameters(self):
@@ -176,7 +183,7 @@ class LocalJob(dict):
             param_fh.close()
 
     def translate_parameters(self):
-        if not 'parameters' in self:
+        if 'parameters' not in self:
             return
 
         config = BibOSConfig()
@@ -252,7 +259,7 @@ class LocalJob(dict):
                 )
             log.close()
         else:
-            print >>os.sys.stderr, "Will not run job without aquired lock"
+            print >> os.sys.stderr, "Will not run job without aquired lock"
 
 
 def get_url_and_uid():
@@ -295,7 +302,7 @@ def get_local_package_diffs():
     # Create a temporary file
     tmpfilename = tempfile.mkstemp()[1]
 
-    # Generate a new file list
+    # Generate a new file listdatetime
     subprocess.call(
         "dpkg -l | grep '^ii ' > %s" % tmpfilename,
         shell=True
@@ -334,7 +341,7 @@ def get_instructions():
         if tmpfilename:
             subprocess.call(['mv', tmpfilename, PACKAGE_LIST_FILE])
     except Exception as e:
-        print >>os.sys.stderr, "Error while getting instructions:" + str(e)
+        print >> os.sys.stderr, "Error while getting instructions:" + str(e)
         if tmpfilename:
             subprocess.call(['rm', tmpfilename])
         return False
@@ -364,15 +371,15 @@ def get_instructions():
         for j in instructions['jobs']:
             local_job = LocalJob(data=j)
             local_job.save()
-            local_job.logline("Job imported at %s" % datetime.datetime.now())
+            local_job.logline("Job imported at %s" % datetime.now())
 
     if ('do_send_package_info' in instructions and
-        instructions['do_send_package_info']):
-        try:
-            # Send full package info to server.
-            upload_packages()
-        except Exception as e:
-            print >>os.sys.stderr, "Package upload failed" + str(e)
+            instructions['do_send_package_info']):
+                try:
+                    # Send full package info to server.
+                    upload_packages()
+                except Exception as e:
+                    print >> os.sys.stderr, "Package upload failed" + str(e)
 
 
 def check_outstanding_packages():
@@ -385,7 +392,7 @@ def check_outstanding_packages():
         package_updates, security_updates = map(int, err.split(';'))
         return (package_updates, security_updates)
     except Exception as e:
-        print >>os.sys.stderr, "apt-check failed" + str(e)
+        print >> os.sys.stderr, "apt-check failed" + str(e)
         return None
 
 
@@ -417,7 +424,80 @@ def run_pending_jobs():
 
         report_job_results(results)
     else:
-        print >>os.sys.stderr, "Aquire the lock before running jobs"
+        print >> os.sys.stderr, "Aquire the lock before running jobs"
+
+
+def collect_security_events(now):
+    try:
+        check_file = open(SECURITY_DIR + "/lastcheck.txt", "r")
+    except IOError:
+        # File does not exists, so we create it.
+        os.mknod(SECURITY_DIR + "/lastcheck.txt")
+        check_file = open(SECURITY_DIR + "/lastcheck.txt", "r")
+
+    last_security_check = datetime.strptime(now, '%Y%m%d%H%M')
+    last_check = check_file.read()
+    if last_check:
+        last_security_check = (
+                            datetime.strptime(last_check, '%Y%m%d%H%M'))
+
+    check_file.close()
+
+    check_file = open(SECURITY_DIR + "/lastcheck.txt", "w")
+    check_file.write(now)
+    check_file.close()
+
+    try:
+        csv_file = open(SECURITY_DIR + "/securityevent.csv", "r")
+    except IOError:
+        # File does not exist. No events occured, since last check.
+        return False
+
+    data = ""
+    for line in csv_file:
+        csv_split = line.split(",")
+        if datetime.strptime(csv_split[0],
+                             '%Y%m%d%H%M') >= last_security_check:
+                data += line
+
+    # Check if any new events occured
+    if data != "":
+        securitycheck_file = open(SECURITY_DIR +
+                                  "/security_check_" + now + ".csv", "w")
+        securitycheck_file.write(data)
+        securitycheck_file.close()
+
+    csv_file.close()
+    os.remove(SECURITY_DIR + "/securityevent.csv")
+
+
+def send_security_events(now):
+    (remote_url, uid) = get_url_and_uid()
+    remote = BibOSAdmin(remote_url)
+
+    try:
+        securitycheck_file = open(SECURITY_DIR +
+                                  "/security_check_" + now + ".csv", "r")
+    except IOError:
+        # File does not exist. No events occured, since last check.
+        return False
+
+    csv_data = [line for line in securitycheck_file]
+
+    securitycheck_file.close()
+
+    try:
+        result = remote.push_security_events(uid, csv_data)
+        return result
+    except Exception as e:
+        print >> os.sys.stderr, "Error while sending security events:" + str(e)
+        return False
+
+
+def handle_security_events():
+    now = datetime.now().strftime('%Y%m%d%H%M')
+    collect_security_events(now)
+    send_security_events(now)
 
 
 def update_and_run():
@@ -426,6 +506,7 @@ def update_and_run():
         try:
             get_instructions()
             run_pending_jobs()
+            handle_security_events()
         finally:
             LOCK.release()
     except IOError:
