@@ -325,8 +325,7 @@ def push_security_events(pc_uid, csv_data):
     for data in csv_data:
         csv_split = data.split(",")
         try:
-            # How do we handle if security problem does not exists?
-            security_problem = SecurityProblem.objects.get(name=csv_split[1])
+            security_problem = SecurityProblem.objects.get(uid=csv_split[1])
 
             new_security_event = SecurityEvent(problem=security_problem, pc=pc)
             new_security_event.ocurred_time = (
