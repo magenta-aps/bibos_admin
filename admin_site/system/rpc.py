@@ -1,7 +1,7 @@
 # This module contains the implementation of the XML-RPC API used by the
 # client.
 
-import system.proxyconf
+import system.proxyconf, utils
 
 from datetime import datetime
 from django.conf import settings
@@ -335,6 +335,8 @@ def push_security_events(pc_uid, csv_data):
             new_security_event.summary = csv_split[2]
             new_security_event.complete_log = csv_split[3]
             new_security_event.save()
+            # Notify subscribed users
+            utils.notify_users(csv_split, security_problem.id)
         except IndexError:
             return False
 
