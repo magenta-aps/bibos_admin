@@ -13,20 +13,34 @@ from views import PackageSearch, PCDelete
 # SecurityProblem and SecurityEvent related views
 from views import SecurityProblemsView, SecurityProblemCreate
 from views import SecurityProblemUpdate, SecurityProblemDelete
-from views import SecurityEventsView
+from views import SecurityEventsView, SecurityEventInfo
+from views import SecurityEventSearch
 
-# Used by mockup for security events UI -- REMOVE
-from django.views.generic import TemplateView
 
 urlpatterns = patterns(
     '',
 
-    # Mockup for security events UI -- REMOVE
-    url(r'^site/somesite/security/$', TemplateView.as_view(template_name='system/site_security.html')),
+    # Security events UI
+    url(r'^site/(?P<slug>[^/]+)/security/warning_info/$',
+        SecurityEventInfo.as_view(), name='security_event_info'),
+    url(r'^site/(?P<slug>[^/]+)/security/search/',
+        SecurityEventSearch.as_view(),
+        name='securityeventsearch'),
     url(r'^site/(?P<slug>[^/]+)/security/', SecurityEventsView.as_view(),
         name='security_events'),
-    url(r'^site/somesite/security/warning_info/$', TemplateView.as_view(template_name='system/security/security_info.html')),
-    url(r'^site/somesite/security_problems/$', TemplateView.as_view(template_name='system/site_security_problems.html')),
+
+    # Security problems UI
+    url(r'^site/(?P<slug>[^/]+)/security_problems/$',
+        SecurityProblemsView.as_view(), name='security_problems'),
+    url(r'^site/(?P<slug>[^/]+)/security_problems/(?P<pk>\d+)/delete/',
+        SecurityProblemDelete.as_view(),
+        name='delete_security_problem'),
+    url(r'^site/(?P<slug>[^/]+)/scripts/(?P<pk>\d+)/',
+        SecurityProblemUpdate.as_view(),
+        name='security_problem'),
+    url(r'^site/(?P<slug>[^/]+)/scripts/new/',
+        SecurityProblemCreate.as_view(),
+        name='new_security_problem'),
 
     url(r'^$', AdminIndex.as_view(), name='index'),
     url(r'^sites/$', SiteList.as_view(), name='sites'),

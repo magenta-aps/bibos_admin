@@ -923,6 +923,9 @@ class SecurityProblem(models.Model):
     site = models.ForeignKey(Site, related_name='security_problems')
     script = models.ForeignKey(Script, related_name='security_problems')
 
+    def __unicode__(self):
+        return self.name
+
 
 class SecurityEvent(models.Model):
     """A security event is an instance of a security problem."""
@@ -960,3 +963,6 @@ class SecurityEvent(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES,
                               default=NEW)
     assigned_user = models.ForeignKey(User, null=True, blank=True)
+
+    def __unicode__(self):
+        return u"{0}: {1}".format(self.problem.name, self.id)

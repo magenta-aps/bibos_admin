@@ -22,7 +22,7 @@ from account.models import UserProfile
 from models import Site, PC, PCGroup, ConfigurationEntry, Package
 from forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
 from forms import UserForm, ParameterForm, PCForm
-from models import Job, Script, Input, SecurityProblem
+from models import Job, Script, Input, SecurityProblem, SecurityEvent
 
 
 def set_notification_cookie(response, message):
@@ -1265,7 +1265,7 @@ class SecurityEventSearch(JSONResponseMixin, SiteView):
         return [{
             'pk': event.pk,
             'problem_name': event.problem.name,
-            'occurred': event.occurred_time.strftime("%Y-%m-%d %H:%M:%S"),
+            'occurred': event.ocurred_time.strftime("%Y-%m-%d %H:%M:%S"),
             'status': event.status + '',
             'pc_name': event.pc.name,
             'assigned_user': event.assigned_user
@@ -1278,10 +1278,10 @@ class SecurityEventSearch(JSONResponseMixin, SiteView):
         # First, get basic context from superclass
         context = super(SecurityEventSearch, self).get_context_data(**kwargs)
         params = self.request.GET or self.request.POST
-        query = {'site': context['site']}
+        query = {'problem__site': context['site']}
 
         if 'level' in params:
-            query['level__in'] = params.getlist('level')
+            query['problem__level__in'] = params.getlist('level')
 
         if 'status' in params:
             query['status__in'] = params.getlist('status')
@@ -1292,12 +1292,15 @@ class SecurityEventSearch(JSONResponseMixin, SiteView):
         limit = int(params.get('do_limit', '0'))
 
         if limit:
-            context['job_list'] = Job.objects.filter(**query).order_by(
-                orderby,
-                'pk'
+            context[
+                'securityevent_list'
+            ] = SecurityEvent.objects.filter(**query).order_by(
+                orderby, 'pk'
             )[:limit]
         else:
-            context['job_list'] = Job.objects.filter(**query).order_by(
+            context[
+                'securityevent_list'
+            ] = SecurityEvent.objects.filter(**query).order_by(
                 orderby,
                 'pk'
             )
@@ -1306,10 +1309,28 @@ class SecurityEventSearch(JSONResponseMixin, SiteView):
 
     def convert_context_to_json(self, context):
         result = SecurityEventSearch.get_event_display_data(
-            context['event_list'],
+            context['securityevent_list'],
             site=context['site']
         )
+        print json.dumps(result)
         return json.dumps(result)
+
+
+class SecurityEventInfo(DetailView, LoginRequiredMixin):
+    template_name = 'system/security_events/info.html'
+    model = SecurityEvent
+
+    def get(self, request, *args, **kwargs):
+        self.site = get_object_or_404(Site, uid=kwargs['site_uid'])
+        return super(SecurityEventInfo, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(SecurityEventInfo, self).get_context_data(**kwargs)
+        if self.site != self.object.batch.site:
+            raise Http404
+        context['site'] = self.site
+        context['job'] = self.object
+        return context
 
 
 class PackageSearch(JSONResponseMixin, ListView):
@@ -1399,7 +1420,7 @@ class DocView(TemplateView):
         fullpath = os.path.join(settings.TEMPLATE_DIRS[0], subpath)
         return os.path.isfile(fullpath)
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs):  # noqa
         if 'name' in self.kwargs:
             self.docname = self.kwargs['name']
         else:

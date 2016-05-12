@@ -1,9 +1,8 @@
 $(function(){
     var SecurityEventList = function(container_elem, template_container_id) {
-        this.elem = $(container_elem)
-        this.searchConditions = {}
-        this.searchUrl = window.bibos_security_event_search_url || './search/'
-        this.statusSelectors = []
+        this.elem = $(container_elem);
+        this.searchUrl = window.bibos_security_event_search_url;
+        this.statusSelectors = [];
         BibOS.addTemplate('securityevent-entry', template_container_id);
     }
     $.extend(SecurityEventList.prototype, {
@@ -89,7 +88,8 @@ $(function(){
 
         search: function() {
             var js = this;
-            js.searchConditions = $('#securityeventsearch-filterform').serialize()
+            js.searchConditions = $('#securityeventsearch-filterform').serialize();
+
             $.ajax({
                 type: "POST",
                 url: js.searchUrl,

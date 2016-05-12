@@ -6,6 +6,10 @@ Sikkerhedsadvarsler
 
 {% block head_javascripts %}
   <script type="text/javascript">
+       var bibos_security_event_search_url = '{% url 'securityeventsearch' site.uid %}'
+  </script>
+  <script type="text/javascript" src="/media/js/security_events_list.js"></script>
+  <script type="text/javascript">
     $(document).ready(function() {
       $('.collapsing').click(function() {
         $(this).find('i').toggleClass('icon-chevron-up icon-chevron-down');
@@ -25,16 +29,17 @@ class="active"
 {% block specific_content %}
   <div class="template-container">
    <table>
-    <tbody id="jobitem-template">
+    <tbody id="securityeventitem-template">
       <tr class="muted">
-        <td>Advarsel</td>
-        <td>Tid</td>
+        <td>#PROBLEM_NAME#</td>
+        <td>#OCCURRED#</td>
+        <td>#ASSIGNED_USER#</td>
       </tr>
     </tbody>
    </table>
   </div>
-  <div id="jobsearchnav" class="sublevelnav">
-    <form id="jobsearch-filterform" name="filterform" action="./" method="post">
+  <div id="securityeventsearchnav" class="sublevelnav">
+    <form id="securityeventsearch-filterform" name="filterform" action="./" method="post">
       
       <h3 class="nav-header">Filtrér:</h3>
       <hr>
@@ -98,32 +103,7 @@ class="active"
           <th>Håndteres af</th>
         </tr>
       </thead>
-      <tbody>
-        <tr class="seclevel-danger" onclick="$('#warnModal').modal()">
-          <td>Brug af <em>sudo</em> på klient</td>
-          <td>Idag 11:13</td>
-          <td>[ Mig ]</td>
-        </tr>
-        <tr class="seclevel-warning" onclick="$('#warnModal').modal()">
-          <td>USB disconnected (tastatur)</td>
-          <td>Idag 09:47</td>
-          <td>Katrine Nordskov</td>
-        </tr>
-        <tr class="seclevel-gentle-warning" onclick="$('#warnModal').modal()">
-          <td>Maskine svarer ikke</td>
-          <td>12. maj 18:23</td>
-          <td class="muted">Ingen</td>
-        </tr>
-        <tr onclick="$('#warnModal').modal()">
-          <td>Maskine svarer ikke (Læst)</td>
-          <td>12. februar 22:14</td>
-          <td>Bjarke Søndermark</td>
-        </tr>
-        <tr onclick="$('#warnModal').modal()">
-          <td>Maskine svarer ikke (Læst)</td>
-          <td>9. september 2014 22:14</td>
-          <td class="muted">Ingen</td>
-        </tr>
+      <tbody id="securityevent-list">
         <tr class="muted">
           <td colspan="3">Loading data...</td>
         </tr>
