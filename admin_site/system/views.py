@@ -119,7 +119,6 @@ class SelectionMixin(View):
         if selected is not None:
             context['selected_{0}'.format(display_name)] = selected
         context['{0}_list'.format(display_name)] = self.get_list()
-
         return context
 
 
@@ -1193,8 +1192,9 @@ class GroupDelete(SiteMixin, SuperAdminOrThisSiteMixin, DeleteView):
 
 class SecurityProblemsView(SelectionMixin, SiteView):
 
-    template_name = 'system/security_problems.html'
+    template_name = 'system/site_security_problems.html'
     selection_class = SecurityProblem
+    class_display_name = 'security_problem'
 
     def get_list(self):
         return self.object.security_problems.all().extra(
@@ -1203,9 +1203,9 @@ class SecurityProblemsView(SelectionMixin, SiteView):
 
     def render_to_response(self, context):
         if('selected_security_problem' in context):
-            return HttpResponseRedirect('/site/%s/security_problem/%s/' % (
+            return HttpResponseRedirect('/site/%s/security_problems/%s/' % (
                 context['site'].uid,
-                context['selected_security_problem'].username
+                context['selected_security_problem'].uid
             ))
         else:
             return HttpResponseRedirect(
@@ -1224,10 +1224,14 @@ class SecurityProblemCreate(SiteMixin, CreateView, SuperAdminOrThisSiteMixin):
 
 
 class SecurityProblemUpdate(SiteMixin, UpdateView, SuperAdminOrThisSiteMixin):
+    template_name = 'system/site_security_problems.html'
     model = SecurityProblem
     # form_class = <hopefully_not_necessary>
 
     fields = '__all__'
+
+    def get_object(self, queryset=None):
+        return SecurityProblem.objects.get(uid=self.kwargs['uid'])
 
     def get_success_url(self):
         return '/site/{0}/security_problems/'.format(self.kwargs['site_uid'])
@@ -1236,6 +1240,9 @@ class SecurityProblemUpdate(SiteMixin, UpdateView, SuperAdminOrThisSiteMixin):
 class SecurityProblemDelete(SiteMixin, DeleteView, SuperAdminOrThisSiteMixin):
     model = SecurityProblem
     # form_class = <hopefully_not_necessary>
+
+    def get_object(self, queryset=None):
+        return SecurityProblem.objects.get(uid=self.kwargs['uid'])
 
     def get_success_url(self):
         return '/site/{0}/security_problems/'.format(self.kwargs['site_uid'])

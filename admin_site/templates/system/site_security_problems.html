@@ -21,16 +21,14 @@ class="active"
     <li class="listutils">
       <a href="#addNewSecProblem" role="button" data-toggle="modal" title="Definér nyt sikkerhedsproblem"><i class="icon-plus icon-white"></i> definér nyt sikkerhedsproblem</a>
     </li>
-
-    {% for sp in site.security_problems.all %}
+    {% for sp in site.security_problems.all|dictsort:"uid" %}
     <li {% ifequal sp selected_security_problem %}class="active"{% endifequal %}>
         {% ifequal sp selected_security_problem %}
         {% if selected_security_problem.is_delete_allowed %}
         <a class="remove pull-right" href="/site/{{ site.url }}/security_problems/{{ selected_security_problem.url }}/delete/" title="Slet sikkerhedsproblem" ><i class="icon-remove icon-white"></i></a>
         {% endif %}
         {% endifequal %}
-        <a class="list-item" href="/site/{{ site.url
-            }}/security_problems/{{ sp.url }}/"><i class="icon-exclamation-sign"></i>{{ sp.name }}</a>
+        <a class="list-item" href="/site/{{ site.url }}/security_problems/{{ sp.uid }}/"><i class="icon-exclamation-sign"></i>{{ sp.name }}</a>
     </li>
     {% endfor %}
   </ul>
@@ -71,7 +69,7 @@ class="active"
             {{ form.script.errors }}
             {{ form.script }}
 
-            <label>Overvåg følgende grupper:</label>
+            <label>Overvåges af følgende grupper:</label>
             {% include 'system/pcgrouplist/list.html' with submit_name='pc_groups' %}
             
           </fieldset>
@@ -88,7 +86,7 @@ class="active"
     </form>
 
     <div id="addNewSecProblem" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <form action="{% url 'new_security_problem' site.uid %}">
+        <form action="{% url 'security_problem_new' site.uid %}" method="POST">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">×</button>
           <h3>Definér nyt sikkerhedsproblem</h3>
@@ -97,8 +95,8 @@ class="active"
             
             <div class="row-fluid">
                 <fieldset class="span6">
+                    {% csrf_token %}
                   
-            
             <label>Navn:</label>
             {{ form.name.errors }}
             {{ form.name }}
@@ -135,7 +133,7 @@ class="active"
                       <input type="checkbox">
                       Advar i email-rapport én gang dagligt
                   </label>
-                </fieldset>
+                  </fieldset>
               </div>
             
         </div>
