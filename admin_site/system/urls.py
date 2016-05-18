@@ -30,17 +30,17 @@ urlpatterns = patterns(
         name='security_events'),
 
     # Security problems UI
-    url(r'^site/(?P<slug>[^/]+)/security_problems/$',
-        SecurityProblemsView.as_view(), name='security_problems'),
-    url(r'^site/(?P<slug>[^/]+)/security_problems/(?P<pk>\d+)/delete/',
+    url(r'^site/(?P<site_uid>[^/]+)/security_problems/(?P<pk>\d+)/delete/',
         SecurityProblemDelete.as_view(),
         name='delete_security_problem'),
-    url(r'^site/(?P<slug>[^/]+)/scripts/(?P<pk>\d+)/',
+    url(r'^site/(?P<site_uid>[^/]+)/security_problems/(?P<pk>\d+)/',
         SecurityProblemUpdate.as_view(),
         name='security_problem'),
-    url(r'^site/(?P<slug>[^/]+)/scripts/new/',
+    url(r'^site/(?P<site_uid>[^/]+)/security_problems/new/',
         SecurityProblemCreate.as_view(),
         name='new_security_problem'),
+    url(r'^site/(?P<slug>[^/]+)/security_problems/$',
+        SecurityProblemsView.as_view(), name='security_problems'),
 
     url(r'^$', AdminIndex.as_view(), name='index'),
     url(r'^sites/$', SiteList.as_view(), name='sites'),

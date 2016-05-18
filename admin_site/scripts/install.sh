@@ -4,15 +4,23 @@
 # System requirements, installed packages etc. are checked 
 # in a separate dependencies file. 
 
-if [ -e ./bin/activate ]
+if [ -z $BIBOS_VIRTUAL_ENV ]
+then
+    DIR=$(pwd)
+    DIR=$(dirname "${DIR}")
+    echo $DIR
+    BIBOS_VIRTUAL_ENV=${DIR}/python-env
+fi
+
+if [ -e ${BIBOS_VIRTUAL_ENV}/bin/activate ]
 then
     echo "virtual environment already installed" 1>&2
     exit
 fi
 
-rm -rf python-env
-virtualenv python-env
-source python-env/bin/activate
+rm -rf $BIBOS_VIRTUAL_ENV
+virtualenv $BIBOS_VIRTUAL_ENV
+source $BIBOS_VIRTUAL_ENV/bin/activate
 
 DIR=$(dirname ${BASH_SOURCE[0]})
 PYTHON_PACKAGES=$(cat "$DIR/PYTHON_DEPENDENCIES")

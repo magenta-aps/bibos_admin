@@ -1197,7 +1197,9 @@ class SecurityProblemsView(SelectionMixin, SiteView):
     selection_class = SecurityProblem
 
     def get_list(self):
-        return self.object.security_problems
+        return self.object.security_problems.all().extra(
+            select={'lower_name': 'lower(name)'}
+        ).order_by('lower_name')
 
     def render_to_response(self, context):
         if('selected_security_problem' in context):
@@ -1207,7 +1209,7 @@ class SecurityProblemsView(SelectionMixin, SiteView):
             ))
         else:
             return HttpResponseRedirect(
-                '/site/%s/new_security_problem/' % context['site'].uid,
+                '/site/%s/security_problems/new/' % context['site'].uid,
             )
 
 
@@ -1215,16 +1217,20 @@ class SecurityProblemCreate(SiteMixin, CreateView, SuperAdminOrThisSiteMixin):
     model = SecurityProblem
     # form_class = <hopefully_not_necessary>
 
+    fields = '__all__'
+
     def get_success_url(self):
-        return '/site/{0}/security_problem/'.format(self.kwargs['site_uid'])
+        return '/site/{0}/security_problems/'.format(self.kwargs['site_uid'])
 
 
 class SecurityProblemUpdate(SiteMixin, UpdateView, SuperAdminOrThisSiteMixin):
     model = SecurityProblem
     # form_class = <hopefully_not_necessary>
 
+    fields = '__all__'
+
     def get_success_url(self):
-        return '/site/{0}/security_problem/'.format(self.kwargs['site_uid'])
+        return '/site/{0}/security_problems/'.format(self.kwargs['site_uid'])
 
 
 class SecurityProblemDelete(SiteMixin, DeleteView, SuperAdminOrThisSiteMixin):
@@ -1232,7 +1238,7 @@ class SecurityProblemDelete(SiteMixin, DeleteView, SuperAdminOrThisSiteMixin):
     # form_class = <hopefully_not_necessary>
 
     def get_success_url(self):
-        return '/site/{0}/security_problem/'.format(self.kwargs['site_uid'])
+        return '/site/{0}/security_problems/'.format(self.kwargs['site_uid'])
 
 
 class SecurityEventsView(SiteView):

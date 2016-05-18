@@ -1,4 +1,5 @@
 /admin_site/*.db
+/python-env
 /admin_site/python-env
 /admin_site/etc/bibos-proxy.htpasswd
 /admin_site/site_media/script_uploads
