@@ -1,0 +1,22 @@
+{% if submit_name %}
+<ul class="unstyled well actionlist" id="id_{{ submit_name }}">
+  <li class="addusertrigger">
+    <a href="#" title="Tilføj ny bruger"><i class="icon-plus"></i>Tilføj ny bruger</a>
+    <ul class="addgrouplist addlist">
+      {% for user in available_users %}
+        {% include 'system/userlist/item.html' with pk=user.pk name=user.name %}
+      {% endfor %}
+    </ul>
+  </li>
+  {% for user in selected_users %}
+    {% include 'system/userlist/item.html' with pk=user.pk name=user.name selected='yes' %}
+  {% endfor %}
+</ul>
+<script type="text/javascript"><!--
+$(function() {
+  BibOS.UserList.setupList('#id_{{ submit_name }}')
+});
+//--></script>
+{% else %}
+<p>You must specify a <em>submit_name</em> when including a user list.</p>
+{% endif %}

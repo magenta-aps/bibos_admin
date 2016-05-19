@@ -28,9 +28,6 @@ class UserProfile(models.Model):
 
     type = models.IntegerField(choices=type_choices, default=SITE_USER)
     site = models.ForeignKey(Site, null=True, blank=True)
-    security_alerts = models.ManyToManyField(SecurityProblem,
-                                             related_name='alert_users',
-                                             blank=True)
     # TODO: Add more fields/user options as needed.
     # TODO: Make before_save integrity check that SITE_USER and
     # SITE_ADMIN users MUST be associated with a site.

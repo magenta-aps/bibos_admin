@@ -385,9 +385,6 @@ class PCGroup(models.Model):
     site = models.ForeignKey(Site, related_name='groups')
     configuration = models.ForeignKey(Configuration)
     custom_packages = models.ForeignKey(CustomPackages)
-    security_alerts = models.ManyToManyField("SecurityProblem",
-                                             related_name='alert_groups',
-                                             blank=True)
 
     @property
     def url(self):
@@ -922,6 +919,12 @@ class SecurityProblem(models.Model):
                              default=HIGH)
     site = models.ForeignKey(Site, related_name='security_problems')
     script = models.ForeignKey(Script, related_name='security_problems')
+    alert_groups = models.ManyToManyField(PCGroup,
+                                          related_name='security_problems',
+                                          blank=True)
+    alert_users = models.ManyToManyField(User,
+                                            related_name='security_problems',
+                                            blank=True)
 
     def __unicode__(self):
         return self.name

@@ -21,7 +21,7 @@ from account.models import UserProfile
 
 from models import Site, PC, PCGroup, ConfigurationEntry, Package
 from forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
-from forms import UserForm, ParameterForm, PCForm
+from forms import UserForm, ParameterForm, PCForm, SecurityProblemForm
 from models import Job, Script, Input, SecurityProblem, SecurityEvent
 
 
@@ -1226,12 +1226,38 @@ class SecurityProblemCreate(SiteMixin, CreateView, SuperAdminOrThisSiteMixin):
 class SecurityProblemUpdate(SiteMixin, UpdateView, SuperAdminOrThisSiteMixin):
     template_name = 'system/site_security_problems.html'
     model = SecurityProblem
-    # form_class = <hopefully_not_necessary>
-
-    fields = '__all__'
+    form_class = SecurityProblemForm
 
     def get_object(self, queryset=None):
         return SecurityProblem.objects.get(uid=self.kwargs['uid'])
+
+    def get_context_data(self, **kwargs):
+
+        context = super(SecurityProblemUpdate, self).get_context_data(**kwargs)
+
+        site = context['site']
+        form = context['form']
+        group_set = site.groups.all()
+        selected_group_ids = form['alert_groups'].value()
+        context['available_groups'] = group_set.exclude(
+            pk__in=selected_group_ids
+        )
+        context['selected_groups'] = group_set.filter(
+            pk__in=selected_group_ids
+        )
+
+        user_set = User.objects.filter(bibos_profile__site=site)
+        selected_user_ids = form['alert_users'].value()
+        context['available_users'] = user_set.exclude(
+            pk__in=selected_user_ids
+        )
+        context['selected_users'] = user_set.filter(
+            pk__in=selected_user_ids
+        )
+        import pdb
+        pdb.set_trace()
+
+        return context
 
     def get_success_url(self):
         return '/site/{0}/security_problems/'.format(self.kwargs['site_uid'])

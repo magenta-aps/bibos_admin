@@ -9,7 +9,8 @@ Definerede sikkerhedsproblemer
 {% endblock %}
 
 {% block javascripts %}
-
+<script type="text/javascript" src="/media/js/pcgrouplist.js"></script>
+<script type="text/javascript" src="/media/js/userlist.js"></script>
 {% endblock %}
 
 {% block security_problems_active %}
@@ -50,7 +51,7 @@ class="active"
       <div>
         <div class="row-fluid">
           <fieldset class="span6">
-            
+              {% csrf_token %} 
             <label>Navn:</label>
             {{ form.name.errors }}
             {{ form.name }}
@@ -70,14 +71,13 @@ class="active"
             {{ form.script }}
 
             <label>Overvåges af følgende grupper:</label>
-            {% include 'system/pcgrouplist/list.html' with submit_name='pc_groups' %}
+            {% include 'system/pcgrouplist/list.html' with submit_name='alert_groups' %}
             
           </fieldset>
           <fieldset class="span6">
             
             <label>Modtager(e) af email-advarsel</label>
-            {% include 'system/pcgrouplist/list.html' with submit_name='pc_groups' %}
-            
+            {% include 'system/userlist/list.html' with submit_name='alert_users' %}
           </fieldset>
         </div>
         
