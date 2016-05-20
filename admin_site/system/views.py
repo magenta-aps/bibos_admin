@@ -1215,9 +1215,7 @@ class SecurityProblemsView(SelectionMixin, SiteView):
 
 class SecurityProblemCreate(SiteMixin, CreateView, SuperAdminOrThisSiteMixin):
     model = SecurityProblem
-    # form_class = <hopefully_not_necessary>
-
-    fields = '__all__'
+    form_class = SecurityProblemForm
 
     def get_success_url(self):
         return '/site/{0}/security_problems/'.format(self.kwargs['site_uid'])
@@ -1254,8 +1252,13 @@ class SecurityProblemUpdate(SiteMixin, UpdateView, SuperAdminOrThisSiteMixin):
         context['selected_users'] = user_set.filter(
             pk__in=selected_user_ids
         )
-        import pdb
-        pdb.set_trace()
+        # TODO: If the JS available/selected stuff above works out, the next
+        # two lines can be deleted.
+        form.fields['alert_users'].queryset = user_set
+        form.fields['alert_groups'].queryset = group_set
+        # Extra fields
+        context['selected_security_problem'] = self.object
+        context['newform'] = SecurityProblemForm()
 
         return context
 

@@ -17,8 +17,10 @@ class="detailpage"
     {% endifequal %}
     <li {% block site_active %}{% endblock %}><a href="/site/{{ site.url }}"><i class="icon-eye-open icon-white"></i> Status</a></li>
     <li class="divider"></li>
-    <li class="nav-header">Maskiner</li>
+    <li class="nav-header">Sikkerhed</li>
     <li {% block security_active %}{% endblock %}><a href="/site/{{ site.url }}/security/"><i class="icon-fire icon-white"></i> Sikkerhedsadvarsler <span class="pull-right badge badge-important sec-warn-blink">25</span></a></li>
+    <li {% block security_problems_active %}{% endblock %}><a href="/site/{{ site.url }}/security_problems/"><i class="icon-exclamation-sign icon-white"></i> Sikkerhedsproblemer</a></li>
+    <li class="nav-header">Maskiner</li>
     <li {% block configuration_active %}{% endblock %}><a href="/site/{{ site.url }}/configuration/"><i class="icon-cog icon-white"></i> Site-konfiguration</a></li>
     <li {% block computers_active %}{% endblock %}><a href="/site/{{ site.url }}/computers/" onclick="spin();"><i class="icon-hdd icon-white"></i> Computere</a></li>
     <li {% block groups_active %}{% endblock %}><a href="/site/{{ site.url }}/groups/"><i class="icon-tags icon-white"></i> Grupper</a></li>
@@ -26,7 +28,6 @@ class="detailpage"
     <li class="nav-header">Scripting</li>
     <li {% block jobs_active %}{% endblock %}><a href="/site/{{ site.url }}/jobs/"><i class="icon-list-alt icon-white"></i> Jobs</a></li>
     <li {% block scripts_active %}{% endblock %}><a href="/site/{{ site.url }}/scripts/"><i class="icon-list icon-white"></i> Scripts</a></li>
-    <li {% block security_problems_active %}{% endblock %}><a href="/site/{{ site.url }}/security_problems/"><i class="icon-exclamation-sign icon-white"></i> Sikkerhedsproblemer</a></li>
     <li class="divider"></li>
     <li {% block users_active %}{% endblock %}><a href="/site/{{site.url}}/users/"><i class="icon-user icon-white"></i> Brugere</a></li>
     <li class="divider"></li>

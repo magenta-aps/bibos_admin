@@ -92,6 +92,10 @@ ul.addgrouplist li {cursor: pointer;}
 ul.addlist li a {border-top: solid 1px #ddd !important;}
 li.addgrouptrigger {position: relative;}
 li.addgrouptrigger:hover ul.addgrouplist {display: block}
+ul.adduserlist {display: none; max-height: 300px; overflow-y: auto; position: absolute; background-color: #fff;}
+ul.adduserlist li {cursor: pointer;}
+li.addusertrigger {position: relative;}
+li.addusertrigger:hover ul.adduserlist {display: block}
 ul.addpclist {display: none; max-height: 300px; overflow-y: auto; position: absolute; background-color: #fff;}
 ul.addpclist li {cursor: pointer;}
 li.addpctrigger {position: relative;}

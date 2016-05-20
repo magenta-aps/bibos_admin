@@ -1,7 +1,7 @@
 {% extends "site_with_navigation.html" %}
 
 {% block specific_title %}
-Definerede sikkerhedsproblemer
+Sikkerhedsproblemer
 {% endblock %}
 
 {% block specific_documentation_links %}
@@ -71,13 +71,16 @@ class="active"
             {{ form.script }}
 
             <label>Overvåges af følgende grupper:</label>
-            {% include 'system/pcgrouplist/list.html' with submit_name='alert_groups' %}
-            
+            {{ form.alert_groups.errors }}
+            {{ form.alert_groups }}
+            {# {% include 'system/pcgrouplist/list.html' with submit_name='alert_groups' %} #}
           </fieldset>
           <fieldset class="span6">
             
             <label>Modtager(e) af email-advarsel</label>
-            {% include 'system/userlist/list.html' with submit_name='alert_users' %}
+            {{ form.alert_users.errors }}
+            {{ form.alert_users }}
+            {# {% include 'system/userlist/list.html' with submit_name='alert_users' %} #}
           </fieldset>
         </div>
         
@@ -86,7 +89,9 @@ class="active"
     </form>
 
     <div id="addNewSecProblem" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <form action="{% url 'security_problem_new' site.uid %}" method="POST">
+        <form action="{% url 'security_problem_new' site.uid %}" 
+            name="new_security_problem_form"
+            id="new_security_problem_form" method="post">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">×</button>
           <h3>Definér nyt sikkerhedsproblem</h3>
@@ -96,33 +101,39 @@ class="active"
             <div class="row-fluid">
                 <fieldset class="span6">
                     {% csrf_token %}
-                  
+                 
+                    <!-- Site field -->
+                    <input type="hidden" id="id_site" name="site" value="{{ site.id }}" />
+                    
+                    <!-- And now the rest -->
             <label>Navn:</label>
-            {{ form.name.errors }}
-            {{ form.name }}
+            {{ newform.name.errors }}
+            {{ newform.name }}
             <label>Id:</label>
-            {{ form.name.errors }}
-            {{ form.name }}
+            {{ newform.uid.errors }}
+            {{ newform.uid }}
             <label>Problemmeddelelse:</label>
-            {{ form.description.errors }}
-            {{ form.description }}
+            {{ newform.description.errors }}
+            {{ newform.description }}
             
             <label>Alvorsgrad:</label>
-            {{ form.level.errors }}
-            {{ form.level }}
+            {{ newform.level.errors }}
+            {{ newform.level }}
 
             <label>Script:</label>
-            {{ form.script.errors }}
-            {{ form.script }}
+            {{ newform.script.errors }}
+            {{ newform.script }}
 
                   <label>Overvåg følgende grupper:</label>
-                  {% include 'system/pcgrouplist/list.html' with submit_name='pc_groups' %}
+                  {{ newform.alert_groups.errors }}
+                  {{ newform.alert_groups }}
                   
                 </fieldset>
                 <fieldset class="span6">
                   
                   <label>Modtager(e) af email-advarsel</label>
-                  {% include 'system/pcgrouplist/list.html' with submit_name='pc_groups' %}
+                  {{ newform.alert_users.errors }}
+                  {{ newform.alert_users }}
                   
                   <label class="checkbox">
                       <input type="checkbox">

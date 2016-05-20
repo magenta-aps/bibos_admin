@@ -37,6 +37,7 @@
 
             // Add hidden input with the value
             var input = $('<input type="hidden" />');
+            input.attr('id', container.attr('id'));
             input.attr('name', container.attr('id').replace(/^id_/, ''));
             input.val(pk);
             input.appendTo(li.find('div').first());

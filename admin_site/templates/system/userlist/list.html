@@ -2,14 +2,14 @@
 <ul class="unstyled well actionlist" id="id_{{ submit_name }}">
   <li class="addusertrigger">
     <a href="#" title="Tilføj ny bruger"><i class="icon-plus"></i>Tilføj ny bruger</a>
-    <ul class="addgrouplist addlist">
+    <ul class="adduserlist addlist">
       {% for user in available_users %}
-        {% include 'system/userlist/item.html' with pk=user.pk name=user.name %}
+        {% include 'system/userlist/available_item.html' with pk=user.pk name=user.username %}
       {% endfor %}
     </ul>
   </li>
   {% for user in selected_users %}
-    {% include 'system/userlist/item.html' with pk=user.pk name=user.name selected='yes' %}
+    {% include 'system/userlist/selected_item.html' with pk=user.pk name=user.username %}
   {% endfor %}
 </ul>
 <script type="text/javascript"><!--
