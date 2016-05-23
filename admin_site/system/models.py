@@ -912,9 +912,7 @@ class SecurityProblem(models.Model):
     }
 
     name = models.CharField(_('name'), max_length=255)
-    uid = models.CharField(_('uid'), max_length=255)
-    description = models.CharField(_('description'), max_length=1024,
-                                   blank=True)
+    description = models.TextField(_('description'), blank=True)
     level = models.CharField(max_length=10, choices=LEVEL_CHOICES,
                              default=HIGH)
     site = models.ForeignKey(Site, related_name='security_problems')
@@ -923,14 +921,18 @@ class SecurityProblem(models.Model):
                                           related_name='security_problems',
                                           blank=True)
     alert_users = models.ManyToManyField(User,
-                                            related_name='security_problems',
-                                            blank=True)
+                                         related_name='security_problems',
+                                         blank=True)
 
     def __unicode__(self):
         return self.name
 
+    class Meta:
+        ordering = ['name']
+
 
 class SecurityEvent(models.Model):
+
     """A security event is an instance of a security problem."""
 
     # Event status choices

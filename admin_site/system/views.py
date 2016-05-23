@@ -1205,7 +1205,7 @@ class SecurityProblemsView(SelectionMixin, SiteView):
         if('selected_security_problem' in context):
             return HttpResponseRedirect('/site/%s/security_problems/%s/' % (
                 context['site'].uid,
-                context['selected_security_problem'].uid
+                context['selected_security_problem'].id
             ))
         else:
             """
@@ -1233,6 +1233,7 @@ class SecurityProblemsView(SelectionMixin, SiteView):
 
 
 class SecurityProblemCreate(SiteMixin, CreateView, SuperAdminOrThisSiteMixin):
+    template_name = 'system/site_security_problems.html'
     model = SecurityProblem
     form_class = SecurityProblemForm
 
@@ -1246,7 +1247,7 @@ class SecurityProblemUpdate(SiteMixin, UpdateView, SuperAdminOrThisSiteMixin):
     form_class = SecurityProblemForm
 
     def get_object(self, queryset=None):
-        return SecurityProblem.objects.get(uid=self.kwargs['uid'])
+        return SecurityProblem.objects.get(id=self.kwargs['pk'])
 
     def get_context_data(self, **kwargs):
 

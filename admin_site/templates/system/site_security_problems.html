@@ -11,6 +11,7 @@ Sikkerhedsproblemer
 {% block javascripts %}
 <script type="text/javascript" src="/media/js/pcgrouplist.js"></script>
 <script type="text/javascript" src="/media/js/userlist.js"></script>
+
 {% endblock %}
 
 {% block security_problems_active %}
@@ -22,14 +23,14 @@ class="active"
     <li class="listutils">
         <a href="#addNewSecProblem" role="button" data-toggle="modal" title="Definér nyt sikkerhedsproblem"><i class="icon-plus icon-white"></i> definér nyt sikkerhedsproblem</a>
     </li>
-    {% for sp in site.security_problems.all|dictsort:"uid" %}
+    {% for sp in site.security_problems.all %}
     <li {% ifequal sp selected_security_problem %}class="active"{% endifequal %}>
         {% ifequal sp selected_security_problem %}
         {% if selected_security_problem.is_delete_allowed %}
         <a class="remove pull-right" href="/site/{{ site.url }}/security_problems/{{ selected_security_problem.url }}/delete/" title="Slet sikkerhedsproblem" ><i class="icon-remove icon-white"></i></a>
         {% endif %}
         {% endifequal %}
-        <a class="list-item" href="/site/{{ site.url }}/security_problems/{{ sp.uid }}/"><i class="icon-exclamation-sign"></i>{{ sp.name }}</a>
+        <a class="list-item" href="/site/{{ site.url }}/security_problems/{{ sp.id }}/"><i class="icon-exclamation-sign"></i>{{ sp.name }}</a>
     </li>
     {% endfor %}
 </ul>
@@ -39,7 +40,7 @@ class="active"
     {% if selected_security_problem %}
     <h2 class="divideheader">
         Detaljer om <em>{{ selected_security_problem.name }}</em>
-        <a class="pull-right" href="/site/{{ site.url }}/security/problem/{{ selected_security_problem.uid }}" title="Se alle advarsler for dette sikkerhedsproblem"><span class="badge badge-important"><icon class="icon-fire icon-white"></icon></span></a>
+        <a class="pull-right" href="/site/{{ site.url }}/security/problem/{{ selected_security_problem.id }}" title="Se alle advarsler for dette sikkerhedsproblem"><span class="badge badge-important"><icon class="icon-fire icon-white"></icon></span></a>
     </h2>
     {% include 'notification.html' %}
 
@@ -54,9 +55,6 @@ class="active"
                 <fieldset class="span6">
                     {% csrf_token %} 
                     <label>Navn:</label>
-                    {{ form.name.errors }}
-                    {{ form.name }}
-                    <label>Id:</label>
                     {{ form.name.errors }}
                     {{ form.name }}
                     <label>Problemmeddelelse:</label>
@@ -111,9 +109,6 @@ class="active"
                         <label>Navn:</label>
                         {{ newform.name.errors }}
                         {{ newform.name }}
-                        <label>Id:</label>
-                        {{ newform.uid.errors }}
-                        {{ newform.uid }}
                         <label>Problemmeddelelse:</label>
                         {{ newform.description.errors }}
                         {{ newform.description }}
