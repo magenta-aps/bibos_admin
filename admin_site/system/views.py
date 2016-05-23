@@ -1208,9 +1208,28 @@ class SecurityProblemsView(SelectionMixin, SiteView):
                 context['selected_security_problem'].uid
             ))
         else:
+            """
             return HttpResponseRedirect(
                 '/site/%s/security_problems/new/' % context['site'].uid,
             )
+            """
+            site = context['site']
+            context['newform'] = SecurityProblemForm()
+            context['newform'].fields[
+                'alert_users'
+            ].queryset = User.objects.filter(bibos_profile__site=site)
+            context['newform'].fields[
+                'alert_groups'
+            ].queryset = site.groups.all()
+            # Limit list of scripts to only include security scripts.
+            script_set = Script.objects.filter(
+                Q(site__isnull=True) | Q(site=site)
+            ).filter(is_security_script=True)
+            context['newform'].fields['script'].queryset = script_set
+
+            return super(
+                SecurityProblemsView, self
+            ).render_to_response(context)
 
 
 class SecurityProblemCreate(SiteMixin, CreateView, SuperAdminOrThisSiteMixin):
@@ -1252,6 +1271,12 @@ class SecurityProblemUpdate(SiteMixin, UpdateView, SuperAdminOrThisSiteMixin):
         context['selected_users'] = user_set.filter(
             pk__in=selected_user_ids
         )
+        # Limit list of scripts to only include security scripts.
+        script_set = Script.objects.filter(
+            Q(site__isnull=True) | Q(site=site)
+        ).filter(is_security_script=True)
+        form.fields['script'].queryset = script_set
+
         # TODO: If the JS available/selected stuff above works out, the next
         # two lines can be deleted.
         form.fields['alert_users'].queryset = user_set
@@ -1259,6 +1284,9 @@ class SecurityProblemUpdate(SiteMixin, UpdateView, SuperAdminOrThisSiteMixin):
         # Extra fields
         context['selected_security_problem'] = self.object
         context['newform'] = SecurityProblemForm()
+        context['newform'].fields['script'].queryset = script_set
+        context['newform'].fields['alert_users'].queryset = user_set
+        context['newform'].fields['alert_groups'].queryset = group_set
 
         return context
 

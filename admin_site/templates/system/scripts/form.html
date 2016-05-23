@@ -32,9 +32,11 @@
             >
             Lokalt script for {{ site.uid }}
           </label>
-          <label class="checkbox">
-            <input type="checkbox" name="" value="">
+          
+            <label class="checkbox" for="{{ form.is_security_script.id_for_label }}"> 
             Sikkerhedsscript
+          {{ form.is_security_script.errors }}
+          {{ form.is_security_script }}
           </label>
         </div>
         <div class="span12" style="margin-left: 0;">
