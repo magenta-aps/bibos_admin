@@ -153,6 +153,11 @@ class SiteMixin(View):
         context = super(SiteMixin, self).get_context_data(**kwargs)
         site = get_object_or_404(Site, uid=self.kwargs[self.site_uid])
         context['site'] = site
+        # Add information about outstanding security events.
+        no_of_sec_events = SecurityEvent.objects.filter(
+            problem__site=site, status=SecurityEvent.NEW
+        ).exclude(problem__level=SecurityProblem.NORMAL).count()
+        context['sec_events'] = no_of_sec_events
 
         return context
 
