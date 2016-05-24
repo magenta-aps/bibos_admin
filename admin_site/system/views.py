@@ -1361,11 +1361,16 @@ class SecurityEventSearch(JSONResponseMixin, SiteView):
         if site is None:
             site = eventlist[0].batch.site
 
+        for event in eventlist:
+            print "PROBLEM", event.problem
+            print "LEVEL", event.problem.level
+
         return [{
             'pk': event.pk,
             'problem_name': event.problem.name,
             'occurred': event.ocurred_time.strftime("%Y-%m-%d %H:%M:%S"),
-            'status': event.status + '',
+            'status': SecurityEvent.STATUS_TO_LABEL[event.status] + '',
+            'level': SecurityProblem.LEVEL_TO_LABEL[event.problem.level] + '',
             'pc_name': event.pc.name,
             'assigned_user': (event.assigned_user.username if
                               event.assigned_user else '')
@@ -1412,7 +1417,7 @@ class SecurityEventSearch(JSONResponseMixin, SiteView):
             context['securityevent_list'],
             site=context['site']
         )
-        # print json.dumps(result)
+        print json.dumps(result)
         return json.dumps(result)
 
 
