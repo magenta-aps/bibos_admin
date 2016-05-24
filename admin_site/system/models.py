@@ -912,6 +912,7 @@ class SecurityProblem(models.Model):
     }
 
     name = models.CharField(_('name'), max_length=255)
+    uid = models.SlugField(_('uid'))
     description = models.TextField(_('description'), blank=True)
     level = models.CharField(max_length=10, choices=LEVEL_CHOICES,
                              default=HIGH)
@@ -929,6 +930,7 @@ class SecurityProblem(models.Model):
 
     class Meta:
         ordering = ['name']
+        unique_together = ('uid', 'site')
 
 
 class SecurityEvent(models.Model):

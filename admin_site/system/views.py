@@ -1205,7 +1205,7 @@ class SecurityProblemsView(SelectionMixin, SiteView):
         if('selected_security_problem' in context):
             return HttpResponseRedirect('/site/%s/security_problems/%s/' % (
                 context['site'].uid,
-                context['selected_security_problem'].id
+                context['selected_security_problem'].uid
             ))
         else:
             """
@@ -1247,7 +1247,8 @@ class SecurityProblemUpdate(SiteMixin, UpdateView, SuperAdminOrThisSiteMixin):
     form_class = SecurityProblemForm
 
     def get_object(self, queryset=None):
-        return SecurityProblem.objects.get(id=self.kwargs['pk'])
+        return SecurityProblem.objects.get(uid=self.kwargs['uid'],
+                                           site__uid=self.kwargs['site_uid'])
 
     def get_context_data(self, **kwargs):
 
@@ -1300,7 +1301,8 @@ class SecurityProblemDelete(SiteMixin, DeleteView, SuperAdminOrThisSiteMixin):
     # form_class = <hopefully_not_necessary>
 
     def get_object(self, queryset=None):
-        return SecurityProblem.objects.get(uid=self.kwargs['uid'])
+        return SecurityProblem.objects.get(uid=self.kwargs['uid'],
+                                           site__uid=self.kwargs['site_uid'])
 
     def get_success_url(self):
         return '/site/{0}/security_problems/'.format(self.kwargs['site_uid'])
@@ -1339,7 +1341,8 @@ class SecurityEventSearch(JSONResponseMixin, SiteView):
             'occurred': event.ocurred_time.strftime("%Y-%m-%d %H:%M:%S"),
             'status': event.status + '',
             'pc_name': event.pc.name,
-            'assigned_user': event.assigned_user
+            'assigned_user': (event.assigned_user.username if
+                              event.assigned_user else '')
         } for event in eventlist]
 
     def post(self, request, *args, **kwargs):
@@ -1383,7 +1386,7 @@ class SecurityEventSearch(JSONResponseMixin, SiteView):
             context['securityevent_list'],
             site=context['site']
         )
-        print json.dumps(result)
+        # print json.dumps(result)
         return json.dumps(result)
 
 

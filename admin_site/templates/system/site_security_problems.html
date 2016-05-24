@@ -27,10 +27,10 @@ class="active"
     <li {% ifequal sp selected_security_problem %}class="active"{% endifequal %}>
         {% ifequal sp selected_security_problem %}
         {% if selected_security_problem.is_delete_allowed %}
-        <a class="remove pull-right" href="/site/{{ site.url }}/security_problems/{{ selected_security_problem.url }}/delete/" title="Slet sikkerhedsproblem" ><i class="icon-remove icon-white"></i></a>
+        <a class="remove pull-right" href="/site/{{ site.url }}/security_problems/{{ selected_security_problem.uid }}/delete/" title="Slet sikkerhedsproblem" ><i class="icon-remove icon-white"></i></a>
         {% endif %}
         {% endifequal %}
-        <a class="list-item" href="/site/{{ site.url }}/security_problems/{{ sp.id }}/"><i class="icon-exclamation-sign"></i>{{ sp.name }}</a>
+        <a class="list-item" href="/site/{{ site.url }}/security_problems/{{ sp.uid }}/"><i class="icon-exclamation-sign"></i>{{ sp.name }}</a>
     </li>
     {% endfor %}
 </ul>
@@ -57,6 +57,9 @@ class="active"
                     <label>Navn:</label>
                     {{ form.name.errors }}
                     {{ form.name }}
+                    <label>ID:</label>
+                    {{ form.uid.errors }}
+                    {{ form.uid }}
                     <label>Problemmeddelelse:</label>
                     {{ form.description.errors }}
                     {{ form.description }}
@@ -109,6 +112,9 @@ class="active"
                         <label>Navn:</label>
                         {{ newform.name.errors }}
                         {{ newform.name }}
+                        <label>Id:</label>
+                        {{ newform.uid.errors }}
+                        {{ newform.uid }}
                         <label>Problemmeddelelse:</label>
                         {{ newform.description.errors }}
                         {{ newform.description }}
