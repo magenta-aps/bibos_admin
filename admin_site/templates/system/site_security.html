@@ -40,37 +40,27 @@ class="active"
   </div>
   <div id="securityeventsearchnav" class="sublevelnav">
     <form id="securityeventsearch-filterform" name="filterform" action="./" method="post">
-      
+        <input type="hidden" name="orderby" value="-pk" />
+        <input class="btn btn-primary pull-right" type="button"
+        onclick="BibOS.SecurityEventList.reset()" value="Nulstil filtre" />
       <h3 class="nav-header">Filtrér:</h3>
       <hr>
-      <div>
-        <label class="checkbox">
-          <input type="checkbox" value="Critical" name="level" checked="checked">
-          <span class="label label-important">Alvorsgrad: Rød</span>
+      <div id="securityeventsearch-level-selectors">
+          {% for l in level_choices %}
+          <label class="checkbox">
+              <input type="checkbox" value="{{ l.value }}" name="level" {{ l.checked }}>
+              <span class="label {{ l.label }}">Alvorsgrad: {{ l.name }}</span>
         </label>
-        <label class="checkbox">
-          <input type="checkbox" value="High" name="level" checked="checked">
-          <span class="label label-warning">Alvorsgrad: Orange</span>
-        </label>
-        <label class="checkbox">
-          <input type="checkbox" value="Normal" name="level" checked="checked">
-          <span class="label label-gentle-warning">Alvorsgrad: Gul</span>
-        </label>
+        {% endfor %}
       </div>
       <hr>
-      <div>
-        <label class="checkbox">
-          <input type="checkbox" value="NEW" name="status" checked="checked">
-          <span>Vis ikke-håndterede</span>
+      <div id="securityeventsearch-status-selectors">
+          {% for s in status_choices %}
+          <label class="checkbox">
+              <input type="checkbox" value="{{ s.value }}" name="level" {{ s.checked }}>
+              <span class="label {{ s.label }}">{{ s.name }}</span>
         </label>
-        <label class="checkbox">
-          <input type="checkbox" value="ASSIGNED" name="status" checked="checked">
-          <span>Vis håndterede</span>
-        </label>
-        <label class="checkbox">
-          <input type="checkbox" value="RESOLVED" name="status">
-          <span>Vis løste (arkiveret)</span>
-        </label>
+        {% endfor %}
       </div>
       <hr>
       <div>

@@ -1314,7 +1314,33 @@ class SecurityEventsView(SiteView):
     def get_context_data(self, **kwargs):
         # First, get basic context from superclass
         context = super(SecurityEventsView, self).get_context_data(**kwargs)
-        # TODO: Supply extra info as (probably not) needed.
+        # Supply extra info as needed.
+        level_preselected = set([
+            SecurityProblem.CRITICAL,
+            SecurityProblem.HIGH
+        ])
+        context['level_choices'] = [
+            {
+                'name': name,
+                'value': value,
+                'label': SecurityProblem.LEVEL_TO_LABEL[value],
+                'checked':
+                'checked="checked' if value in level_preselected else ''
+            } for (value, name) in SecurityProblem.LEVEL_CHOICES
+        ]
+        status_preselected = set([
+            SecurityEvent.NEW,
+            SecurityEvent.ASSIGNED
+        ])
+        context['status_choices'] = [
+            {
+                'name': name,
+                'value': value,
+                'label': SecurityEvent.STATUS_TO_LABEL[value],
+                'checked':
+                'checked="checked' if value in status_preselected else ''
+            } for (value, name) in SecurityEvent.STATUS_CHOICES
+        ]
         return context
 
 

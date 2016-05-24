@@ -900,13 +900,13 @@ class SecurityProblem(models.Model):
     }
 
     LEVEL_CHOICES = (
-        (NORMAL, LEVEL_TRANSLATIONS[NORMAL]),
-        (HIGH, LEVEL_TRANSLATIONS[HIGH]),
         (CRITICAL, LEVEL_TRANSLATIONS[CRITICAL]),
+        (HIGH, LEVEL_TRANSLATIONS[HIGH]),
+        (NORMAL, LEVEL_TRANSLATIONS[NORMAL]),
     )
 
     LEVEL_TO_LABEL = {
-        NORMAL: 'label-success',
+        NORMAL: 'label-gentle-warning',
         HIGH: 'label-warning',
         CRITICAL: 'label-important',
     }
