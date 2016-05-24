@@ -54,6 +54,10 @@ class="active"
             <div class="row-fluid">
                 <fieldset class="span6">
                     {% csrf_token %} 
+                    
+                    <!-- Site field -->
+                    <input type="hidden" id="id_site" name="site" value="{{ site.id }}" />
+
                     <label>Navn:</label>
                     {{ form.name.errors }}
                     {{ form.name }}
