@@ -1235,7 +1235,7 @@ class SecurityProblemsView(SelectionMixin, SiteView):
 class SecurityProblemCreate(SiteMixin, CreateView, SuperAdminOrThisSiteMixin):
     template_name = 'system/site_security_problems.html'
     model = SecurityProblem
-    form_class = SecurityProblemForm
+    fields = '__all__'
 
     def get_success_url(self):
         return '/site/{0}/security_problems/'.format(self.kwargs['site_uid'])
@@ -1360,10 +1360,6 @@ class SecurityEventSearch(JSONResponseMixin, SiteView):
 
         if site is None:
             site = eventlist[0].batch.site
-
-        for event in eventlist:
-            print "PROBLEM", event.problem
-            print "LEVEL", event.problem.level
 
         return [{
             'pk': event.pk,
