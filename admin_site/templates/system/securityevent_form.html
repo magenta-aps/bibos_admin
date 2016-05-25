@@ -7,7 +7,6 @@
       <a class="btn" href="javascript:history.go(-1)">Annuller</a>
       <div class="alert alert-error">
           <p><strong>{{ securityevent.problem.name }}: {{ securityevent.summary }}</strong></p>
-          <p><pre>{{ securityevent.complete_log }}</pre></p>
       </div>
       <dl class="dl-horizontal">
         <dt>Tid</dt>
@@ -24,6 +23,10 @@
         {{ form.status.errors }}
         {{ form.status }}
       </dd>
+      <dt>Log-output</dt>
+      <dd>
+          <p><pre>{{ securityevent.complete_log }}</pre></p>
+          </dd>
       </dl>
     </div>
   </form>
