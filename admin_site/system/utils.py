@@ -1,7 +1,6 @@
 """Utility methods for the BibOS project."""
 
 from django.conf import settings
-from account.models import UserProfile
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
 
