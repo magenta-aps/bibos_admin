@@ -1,10 +1,10 @@
-
 {% extends "sitebase.html" %}
-
 {% block content %}
 
 <div class="container">
   <form action="" method="post">{% csrf_token %}
+      <input class="btn btn-primary" type="submit" value="Gem" />
+      <a class="btn" href="javascript:history.go(-1)">Annuller</a>
       <div class="alert alert-error">
           <p><strong>{{ securityevent.problem.name }}: {{ securityevent.summary }}</strong></p>
           <p><pre>{{ securityevent.complete_log }}</pre></p>
@@ -16,18 +16,16 @@
         <dd><a href="/site/{{ site.uid }}/computers/{{ securityevent.pc.uid }}">{{ securityevent.pc.name }}</a>, sidst set {{ securityevent.pc.last_seen }}</dd>
         <dt>Håndteres af</dt>
         <dd>
-        {{ form.user.errors }}
-        {{ form.user }}
+        {{ form.assigned_user.errors }}
+        {{ form.assigned_user }}
         </dd>
-      </dl>
-      <p><strong>Status:</strong></p>
-      <p>
+      <dt><strong>Status:</strong></dt>
+      <dd>
         {{ form.status.errors }}
         {{ form.status }}
-      </p>
+      </dd>
+      </dl>
     </div>
-      <input class="btn btn-primary" type="submit" value="Gem" />
-      <a class="btn" href="javascript:history.go(-1)">Annuller</a>
   </form>
 </div>
 {% endblock %}
