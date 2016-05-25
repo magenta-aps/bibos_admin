@@ -270,7 +270,10 @@ def get_instructions(pc_uid, update_data):
         job.save()
         jobs.append(job.as_instruction)
 
+    security_scripts = Script.objects.get(is_security_script=1)
+
     result = {
+        'security_scripts' : security_scripts,      
         'jobs': jobs,
         'configuration': pc.get_full_config(),
     }
