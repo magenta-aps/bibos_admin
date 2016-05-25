@@ -1425,8 +1425,7 @@ class SecurityEventSearch(JSONResponseMixin, SiteView):
 
 class SecurityEventUpdate(SiteMixin, UpdateView, SuperAdminOrThisSiteMixin):
     model = SecurityEvent
-    fields = ['problem', 'summary', 'complete_log', 'ocurred_time', 'pc',
-              'assigned_user', 'status']
+    fields = ['assigned_user', 'status']
 
     def get_object(self, queryset=None):
         return SecurityEvent.objects.get(id=self.kwargs['pk'])
@@ -1437,6 +1436,11 @@ class SecurityEventUpdate(SiteMixin, UpdateView, SuperAdminOrThisSiteMixin):
 
         # Set fields to read-only
         return context
+
+    def post(self, request, *args, **kwargs):
+        result = super(SecurityEventUpdate,
+                       self).post(request, *args, **kwargs)
+        return result
 
     def get_success_url(self):
         return '/site/{0}/security/'.format(self.kwargs['site_uid'])

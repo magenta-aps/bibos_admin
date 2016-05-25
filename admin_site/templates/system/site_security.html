@@ -40,6 +40,7 @@ class="active"
     </tbody>
    </table>
   </div>
+  {% if 0 %}
   <div id="securityeventsearchnav" class="sublevelnav">
     <form id="securityeventsearch-filterform" name="filterform" action="./" method="post">
         <input type="hidden" name="orderby" value="-pk" />
@@ -88,6 +89,7 @@ class="active"
       </div>
     </form>
   </div>
+  {% endif %}
   <div class="container-fluid main sublevelmain" style="overflow-x: auto;">
     {% include 'notification.html' %}
     <table class="table table-hover warn-table"
@@ -98,7 +100,7 @@ class="active"
           <th>Tid</th>
           <th>Status</th>
           <th>Håndteres af</th>
-          <th>Info</th>
+          <th>Åbn</th>
         </tr>
       </thead>
       <tbody id="securityevent-list">
