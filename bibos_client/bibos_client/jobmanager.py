@@ -373,6 +373,15 @@ def get_instructions():
             local_job.save()
             local_job.logline("Job imported at %s" % datetime.now())
 
+    # Import security scripts
+    if 'security_scripts' in instructions:
+        for s in instructions['security_scripts']:
+            fpath = SECURITY_DIR + '/' + str(s.name)              
+            fh = open(path, 'w')
+            fh.write(s.executable_code.encode("utf8"))
+            fh.close()
+            os.chmod(fpath, stat.S_IRWXU)
+
     if ('do_send_package_info' in instructions and
             instructions['do_send_package_info']):
                 try:
@@ -428,6 +437,12 @@ def run_pending_jobs():
 
 
 def collect_security_events(now):
+    
+    # execute scripts
+    for filename in glob.glob(SECURITY_DIR):
+        cmd = [SECURITY_DIR + '/' + filename]
+        ret_val = subprocess.call(cmd)
+
     try:
         check_file = open(SECURITY_DIR + "/lastcheck.txt", "r")
     except IOError:
