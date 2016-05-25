@@ -14,7 +14,7 @@ def notify_users(data, security_problem):
     email_list = []
     alert_users = security_problem.alert_users.all()
     for user in alert_users:
-        email_list.append(User.objects.get(id=user.user_id).email)
+        email_list.append(User.objects.get(id=user.id).email)
 
     body = ("Beskrivelse af sikkerhedsadvarsel: " +
             security_problem.description + "\n")
