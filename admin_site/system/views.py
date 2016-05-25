@@ -1368,9 +1368,10 @@ class SecurityEventSearch(JSONResponseMixin, SiteView):
 
         return [{
             'pk': event.pk,
+            'site_uid': site.uid,
             'problem_name': event.problem.name,
             'occurred': event.ocurred_time.strftime("%Y-%m-%d %H:%M:%S"),
-            'status': SecurityEvent.STATUS_TO_LABEL[event.status] + '',
+            'status': event.get_status_display(),
             'level': SecurityProblem.LEVEL_TO_LABEL[event.problem.level] + '',
             'pc_name': event.pc.name,
             'assigned_user': (event.assigned_user.username if
@@ -1418,25 +1419,27 @@ class SecurityEventSearch(JSONResponseMixin, SiteView):
             context['securityevent_list'],
             site=context['site']
         )
-        print json.dumps(result)
+        # print json.dumps(result)
         return json.dumps(result)
 
 
-class SecurityEventInfo(DetailView, LoginRequiredMixin):
-    template_name = 'system/security_events/info.html'
+class SecurityEventUpdate(SiteMixin, UpdateView, SuperAdminOrThisSiteMixin):
     model = SecurityEvent
+    fields = ['problem', 'summary', 'complete_log', 'ocurred_time', 'pc',
+              'assigned_user', 'status']
 
-    def get(self, request, *args, **kwargs):
-        self.site = get_object_or_404(Site, uid=kwargs['site_uid'])
-        return super(SecurityEventInfo, self).get(request, *args, **kwargs)
+    def get_object(self, queryset=None):
+        return SecurityEvent.objects.get(id=self.kwargs['pk'])
 
     def get_context_data(self, **kwargs):
-        context = super(SecurityEventInfo, self).get_context_data(**kwargs)
-        if self.site != self.object.batch.site:
-            raise Http404
-        context['site'] = self.site
-        context['job'] = self.object
+
+        context = super(SecurityEventUpdate, self).get_context_data(**kwargs)
+
+        # Set fields to read-only
         return context
+
+    def get_success_url(self):
+        return '/site/{0}/security/'.format(self.kwargs['site_uid'])
 
 
 class PackageSearch(JSONResponseMixin, ListView):

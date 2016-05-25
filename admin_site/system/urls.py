@@ -13,7 +13,7 @@ from views import PackageSearch, PCDelete
 # SecurityProblem and SecurityEvent related views
 from views import SecurityProblemsView, SecurityProblemCreate
 from views import SecurityProblemUpdate, SecurityProblemDelete
-from views import SecurityEventsView, SecurityEventInfo
+from views import SecurityEventsView, SecurityEventUpdate
 from views import SecurityEventSearch
 
 
@@ -21,12 +21,12 @@ urlpatterns = patterns(
     '',
 
     # Security events UI
-    url(r'^site/(?P<slug>[^/]+)/security/warning_info/$',
-        SecurityEventInfo.as_view(), name='security_event_info'),
-    url(r'^site/(?P<slug>[^/]+)/security/search/',
+    url(r'^site/(?P<site_uid>[^/]+)/security/(?P<pk>\d+)/$',
+        SecurityEventUpdate.as_view(), name='security_event_update'),
+    url(r'^site/(?P<slug>[^/]+)/security/search/$',
         SecurityEventSearch.as_view(),
         name='securityeventsearch'),
-    url(r'^site/(?P<slug>[^/]+)/security/', SecurityEventsView.as_view(),
+    url(r'^site/(?P<slug>[^/]+)/security/$', SecurityEventsView.as_view(),
         name='security_events'),
 
     # Security problems UI

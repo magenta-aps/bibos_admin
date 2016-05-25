@@ -30,10 +30,12 @@ class="active"
   <div class="template-container">
    <table>
     <tbody id="securityeventitem-template">
-      <tr class="#LEVEL#">
-        <td>#PROBLEM_NAME#</td>
+      <tr>
+        <td class="#LEVEL#">#PROBLEM_NAME#</td>
         <td>#OCCURRED#</td>
+        <td>#STATUS#</td>
         <td>#ASSIGNED_USER#</td>
+        <td>#SECURITYEVENTINFOBUTTON#</td>
       </tr>
     </tbody>
    </table>
@@ -46,6 +48,9 @@ class="active"
       <h3 class="nav-header">Filtrér:</h3>
       <hr>
       <div id="securityeventsearch-level-selectors">
+          <dt>Status</dt>
+          {{ form.status.errors }}
+          {{ form.status }}
           {% for l in level_choices %}
           <label class="checkbox">
               <input type="checkbox" value="{{ l.value }}" name="level" {{ l.checked }}>
@@ -85,12 +90,15 @@ class="active"
   </div>
   <div class="container-fluid main sublevelmain" style="overflow-x: auto;">
     {% include 'notification.html' %}
-    <table class="table table-hover warn-table">
+    <table class="table table-hover warn-table"
+    id="#site_securityevents_table">
       <thead>
         <tr>
           <th><i class="icon-fire"></i> Advarsel</th>
           <th>Tid</th>
+          <th>Status</th>
           <th>Håndteres af</th>
+          <th>Info</th>
         </tr>
       </thead>
       <tbody id="securityevent-list">
@@ -101,7 +109,10 @@ class="active"
     </table> 
   </div>
   
-  <div id="warnModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="warnModalLabel" aria-hidden="true">
+  <div class="modal iframe hide" id="edit-securityevent-modal" tabindex="-1" role="dialog"
+      aria-labelledby="edit-securityevent-modal-title"
+      aria-hidden="true"
+      data-href="/security/edit"/>
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
       <h3 id="myModalLabel">USB disconnected</h3>

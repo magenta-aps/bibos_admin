@@ -20,14 +20,11 @@ $(function(){
         appendEntries: function(dataList) {
             var container = this.elem
             $.each(dataList, function() {
-                var info_button = '';
-                if(this.has_info) {
-                    info_button = '<button ' +
+                var info_button = '<button ' +
                         'class="btn securityeventinfobutton" ' +
                         'title="Event-info" ' +
-                        'data-pk="' + this.pk + '"'+
+                        'onclick="window.location.href=\'/site/' + this.site_uid + '/security/' + this.pk + '/\'"'+
                     '><i class="icon-info-sign"></i></button>'
-                }
                 var item = $(BibOS.expandTemplate(
                     'securityevent-entry',
                     $.extend(this, {
@@ -39,7 +36,6 @@ $(function(){
                 });
                 item.appendTo(container)
             });
-            BibOS.setupJobInfoButtons(container);
         },
 
         replaceEntries: function(dataList) {
