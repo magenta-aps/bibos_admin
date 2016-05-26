@@ -4,6 +4,7 @@ from django.contrib import admin
 from models import Configuration, ConfigurationEntry, PackageList, Package
 from models import Site, Distribution, PCGroup, PC, CustomPackages
 from models import PackageInstallInfo, PackageStatus
+from models import SecurityEvent, SecurityProblem
 # Job-related stuff
 from models import Script, Batch, Job, Input, Parameter
 ar = admin.site.register
@@ -84,3 +85,5 @@ ar(Script, ScriptAdmin)
 ar(Batch, BatchAdmin)
 ar(Job)
 ar(Parameter)
+ar(SecurityEvent)
+ar(SecurityProblem)
