@@ -23,9 +23,11 @@
         {{ form.status.errors }}
         {{ form.status }}
       </dd>
-      <dt>Log-output</dt>
+      <dt>Log-output:</dt>
       <dd>
-          <p><pre>{{ securityevent.complete_log }}</pre></p>
+      <p><a href="javascript:void(0)"
+            onclick="$('pre').toggle()">Vis/skjul</a>
+          <p name="securityevent-log"><pre style="display: none;">{{ securityevent.complete_log }}</pre></p>
           </dd>
       </dl>
     </div>
