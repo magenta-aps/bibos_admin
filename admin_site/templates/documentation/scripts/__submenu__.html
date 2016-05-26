@@ -8,4 +8,10 @@
     <li {% ifequal submenu_active 'running' %}class="active"{% endifequal %}>
       <a href="{% url 'doc' 'scripts/running' %}"> Afvikling af scripts</a>
     </li>
+     <li {% ifequal submenu_active 'securitywarnings' %}class="active"{% endifequal %}>
+      <a href="{% url 'doc' 'scripts/securitywarnings' %}"> Sikkerhedsadvarsler</a>
+    </li>
+     <li {% ifequal submenu_active 'securityproblems' %}class="active"{% endifequal %}>
+      <a href="{% url 'doc' 'scripts/securityproblems' %}"> Sikkerhedsproblemer</a>
+    </li>
 </ul>
