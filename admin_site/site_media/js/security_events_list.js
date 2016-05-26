@@ -7,8 +7,11 @@ $(function(){
     }
     $.extend(SecurityEventList.prototype, {
         init: function() {
-            var securityeventsearch = this
+            var securityeventsearch = this;
             $('#securityeventsearch-status-selectors input:checkbox').change(function() {
+                securityeventsearch.search();
+            })
+            $('#securityeventsearch-level-selectors input:checkbox').change(function() {
                 securityeventsearch.search();
             })
             $('#securityeventsearch-length-limitation input:radio').change(function() {
@@ -56,18 +59,6 @@ $(function(){
             this.search()
         },
 
-        selectBatch: function(elem, val) {
-            this.selectFilter('batch', elem, val)
-        },
-
-        selectPC: function(elem, val) {
-            this.selectFilter('pc', elem, val)
-        },
-
-        selectGroup: function(elem, val) {
-            this.selectFilter('group', elem, val)
-        },
-
         orderby: function(order) {
             $('.orderby').each(function() {
               if ($(this).hasClass('order-' + order)) {
@@ -100,9 +91,6 @@ $(function(){
         reset: function() {
             $('#securityeventsearch-filterform')[0].reset()
             $('#securityeventsearch-filterform li.selected').removeClass('selected')
-            $('#securityeventsearch-filterform input[name=batch]').val('')
-            $('#securityeventsearch-filterform input[name=pc]').val('')
-            $('#securityeventsearch-filterform input[name=group]').val('')
             this.search()
         }
     });

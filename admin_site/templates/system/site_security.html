@@ -30,7 +30,7 @@ class="active"
   <div class="template-container">
    <table>
     <tbody id="securityeventitem-template">
-      <tr>
+      <tr class="muted">
         <td class="#LEVEL#">#PROBLEM_NAME#</td>
         <td>#PC_NAME#</td>
         <td>#OCCURRED#</td>
@@ -41,7 +41,6 @@ class="active"
     </tbody>
    </table>
   </div>
-  {% if 0 %}
   <div id="securityeventsearchnav" class="sublevelnav">
     <form id="securityeventsearch-filterform" name="filterform" action="./" method="post">
         <input type="hidden" name="orderby" value="-pk" />
@@ -64,7 +63,7 @@ class="active"
       <div id="securityeventsearch-status-selectors">
           {% for s in status_choices %}
           <label class="checkbox">
-              <input type="checkbox" value="{{ s.value }}" name="level" {{ s.checked }}>
+              <input type="checkbox" value="{{ s.value }}" name="status" {{ s.checked }}>
               <span class="label {{ s.label }}">{{ s.name }}</span>
         </label>
         {% endfor %}
@@ -90,7 +89,6 @@ class="active"
       </div>
     </form>
   </div>
-  {% endif %}
   <div class="container-fluid main sublevelmain" style="overflow-x: auto;">
     {% include 'notification.html' %}
     <table class="table table-hover warn-table"
