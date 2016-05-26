@@ -76,7 +76,7 @@ class="active"
                     {{ form.script.errors }}
                     {{ form.script }}
 
-                    <label>Overvåges af følgende grupper:</label>
+                    <label>Overvåg følgende grupper:</label>
                     {{ form.alert_groups.errors }}
                     {{ form.alert_groups }}
                     {# {% include 'system/pcgrouplist/list.html' with submit_name='alert_groups' %} #}
@@ -142,15 +142,6 @@ class="active"
                         {{ newform.alert_users.errors }}
                         {{ newform.alert_users }}
 
-                        <label class="checkbox">
-                            <input type="checkbox">
-                            Advar øjeblikkeligt ved opstået problem
-                        </label>
-
-                        <label class="checkbox">
-                            <input type="checkbox">
-                            Advar i email-rapport én gang dagligt
-                        </label>
                     </fieldset>
                 </div>
 
