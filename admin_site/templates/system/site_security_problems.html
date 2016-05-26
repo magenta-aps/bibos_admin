@@ -40,7 +40,10 @@ class="active"
     {% if selected_security_problem %}
     <h2 class="divideheader">
         Detaljer om <em>{{ selected_security_problem.name }}</em>
+        {% comment %}
+        TODO later?
         <a class="pull-right" href="/site/{{ site.url }}/security/problem/{{ selected_security_problem.id }}" title="Se alle advarsler for dette sikkerhedsproblem"><span class="badge badge-important"><icon class="icon-fire icon-white"></icon></span></a>
+        {% endcomment %}
     </h2>
     {% include 'notification.html' %}
 
