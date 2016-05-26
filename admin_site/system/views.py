@@ -1370,6 +1370,7 @@ class SecurityEventSearch(JSONResponseMixin, SiteView):
             'pk': event.pk,
             'site_uid': site.uid,
             'problem_name': event.problem.name,
+            'pc_name': event.pc.name,
             'occurred': event.ocurred_time.strftime("%Y-%m-%d %H:%M:%S"),
             'status': event.get_status_display(),
             'level': SecurityProblem.LEVEL_TO_LABEL[event.problem.level] + '',
