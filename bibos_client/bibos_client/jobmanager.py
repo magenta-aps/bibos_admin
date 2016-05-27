@@ -437,23 +437,9 @@ def run_pending_jobs():
 
 
 def run_security_scripts():
-    try:
-        log = open(SECURITY_DIR + "/security_log.txt", "a")
-    except IOError:
-        # File does not exists, so we create it.
-        os.mknod(SECURITY_DIR + "/security_log.txt")
-        log = open(SECURITY_DIR + "/security_log.txt", "a")
-
     for filename in glob.glob(SECURITY_DIR + '/s_*'):        
-        log.write(">>>" + filename)
         cmd = [filename]
-        ret_val = subprocess.call(cmd, shell=True, stdout=log, stderr=log)
-        if ret_val == 0:
-            log.write(">>>" + filename +  " Succeeded")
-        else:
-            log.write(">>>" + filename +  " Failed")
-
-    log.close()
+        subprocess.call(cmd, shell=True)
 
 
 def collect_security_events(now):
