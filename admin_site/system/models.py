@@ -385,9 +385,6 @@ class PCGroup(models.Model):
     site = models.ForeignKey(Site, related_name='groups')
     configuration = models.ForeignKey(Configuration)
     custom_packages = models.ForeignKey(CustomPackages)
-    security_alerts = models.ManyToManyField("SecurityProblem",
-                                             related_name='alert_groups',
-                                             blank=True)
 
     @property
     def url(self):
@@ -903,28 +900,41 @@ class SecurityProblem(models.Model):
     }
 
     LEVEL_CHOICES = (
-        (NORMAL, LEVEL_TRANSLATIONS[NORMAL]),
-        (HIGH, LEVEL_TRANSLATIONS[HIGH]),
         (CRITICAL, LEVEL_TRANSLATIONS[CRITICAL]),
+        (HIGH, LEVEL_TRANSLATIONS[HIGH]),
+        (NORMAL, LEVEL_TRANSLATIONS[NORMAL]),
     )
 
     LEVEL_TO_LABEL = {
-        NORMAL: 'label-success',
+        NORMAL: 'label-gentle-warning',
         HIGH: 'label-warning',
         CRITICAL: 'label-important',
     }
 
     name = models.CharField(_('name'), max_length=255)
-    uid = models.CharField(_('uid'), max_length=255)
-    description = models.CharField(_('description'), max_length=1024,
-                                   blank=True)
+    uid = models.SlugField(_('uid'))
+    description = models.TextField(_('description'), blank=True)
     level = models.CharField(max_length=10, choices=LEVEL_CHOICES,
                              default=HIGH)
     site = models.ForeignKey(Site, related_name='security_problems')
     script = models.ForeignKey(Script, related_name='security_problems')
+    alert_groups = models.ManyToManyField(PCGroup,
+                                          related_name='security_problems',
+                                          blank=True)
+    alert_users = models.ManyToManyField(User,
+                                         related_name='security_problems',
+                                         blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['name']
+        unique_together = ('uid', 'site')
 
 
 class SecurityEvent(models.Model):
+
     """A security event is an instance of a security problem."""
 
     # Event status choices
@@ -960,3 +970,6 @@ class SecurityEvent(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES,
                               default=NEW)
     assigned_user = models.ForeignKey(User, null=True, blank=True)
+
+    def __unicode__(self):
+        return u"{0}: {1}".format(self.problem.name, self.id)

@@ -4,7 +4,7 @@ from django import forms
 from django.contrib.auth.models import User
 
 from models import Site, PCGroup, ConfigurationEntry, PC
-from models import Script, Input
+from models import Script, Input, SecurityProblem
 from account.models import UserProfile
 
 from django.utils.translation import ugettext as _
@@ -190,3 +190,9 @@ class PCForm(forms.ModelForm):
         exclude = ('uid', 'configuration', 'package_list', 'site',
                    'is_update_required', 'creation_time', 'last_seen',
                    'custom_packages', 'do_send_package_info')
+
+
+class SecurityProblemForm(forms.ModelForm):
+    class Meta:
+        model = SecurityProblem
+        fields = '__all__'
