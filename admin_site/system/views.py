@@ -1426,7 +1426,7 @@ class SecurityEventSearch(JSONResponseMixin, SiteView):
 
 class SecurityEventUpdate(SiteMixin, UpdateView, SuperAdminOrThisSiteMixin):
     model = SecurityEvent
-    fields = ['assigned_user', 'status']
+    fields = ['assigned_user', 'status', 'note']
 
     def get_object(self, queryset=None):
         return SecurityEvent.objects.get(id=self.kwargs['pk'])
