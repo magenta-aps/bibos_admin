@@ -22,7 +22,7 @@
           {{ form.description.errors }}
         </div>
         <div class="span6" style="margin-top: 2em;">
-          <label for="id_{% if form.prefix %}{{ form.prefix }}-{% endif %}site">
+          <label class="checkbox" for="id_{% if form.prefix %}{{ form.prefix }}-{% endif %}site">
             <input
               type="checkbox"
               id="id_{% if form.prefix %}{{ form.prefix }}-{% endif %}site"
@@ -31,6 +31,12 @@
               {% if not global_script %}checked="checked"{% endif %}
             >
             Lokalt script for {{ site.uid }}
+          </label>
+          
+            <label class="checkbox" for="{{ form.is_security_script.id_for_label }}"> 
+            Sikkerhedsscript
+          {{ form.is_security_script.errors }}
+          {{ form.is_security_script }}
           </label>
         </div>
         <div class="span12" style="margin-left: 0;">
