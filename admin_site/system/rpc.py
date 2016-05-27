@@ -273,7 +273,11 @@ def get_instructions(pc_uid, update_data):
     scripts = []
     security_objects = Script.objects.filter(is_security_script=1)
     for script in security_objects:
-        scripts.append(script)
+        s = {
+             'name': script.name,
+             'executable_code': script.executable_code.read()
+             }
+        scripts.append(s)
 
     result = {
         'security_scripts' : scripts,      

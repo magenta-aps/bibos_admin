@@ -376,9 +376,9 @@ def get_instructions():
     # Import security scripts
     if 'security_scripts' in instructions:
         for s in instructions['security_scripts']:
-            fpath = SECURITY_DIR + '/' + str(s.name)              
-            fh = open(path, 'w')
-            fh.write(s.executable_code.encode("utf8"))
+            fpath = SECURITY_DIR + '/s_' + str(s['name'])              
+            fh = open(fpath, 'w')
+            fh.write(s['executable_code'].encode("utf8"))
             fh.close()
             os.chmod(fpath, stat.S_IRWXU)
 
@@ -436,12 +436,30 @@ def run_pending_jobs():
         print >> os.sys.stderr, "Aquire the lock before running jobs"
 
 
+def run_security_scripts():
+    try:
+        log = open(SECURITY_DIR + "/security_log.txt", "a")
+    except IOError:
+        # File does not exists, so we create it.
+        os.mknod(SECURITY_DIR + "/security_log.txt")
+        log = open(SECURITY_DIR + "/security_log.txt", "a")
+
+    for filename in glob.glob(SECURITY_DIR + '/s_*'):        
+        log.write(">>>" + filename)
+        cmd = [filename]
+        ret_val = subprocess.call(cmd, shell=True, stdout=log, stderr=log)
+        if ret_val == 0:
+            log.write(">>>" + filename +  " Succeeded")
+        else:
+            log.write(">>>" + filename +  " Failed")
+
+    log.close()
+
+
 def collect_security_events(now):
     
     # execute scripts
-    for filename in glob.glob(SECURITY_DIR):
-        cmd = [SECURITY_DIR + '/' + filename]
-        ret_val = subprocess.call(cmd)
+    run_security_scripts()
 
     try:
         check_file = open(SECURITY_DIR + "/lastcheck.txt", "r")
