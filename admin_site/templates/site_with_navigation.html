@@ -18,8 +18,7 @@ class="detailpage"
     <li {% block site_active %}{% endblock %}><a href="/site/{{ site.url }}"><i class="icon-eye-open icon-white"></i> Status</a></li>
     <li class="divider"></li>
     <li class="nav-header">Sikkerhed</li>
-    <li {% block security_active %}{% endblock %}><a href="/site/{{
-            site.url }}/security/"><i class="icon-fire icon-white"></i>Advarsler
+    <li {% block security_active %}{% endblock %}><a href="/site/{{ site.url }}/security/"><i class="icon-fire icon-white"></i>Advarsler
             {% if sec_events > 0 %}
             <span class="pull-right badge badge-important
             sec-warn-blink">{{ sec_events }}{% endif %}</span></a></li>
@@ -27,7 +26,7 @@ class="detailpage"
             href="/site/{{ site.url }}/security_problems/"><i
                 class="icon-exclamation-sign icon-white"></i>Regler</a></li>
     <li {% block security_scripts_active %}{% endblock %}><a
-            href="/site/{{ site.url }}/security_scripts/"><i
+                {#  href="/site/{{ site.url }}/security_scripts/" #}><i
                 class="icon-list icon-white"></i>Scrips</a></li>
     <li class="nav-header">Maskiner</li>
     <li {% block configuration_active %}{% endblock %}><a href="/site/{{ site.url }}/configuration/"><i class="icon-cog icon-white"></i> Site-konfiguration</a></li>
