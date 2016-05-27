@@ -14,8 +14,20 @@
     som indsamler sikkerhedsadvarsler.
     <br>    
     <br>
-	<a href="{% url 'doc' 'scripts/securitywarnings' %}">Læs mere om Sikkerhedsadvarsler her.</a>	 
-  </p>
+	<a href="{% url 'doc' 'scripts/securitywarnings' %}">Læs mere om Sikkerhedsadvarsler her.</a>
+	<br>
+	<br>
+	Det specielle ved et Sikkerhedscript er at det ikke tager nogen parametre, 
+	og så skal det følge et bestemt format.<br>
+	Opbygningen af et Sikkerhedscript vil typisk være, at læse en mængde data
+	fra en log fil, søge efter event via et eller flere keywords, også herefter
+	gemme oplysningen i bestemt format. Et Sikkerhedsscript kan et shell script
+	eller et python script. 
+	Formatet ser således ud: "securityEventCode, Tec sum, Raw data".
+	Aflever formatet til modulet csv_writer ved at kalde metoden write.
+	Husk at strippe dataten for linje skift, og kommaer før du formatere det, 
+	og sender det til csv_writer modulet. 	 
+  </p>  
   <p>
     Når du redigerer et script har du mulighed for at ændre scripts navn og
     beskrivelse. Du kan også uploade en ny version af scriptet ved at
