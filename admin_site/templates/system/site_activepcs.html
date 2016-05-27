@@ -1,0 +1,44 @@
+{% extends "site_with_navigation.html" %}
+
+{% load bibos_custom_tags %}
+
+{% block specific_title %}
+Aktive computere
+{% endblock %}
+
+{% block activepcs_active %}
+class="active"
+{% endblock %}
+
+{% block javascripts %}
+{% endblock %}
+
+{% block specific_documentation_links %}
+  <li><a href="{% url 'doc' 'site_security' %}"><i
+              class="icon-question-sign icon-white"></i>Hjælp til sikkerhed</li>
+{% endblock %}
+
+{% block specific_content %}
+  <div class="container-fluid main">
+
+    <table class="table table-hover warn-table"
+    id="#site_activepcs_table">
+      <thead>
+        <tr>
+          <th>Navn</th>
+          <th>Beskrivelse</th>
+          <th>Sidst set</th>
+        </tr>
+      </thead>
+      <tbody id="activepcs-list">
+          {% for pc in site.pcs.all|sort_by:'last_seen' %}
+        <tr class="muted">
+            <td><a href="/site/{{ site.uid }}/computers/{{ pc.uid }}">{{ pc.name }}</a></td>
+            <td>{{ pc.description }}</td>
+            <td>{{ pc.last_seen }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table> 
+  </div>
+{% endblock %}
