@@ -10,9 +10,38 @@ from views import ScriptRun, PCUpdate, JobRestarter, MarkPackageUpgrade
 from views import ConfigurationEntryCreate, ConfigurationEntryUpdate
 from views import ConfigurationEntryDelete, JobInfo, TechDocView, DocView
 from views import PackageSearch, PCDelete
+# SecurityProblem and SecurityEvent related views
+from views import SecurityProblemsView, SecurityProblemCreate
+from views import SecurityProblemUpdate, SecurityProblemDelete
+from views import SecurityEventsView, SecurityEventUpdate
+from views import SecurityEventSearch
+
 
 urlpatterns = patterns(
     '',
+
+    # Security events UI
+    url(r'^site/(?P<site_uid>[^/]+)/security/(?P<pk>\d+)/$',
+        SecurityEventUpdate.as_view(), name='security_event_update'),
+    url(r'^site/(?P<slug>[^/]+)/security/search/$',
+        SecurityEventSearch.as_view(),
+        name='securityeventsearch'),
+    url(r'^site/(?P<slug>[^/]+)/security/$', SecurityEventsView.as_view(),
+        name='security_events'),
+
+    # Security problems UI
+    url(r'^site/(?P<site_uid>[^/]+)/security_problems/new/$',
+        SecurityProblemCreate.as_view(),
+        name='security_problem_new'),
+    url(r'^site/(?P<site_uid>[^/]+)/security_problems/(?P<uid>[^/]+)/delete/$',
+        SecurityProblemDelete.as_view(),
+        name='security_problem_delete'),
+    url(r'^site/(?P<site_uid>[^/]+)/security_problems/(?P<uid>[^/]+)/$',
+        SecurityProblemUpdate.as_view(),
+        name='security_problem'),
+    url(r'^site/(?P<slug>[^/]+)/security_problems/$',
+        SecurityProblemsView.as_view(), name='security_problems'),
+
     url(r'^$', AdminIndex.as_view(), name='index'),
     url(r'^sites/$', SiteList.as_view(), name='sites'),
     url(r'^sites/new/$', SiteCreate.as_view(), name='new_site'),
@@ -62,6 +91,7 @@ urlpatterns = patterns(
         name='job_info'
         ),
     url(r'^site/(?P<slug>[^/]+)/jobs/', JobsView.as_view(), name='jobs'),
+
     # Scripts
     url(r'^site/(?P<slug>[^/]+)/scripts/(?P<script_pk>\d+)/delete/',
         ScriptDelete.as_view(),
