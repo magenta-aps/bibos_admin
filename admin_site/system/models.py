@@ -970,6 +970,7 @@ class SecurityEvent(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES,
                               default=NEW)
     assigned_user = models.ForeignKey(User, null=True, blank=True)
+    note = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
         return u"{0}: {1}".format(self.problem.name, self.id)
