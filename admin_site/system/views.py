@@ -513,6 +513,9 @@ class ScriptMixin(object):
             context['script_inputs'] = []
 
         context['script_inputs_json'] = json.dumps(context['script_inputs'])
+        # Add information about outstanding security events.
+        no_of_sec_events = get_no_of_sec_events(self.site)
+        context['sec_events'] = no_of_sec_events
 
         return context
 
@@ -947,6 +950,9 @@ class UsersMixin(object):
         if 'site' not in context:
             self.add_site_to_context(context)
         context['user_list'] = context['site'].users
+        # Add information about outstanding security events.
+        no_of_sec_events = get_no_of_sec_events(self.site)
+        context['sec_events'] = no_of_sec_events
         return context
 
 
