@@ -5,7 +5,11 @@ Scripts
 {% endblock %}
 
 {% block scripts_active %}
-class="active"
+{% if not is_security %}class="active"{% endif %}
+{% endblock %}
+
+{% block security_scripts_active %}
+{% if is_security %}class="active"{% endif %}
 {% endblock %}
 
 {% block javascripts %}
@@ -44,7 +48,9 @@ $.each(inputs, function() {BibOS.ScriptEdit.addInput('#update-script-inputs', th
       <div>
       {% include 'notification.html' %}
       </div>
+      {% if not is_security %}
       <a href="#runscriptmodal" role="button" class="btn btn-success" data-toggle="modal">Kør script</a>
+      {% endif %}
     {% if selected_script.is_global %}
     {% ifequal user.bibos_profile.type 0 %}
     <input type="submit" class="btn btn-primary" value="Gem ændringer" />

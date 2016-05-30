@@ -466,13 +466,15 @@ class JobInfo(DetailView, LoginRequiredMixin):
 class ScriptMixin(object):
     script = None
     script_inputs = None
+    is_security = False
 
     def setup_script_editing(self, **kwargs):
         # Get site
         self.site = get_object_or_404(Site, uid=kwargs['slug'])
         # Add the global and local script lists
         self.scripts = Script.objects.filter(
-            Q(site=self.site) | Q(site=None)
+            Q(site=self.site) | Q(site=None),
+            is_security_script=self.is_security
         ).exclude(
             site__name='system'
         )
@@ -498,6 +500,11 @@ class ScriptMixin(object):
                                            key=lambda s: s.name.lower())
 
         context['script_inputs'] = self.script_inputs
+        context['is_security'] = self.is_security
+        if self.is_security:
+            context['script_url'] = 'security_script'
+        else:
+            context['script_url'] = 'script'
 
         # If we selected a script add it to context
         if self.script is not None:
@@ -594,6 +601,8 @@ class ScriptList(ScriptMixin, SiteView):
         except IndexError:
             return HttpResponseRedirect(
                 "/site/%s/scripts/new/" % self.site.uid
+                if self.is_security else
+                "/site/%s/security/scripts/new/" % self.site.uid
             )
 
 

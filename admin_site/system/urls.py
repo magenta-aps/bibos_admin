@@ -48,6 +48,20 @@ urlpatterns = patterns(
         ActivePCsView.as_view(),
         name='activepcs'),
 
+    # Security scripts
+    url(r'^site/(?P<slug>[^/]+)/security/scripts/(?P<script_pk>\d+)/delete/',
+        ScriptDelete.as_view(is_security=True),
+        name='delete_security_script'),
+    url(r'^site/(?P<slug>[^/]+)/security/scripts/(?P<script_pk>\d+)/',
+        ScriptUpdate.as_view(is_security=True),
+        name='security_script'),
+    url(r'^site/(?P<slug>[^/]+)/security/scripts/new/',
+        ScriptCreate.as_view(is_security=True),
+        name='new_security_script'),
+    url(r'^site/(?P<slug>[^/]+)/security/scripts/',
+        ScriptList.as_view(is_security=True),
+        name='security_scripts'),
+
     url(r'^$', AdminIndex.as_view(), name='index'),
     url(r'^sites/$', SiteList.as_view(), name='sites'),
     url(r'^sites/new/$', SiteCreate.as_view(), name='new_site'),

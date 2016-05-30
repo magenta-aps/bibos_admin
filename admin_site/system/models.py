@@ -682,7 +682,10 @@ class Script(models.Model):
             site_uid = kwargs['site_uid']
         else:
             site_uid = self.site.uid
-        return reverse('script', args=(site_uid, self.pk))
+        if self.is_security_script:
+            return reverse('security_script', args=(site_uid, self.pk))
+        else:
+            return reverse('script', args=(site_uid, self.pk))
 
 
 class Batch(models.Model):
