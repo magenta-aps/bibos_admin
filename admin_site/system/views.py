@@ -41,6 +41,15 @@ def set_notification_cookie(response, message):
     )
 
 
+def get_no_of_sec_events(site):
+    """Utility function to get number of security events."""
+    no_of_sec_events = SecurityEvent.objects.filter(
+        problem__site=site).exclude(
+            problem__level=SecurityProblem.NORMAL
+        ).exclude(status=SecurityEvent.RESOLVED).count()
+    return no_of_sec_events
+
+
 # Mixin class to require login
 class LoginRequiredMixin(View):
     """Subclass in all views where login is required."""
@@ -154,9 +163,7 @@ class SiteMixin(View):
         site = get_object_or_404(Site, uid=self.kwargs[self.site_uid])
         context['site'] = site
         # Add information about outstanding security events.
-        no_of_sec_events = SecurityEvent.objects.filter(
-            problem__site=site, status=SecurityEvent.NEW
-        ).exclude(problem__level=SecurityProblem.NORMAL).count()
+        no_of_sec_events = get_no_of_sec_events(site)
         context['sec_events'] = no_of_sec_events
 
         return context
@@ -189,10 +196,19 @@ class SiteList(ListView, SuperAdminOnlyMixin):
 
 
 # Base class for Site-based passive (non-form) views
-class SiteView(DetailView, SuperAdminOrThisSiteMixin):
+class SiteView(DetailView,  SuperAdminOrThisSiteMixin):
     """Base class for all views based on a single site."""
     model = Site
     slug_field = 'uid'
+
+    def get_context_data(self, **kwargs):
+        context = super(SiteView, self).get_context_data(**kwargs)
+        site = self.get_object()
+        # Add information about outstanding security events.
+        no_of_sec_events = get_no_of_sec_events(site)
+        context['sec_events'] = no_of_sec_events
+
+        return context
 
 
 class SiteDetailView(SiteView):
@@ -497,6 +513,9 @@ class ScriptMixin(object):
             context['script_inputs'] = []
 
         context['script_inputs_json'] = json.dumps(context['script_inputs'])
+        # Add information about outstanding security events.
+        no_of_sec_events = get_no_of_sec_events(self.site)
+        context['sec_events'] = no_of_sec_events
 
         return context
 
@@ -931,6 +950,9 @@ class UsersMixin(object):
         if 'site' not in context:
             self.add_site_to_context(context)
         context['user_list'] = context['site'].users
+        # Add information about outstanding security events.
+        no_of_sec_events = get_no_of_sec_events(self.site)
+        context['sec_events'] = no_of_sec_events
         return context
 
 
@@ -1375,6 +1397,7 @@ class SecurityEventSearch(JSONResponseMixin, SiteView):
             'pc_name': event.pc.name,
             'occurred': event.ocurred_time.strftime("%Y-%m-%d %H:%M:%S"),
             'status': event.get_status_display(),
+            'status_label': event.STATUS_TO_LABEL[event.status],
             'level': SecurityProblem.LEVEL_TO_LABEL[event.problem.level] + '',
             'pc_name': event.pc.name,
             'assigned_user': (event.assigned_user.username if
