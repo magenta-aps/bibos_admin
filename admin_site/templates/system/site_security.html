@@ -1,0 +1,146 @@
+{% extends "site_with_navigation.html" %}
+
+{% block specific_title %}
+Sikkerhedsadvarsler
+{% endblock %}
+
+{% block head_javascripts %}
+  <script type="text/javascript">
+       var bibos_security_event_search_url = '{% url 'securityeventsearch' site.uid %}'
+  </script>
+  <script type="text/javascript" src="/media/js/security_events_list.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('.collapsing').click(function() {
+        $(this).find('i').toggleClass('icon-chevron-up icon-chevron-down');
+      });
+    });
+  </script>
+{% endblock %}
+
+{% block security_active %}
+class="active"
+{% endblock %}
+
+{% block specific_documentation_links %}
+  <li><a href="{% url 'doc' 'scripts/running' %}"><i class="icon-question-sign icon-white"></i>Hjælp til sikkerhed</a></li>
+{% endblock %}
+
+{% block specific_content %}
+  <div class="template-container">
+   <table>
+    <tbody id="securityeventitem-template">
+      <tr class="muted">
+        <td class="#LEVEL#">#PROBLEM_NAME#</td>
+        <td>#PC_NAME#</td>
+        <td>#OCCURRED#</td>
+        <td>#STATUS#</td>
+        <td>#ASSIGNED_USER#</td>
+        <td>#SECURITYEVENTINFOBUTTON#</td>
+      </tr>
+    </tbody>
+   </table>
+  </div>
+  <div id="securityeventsearchnav" class="sublevelnav">
+    <form id="securityeventsearch-filterform" name="filterform" action="./" method="post">
+        <input type="hidden" name="orderby" value="-pk" />
+        <input class="btn btn-primary pull-right" type="button"
+        onclick="BibOS.SecurityEventList.reset()" value="Nulstil filtre" />
+      <h3 class="nav-header">Filtrér:</h3>
+      <hr>
+      <div id="securityeventsearch-level-selectors">
+          <dt>Status</dt>
+          {{ form.status.errors }}
+          {{ form.status }}
+          {% for l in level_choices %}
+          <label class="checkbox">
+              <input type="checkbox" value="{{ l.value }}" name="level" {{ l.checked }}>
+              <span class="label {{ l.label }}">Alvorsgrad: {{ l.name }}</span>
+        </label>
+        {% endfor %}
+      </div>
+      <hr>
+      <div id="securityeventsearch-status-selectors">
+          {% for s in status_choices %}
+          <label class="checkbox">
+              <input type="checkbox" value="{{ s.value }}" name="status" {{ s.checked }}>
+              <span class="label {{ s.label }}">{{ s.name }}</span>
+        </label>
+        {% endfor %}
+      </div>
+      <hr>
+      <div>
+          <label>
+            <input type="radio" value="20"  checked="checked" name="do_limit">
+            <span class="label">Første 20</span>
+          </label>
+          <label>
+            <input type="radio" value="50"  name="do_limit">
+            <span class="label">Første 50</span>
+          </label>
+          <label>
+            <input type="radio" value="100"  name="do_limit">
+            <span class="label">Første 100</span>
+          </label>
+          <label>
+            <input type="radio" value="0"  name="do_limit">
+            <span class="label">Alle</span>
+          </label>
+      </div>
+    </form>
+  </div>
+  <div class="container-fluid main sublevelmain" style="overflow-x: auto;">
+    {% include 'notification.html' %}
+    <table class="table table-hover warn-table"
+    id="#site_securityevents_table">
+      <thead>
+        <tr>
+          <th><i class="icon-fire"></i> Advarsel</th>
+          <th>Maskine</th>
+          <th>Tid</th>
+          <th>Status</th>
+          <th>Håndteres af</th>
+          <th>Åbn</th>
+        </tr>
+      </thead>
+      <tbody id="securityevent-list">
+        <tr class="muted">
+          <td colspan="3">Loading data...</td>
+        </tr>
+      </tbody>
+    </table> 
+  </div>
+  
+  <div class="modal iframe hide" id="edit-securityevent-modal" tabindex="-1" role="dialog"
+      aria-labelledby="edit-securityevent-modal-title"
+      aria-hidden="true"
+      data-href="/security/edit"/>
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel">USB disconnected</h3>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-error">
+        <p><strong>Der er sket noget uhensigtsmæssigt</strong></p>
+        <p>Her er en uddybende besked om uhensigtsmæssigheden.</p>
+      </div>
+      <dl class="dl-horizontal">
+        <dt>Tid</dt>
+        <dt>PC</dt>
+        <dd>Idag 11:34</dd>
+        <dt>Lokation</dt>
+        <dd><a href="#">Afdeling C / Gruppe C</a></dd>
+        <dt>Maskine</dt>
+        <dd><a hre="#">Public computer #253</a> sidst set idag 11:34</dd>
+        <dt>Håndteres af</dt>
+        <dd><a href="#">Bjarke Søndermark</a></dd>
+      </dl>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Luk</button>
+      <button class="btn btn-primary" disabled="disabled">Jeg håndterer det</button>
+      <button class="btn btn-primary">Markér som løst</button>
+    </div>
+  </div>
+  
+{% endblock %}
