@@ -44,9 +44,10 @@ def set_notification_cookie(response, message):
 def get_no_of_sec_events(site):
     """Utility function to get number of security events."""
     no_of_sec_events = SecurityEvent.objects.filter(
-        problem__site=site).exclude(
-            problem__level=SecurityProblem.NORMAL
-        ).exclude(status=SecurityEvent.RESOLVED).count()
+        problem__site=site
+    ).exclude(
+        problem__level=SecurityProblem.NORMAL
+    ).exclude(status=SecurityEvent.RESOLVED).count()
     return no_of_sec_events
 
 
@@ -778,6 +779,11 @@ class PCsView(SelectionMixin, SiteView):
             ))
         else:
             return super(PCsView, self).render_to_response(context)
+
+
+class ActivePCsView(SiteView):
+    """All PCs."""
+    template_name = 'system/site_activepcs.html'
 
 
 class PCUpdate(SiteMixin, UpdateView, LoginRequiredMixin):
