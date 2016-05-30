@@ -13,12 +13,18 @@
         <dd>{{ securityevent.ocurred_time }}</dd>
         <dt>Maskine</dt>
         <dd><a href="/site/{{ site.uid }}/computers/{{ securityevent.pc.uid }}">{{ securityevent.pc.name }}</a>, sidst set {{ securityevent.pc.last_seen }}</dd>
+        <dt>Note</dt>
+        <dd>
+        {{ form.note.errors }}
+        {{ form.note }}
+        </dd>
+
         <dt>Håndteres af</dt>
         <dd>
         {{ form.assigned_user.errors }}
         {{ form.assigned_user }}
         </dd>
-      <dt><strong>Status:</strong></dt>
+      <dt><strong>Status</strong></dt>
       <dd>
         {{ form.status.errors }}
         {{ form.status }}
