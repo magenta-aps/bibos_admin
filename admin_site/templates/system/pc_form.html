@@ -63,6 +63,10 @@ class="active"
       {% if selected_pc.is_update_required %}
         <span class="label label-warning">Opdateringer tilgængelige</span>
       {% endif %}
+      {% if has_security_warnings %}
+      <a class="pull-right" href="/site/{{ site.url }}/security?pc={{ pc.uid }}" title=" Se alle advarsler for denne PC"><span class="badge badge-important"><icon
+        class="icon-fire icon-white"></icon></span></a>
+{% endif %}
       {% comment %}
       TODO later?
       <a class="pull-right" href="/site/somesite/security/" title=" Se alle advarsler for denne PC"><span class="badge badge-important"><icon class="icon-fire icon-white"></icon></span></a>

@@ -855,6 +855,12 @@ class PCUpdate(SiteMixin, UpdateView, LoginRequiredMixin):
 
         context['selected_pc'] = pc
 
+        context['has_security_warnings'] = pc.securityevent_set.exclude(
+            status=SecurityEvent.RESOLVED
+        ).exclude(
+            problem__level=SecurityProblem.NORMAL
+        ).count() > 0
+
         return context
 
     def form_valid(self, form):
@@ -1418,6 +1424,10 @@ class SecurityEventSearch(JSONResponseMixin, SiteView):
         context = super(SecurityEventSearch, self).get_context_data(**kwargs)
         params = self.request.GET or self.request.POST
         query = {'problem__site': context['site']}
+        if params.get('pc', None):
+            pc_uid = self.request.GET['pc']
+        else:
+            pc_uid = None
 
         if 'level' in params:
             query['problem__level__in'] = params.getlist('level')
@@ -1443,7 +1453,10 @@ class SecurityEventSearch(JSONResponseMixin, SiteView):
                 orderby,
                 'pk'
             )
-
+        if pc_uid:
+            context['securityevent_list'] = context[
+                'securityevent_list'
+            ].filter(pc__uid=pc_uid)
         return context
 
     def convert_context_to_json(self, context):
