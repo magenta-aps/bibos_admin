@@ -28,7 +28,7 @@ $(function(){
                     'securityevent-entry',
                     $.extend(this, {})
                 ));
-                item.attr('onclick', "openMegaDrawer('/site/" + this.site_uid + "/security/" + this.pk + "/')");
+                item.attr('onclick', "location.href = '/site/" + this.site_uid + "/security/" + this.pk + "/'");
                 item.appendTo(container)
             });
         },

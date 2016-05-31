@@ -25,7 +25,7 @@ class="active"
     id="#site_activepcs_table">
       <thead>
         <tr>
-          <th>Navn</th>
+          <th><i class="icon-hdd"></i> Navn</th>
           <th>Beskrivelse</th>
           <th>Sidst set</th>
         </tr>
@@ -33,8 +33,8 @@ class="active"
       <tbody id="activepcs-list">
           {% for pc in site.pcs.all|sort_by:'last_seen' %}
           {% if pc.is_active %}
-        <tr class="muted">
-            <td><a href="/site/{{ site.uid }}/computers/{{ pc.uid }}">{{ pc.name }}</a></td>
+        <tr class="click-list--item" onclick="location.href = '/site/{{ site.uid }}/computers/{{ pc.uid }}'">
+            <td><strong>{{ pc.name }}</strong></td>
             <td>{{ pc.description }}</td>
             <td>{% if pc.last_seen %}{{ pc.last_seen }}{% else %}Aldrig{% endif %}</td>
         </tr>

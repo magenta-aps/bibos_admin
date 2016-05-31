@@ -110,6 +110,9 @@ ul.nav li ul li.active { font-style: italic; }
 
 /* Forms */
 
+textarea {
+    max-width: 100%;
+}
 .sublevelnav-inverted > form {padding: 20px;}
 
 
@@ -206,46 +209,23 @@ div.docscontainer .nav-list>li>a:hover {background: #666; text-decoration: none;
 }
 
 
-/* Mega Drawer (modal dialog alternative for heavy content) */
+/* Popup page */
 
-.mega-drawer {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  top: 0;
-  display: none;
+.popup-page {
+    background-color: #fff;
+    padding: 2em;
+    min-height: 100%;
 }
-.mega-drawer.open {  
-  display: block;
+
+@media (min-width: 1200px) {
+    
+    .popup-page {
+        max-width: 960px;
+        margin: 0 auto;
+    }
+    
 }
-.mega-drawer .mega-drawer--body {
-  display: none;
-}
-.mega-drawer.open .mega-drawer--body {
-  display: block;
-  box-shadow: 0 0 1em 1em rgba(0,0,0,0.25);
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  top: 20%;
-  background: #fff;
-  padding: 1em;
-}
-.mega-drawer--close {
-  position: absolute;
-  right: 1em;
-  top: 1em;
-}
-.mega-drawer--iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-.mega-drawer--iframe--content {
-  background: #fff;
-}
+
 
 
 /* Loading animation */
