@@ -86,11 +86,11 @@ class="active"
     <table class="table table-hover warn-table" id="#site_securityevents_table">
       <thead>
         <tr>
-          <th class="orderby order-problem__name" onclick="BibOS.SecurityEventList.orderby('problem__name')">Advarsel <i class="icon icon-chevron-down"></i></th>
+          <th class="orderby order-problem__name desc" onclick="BibOS.SecurityEventList.orderby('problem__name')">Advarsel <i class="icon icon-chevron-down"></i></th>
           <th>Maskine</th>
           <th>Tid</th>
           <th>Status</th>
-          <th class="orderby order-assigned_user__username" onclick="BibOS.SecurityEventList.orderby('assigned_user__username')">Håndteres af <i class="icon icon-chevron-down"></i></th>
+          <th class="orderby order-assigned_user__username desc" onclick="BibOS.SecurityEventList.orderby('assigned_user__username')">Håndteres af <i class="icon icon-chevron-down"></i></th>
         </tr>
       </thead>
       <tbody id="securityevent-list">
@@ -99,13 +99,6 @@ class="active"
         </tr>
       </tbody>
     </table> 
-  </div>
-  
-  <div class="mega-drawer">
-     <div class="mega-drawer--body">
-          <button class="btn btn-defaul mega-drawer--close" onclick="closeMegaDrawer()">Annullér</button>
-          <iframe class="mega-drawer--iframe" src="/"></iframe>
-     </div>
   </div>
   
 {% endblock %}
