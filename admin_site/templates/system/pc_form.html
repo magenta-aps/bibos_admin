@@ -63,10 +63,14 @@ class="active"
       {% if selected_pc.is_update_required %}
         <span class="label label-warning">Opdateringer tilgængelige</span>
       {% endif %}
+      {% comment %}
+      TODO later?
+      <a class="pull-right" href="/site/somesite/security/" title=" Se alle advarsler for denne PC"><span class="badge badge-important"><icon class="icon-fire icon-white"></icon></span></a>
+      {% endcomment %}
     </h2>
     {% include 'notification.html' %}
     
-    {% if selected_pc.last_seen %} 
+    {% if selected_pc.last_seen %}
       <p class="pull-right"><span class="muted"> &nbsp;Sidst set:</span> <strong>{{ selected_pc.last_seen|date }} </strong> {{ selected_pc.last_seen|time }}</p>
     {% endif %}
     
@@ -241,5 +245,5 @@ class="active"
     </form>
     {% include 'system/package_lists/templates.html' %}
     {% include 'system/configlist/templates.html' %}
-  </div>
+  </p>
 {% endblock %}

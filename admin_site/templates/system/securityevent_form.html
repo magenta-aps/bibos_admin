@@ -1,0 +1,42 @@
+{% extends "sitebase.html" %}
+{% block content %}
+
+<div class="container">
+  <form action="" method="post">{% csrf_token %}
+      <input class="btn btn-primary" type="submit" value="Gem" />
+      <a class="btn" href="javascript:history.go(-1)">Annuller</a>
+      <div class="alert alert-error">
+          <p><strong>{{ securityevent.problem.name }}: {{ securityevent.summary }}</strong></p>
+      </div>
+      <dl class="dl-horizontal">
+        <dt>Tid</dt>
+        <dd>{{ securityevent.ocurred_time }}</dd>
+        <dt>Maskine</dt>
+        <dd><a href="/site/{{ site.uid }}/computers/{{ securityevent.pc.uid }}">{{ securityevent.pc.name }}</a>, sidst set {{ securityevent.pc.last_seen }}</dd>
+        <dt>Note</dt>
+        <dd>
+        {{ form.note.errors }}
+        {{ form.note }}
+        </dd>
+
+        <dt>Håndteres af</dt>
+        <dd>
+        {{ form.assigned_user.errors }}
+        {{ form.assigned_user }}
+        </dd>
+      <dt><strong>Status</strong></dt>
+      <dd>
+        {{ form.status.errors }}
+        {{ form.status }}
+      </dd>
+      <dt>Log-output:</dt>
+      <dd>
+      <p><a href="javascript:void(0)"
+            onclick="$('pre').toggle()">Vis/skjul</a>
+          <p name="securityevent-log"><pre style="display: none;">{{ securityevent.complete_log }}</pre></p>
+          </dd>
+      </dl>
+    </div>
+  </form>
+</div>
+{% endblock %}

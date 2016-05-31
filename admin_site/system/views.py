@@ -21,8 +21,8 @@ from account.models import UserProfile
 
 from models import Site, PC, PCGroup, ConfigurationEntry, Package
 from forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
-from forms import UserForm, ParameterForm, PCForm
-from models import Job, Script, Input
+from forms import UserForm, ParameterForm, PCForm, SecurityProblemForm
+from models import Job, Script, Input, SecurityProblem, SecurityEvent
 
 
 def set_notification_cookie(response, message):
@@ -39,6 +39,16 @@ def set_notification_cookie(response, message):
         'bibos-notification',
         ''.join([js_escape(c) for c in message])
     )
+
+
+def get_no_of_sec_events(site):
+    """Utility function to get number of security events."""
+    no_of_sec_events = SecurityEvent.objects.filter(
+        problem__site=site
+    ).exclude(
+        problem__level=SecurityProblem.NORMAL
+    ).exclude(status=SecurityEvent.RESOLVED).count()
+    return no_of_sec_events
 
 
 # Mixin class to require login
@@ -119,7 +129,6 @@ class SelectionMixin(View):
         if selected is not None:
             context['selected_{0}'.format(display_name)] = selected
         context['{0}_list'.format(display_name)] = self.get_list()
-
         return context
 
 
@@ -154,6 +163,9 @@ class SiteMixin(View):
         context = super(SiteMixin, self).get_context_data(**kwargs)
         site = get_object_or_404(Site, uid=self.kwargs[self.site_uid])
         context['site'] = site
+        # Add information about outstanding security events.
+        no_of_sec_events = get_no_of_sec_events(site)
+        context['sec_events'] = no_of_sec_events
 
         return context
 
@@ -185,10 +197,19 @@ class SiteList(ListView, SuperAdminOnlyMixin):
 
 
 # Base class for Site-based passive (non-form) views
-class SiteView(DetailView, SuperAdminOrThisSiteMixin):
+class SiteView(DetailView,  SuperAdminOrThisSiteMixin):
     """Base class for all views based on a single site."""
     model = Site
     slug_field = 'uid'
+
+    def get_context_data(self, **kwargs):
+        context = super(SiteView, self).get_context_data(**kwargs)
+        site = self.get_object()
+        # Add information about outstanding security events.
+        no_of_sec_events = get_no_of_sec_events(site)
+        context['sec_events'] = no_of_sec_events
+
+        return context
 
 
 class SiteDetailView(SiteView):
@@ -283,7 +304,7 @@ class JobsView(SiteView):
                 'value': value,
                 'label': Job.STATUS_TO_LABEL[value],
                 'checked':
-                    'checked="checked' if value in preselected else ''
+                'checked="checked' if value in preselected else ''
             } for (value, name) in Job.STATUS_CHOICES
         ]
         params = self.request.GET or self.request.POST
@@ -493,6 +514,9 @@ class ScriptMixin(object):
             context['script_inputs'] = []
 
         context['script_inputs_json'] = json.dumps(context['script_inputs'])
+        # Add information about outstanding security events.
+        no_of_sec_events = get_no_of_sec_events(self.site)
+        context['sec_events'] = no_of_sec_events
 
         return context
 
@@ -757,6 +781,11 @@ class PCsView(SelectionMixin, SiteView):
             return super(PCsView, self).render_to_response(context)
 
 
+class ActivePCsView(SiteView):
+    """All PCs."""
+    template_name = 'system/site_activepcs.html'
+
+
 class PCUpdate(SiteMixin, UpdateView, LoginRequiredMixin):
     template_name = 'system/pc_form.html'
     form_class = PCForm
@@ -927,6 +956,9 @@ class UsersMixin(object):
         if 'site' not in context:
             self.add_site_to_context(context)
         context['user_list'] = context['site'].users
+        # Add information about outstanding security events.
+        no_of_sec_events = get_no_of_sec_events(self.site)
+        context['sec_events'] = no_of_sec_events
         return context
 
 
@@ -975,6 +1007,7 @@ class UserUpdate(UpdateView, UsersMixin, SuperAdminOrThisSiteMixin):
         return self.selected_user
 
     def get_context_data(self, **kwargs):
+        self.context_object_name = 'selected_user'
         context = super(UserUpdate, self).get_context_data(**kwargs)
         self.add_userlist_to_context(context)
 
@@ -985,6 +1018,7 @@ class UserUpdate(UpdateView, UsersMixin, SuperAdminOrThisSiteMixin):
 
         context['create_form'] = UserForm(prefix='create')
         context['create_form'].setup_usertype_choices(loginusertype)
+
         return context
 
     def form_valid(self, form):
@@ -1191,6 +1225,259 @@ class GroupDelete(SiteMixin, SuperAdminOrThisSiteMixin, DeleteView):
         return response
 
 
+class SecurityProblemsView(SelectionMixin, SiteView):
+
+    template_name = 'system/site_security_problems.html'
+    selection_class = SecurityProblem
+    class_display_name = 'security_problem'
+
+    def get_list(self):
+        return self.object.security_problems.all().extra(
+            select={'lower_name': 'lower(name)'}
+        ).order_by('lower_name')
+
+    def render_to_response(self, context):
+        if('selected_security_problem' in context):
+            return HttpResponseRedirect('/site/%s/security_problems/%s/' % (
+                context['site'].uid,
+                context['selected_security_problem'].uid
+            ))
+        else:
+            """
+            return HttpResponseRedirect(
+                '/site/%s/security_problems/new/' % context['site'].uid,
+            )
+            """
+            site = context['site']
+            context['newform'] = SecurityProblemForm()
+            context['newform'].fields[
+                'alert_users'
+            ].queryset = User.objects.filter(bibos_profile__site=site)
+            context['newform'].fields[
+                'alert_groups'
+            ].queryset = site.groups.all()
+            # Limit list of scripts to only include security scripts.
+            script_set = Script.objects.filter(
+                Q(site__isnull=True) | Q(site=site)
+            ).filter(is_security_script=True)
+            context['newform'].fields['script'].queryset = script_set
+
+            return super(
+                SecurityProblemsView, self
+            ).render_to_response(context)
+
+
+class SecurityProblemCreate(SiteMixin, CreateView, SuperAdminOrThisSiteMixin):
+    template_name = 'system/site_security_problems.html'
+    model = SecurityProblem
+    fields = '__all__'
+
+    def get_success_url(self):
+        return '/site/{0}/security_problems/'.format(self.kwargs['site_uid'])
+
+
+class SecurityProblemUpdate(SiteMixin, UpdateView, SuperAdminOrThisSiteMixin):
+    template_name = 'system/site_security_problems.html'
+    model = SecurityProblem
+    form_class = SecurityProblemForm
+
+    def get_object(self, queryset=None):
+        return SecurityProblem.objects.get(uid=self.kwargs['uid'],
+                                           site__uid=self.kwargs['site_uid'])
+
+    def get_context_data(self, **kwargs):
+
+        context = super(SecurityProblemUpdate, self).get_context_data(**kwargs)
+
+        site = context['site']
+        form = context['form']
+        group_set = site.groups.all()
+        selected_group_ids = form['alert_groups'].value()
+        context['available_groups'] = group_set.exclude(
+            pk__in=selected_group_ids
+        )
+        context['selected_groups'] = group_set.filter(
+            pk__in=selected_group_ids
+        )
+
+        user_set = User.objects.filter(bibos_profile__site=site)
+        selected_user_ids = form['alert_users'].value()
+        context['available_users'] = user_set.exclude(
+            pk__in=selected_user_ids
+        )
+        context['selected_users'] = user_set.filter(
+            pk__in=selected_user_ids
+        )
+        # Limit list of scripts to only include security scripts.
+        script_set = Script.objects.filter(
+            Q(site__isnull=True) | Q(site=site)
+        ).filter(is_security_script=True)
+        form.fields['script'].queryset = script_set
+
+        # TODO: If the JS available/selected stuff above works out, the next
+        # two lines can be deleted.
+        form.fields['alert_users'].queryset = user_set
+        form.fields['alert_groups'].queryset = group_set
+        # Extra fields
+        context['selected_security_problem'] = self.object
+        context['newform'] = SecurityProblemForm()
+        context['newform'].fields['script'].queryset = script_set
+        context['newform'].fields['alert_users'].queryset = user_set
+        context['newform'].fields['alert_groups'].queryset = group_set
+
+        return context
+
+    def get_success_url(self):
+        return '/site/{0}/security_problems/'.format(self.kwargs['site_uid'])
+
+
+class SecurityProblemDelete(SiteMixin, DeleteView, SuperAdminOrThisSiteMixin):
+    model = SecurityProblem
+    # form_class = <hopefully_not_necessary>
+
+    def get_object(self, queryset=None):
+        return SecurityProblem.objects.get(uid=self.kwargs['uid'],
+                                           site__uid=self.kwargs['site_uid'])
+
+    def get_success_url(self):
+        return '/site/{0}/security_problems/'.format(self.kwargs['site_uid'])
+
+
+class SecurityEventsView(SiteView):
+    template_name = 'system/site_security.html'
+
+    def get_context_data(self, **kwargs):
+        # First, get basic context from superclass
+        context = super(SecurityEventsView, self).get_context_data(**kwargs)
+        # Supply extra info as needed.
+        level_preselected = set([
+            SecurityProblem.CRITICAL,
+            SecurityProblem.HIGH
+        ])
+        context['level_choices'] = [
+            {
+                'name': name,
+                'value': value,
+                'label': SecurityProblem.LEVEL_TO_LABEL[value],
+                'checked':
+                'checked="checked' if value in level_preselected else ''
+            } for (value, name) in SecurityProblem.LEVEL_CHOICES
+        ]
+        status_preselected = set([
+            SecurityEvent.NEW,
+            SecurityEvent.ASSIGNED
+        ])
+        context['status_choices'] = [
+            {
+                'name': name,
+                'value': value,
+                'label': SecurityEvent.STATUS_TO_LABEL[value],
+                'checked':
+                'checked="checked' if value in status_preselected else ''
+            } for (value, name) in SecurityEvent.STATUS_CHOICES
+        ]
+        return context
+
+
+class SecurityEventSearch(JSONResponseMixin, SiteView):
+    http_method_names = ['get', 'post']
+    VALID_ORDER_BY = []
+    for i in [
+        'pk', 'problem__name', 'occurred_time', 'assigned_user__username'
+    ]:
+        VALID_ORDER_BY.append(i)
+        VALID_ORDER_BY.append('-' + i)
+
+    @staticmethod
+    def get_event_display_data(eventlist, site=None):
+        if len(eventlist) == 0:
+            return []
+
+        if site is None:
+            site = eventlist[0].batch.site
+
+        return [{
+            'pk': event.pk,
+            'site_uid': site.uid,
+            'problem_name': event.problem.name,
+            'pc_name': event.pc.name,
+            'occurred': event.ocurred_time.strftime("%Y-%m-%d %H:%M:%S"),
+            'status': event.get_status_display(),
+            'status_label': event.STATUS_TO_LABEL[event.status],
+            'level': SecurityProblem.LEVEL_TO_LABEL[event.problem.level] + '',
+            'pc_name': event.pc.name,
+            'assigned_user': (event.assigned_user.username if
+                              event.assigned_user else '')
+        } for event in eventlist]
+
+    def post(self, request, *args, **kwargs):
+        return self.get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        # First, get basic context from superclass
+        context = super(SecurityEventSearch, self).get_context_data(**kwargs)
+        params = self.request.GET or self.request.POST
+        query = {'problem__site': context['site']}
+
+        if 'level' in params:
+            query['problem__level__in'] = params.getlist('level')
+
+        if 'status' in params:
+            query['status__in'] = params.getlist('status')
+
+        orderby = params.get('orderby', '-pk')
+        if orderby not in SecurityEventSearch.VALID_ORDER_BY:
+            orderby = '-pk'
+        limit = int(params.get('do_limit', '0'))
+
+        if limit:
+            context[
+                'securityevent_list'
+            ] = SecurityEvent.objects.filter(**query).order_by(
+                orderby, 'pk'
+            )[:limit]
+        else:
+            context[
+                'securityevent_list'
+            ] = SecurityEvent.objects.filter(**query).order_by(
+                orderby,
+                'pk'
+            )
+
+        return context
+
+    def convert_context_to_json(self, context):
+        result = SecurityEventSearch.get_event_display_data(
+            context['securityevent_list'],
+            site=context['site']
+        )
+        # print json.dumps(result)
+        return json.dumps(result)
+
+
+class SecurityEventUpdate(SiteMixin, UpdateView, SuperAdminOrThisSiteMixin):
+    model = SecurityEvent
+    fields = ['assigned_user', 'status', 'note']
+
+    def get_object(self, queryset=None):
+        return SecurityEvent.objects.get(id=self.kwargs['pk'])
+
+    def get_context_data(self, **kwargs):
+
+        context = super(SecurityEventUpdate, self).get_context_data(**kwargs)
+
+        # Set fields to read-only
+        return context
+
+    def post(self, request, *args, **kwargs):
+        result = super(SecurityEventUpdate,
+                       self).post(request, *args, **kwargs)
+        return result
+
+    def get_success_url(self):
+        return '/site/{0}/security/'.format(self.kwargs['site_uid'])
+
+
 class PackageSearch(JSONResponseMixin, ListView):
     raw_result = False
 
@@ -1278,7 +1565,7 @@ class DocView(TemplateView):
         fullpath = os.path.join(settings.TEMPLATE_DIRS[0], subpath)
         return os.path.isfile(fullpath)
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs):  # noqa
         if 'name' in self.kwargs:
             self.docname = self.kwargs['name']
         else:
