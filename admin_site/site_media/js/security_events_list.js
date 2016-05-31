@@ -34,7 +34,7 @@ $(function(){
         },
 
         replaceEntries: function(dataList) {
-            this.elem.find('tr.muted').remove()
+            this.elem.find('tr').remove()
             this.appendEntries(dataList)
         },
 
