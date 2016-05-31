@@ -32,7 +32,7 @@ class="active"
   <div class="template-container">
    <table>
     <tbody id="jobitem-template">
-      <tr class="muted">
+      <tr class="click-list--item">
         <td>#SCRIPT_NAME#</td>
         <td>#STARTED#</td>
         <td>#FINISHED#</td>
@@ -44,7 +44,7 @@ class="active"
     </tbody>
    </table>
   </div>
-  <div id="jobsearchnav" class="sublevelnav">
+  <div id="jobsearchnav" class="sublevelnav sublevelnav-inverted">
     <form id="jobsearch-filterform" name="filterform" action="./" method="post">
       <input type="hidden" name="batch" value="{{ selected_batch }}" />
       <input type="hidden" name="pc" value="{{ selected_pc }}" />
@@ -134,4 +134,5 @@ class="active"
       </tbody>
     </table> 
   </div>
+  
 {% endblock %}

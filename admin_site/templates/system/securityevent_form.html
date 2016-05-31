@@ -1,10 +1,8 @@
-{% extends "sitebase.html" %}
+{% extends "base.html" %}
 {% block content %}
 
-<div class="container">
-  <form action="" method="post">{% csrf_token %}
-      <input class="btn btn-primary" type="submit" value="Gem" />
-      <a class="btn" href="javascript:history.go(-1)">Annuller</a>
+  <form action="" method="post" class="mega-drawer--iframe--content">{% csrf_token %}
+      <input class="btn btn-primary" type="submit" value="Gem">
       <div class="alert alert-error">
           <p><strong>{{ securityevent.problem.name }}: {{ securityevent.summary }}</strong></p>
       </div>
@@ -38,5 +36,5 @@
       </dl>
     </div>
   </form>
-</div>
+
 {% endblock %}
