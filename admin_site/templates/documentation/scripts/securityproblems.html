@@ -1,0 +1,42 @@
+{% extends 'documentation/index.html' %}
+
+{% block specific_content %}
+  <h1>Sikkerhedsproblemer</h1>
+  <p>
+    I oversigten "Sikkerhedsproblemer" vises alle definerede sikkerhedsproblemer, som der holdes øje med. 
+    Fra oversigten kan oprettes nye sikkerhedsproblemer.<br>
+    Et nyt sikkerhedsproblem skal have følgende input:
+   </p>
+   <ul>
+	   <li>
+	   Navn: Navnet på det pågældende sikkerhedsproblem.
+	   </li>	     
+	   <li>
+	   ID: Et kort og unikt navn (som bruges internt i systemet). 
+	   Dette id bruges i det tilknyttede security script.
+	   Hvis ikke disse to passer sammen, ved systemet ikke 
+	   hvilket Sikkerhedsproblem eventet hører til.
+	   </li>
+	   <li>
+	   Problemmeddelelse: En beskrivende tekst, som indgår i de afsendte advarselsmails.
+	   </li>
+	   <li>
+	   Alvorsgrad: Vælg mellem Kritisk, Høj og Normal.
+	   </li>
+	   <li>
+	   Script: Vælg fra listen. Oversigten består af de relevante scripts, 
+	   som er markeret som sikkerhedsscripts. 
+	   Scriptet afvikles hver gang en maskine kontakter BibOS-admin.
+	   </li>
+	   <li>
+	   Overvåges af følgende grupper: Vælg fra listen.<br> 
+	   Grupperne definerer hvilke maskiner det aktuelle sikkerhedsproblem er aktive for.
+	   </li>
+	   <li>
+	   Modtagere af email-advarsler: Vælg hvilke brugere der skal modtage advarsel per mail.
+	   </li>
+	   <li>
+	   Frekvens for e-mail: Vælg øjeblikkelig eller daglig advarselsmail.
+	   </li>
+   </ul>
+{% endblock %}
