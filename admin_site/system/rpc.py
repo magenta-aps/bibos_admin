@@ -2,6 +2,7 @@
 # client.
 
 import system.proxyconf
+import system.utils
 
 from datetime import datetime
 from django.conf import settings
@@ -269,7 +270,17 @@ def get_instructions(pc_uid, update_data):
         job.save()
         jobs.append(job.as_instruction)
 
+    scripts = []
+    security_objects = Script.objects.filter(is_security_script=1)
+    for script in security_objects:
+        s = {
+             'name': script.name,
+             'executable_code': script.executable_code.read()
+             }
+        scripts.append(s)
+
     result = {
+        'security_scripts' : scripts,      
         'jobs': jobs,
         'configuration': pc.get_full_config(),
     }
@@ -335,6 +346,8 @@ def push_security_events(pc_uid, csv_data):
             new_security_event.summary = csv_split[2]
             new_security_event.complete_log = csv_split[3]
             new_security_event.save()
+            # Notify subscribed users
+            system.utils.notify_users(csv_split, security_problem)
         except IndexError:
             return False
 

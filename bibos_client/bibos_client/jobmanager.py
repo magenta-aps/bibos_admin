@@ -373,6 +373,15 @@ def get_instructions():
             local_job.save()
             local_job.logline("Job imported at %s" % datetime.now())
 
+    # Import security scripts
+    if 'security_scripts' in instructions:
+        for s in instructions['security_scripts']:
+            fpath = SECURITY_DIR + '/s_' + str(s['name'])              
+            fh = open(fpath, 'w')
+            fh.write(s['executable_code'].encode("utf8"))
+            fh.close()
+            os.chmod(fpath, stat.S_IRWXU)
+
     if ('do_send_package_info' in instructions and
             instructions['do_send_package_info']):
                 try:
@@ -427,7 +436,17 @@ def run_pending_jobs():
         print >> os.sys.stderr, "Aquire the lock before running jobs"
 
 
+def run_security_scripts():
+    for filename in glob.glob(SECURITY_DIR + '/s_*'):        
+        cmd = [filename]
+        subprocess.call(cmd, shell=True)
+
+
 def collect_security_events(now):
+    
+    # execute scripts
+    run_security_scripts()
+
     try:
         check_file = open(SECURITY_DIR + "/lastcheck.txt", "r")
     except IOError:
