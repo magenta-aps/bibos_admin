@@ -2,8 +2,6 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
-from system.models import Site, SecurityProblem
-
 
 class UserProfile(models.Model):
     """BibOS Admin specific user profile."""

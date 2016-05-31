@@ -624,6 +624,9 @@ class ScriptCreate(ScriptMixin, CreateView, SuperAdminOrThisSiteMixin):
         if self.validate_script_inputs():
             self.object = form.save()
             self.script = self.object
+            if self.is_security:
+                self.object.is_security_script = True
+                self.object.save()
             self.save_script_inputs()
             return HttpResponseRedirect(self.get_success_url())
         else:
@@ -636,7 +639,11 @@ class ScriptCreate(ScriptMixin, CreateView, SuperAdminOrThisSiteMixin):
         return super(ScriptCreate, self).form_invalid(form)
 
     def get_success_url(self):
-        return '/site/%s/scripts/%s/' % (self.site.uid, self.script.pk)
+        if self.is_security:
+            return '/site/%s/security/scripts/%s/' % (self.site.uid,
+                                                      self.script.pk)
+        else:
+            return '/site/%s/scripts/%s/' % (self.site.uid, self.script.pk)
 
 
 class ScriptUpdate(ScriptMixin, UpdateView, LoginRequiredMixin):
