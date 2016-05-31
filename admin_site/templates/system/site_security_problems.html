@@ -74,17 +74,16 @@ class="active"
                     <label>Alvorsgrad:</label>
                     {{ form.level.errors }}
                     {{ form.level }}
-
+                </fieldset>
+                <fieldset class="span6">
                     <label>Script:</label>
                     {{ form.script.errors }}
                     {{ form.script }}
 
-                    <label>Overvåg følgende grupper:</label>
+                    <label>Overvågede grupper:</label>
                     {{ form.alert_groups.errors }}
                     {{ form.alert_groups }}
                     {# {% include 'system/pcgrouplist/list.html' with submit_name='alert_groups' %} #}
-                </fieldset>
-                <fieldset class="span6">
 
                     <label>Modtager(e) af email-advarsel</label>
                     {{ form.alert_users.errors }}
