@@ -307,25 +307,9 @@ var BibOS;
 
 })($)
 
+
 /* Function to show a spinner while we wait for a new page or content to load */
+
 function spin() {
     $('body').append('<div class="overlay"><div class="windows8"><div class="wBall" id="wBall_1"><div class="wInnerBall"></div></div><div class="wBall" id="wBall_2"><div class="wInnerBall"></div></div><div class="wBall" id="wBall_3"><div class="wInnerBall"></div></div><div class="wBall" id="wBall_4"><div class="wInnerBall"></div></div><div class="wBall" id="wBall_5"><div class="wInnerBall"></div></div></div></div>');
-};
-
-/* Functions to display/hide an expandable drawer with an iFrame in it */
-function openMegaDrawer(iframeUrl) {
-    var el = $('.mega-drawer');
-    el.find('.mega-drawer--iframe').attr('src', iframeUrl);
-    el.toggleClass('open');
-    el.on('click', function(event) {
-        if (event.target !== this) {
-            return;  
-        };
-        closeMegaDrawer();
-    });
-};
-function closeMegaDrawer() {
-    var el = $('.mega-drawer');
-    el.toggleClass('open');
-    el.off();
 };
