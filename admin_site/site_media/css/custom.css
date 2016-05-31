@@ -13,11 +13,16 @@ header {padding: 20px; margin: 0 0 20px; background: #444; color: #ccc;}
 header.detailpage {padding: 20px 0; margin-left: 250px;}
 header.detailpage h1 {font-size: 24px; line-height: 24px; margin: 0;}
 header h1 em {color: #fff; font-style: normal;}
+.nav-header {
+  letter-spacing: 0.05em;
+  font-weight: normal;
+}
 .divideheader {background: #444; color: #ddd; padding: 0 20px; margin-top: 40px; font-size: 21px;}
 .divideheader em {color: #fff; font-style: normal;}
 h2.divideheader {margin-top: 20px;}
 .divideheader .label {margin-left: 20px; position: relative; bottom: 2px;}
-h3.nav-header {margin: 0; padding: 0;}
+h3.nav-header,
+h4.nav-header {margin: 0; padding: 0;}
 header.detailpage h1.siteheader {margin-left: 20px;}
 div.runscriptdialogheader {display: none;}
 
@@ -99,6 +104,7 @@ ul.nav li ul li.active { font-style: italic; }
 .table th.orderby {cursor: pointer; text-align: center; border-radius: 5px;}
 .click-list--item td {
     border-top: solid 1px #ccc;
+    cursor: pointer;
 }
 
 
@@ -176,11 +182,28 @@ div.docscontainer .nav-list>li>a:hover {background: #666; text-decoration: none;
   50% { background-color: transparent; }
   100% { background-color: #b94a48; }
 }
-.label-warning, .badge-warning {color: #333;}
-.label-gentle-warning, .badge-gentle-warning {background-color: #F8F006; color: #333;}
+.label-warning,
+.badge-warning {color: #333;}
+.label-gentle-warning,
+.badge-gentle-warning {background-color: #F8F006; color: #333;}
 .seclevel-danger {color: #fff; background-color: #b94a48;}
 .seclevel-warning {color: #333; background-color: #f89406;}
 .seclevel-gentle-warning {color: #333; background-color: #F8F006;}
+.severity-label-important,
+.severity-label-warning,
+.severity-label-gentle-warning {
+    border-left: solid 1em #F8F006;
+}
+.severity-label-important {
+    border-color: #b94a48;
+}
+.severity-label-warning {
+    border-color: #f89406;
+}
+.severity-checkbox {
+  padding-left: 0.5em;
+  border-width: 0.5em;
+}
 
 
 /* Mega Drawer (modal dialog alternative for heavy content) */

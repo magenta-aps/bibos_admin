@@ -24,7 +24,7 @@ class="active"
    <table>
     <tbody id="securityeventitem-template">
       <tr class="click-list--item">
-        <td class="#LEVEL#">#PROBLEM_NAME#</td>
+        <td class="severity-#LEVEL#"><strong>#PROBLEM_NAME#</strong></td>
         <td>#PC_NAME#</td>
         <td>#OCCURRED#</td>
         <td><span class="label #STATUS_LABEL#">#STATUS#</span></td>
@@ -41,19 +41,19 @@ class="active"
       <h3 class="nav-header">Filtrér:</h3>
       <hr>
       <div id="securityeventsearch-level-selectors">
-          <h4>Alvorsgrad</h4>
+          <h4 class="nav-header">Alvorsgrad</h4>
           {{ form.status.errors }}
           {{ form.status }}
           {% for l in level_choices %}
           <label class="checkbox">
               <input type="checkbox" value="{{ l.value }}" name="level" {{ l.checked }}>
-              <span class="label {{ l.label }}">Alvorsgrad: {{ l.name }}</span>
+              <span class="severity-checkbox severity-{{ l.label }}">{{ l.name }}</span>
         </label>
         {% endfor %}
       </div>
       <hr>
       <div id="securityeventsearch-status-selectors">
-          <h4>Status</h4>
+          <h4 class="nav-header">Status</h4>
           {% for s in status_choices %}
           <label class="checkbox">
               <input type="checkbox" value="{{ s.value }}" name="status" {{ s.checked }}>
