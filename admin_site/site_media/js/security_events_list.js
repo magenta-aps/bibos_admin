@@ -23,7 +23,6 @@ $(function(){
         appendEntries: function(dataList) {
             var container = this.elem
             $.each(dataList, function() {
-                
                 var item = $(BibOS.expandTemplate(
                     'securityevent-entry',
                     $.extend(this, {})
@@ -52,14 +51,6 @@ $(function(){
         },
 
         orderby: function(order) {
-            $('.orderby').each(function() {
-              if ($(this).hasClass('order-' + order)) {
-                $(this).addClass('active').find('i').toggleClass('icon-chevron-down icon-chevron-up').addClass('icon-white');
-              } else {
-                $(this).removeClass('active').find('i').attr('class', 'icon-chevron-down');
-              };
-            });
-            
             var input = $('#securityeventsearch-filterform input[name=orderby]');
             input.val(BibOS.getOrderBy(input.val(), order))
             this.search()
@@ -75,6 +66,9 @@ $(function(){
                 data: js.searchConditions,
                 success: function(data) {
                     js.replaceEntries(data)
+                },
+                error: function(err) {
+                    console.log(err)
                 },
                 dataType: "json"
             });

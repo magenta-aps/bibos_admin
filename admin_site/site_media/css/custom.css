@@ -100,8 +100,12 @@ ul.nav li ul li.active { font-style: italic; }
 .table-striped tbody>tr:nth-child(odd)>th {background: #444; color: #fff;}
 .jobtable .popover-content a {margin-bottom: 10px; display: inline-block;}
 .jobtable tr td {border-top: solid 1px #ccc;}
-.jobtable tr.marked td, .jobtable tr.marked:hover td {background: #08c; color: #fff;}
-.table th.orderby {cursor: pointer; text-align: center; border-radius: 5px;}
+.table th.orderby {
+    cursor: pointer;
+    vertical-align: top;
+    white-space: nowrap;
+    border-radius: 0.5em 0.5em 0 0;
+}
 .click-list--item td {
     border-top: solid 1px #ccc;
     cursor: pointer;
@@ -196,6 +200,7 @@ div.docscontainer .nav-list>li>a:hover {background: #666; text-decoration: none;
 .severity-label-warning,
 .severity-label-gentle-warning {
     border-left: solid 1em #F8F006;
+    box-sizing: border-box;
 }
 .severity-label-important {
     border-color: #b94a48;

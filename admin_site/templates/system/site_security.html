@@ -35,9 +35,8 @@ class="active"
   </div>
   <div id="securityeventsearchnav" class="sublevelnav sublevelnav-inverted">
     <form id="securityeventsearch-filterform" name="filterform" action="./" method="post">
-        <input type="hidden" name="orderby" value="-pk" />
-        <input class="btn btn-primary pull-right" type="button"
-        onclick="BibOS.SecurityEventList.reset()" value="Nulstil filtre" />
+        <input type="hidden" name="orderby" value="-pk">
+        <input class="btn btn-primary pull-right" type="button" onclick="BibOS.SecurityEventList.reset()" value="Nulstil filtre">
       <h3 class="nav-header">Filtrér:</h3>
       <hr>
       <div id="securityeventsearch-level-selectors">
@@ -87,11 +86,11 @@ class="active"
     <table class="table table-hover warn-table" id="#site_securityevents_table">
       <thead>
         <tr>
-          <th><i class="icon-fire"></i> Advarsel</th>
+          <th class="orderby order-problem__name" onclick="BibOS.SecurityEventList.orderby('problem__name')">Advarsel <i class="icon icon-chevron-down"></i></th>
           <th>Maskine</th>
           <th>Tid</th>
           <th>Status</th>
-          <th>Håndteres af</th>
+          <th class="orderby order-assigned_user__username" onclick="BibOS.SecurityEventList.orderby('assigned_user__username')">Håndteres af <i class="icon icon-chevron-down"></i></th>
         </tr>
       </thead>
       <tbody id="securityevent-list">

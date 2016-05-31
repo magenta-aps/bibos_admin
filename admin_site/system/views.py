@@ -1434,7 +1434,8 @@ class SecurityEventSearch(JSONResponseMixin, SiteView):
             context[
                 'securityevent_list'
             ] = SecurityEvent.objects.filter(**query).order_by(
-                orderby, 'pk'
+                orderby,
+                'pk'
             )[:limit]
         else:
             context[
