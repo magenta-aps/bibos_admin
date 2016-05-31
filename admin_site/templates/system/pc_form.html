@@ -71,7 +71,8 @@ class="active"
     {% include 'notification.html' %}
     
     {% if selected_pc.last_seen %}
-      <p class="pull-right"><span class="muted"> &nbsp;Sidst set:</span> <strong>{{ selected_pc.last_seen|date }} </strong> {{ selected_pc.last_seen|time }}</p>
+      <p class="pull-right"><span class="muted"> &nbsp;Sidst set:</span>
+      <strong>{{ selected_pc.last_seen|date:'Y-m-d H:i:s' }} </strong></p>
     {% endif %}
     
     <form name="pc_update_form" id="pc_update_form" action="{% url 'computer' site.uid selected_pc.uid %}" method="post">

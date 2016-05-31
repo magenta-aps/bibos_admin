@@ -36,7 +36,7 @@ class="active"
         <tr class="muted">
             <td><a href="/site/{{ site.uid }}/computers/{{ pc.uid }}">{{ pc.name }}</a></td>
             <td>{{ pc.description }}</td>
-            <td>{% if pc.last_seen %}{{ pc.last_seen }}{% else %}Aldrig{% endif %}</td>
+            <td>{% if pc.last_seen %}{{ pc.last_seen|date:'Y-m-d H:i:s' }}{% else %}Aldrig{% endif %}</td>
         </tr>
         {% endif %}
         {% endfor %}
