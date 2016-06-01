@@ -24,6 +24,6 @@ def notify_users(data, security_problem):
                                settings.ADMIN_EMAIL, email_list)
         message.send()
     except Exception:
-        raise
+        return False
 
     return True

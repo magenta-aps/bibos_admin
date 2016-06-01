@@ -345,10 +345,11 @@ def push_security_events(pc_uid, csv_data):
             new_security_event.reported_time = datetime.now()
             new_security_event.summary = csv_split[2]
             new_security_event.complete_log = csv_split[3]
-            new_security_event.save()
-            # Notify subscribed users
-            system.utils.notify_users(csv_split, security_problem)
+            new_security_event.save()          
         except IndexError:
             return False
+        
+        # Notify subscribed users
+        system.utils.notify_users(csv_split, security_problem)
 
     return 0
