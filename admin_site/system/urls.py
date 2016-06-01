@@ -26,6 +26,9 @@ urlpatterns = patterns(
     url(r'^site/(?P<slug>[^/]+)/security/search/$',
         SecurityEventSearch.as_view(),
         name='securityeventsearch'),
+    url(r'^site/(?P<slug>[^/]+)/security/pc/(?P<pc_uid>[^/]+)/$',
+        SecurityEventsView.as_view(),
+        name='securityeventsearch'),
     url(r'^site/(?P<slug>[^/]+)/security/$', SecurityEventsView.as_view(),
         name='security_events'),
 
