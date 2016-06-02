@@ -774,7 +774,7 @@ class PCsView(SelectionMixin, SiteView):
         ).order_by('lower_name')
 
     def render_to_response(self, context):
-        if('selected_pc' in context):
+        if('selected_pc' in context):            
             return HttpResponseRedirect('/site/%s/computers/%s/' % (
                 context['site'].uid,
                 context['selected_pc'].uid
@@ -824,7 +824,7 @@ class PCUpdate(SiteMixin, UpdateView, LoginRequiredMixin):
 
         context['pc_list'] = site.pcs.all().extra(
             select={'lower_name': 'lower(name)'}
-        ).order_by('lower_name')
+        ).order_by('lower_name')        
 
         waiting_for_packages = False
         pkg_list_count = pc.package_list.packages.count()
@@ -868,6 +868,8 @@ class PCUpdate(SiteMixin, UpdateView, LoginRequiredMixin):
         context['orderby_base_url'] = pc.get_absolute_url() + '?'
 
         context['selected_pc'] = pc
+        
+        context['security_event'] = get_latest_sec_event(pc)
 
         return context
 
