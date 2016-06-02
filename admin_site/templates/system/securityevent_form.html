@@ -48,4 +48,55 @@
         </div>
     </form>
 
+
+    <script>
+$(document).ready(function() {
+    if ($("#id_status").val() == "RESOLVED") {
+        $("#id_assigned_user").attr('disabled', true);
+    }
+    if ($("#id_status").val() == "NEW") {
+        $("#id_status").attr('disabled', true);
+        $("#id_assigned_user").attr('disabled', false);
+    }
+    
+    if (!$("#id_assigned_user").val()) {
+        $("#id_status").val('NEW');
+        $("#id_status").attr('disabled', true);
+        $("#id_assigned_user").attr('disabled', false);
+    }
+
+    $("#id_assigned_user").change(function() {
+        var status = $("#id_status").val();
+        var auser = $("#id_assigned_user").val();
+        if (auser && status == "NEW") {
+
+            $("#id_status").val("ASSIGNED");
+            $("#id_status").attr('disabled', false);
+        }
+        if (status == "ASSIGNED" && !auser) {
+            $("#id_status").val("NEW");
+            $("#id_assigned_user").attr('disabled', false);
+            $("#id_status").attr('disabled', true);
+        }
+
+    });
+
+   $("#id_status").change(function() {
+        var status = $("#id_status").val();
+        if (status == "RESOLVED") {
+            $("#id_assigned_user").attr('disabled', true);
+        }
+        if (status == "ASSIGNED") {
+            $("#id_assigned_user").attr('disabled', false);
+        }
+        if (status == "NEW") {
+            $("#id_assigned_user").val('');
+            $("#id_status").attr('disabled', true);
+            $("#id_assigned_user").attr('disabled', false);
+        }
+
+   });
+
+});
+    </script>
 {% endblock %}
