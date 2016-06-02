@@ -32,8 +32,8 @@ class="active"
   <div class="template-container">
    <table>
     <tbody id="jobitem-template">
-      <tr class="muted">
-        <td>#SCRIPT_NAME#</td>
+      <tr>
+        <td><strong>#SCRIPT_NAME#</strong></td>
         <td>#STARTED#</td>
         <td>#FINISHED#</td>
         <td><span class="label #LABEL#">#STATUS#</span></td>
@@ -44,13 +44,13 @@ class="active"
     </tbody>
    </table>
   </div>
-  <div id="jobsearchnav" class="sublevelnav">
+  <div id="jobsearchnav" class="sublevelnav sublevelnav-inverted">
     <form id="jobsearch-filterform" name="filterform" action="./" method="post">
-      <input type="hidden" name="batch" value="{{ selected_batch }}" />
-      <input type="hidden" name="pc" value="{{ selected_pc }}" />
-      <input type="hidden" name="group" value="{{ selected_group }}" />
-      <input type="hidden" name="orderby" value="-pk" />
-      <input class="btn btn-primary pull-right" type="button" onclick="BibOS.JobList.reset()" value="Nulstil filtre" />
+      <input type="hidden" name="batch" value="{{ selected_batch }}">
+      <input type="hidden" name="pc" value="{{ selected_pc }}">
+      <input type="hidden" name="group" value="{{ selected_group }}">
+      <input type="hidden" name="orderby" value="-pk">
+      <input class="btn btn-primary pull-right" type="button" onclick="BibOS.JobList.reset()" value="Nulstil filtre">
       <h3 class="nav-header">Filtrér:</h3>
       <hr>
       <div id="jobsearch-status-selectors">
@@ -115,15 +115,15 @@ class="active"
   </div>
   <div class="container-fluid main sublevelmain" style="overflow-x: auto;">
     {% include 'notification.html' %}
-    <table class="table table-hover jobtable">
+    <table class="table jobtable">
       <thead>
         <tr>
-          <th class="orderby order-batch__script__name desc" onclick="BibOS.JobList.orderby('batch__script__name')">Script<br><i class="icon icon-chevron-down"></i></th>
-          <th class="orderby order-started desc" onclick="BibOS.JobList.orderby('started')">Startet<br><i class="icon icon-chevron-down"></i></th>
-          <th class="orderby order-finished desc" onclick="BibOS.JobList.orderby('finished')">Sluttet<br><i class="icon icon-chevron-down"></i></th>
-          <th class="orderby order-status desc" onclick="BibOS.JobList.orderby('status')">Status<br><i class="icon icon-chevron-down"></i></th>
-          <th class="orderby order-pc__name desc" onclick="BibOS.JobList.orderby('pc__name')">Computer<br><i class="icon icon-chevron-down"></i></th>
-          <th class="orderby order-batch__name desc" onclick="BibOS.JobList.orderby('batch__name')">Batch<br><i class="icon icon-chevron-down"></i></th>
+          <th class="orderby order-batch__script__name desc" onclick="BibOS.JobList.orderby('batch__script__name')">Script <i class="icon icon-chevron-down"></i></th>
+          <th class="orderby order-started desc" onclick="BibOS.JobList.orderby('started')">Startet <i class="icon icon-chevron-down"></i></th>
+          <th class="orderby order-finished desc" onclick="BibOS.JobList.orderby('finished')">Sluttet <i class="icon icon-chevron-down"></i></th>
+          <th class="orderby order-status desc" onclick="BibOS.JobList.orderby('status')">Status <i class="icon icon-chevron-down"></i></th>
+          <th class="orderby order-pc__name desc" onclick="BibOS.JobList.orderby('pc__name')">Computer <i class="icon icon-chevron-down"></i></th>
+          <th class="orderby order-batch__name desc" onclick="BibOS.JobList.orderby('batch__name')">Batch <i class="icon icon-chevron-down"></i></th>
           <th></th>
         </tr>
       </thead>
@@ -134,4 +134,5 @@ class="active"
       </tbody>
     </table> 
   </div>
+  
 {% endblock %}
