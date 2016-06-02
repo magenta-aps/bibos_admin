@@ -41,8 +41,6 @@ class="active"
       <hr>
       <div id="securityeventsearch-level-selectors">
           <h4 class="nav-header">Alvorsgrad</h4>
-          {{ form.status.errors }}
-          {{ form.status }}
           {% for l in level_choices %}
           <label class="checkbox">
               <input type="checkbox" value="{{ l.value }}" name="level" {{ l.checked }}>
