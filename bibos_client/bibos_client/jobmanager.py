@@ -375,8 +375,9 @@ def get_instructions():
 
     # Import security scripts
     if 'security_scripts' in instructions:
+        os.popen('rm -f ' + SECURITY_DIR + '/s_*')
         for s in instructions['security_scripts']:
-            fpath = SECURITY_DIR + '/s_' + str(s['name'])              
+            fpath = SECURITY_DIR + '/s_' + str(s['name']).replace(' ', '')              
             fh = open(fpath, 'w')
             fh.write(s['executable_code'].encode("utf8"))
             fh.close()
