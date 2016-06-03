@@ -377,7 +377,7 @@ def get_instructions():
     if 'security_scripts' in instructions:
         os.popen('rm -f ' + SECURITY_DIR + '/s_*')
         for s in instructions['security_scripts']:
-            fpath = SECURITY_DIR + '/s_' + str(s['name']).replace(' ', '')              
+            fpath = SECURITY_DIR + '/s_' + str(s['name']).replace(' ', '')
             fh = open(fpath, 'w')
             fh.write(s['executable_code'].encode("utf8"))
             fh.close()
@@ -437,10 +437,9 @@ def run_pending_jobs():
         print >> os.sys.stderr, "Aquire the lock before running jobs"
 
 
-def run_security_scripts():    
+def run_security_scripts():
     try:
-        if os.path.getsize(SECURITY_DIR 
-                + "/security_log.txt") > 10000:
+        if os.path.getsize(SECURITY_DIR + "/security_log.txt") > 10000:
             os.remove(SECURITY_DIR + "/security_log.txt")
 
         log = open(SECURITY_DIR + "/security_log.txt", "a")
@@ -449,20 +448,20 @@ def run_security_scripts():
         os.mknod(SECURITY_DIR + "/security_log.txt")
         log = open(SECURITY_DIR + "/security_log.txt", "a")
 
-    for filename in glob.glob(SECURITY_DIR + '/s_*'):        
+    for filename in glob.glob(SECURITY_DIR + '/s_*'):
         log.write(">>>" + filename)
         cmd = [filename]
         ret_val = subprocess.call(cmd, shell=True, stdout=log, stderr=log)
         if ret_val == 0:
-            log.write(">>>" + filename +  " Succeeded")
+            log.write(">>>" + filename + " Succeeded")
         else:
-            log.write(">>>" + filename +  " Failed")
+            log.write(">>>" + filename + " Failed")
 
     log.close()
 
 
 def collect_security_events(now):
-    
+
     # execute scripts
     run_security_scripts()
 
@@ -525,8 +524,8 @@ def send_security_events(now):
             check_file = open(SECURITY_DIR + "/lastcheck.txt", "w")
             check_file.write(now)
             check_file.close()
-            os.remove(SECURITY_DIR + "/securityevent.csv")            
-                    
+            os.remove(SECURITY_DIR + "/securityevent.csv")
+
         return result
     except Exception as e:
         print >> os.sys.stderr, "Error while sending security events:" + str(e)

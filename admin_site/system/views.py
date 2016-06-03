@@ -50,9 +50,11 @@ def get_no_of_sec_events(site):
     ).exclude(status=SecurityEvent.RESOLVED).count()
     return no_of_sec_events
 
+
 def get_latest_sec_event(pc):
     """Utility function to get latest security event for pc."""
     return SecurityEvent.objects.filter(pc_id=pc.id).latest('reported_time')
+
 
 # Mixin class to require login
 class LoginRequiredMixin(View):
@@ -774,7 +776,7 @@ class PCsView(SelectionMixin, SiteView):
         ).order_by('lower_name')
 
     def render_to_response(self, context):
-        if('selected_pc' in context):            
+        if('selected_pc' in context):
             return HttpResponseRedirect('/site/%s/computers/%s/' % (
                 context['site'].uid,
                 context['selected_pc'].uid
@@ -786,8 +788,8 @@ class PCsView(SelectionMixin, SiteView):
 class ActivePCsView(SiteView):
     """All PCs."""
     template_name = 'system/site_activepcs.html'
-    
-    # For hver pc skal vi hente seneste security event.    
+
+    # For hver pc skal vi hente seneste security event.
     def get_context_data(self, **kwargs):
         context = super(ActivePCsView, self).get_context_data(**kwargs)
         site = context['site']
@@ -795,10 +797,10 @@ class ActivePCsView(SiteView):
         securityevents = []
         for pc in context['ls_pcs']:
             securityevents.append(get_latest_sec_event(pc))
-            
+
         context['security_events'] = securityevents
-        return context     
-                    
+        return context
+
 
 class PCUpdate(SiteMixin, UpdateView, LoginRequiredMixin):
     template_name = 'system/pc_form.html'
@@ -824,7 +826,7 @@ class PCUpdate(SiteMixin, UpdateView, LoginRequiredMixin):
 
         context['pc_list'] = site.pcs.all().extra(
             select={'lower_name': 'lower(name)'}
-        ).order_by('lower_name')        
+        ).order_by('lower_name')
 
         waiting_for_packages = False
         pkg_list_count = pc.package_list.packages.count()
@@ -868,7 +870,7 @@ class PCUpdate(SiteMixin, UpdateView, LoginRequiredMixin):
         context['orderby_base_url'] = pc.get_absolute_url() + '?'
 
         context['selected_pc'] = pc
-        
+
         context['security_event'] = get_latest_sec_event(pc)
 
         return context
