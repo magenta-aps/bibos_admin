@@ -39,9 +39,12 @@ class="active"
             <td>{{ pc.description }}</td>
             <td>{% if pc.last_seen %}{{ pc.last_seen }}{% else %}Aldrig{% endif %}</td>  
             {% for se in security_events %}
-            {% if se.pc_id == pc.id %}
-            	<td>{{ se.reported_time }}</td>
-			{% endif %}            
+	            {% if se == "Ingen advarsler" %}
+	            	<td>{{ se }}</td>
+	            {% elif se.pc_id == pc.id %}
+	            	<td>{{ se.reported_time }}</td>
+				{% endif %} 
+				{% endif %}            
             {% endfor %}         
         </tr>
         {% endif %}

@@ -23,6 +23,7 @@ from models import Site, PC, PCGroup, ConfigurationEntry, Package
 from forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
 from forms import UserForm, ParameterForm, PCForm, SecurityProblemForm
 from models import Job, Script, Input, SecurityProblem, SecurityEvent
+from warnings import catch_warnings
 
 
 def set_notification_cookie(response, message):
@@ -51,9 +52,14 @@ def get_no_of_sec_events(site):
     return no_of_sec_events
 
 
-def get_latest_sec_event(pc):
+def get_latest_security_event(pc):
     """Utility function to get latest security event for pc."""
-    return SecurityEvent.objects.filter(pc_id=pc.id).latest('reported_time')
+    sc = ""
+    try:
+        sc = SecurityEvent.objects.filter(pc_id=pc.id).latest('reported_time')
+    except SecurityEvent.DoesNotExist:
+        sc = "Ingen advarsler"    
+    return sc
 
 
 # Mixin class to require login
@@ -791,12 +797,11 @@ class ActivePCsView(SiteView):
 
     # For hver pc skal vi hente seneste security event.
     def get_context_data(self, **kwargs):
-        context = super(ActivePCsView, self).get_context_data(**kwargs)
-        site = context['site']
-        context['ls_pcs'] = site.pcs.all().order_by('last_seen')
+        context = super(ActivePCsView, self).get_context_data(**kwargs)        
+        context['ls_pcs'] = context['site'].pcs.all().order_by('last_seen')
         securityevents = []
         for pc in context['ls_pcs']:
-            securityevents.append(get_latest_sec_event(pc))
+            securityevents.append(get_latest_security_event(pc))
 
         context['security_events'] = securityevents
         return context
@@ -871,7 +876,7 @@ class PCUpdate(SiteMixin, UpdateView, LoginRequiredMixin):
 
         context['selected_pc'] = pc
 
-        context['security_event'] = get_latest_sec_event(pc)
+        context['security_event'] = get_latest_security_event(pc)
 
         return context
 
