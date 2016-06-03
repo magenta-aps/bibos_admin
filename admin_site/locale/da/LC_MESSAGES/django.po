@@ -181,7 +181,7 @@ msgstr "oprettelsestidspunkt"
 
 #: system/models.py:407
 msgid "last seen"
-msgstr "sidst set"
+msgstr "senest set"
 
 #: system/views.py:264
 #, python-format
