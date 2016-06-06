@@ -23,26 +23,17 @@ $(function(){
         appendEntries: function(dataList) {
             var container = this.elem
             $.each(dataList, function() {
-                var info_button = '<button ' +
-                        'class="btn securityeventinfobutton" ' +
-                        'title="Event-info" ' +
-                        'onclick="window.location.href=\'/site/' + this.site_uid + '/security/' + this.pk + '/\'"'+
-                    '><i class="icon-info-sign"></i></button>'
                 var item = $(BibOS.expandTemplate(
                     'securityevent-entry',
-                    $.extend(this, {
-                        'securityeventinfobutton': info_button
-                    })
+                    $.extend(this, {})
                 ));
-                item.find('input:checkbox').click(function() {
-                    $(this).parents('tr').toggleClass('marked');
-                });
+                item.attr('onclick', "location.href = '/site/" + this.site_uid + "/security/" + this.pk + "/'");
                 item.appendTo(container)
             });
         },
 
         replaceEntries: function(dataList) {
-            this.elem.find('tr.muted').remove()
+            this.elem.find('tr').remove()
             this.appendEntries(dataList)
         },
 
@@ -70,7 +61,7 @@ $(function(){
             
             var input = $('#securityeventsearch-filterform input[name=orderby]');
             input.val(BibOS.getOrderBy(input.val(), order))
-            this.search()
+            this.search();
         },
 
         search: function() {
@@ -83,6 +74,9 @@ $(function(){
                 data: js.searchConditions,
                 success: function(data) {
                     js.replaceEntries(data)
+                },
+                error: function(err) {
+                    console.log(err)
                 },
                 dataType: "json"
             });
