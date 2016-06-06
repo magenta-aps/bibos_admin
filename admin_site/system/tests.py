@@ -11,15 +11,15 @@ import pep8
 from django.conf import settings
 from django.test import TestCase
 
+from django.core.mail import EmailMessage
+from django.contrib.auth.models import User
+from account.models import UserProfile
+
 print "FILE", os.path.dirname(__file__)
 
 parent_directory = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')
 )
-from django.core.mail import EmailMessage
-from django.contrib.auth.models import User
-from account.models import UserProfile
-from bibos_admin.wsgi import install_dir as parent_directory
 
 
 # setup account_userprofile, auth_user, securityproblem

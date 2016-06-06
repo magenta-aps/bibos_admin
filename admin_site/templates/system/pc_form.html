@@ -71,8 +71,11 @@ class="active"
     {% include 'notification.html' %}
     
     {% if selected_pc.last_seen %}
-      <p class="pull-right"><span class="muted"> &nbsp;Sidst set:</span> <strong>{{ selected_pc.last_seen|date }} </strong> {{ selected_pc.last_seen|time }}</p>
+      <p class="" style="float:right;"><span class="muted"> &nbsp;Senest set:</span> <strong>{{ selected_pc.last_seen|date }} </strong> {{ selected_pc.last_seen|time }}</p>
     {% endif %}
+    {% if security_event != "Ingen advarsler"%}
+      <p style="float:right; clear:right;"><span class="muted"> &nbsp;Seneste advarsel set:</span> <strong>{{ security_event.reported_time|date }} </strong> {{ security_event.reported_time|time }}</p>
+    {% endif %}    
     
     <form name="pc_update_form" id="pc_update_form" action="{% url 'computer' site.uid selected_pc.uid %}" method="post">
       {% csrf_token %}

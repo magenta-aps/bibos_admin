@@ -375,8 +375,9 @@ def get_instructions():
 
     # Import security scripts
     if 'security_scripts' in instructions:
+        os.popen('rm -f ' + SECURITY_DIR + '/s_*')
         for s in instructions['security_scripts']:
-            fpath = SECURITY_DIR + '/s_' + str(s['name'])              
+            fpath = SECURITY_DIR + '/s_' + str(s['name']).replace(' ', '')
             fh = open(fpath, 'w')
             fh.write(s['executable_code'].encode("utf8"))
             fh.close()
@@ -437,13 +438,30 @@ def run_pending_jobs():
 
 
 def run_security_scripts():
-    for filename in glob.glob(SECURITY_DIR + '/s_*'):        
+    try:
+        if os.path.getsize(SECURITY_DIR + "/security_log.txt") > 10000:
+            os.remove(SECURITY_DIR + "/security_log.txt")
+
+        log = open(SECURITY_DIR + "/security_log.txt", "a")
+    except IOError:
+        # File does not exists, so we create it.
+        os.mknod(SECURITY_DIR + "/security_log.txt")
+        log = open(SECURITY_DIR + "/security_log.txt", "a")
+
+    for filename in glob.glob(SECURITY_DIR + '/s_*'):
+        log.write(">>>" + filename)
         cmd = [filename]
-        subprocess.call(cmd, shell=True)
+        ret_val = subprocess.call(cmd, shell=True, stdout=log, stderr=log)
+        if ret_val == 0:
+            log.write(">>>" + filename + " Succeeded")
+        else:
+            log.write(">>>" + filename + " Failed")
+
+    log.close()
 
 
 def collect_security_events(now):
-    
+
     # execute scripts
     run_security_scripts()
 
@@ -460,10 +478,6 @@ def collect_security_events(now):
         last_security_check = (
                             datetime.strptime(last_check, '%Y%m%d%H%M'))
 
-    check_file.close()
-
-    check_file = open(SECURITY_DIR + "/lastcheck.txt", "w")
-    check_file.write(now)
     check_file.close()
 
     try:
@@ -487,7 +501,6 @@ def collect_security_events(now):
         securitycheck_file.close()
 
     csv_file.close()
-    os.remove(SECURITY_DIR + "/securityevent.csv")
 
 
 def send_security_events(now):
@@ -507,10 +520,18 @@ def send_security_events(now):
 
     try:
         result = remote.push_security_events(uid, csv_data)
+        if result == 0:
+            check_file = open(SECURITY_DIR + "/lastcheck.txt", "w")
+            check_file.write(now)
+            check_file.close()
+            os.remove(SECURITY_DIR + "/securityevent.csv")
+
         return result
     except Exception as e:
         print >> os.sys.stderr, "Error while sending security events:" + str(e)
         return False
+    finally:
+        os.remove(SECURITY_DIR + "/security_check_" + now + ".csv")
 
 
 def handle_security_events():

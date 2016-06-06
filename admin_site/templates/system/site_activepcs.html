@@ -27,17 +27,23 @@ class="active"
         <tr>
           <th><i class="icon-hdd"></i> Navn</th>
           <th>Beskrivelse</th>
-          <th>Sidst set</th>
+          <th>Senest set</th>
+          <th>Seneste advarsel set</th>
         </tr>
       </thead>
       <tbody id="activepcs-list">
-          {% for pc in site.pcs.all|sort_by:'last_seen' %}
+          {% for pc in ls_pcs %}
           {% if pc.is_active %}
         <tr class="click-list--item" onclick="location.href = '/site/{{ site.uid }}/computers/{{ pc.uid }}'">
             <td><strong>{{ pc.name }}</strong></td>
             <td>{{ pc.description }}</td>
-            <td>{% if pc.last_seen %}{{ pc.last_seen }}{% else %}Aldrig{% endif %}</td>
-        </tr>
+            <td>{% if pc.last_seen %}{{ pc.last_seen }}{% else %}Aldrig{% endif %}</td>  
+            <td>
+            {% for se in security_events %}	            	        
+	        {% if se.pc_id == pc.id %}{{ se.reported_time }}{% endif %}	        							           
+            {% endfor %}
+            </td>         
+        </tr>        
         {% endif %}
         {% endfor %}
       </tbody>
