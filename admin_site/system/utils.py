@@ -21,7 +21,7 @@ def notify_users(data, security_problem):
     try:
         message = EmailMessage("Sikkerhedsadvarsel: " +
                                security_problem.name, body,
-                               settings.ADMIN_EMAIL, email_list)
+                               settings.DEFAULT_FROM_EMAIL, email_list)
         message.send()
     except Exception:
         return False
