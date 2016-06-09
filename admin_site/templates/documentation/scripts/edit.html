@@ -3,22 +3,31 @@
 {% block specific_content %}
   <h1>Redigering af script</h1>
   <p>
-    For at redigere et script skal klikke på "Scripts" i venstremenuen og
+    For at redigere et script skal du klikke på "Scripts" i venstremenuen og
     efterfølgende vælge scriptet i listen over scripts til højre for
     venstremenuen. Bemærk at det kan være nødvendigt at skifte mellem
     fanebladenene "Lokale scripts" og "Globale scripts" for at finde scriptet.
+  </p>   
+  <p>
+    Når du redigerer et script har du mulighed for at ændre scripts navn og
+    beskrivelse. Du kan også uploade en ny version af scriptet ved at
+    udfylde feltet under "Upload scriptkode". Ændringer du har foretaget
+    træder ikke i kræft før du har klikket på "Gem ændringer" i toppen af
+    siden.
   </p>
   <p>
-    Et script kan markeres som 'Sikkerhedscript', uanset om scriptet er 
-    lokalt eller globalt. Sikkerhedsscripts er en særlig type scripts, 
-    som indsamler sikkerhedsadvarsler.
-    <br>    
+    Hvis det ikke er et Sikkerhedsscript har du i en ekstra fane mulighed for at
+    <a href="{% url 'doc' 'scripts/parameters' %}">tilpasse
+    input-parametre for scriptet</a>.
+  </p>
+  <p>    
+    Hvis det derimod er et Sikkerhedsscripts, skal du være opmærksom på følgende:
     <br>
-	<a href="{% url 'doc' 'scripts/securitywarnings' %}">Læs mere om Sikkerhedsadvarsler her.</a>
-	<br>
-	<br>
-	Det specielle ved et Sikkerhedscript er at det ikke tager nogen parametre, 
-	og så skal det følge et bestemt format.<br>
+    Et Sikkerhedsscript er et script, som indsamler <a href="{% url 'doc' 'scripts/securitywarnings' %}"> sikkerhedsadvarsler</a>.
+    <br>
+    <br>    
+	Et Sikkerhedscript tager ikke nogen input parametre, 
+	og det skal følge et bestemt format.<br>
 	Opbygningen af et Sikkerhedscript vil typisk være, at læse en mængde data
 	fra en log fil, søge efter event via et eller flere keywords, og så herefter
 	gemme oplysningerne i bestemt format. Et Sikkerhedsscript kan være et shell script
@@ -43,17 +52,5 @@
   	Aflever formatet til modulet csv_writer ved at kalde metoden write.
 	Husk at strippe dataten for linje skift, og kommaer før du danner formatet, 
 	og sender det til csv_writer modulet. 	 
-  </p>
-  <p>
-    Når du redigerer et script har du mulighed for at ændre scripts navn og
-    beskrivelse. Du kan også uploade en ny version af scriptet ved at
-    udfylde feltet under "Upload scriptkode". Ændringer du har foretaget
-    træder ikke i kræft før du har klikket på "Gem ændringer" i toppen af
-    siden.
-  </p>
-  <p>
-    I bunden af redigeringsinterfacet har du mulighed for at
-    <a href="{% url 'doc' 'scripts/parameters' %}">tilpasse
-    input-parametre for scriptet</a>.
   </p>
 {% endblock %}
