@@ -30,11 +30,11 @@
 	og det skal følge et bestemt format.<br>
 	Opbygningen af et Sikkerhedscript vil typisk være, at læse en mængde data
 	fra en log fil, søge efter event via et eller flere keywords, og så herefter
-	gemme oplysningerne i bestemt format. Et Sikkerhedsscript kan være et shell script
-	eller et python script.
+	gemme oplysningerne i bestemt format. Et Sikkerhedsscript kan være et shellscript
+	eller et pythonscript.
 	<br>
 	<br> 
-	Formatet ser således ud: "Sikkerhedsproblem id, Teknisk referat, Den rå data".<br>	
+	Formatet ser således ud: "Sikkerhedsproblem id, Teknisk referat, De rå data".<br>	
   </p>  
   <ul>
 	  <li>
@@ -45,12 +45,12 @@
 	  	Det tekniske referat kan enten være noget du definere eller en bid af det indsamlede data.		
 	  </li>
 	  <li>
-	  	Den rå data er alt den indsamlede data vedrørende sikkerhedseventet.
+	  	De rå data er alt den indsamlede data vedrørende sikkerhedseventet.
 	  </li>
   </ul>
   <p>
   	Aflever formatet til modulet csv_writer ved at kalde metoden write.
-	Husk at strippe dataten for linje skift, og kommaer før du danner formatet, 
+	Husk at strippe dataten for linjeskift, og kommaer før du danner formatet, 
 	og sender det til csv_writer modulet. 	 
   </p>
 {% endblock %}
