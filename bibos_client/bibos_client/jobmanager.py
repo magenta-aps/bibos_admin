@@ -443,7 +443,7 @@ def run_security_scripts():
             os.remove(SECURITY_DIR + "/security_log.txt")
 
         log = open(SECURITY_DIR + "/security_log.txt", "a")
-    except IOError:
+    except (OSError, IOError):
         # File does not exists, so we create it.
         os.mknod(SECURITY_DIR + "/security_log.txt")
         log = open(SECURITY_DIR + "/security_log.txt", "a")
