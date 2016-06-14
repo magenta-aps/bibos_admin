@@ -3,7 +3,10 @@
 {% load bibos_custom_tags %}
 
 {% block specific_title %}
-Aktive computere
+Aktive computere 
+{% if active_pcs > 0 %}
+	({{ active_pcs }})
+{% endif %}
 {% endblock %}
 
 {% block activepcs_active %}

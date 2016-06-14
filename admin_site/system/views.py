@@ -23,7 +23,6 @@ from models import Site, PC, PCGroup, ConfigurationEntry, Package
 from forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
 from forms import UserForm, ParameterForm, PCForm, SecurityProblemForm
 from models import Job, Script, Input, SecurityProblem, SecurityEvent
-from warnings import catch_warnings
 
 
 def set_notification_cookie(response, message):
@@ -58,7 +57,7 @@ def get_latest_security_event(pc):
     try:
         sc = SecurityEvent.objects.filter(pc_id=pc.id).latest('reported_time')
     except SecurityEvent.DoesNotExist:
-        sc = "Ingen advarsler"    
+        sc = "Ingen advarsler"
     return sc
 
 
@@ -797,8 +796,11 @@ class ActivePCsView(SiteView):
 
     # For hver pc skal vi hente seneste security event.
     def get_context_data(self, **kwargs):
-        context = super(ActivePCsView, self).get_context_data(**kwargs)        
-        context['ls_pcs'] = context['site'].pcs.all().order_by('last_seen')
+        context = super(ActivePCsView, self).get_context_data(**kwargs)
+        site = context['site']
+        active_pcs = site.pcs.filter(is_active=True)
+        context['active_pcs'] = active_pcs.count()
+        context['ls_pcs'] = site.pcs.all().order_by('last_seen')
         securityevents = []
         for pc in context['ls_pcs']:
             securityevents.append(get_latest_security_event(pc))
