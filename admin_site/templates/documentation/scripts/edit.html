@@ -34,7 +34,7 @@
 	eller et pythonscript.
 	<br>
 	<br> 
-	Formatet ser således ud: "Sikkerhedsproblem id, Teknisk referat, De rå data".<br>	
+	Formatet ser således ud: "[Sikkerhedsproblem id, Teknisk referat, De rå data]".<br>	
   </p>  
   <ul>
 	  <li>
@@ -49,8 +49,6 @@
 	  </li>
   </ul>
   <p>
-  	Aflever formatet til modulet csv_writer ved at kalde metoden write.
-	Husk at strippe dataten for linjeskift, og kommaer før du danner formatet, 
-	og sender det til csv_writer modulet. 	 
+  	Aflever formatet som et array til modulet csv_writer ved at kalde metoden write.	 	
   </p>
 {% endblock %}
