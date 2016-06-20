@@ -7,7 +7,7 @@ import system.utils
 from datetime import datetime
 from django.conf import settings
 
-from models import PC, PCGroup, Site, Distribution, Configuration, ConfigurationEntry
+from models import PC, Site, Distribution, Configuration, ConfigurationEntry
 from models import PackageList, Package, PackageStatus, CustomPackages
 from models import Job, Script, SecurityProblem, SecurityEvent
 
@@ -269,18 +269,19 @@ def get_instructions(pc_uid, update_data):
         job.status = Job.SUBMITTED
         job.save()
         jobs.append(job.as_instruction)
-            
+
     scripts = []
     pc_groups = pc.pc_groups.all()
-    if len(pc_groups) > 0:        
+    if len(pc_groups) > 0:
         security_objects = []
-        for group in pc_groups:            
-            security_problems = SecurityProblem.objects.filter(alert_groups=group.id)
+        for group in pc_groups:
+            security_problems = (SecurityProblem.objects.
+                                 filter(alert_groups=group.id))
             if len(security_problems) > 0:
                 for problem in security_problems:
-                    security_objects.append(Script.objects.get(id=problem.script_id))   
-            
-        # security_objects = Script.objects.filter(is_security_script=1)    
+                    security_objects.append(Script.objects.
+                                            get(id=problem.script_id))
+
         for script in security_objects:
             if script.is_security_script == 1:
                 s = {
@@ -288,7 +289,7 @@ def get_instructions(pc_uid, update_data):
                      'executable_code': script.executable_code.read()
                      }
                 scripts.append(s)
-    
+
     result = {
         'security_scripts': scripts,
         'jobs': jobs,
