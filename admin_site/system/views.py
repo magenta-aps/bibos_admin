@@ -676,7 +676,11 @@ class ScriptUpdate(ScriptMixin, UpdateView, LoginRequiredMixin):
         return super(ScriptUpdate, self).form_invalid(form)
 
     def get_success_url(self):
-        return '/site/%s/scripts/%s/' % (self.site.uid, self.script.pk)
+        if self.is_security:
+            return '/site/%s/security/scripts/%s/' % (self.site.uid,
+                                                      self.script.pk)
+        else:
+            return '/site/%s/scripts/%s/' % (self.site.uid, self.script.pk)
 
 
 class ScriptRun(SiteView):
