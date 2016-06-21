@@ -273,8 +273,9 @@ def get_instructions(pc_uid, update_data):
     security_objects = []
     # First check for security scripts covering the site
     site_security_problems = (SecurityProblem.objects.
-                              filter(site_id=pc.site,
-                                     alert_groups__isnull=True))
+                              filter(alert_groups__isnull=True)
+                              .exclude(site_id=pc.site))
+
     for security_problem in site_security_problems:
         security_objects.append(Script.objects.
                                 get(id=security_problem.script_id))
