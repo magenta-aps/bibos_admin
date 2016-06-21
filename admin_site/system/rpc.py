@@ -269,20 +269,21 @@ def get_instructions(pc_uid, update_data):
         job.status = Job.SUBMITTED
         job.save()
         jobs.append(job.as_instruction)
-    
+
     security_objects = []
     # First check for security scripts covering the site
     site_security_problems = (SecurityProblem.objects.
-                              filter(alert_groups__isnull=True)
-                              .exclude(site_id=pc.site))
+                              filter(site_id=pc.site).
+                              exclude(alert_groups__isnull=False))
 
     for security_problem in site_security_problems:
         security_objects.append(Script.objects.
                                 get(id=security_problem.script_id))
-    # Then check for security scripts covering groups the pc is a member of    
+
+    # Then check for security scripts covering groups the pc is a member of.
     pc_groups = pc.pc_groups.all()
     if len(pc_groups) > 0:
-        
+
         for group in pc_groups:
             security_problems = (SecurityProblem.objects.
                                  filter(alert_groups=group.id))
