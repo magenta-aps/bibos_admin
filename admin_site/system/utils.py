@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
 
 
-def notify_users(data, security_problem):
+def notify_users(data, security_problem, pc):
     """Notify users about security event."""
 
     # Subject = security name,
@@ -19,10 +19,11 @@ def notify_users(data, security_problem):
             security_problem.description + "\n")
     body += "Kort resume af data fra log filen : " + data[2]
     try:
-        message = EmailMessage("Sikkerhedsadvarsel: " +
+        message = EmailMessage("Sikkerhedsadvarsel for PC : " + pc.name
+                               + ". Sikkerhedsproblem : " +
                                security_problem.name, body,
                                settings.DEFAULT_FROM_EMAIL, email_list)
-        message.send()
+        message.send(fail_silently=False)
     except Exception:
         return False
 

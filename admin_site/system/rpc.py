@@ -373,6 +373,6 @@ def push_security_events(pc_uid, csv_data):
             return False
 
         # Notify subscribed users
-        system.utils.notify_users(csv_split, security_problem)
+        system.utils.notify_users(csv_split, security_problem, pc)
 
     return 0
