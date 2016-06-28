@@ -373,9 +373,13 @@ def get_instructions():
             local_job.save()
             local_job.logline("Job imported at %s" % datetime.now())
 
+    # Always remove old security scripts.
+    # Could be pc is moved to another group,
+    # and does not need security scripts any more.	
+    os.popen('rm -f ' + SECURITY_DIR + '/s_*')
+
     # Import security scripts
     if 'security_scripts' in instructions:
-        os.popen('rm -f ' + SECURITY_DIR + '/s_*')
         for s in instructions['security_scripts']:
             fpath = SECURITY_DIR + '/s_' + str(s['name']).replace(' ', '')
             fh = open(fpath, 'w')
@@ -443,7 +447,7 @@ def run_security_scripts():
             os.remove(SECURITY_DIR + "/security_log.txt")
 
         log = open(SECURITY_DIR + "/security_log.txt", "a")
-    except IOError:
+    except (OSError, IOError):
         # File does not exists, so we create it.
         os.mknod(SECURITY_DIR + "/security_log.txt")
         log = open(SECURITY_DIR + "/security_log.txt", "a")
