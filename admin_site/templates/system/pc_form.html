@@ -63,10 +63,12 @@ class="active"
       {% if selected_pc.is_update_required %}
         <span class="label label-warning">Opdateringer tilgængelige</span>
       {% endif %}
-      {% comment %}
-      TODO later?
-      <a class="pull-right" href="/site/somesite/security/" title=" Se alle advarsler for denne PC"><span class="badge badge-important"><icon class="icon-fire icon-white"></icon></span></a>
-      {% endcomment %}
+      {% if selected_pc.securityevent_set.count > 0 %}
+      <a class="pull-right" href="/site/{{ site.url }}/security/pc/{{ pc.uid }}" title=" Se advarsler for denne PC"><span class="badge badge-important">
+              <icon
+                                                                                                                          class="{% if has_security_warnings %}icon-fire{% else %}icon-ok{% endif %} icon-white">
+              </icon></span></a>
+{% endif %}
     </h2>
     {% include 'notification.html' %}
     

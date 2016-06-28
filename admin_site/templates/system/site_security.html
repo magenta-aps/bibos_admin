@@ -76,6 +76,9 @@ class="active"
             <input type="radio" value="0"  name="do_limit">
             <span class="label">Alle</span>
           </label>
+            {% if pc_uid %}
+          <input type="hidden" value="{{ pc_uid }}" name="pc" />
+          {% endif %}
       </div>
     </form>
   </div>

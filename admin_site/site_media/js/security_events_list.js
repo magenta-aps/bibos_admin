@@ -49,6 +49,10 @@ $(function(){
             $('#securityeventsearch-filterform input[name=' + field + ']').val(val)
             this.search()
         },
+ 
+        selectPC: function(elem, val) {
+            this.selectFilter('pc', elem, val)
+        },
 
         orderby: function(order) {
             $('.orderby').each(function() {
@@ -85,6 +89,7 @@ $(function(){
         reset: function() {
             $('#securityeventsearch-filterform')[0].reset()
             $('#securityeventsearch-filterform li.selected').removeClass('selected')
+            $('#jobsearch-filterform input[name=pc]').val('')
             this.search()
         }
     });
