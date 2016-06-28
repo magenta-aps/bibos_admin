@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
-from system.models import Site, SecurityProblem
+from system.models import Site
 
 
 class UserProfile(models.Model):
