@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block body %}
 
-    <form action="" method="post" class="popup-page">{% csrf_token %}
+    <form id="security_update_form" action="" method="post" class="popup-page">{% csrf_token %}
         <p>
             <input class="btn btn-primary" type="submit" value="Gem">
             <a class="btn" href="javascript:history.go(-1)">Luk</a>
@@ -50,6 +50,12 @@
 
     <script>
 $(document).ready(function() {
+	$( "#security_update_form" ).submit(function( event ) {
+		var input = $("<input>").attr("type", "hidden").attr("name", $('*:disabled').attr("name")).val($('*:disabled').val());							
+		$('#security_update_form').append($(input));
+		alert("success : " + input);
+	});
+	
     if ($("#id_status").val() == "RESOLVED") {
         $("#id_assigned_user").attr('disabled', true);
     }
@@ -81,7 +87,7 @@ $(document).ready(function() {
     });
 
    $("#id_status").change(function() {
-        var status = $("#id_status").val();
+        var status = $("#id_status").val();        
         if (status == "RESOLVED") {
             $("#id_assigned_user").attr('disabled', true);
         }
@@ -93,7 +99,7 @@ $(document).ready(function() {
             $("#id_status").attr('disabled', true);
             $("#id_assigned_user").attr('disabled', false);
         }
-
+		
    });
 
 });
