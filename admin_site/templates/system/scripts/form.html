@@ -6,9 +6,11 @@
     <li>
       <a href="#script-preview" data-toggle="tab">Kode</a>
     </li>
+    {% if not is_security %}
     <li>
       <a href="#script-parameters" data-toggle="tab">Inputparametre</a>
     </li>
+    {% endif %}
   </ul>
   <div id="script-details" class="tabcontent active">
 {% endif %}
@@ -22,7 +24,7 @@
           {{ form.description.errors }}
         </div>
         <div class="span6" style="margin-top: 2em;">
-          <label for="id_{% if form.prefix %}{{ form.prefix }}-{% endif %}site">
+          <label class="checkbox" for="id_{% if form.prefix %}{{ form.prefix }}-{% endif %}site">
             <input
               type="checkbox"
               id="id_{% if form.prefix %}{{ form.prefix }}-{% endif %}site"
@@ -32,6 +34,8 @@
             >
             Lokalt script for {{ site.uid }}
           </label>
+         <input id="id_is_security_script" name="is_security_script"
+         value="{{ is_security }}" type="hidden" /> 
         </div>
         <div class="span12" style="margin-left: 0;">
           <label for="{{ form.description.id_for_label }}">Beskrivelse:</label>
@@ -62,7 +66,7 @@
   <div id="script-parameters" class="tabcontent">
 {% endif %}
   
-    {% if disable_inputs %}
+    {% if disable_inputs or is_security %}
       <input type="hidden" name="script-number-of-inputs" class="script-number-of-inputs" value="0" />
     {% else %}
       <fieldset id="{{ form.prefix|default:'update' }}-script-inputs">

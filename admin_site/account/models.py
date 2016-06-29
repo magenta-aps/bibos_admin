@@ -4,10 +4,12 @@ from django.contrib.auth.models import User
 
 from system.models import Site
 
+
 class UserProfile(models.Model):
     """BibOS Admin specific user profile."""
     # This is the user to which the profile belongs
-    user = models.ForeignKey(User, unique=True, related_name='bibos_profile')
+    user = models.OneToOneField(User, unique=True,
+                                related_name='bibos_profile')
 
     SUPER_ADMIN = 0
     SITE_USER = 1
@@ -27,9 +29,9 @@ class UserProfile(models.Model):
     type = models.IntegerField(choices=type_choices, default=SITE_USER)
     site = models.ForeignKey(Site, null=True, blank=True)
     # TODO: Add more fields/user options as needed.
-    # TODO: Make before_save integrity check that SITE_USER and 
+    # TODO: Make before_save integrity check that SITE_USER and
     # SITE_ADMIN users MUST be associated with a site.
-   
+
     def __unicode__(self):
         return self.user.username
 
@@ -40,7 +42,3 @@ class UserProfile(models.Model):
             raise ValidationError(_(
                 'Non-admin users MUST be attached to a site'
             ))
-        #if self.type == UserProfile.SUPER_ADMIN and self.site is not None:
-        #    raise ValidationError(_(
-        #        'BibOS admins may not be attached to a site'
-        #    ))

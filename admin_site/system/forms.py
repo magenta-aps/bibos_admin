@@ -1,11 +1,10 @@
 import datetime
 
 from django import forms
-from django.forms.models import inlineformset_factory
 from django.contrib.auth.models import User
 
 from models import Site, PCGroup, ConfigurationEntry, PC
-from job.models import Script, Input
+from models import Script, Input, SecurityProblem
 from account.models import UserProfile
 
 from django.utils.translation import ugettext as _
@@ -73,6 +72,7 @@ class ScriptForm(forms.ModelForm):
 
     class Meta:
         model = Script
+        fields = '__all__'
 
 
 class ConfigurationEntryForm(forms.ModelForm):
@@ -84,7 +84,7 @@ class ConfigurationEntryForm(forms.ModelForm):
 class UserForm(forms.ModelForm):
     usertype = forms.ChoiceField(
         required=True,
-        choices=UserProfile.NON_ADMIN_CHOICES
+        choices=UserProfile.type_choices
     )
 
     new_password = forms.CharField(
@@ -106,7 +106,7 @@ class UserForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         initial = kwargs.setdefault('initial', {})
         if 'instance' in kwargs and kwargs['instance'] is not None:
-            initial['usertype'] = kwargs['instance'].bibos_profile.get().type
+            initial['usertype'] = kwargs['instance'].bibos_profile.type
         else:
             initial['usertype'] = UserProfile.SITE_USER
         self.initial_type = initial['usertype']
@@ -190,3 +190,9 @@ class PCForm(forms.ModelForm):
         exclude = ('uid', 'configuration', 'package_list', 'site',
                    'is_update_required', 'creation_time', 'last_seen',
                    'custom_packages', 'do_send_package_info')
+
+
+class SecurityProblemForm(forms.ModelForm):
+    class Meta:
+        model = SecurityProblem
+        fields = '__all__'

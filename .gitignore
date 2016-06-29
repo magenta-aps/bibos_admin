@@ -1,8 +1,6 @@
 /admin_site/*.db
-/admin_site/lib
-/admin_site/include
-/admin_site/local
-/admin_site/bin
+/python-env
+/admin_site/python-env
 /admin_site/etc/bibos-proxy.htpasswd
 /admin_site/site_media/script_uploads
 /admin_site/site_media/parameter_uploads
@@ -19,5 +17,7 @@
 .bash_history
 .viminfo
 .vim
+.ropeproject
+*.egg-info
 
 admin_site/bibos_admin/settings.py

@@ -63,12 +63,22 @@ class="active"
       {% if selected_pc.is_update_required %}
         <span class="label label-warning">Opdateringer tilgængelige</span>
       {% endif %}
+      {% if selected_pc.securityevent_set.count > 0 %}
+      <a class="pull-right" href="/site/{{ site.url }}/security/pc/{{ pc.uid }}" title=" Se advarsler for denne PC"><span class="badge badge-important">
+              <icon
+                                                                                                                          class="{% if has_security_warnings %}icon-fire{% else %}icon-ok{% endif %} icon-white">
+              </icon></span></a>
+{% endif %}
     </h2>
     {% include 'notification.html' %}
     
-    {% if selected_pc.last_seen %} 
-      <p class="pull-right"><span class="muted"> &nbsp;Sidst set:</span> <strong>{{ selected_pc.last_seen|date }} </strong> {{ selected_pc.last_seen|time }}</p>
+    {% if selected_pc.last_seen %}
+      <p class="" style="float:right;"><span class="muted"> &nbsp;Senest
+          set:</span> <strong>{{ selected_pc.last_seen|date:'Y-m-d H:i:s' }} </strong></p>
     {% endif %}
+    {% if security_event != "Ingen advarsler"%}
+      <p style="float:right; clear:right;"><span class="muted"> &nbsp;Seneste advarsel set:</span> <strong>{{ security_event.reported_time|date }} </strong> {{ security_event.reported_time|time }}</p>
+    {% endif %}    
     
     <form name="pc_update_form" id="pc_update_form" action="{% url 'computer' site.uid selected_pc.uid %}" method="post">
       {% csrf_token %}
@@ -241,5 +251,5 @@ class="active"
     </form>
     {% include 'system/package_lists/templates.html' %}
     {% include 'system/configlist/templates.html' %}
-  </div>
+  </p>
 {% endblock %}

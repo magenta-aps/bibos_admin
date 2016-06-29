@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block body %}
+
+    <form id="security_update_form" action="" method="post" class="popup-page">{% csrf_token %}
+        <p>
+            <input class="btn btn-primary" type="submit" value="Gem">
+            <a class="btn" href="javascript:history.go(-1)">Luk</a>
+        </p>
+        <div class="alert alert-error">
+                    <p><strong>{{ securityevent.problem.name }}: {{ securityevent.summary }}</strong></p>
+                </div>
+        <div class="row-fluid">
+            <div class="span6">
+                
+                <dl class="dl-horizontal">
+                    <dt>Tid</dt>
+                    <dd>{{ securityevent.ocurred_time }}</dd>
+                    <dt>Maskine</dt>
+                    <dd><a href="/site/{{ site.uid }}/computers/{{ securityevent.pc.uid }}">{{ securityevent.pc.name }}</a>, senest set {{ securityevent.pc.last_seen }}</dd>
+                    <dt>Note</dt>
+                    <dd>
+                    {{ form.note.errors }}
+                    {{ form.note }}
+                    </dd>
+            
+                    <dt>Håndteres af</dt>
+                    <dd>
+                    {{ form.assigned_user.errors }}
+                    {{ form.assigned_user }}
+                    </dd>
+                    <dt><strong>Status</strong></dt>
+                    <dd>
+                      {{ form.status.errors }}
+                      {{ form.status }}
+                    </dd>
+                </dl>
+            </div>
+            <div class="span6">
+                <dl>
+                    <dt>Log-output:</dt>
+                    <dd>
+                        <p name="securityevent-log">
+                            <pre>{{ securityevent.complete_log }}</pre>
+                        </p>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </form>
+
+    <script>
+$(document).ready(function() {
+	$( "#security_update_form" ).submit(function( event ) {
+		var input = $("<input>").attr("type", "hidden").attr("name", $('*:disabled').attr("name")).val($('*:disabled').val());							
+		$('#security_update_form').append($(input));
+	});
+	
+	var html = '<ul class="errorlist" id="id_errorlist"><li></li></ul>';
+	var onload_status = $("#id_status").val();
+	var onload_assigned_user = $("#id_assigned_user").val(); 
+	
+    if ($("#id_status").val() == "RESOLVED") {
+        $("#id_assigned_user").attr('disabled', true);
+    }
+    if ($("#id_status").val() == "NEW") {
+        $("#id_status").attr('disabled', true);
+        $("#id_assigned_user").attr('disabled', false);
+    }
+    
+    if (!$("#id_assigned_user").val()) {
+        $("#id_status").val('NEW');
+        $("#id_status").attr('disabled', true);
+        $("#id_assigned_user").attr('disabled', false);
+    }
+
+    $("#id_assigned_user").change(function() {
+    	$('#id_errorlist').remove();
+        var status = $("#id_status").val();
+        var auser = $("#id_assigned_user").val();
+        if (auser && status == "NEW") {
+
+            $("#id_status").val("ASSIGNED");
+            $("#id_status").attr('disabled', false);
+        }
+        else if (status == "ASSIGNED" && !auser && onload_status == "NEW") {
+            $("#id_status").val("NEW");
+            $("#id_assigned_user").attr('disabled', false);
+            $("#id_status").attr('disabled', true);
+        } else {
+        	var html = '<ul class="errorlist" id="id_errorlist"><li>Når først en person er blevet tildelt til advarslen, skal en person altid være tildelt.</li></ul>';
+        	$("#id_assigned_user").parent().append(html);
+        	$("#id_assigned_user").val(onload_assigned_user);
+        }
+
+    });
+
+   $("#id_status").change(function() {
+	    $('#id_errorlist').remove();
+        var status = $("#id_status").val();        
+        if (status == "RESOLVED") {
+            $("#id_assigned_user").attr('disabled', true);
+        }
+        else if (status == "ASSIGNED") {
+            $("#id_assigned_user").attr('disabled', false);
+        }
+        else if (status == "NEW" && onload_status == "NEW") {
+            $("#id_assigned_user").val('');
+            $("#id_status").attr('disabled', true);
+            $("#id_assigned_user").attr('disabled', false);
+        }
+        else{   
+        	var html = '<ul class="errorlist" id="id_errorlist"><li>Når først en advarsel er blevet tildelt, kan den ikke sættes tilbage til status Ny.</li></ul>';        	
+        	$("#id_status").parent().append(html);
+        	$("#id_status").val(onload_status);
+        }
+		
+   });
+
+});
+    </script>
+{% endblock %}

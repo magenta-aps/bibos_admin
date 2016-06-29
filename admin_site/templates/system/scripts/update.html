@@ -5,7 +5,11 @@ Scripts
 {% endblock %}
 
 {% block scripts_active %}
-class="active"
+{% if not is_security %}class="active"{% endif %}
+{% endblock %}
+
+{% block security_scripts_active %}
+{% if is_security %}class="active"{% endif %}
 {% endblock %}
 
 {% block javascripts %}
@@ -19,8 +23,12 @@ $.each(inputs, function() {BibOS.ScriptEdit.addInput('#update-script-inputs', th
 {% endblock %}
 
 {% block specific_documentation_links %}
+{% if is_security %}
+  <li><a href="{% url 'doc' 'scripts/securitywarnings' %}"><i class="icon-question-sign icon-white"></i>Hjælp til sikkerhed</a></li>
+{% else %}
   <li><a href="{% url 'doc' 'scripts' %}"><i class="icon-question-sign icon-white"></i> Administration af scripts</a></li>
   <li><a href="{% url 'doc' 'scripts/running' %}"><i class="icon-question-sign icon-white"></i> Afvikling af scripts</a></li>
+  {% endif %}
 {% endblock %}
 
 {% block specific_content %}
@@ -37,27 +45,29 @@ $.each(inputs, function() {BibOS.ScriptEdit.addInput('#update-script-inputs', th
     </h2>
 
     <form method="post" name="scriptform" id="scriptform"
-        action="{% url 'script' site.uid selected_script.pk %}"
+        action="{% url script_url site.uid selected_script.pk %}"
         enctype="multipart/form-data">
       {% csrf_token %}
 
       <div>
       {% include 'notification.html' %}
       </div>
+      {% if not is_security %}
       <a href="#runscriptmodal" role="button" class="btn btn-success" data-toggle="modal">Kør script</a>
+      {% endif %}
     {% if selected_script.is_global %}
-    {% ifequal user.get_profile.type 0 %}
+    {% ifequal user.bibos_profile.type 0 %}
     <input type="submit" class="btn btn-primary" value="Gem ændringer" />
     {% endifequal %}
     {% else %}
     <input type="submit" class="btn btn-primary" value="Gem ændringer" />
     {% endif %}
 
-      <button class="btn" onclick="location.href='{% url 'script' site.uid selected_script.pk %}'; return false;">Annuller</button>
+      <button class="btn" onclick="location.href='{% url script_url site.uid selected_script.pk %}'; return false;">Annuller</button>
 
       {% include 'system/scripts/form.html' with show_code_preview=1 global_script=script.is_global %}
     </form>
-
+     {% if not is_security %}
     <div id="runscriptmodal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">×</button>
@@ -70,12 +80,19 @@ $.each(inputs, function() {BibOS.ScriptEdit.addInput('#update-script-inputs', th
               <button class="btn" data-dismiss="modal">OK</button>
       </div>
     </div>
+    {% endif %}
   </div>  
 
   <!-- MODAL WINDOW FOR NEW SCRIPT REGISTRATION: -->
   
   <div id="addNewScript" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 650px">
-    <form action="{% url 'new_script' site.uid %}" name="create_script_form"
+    <form 
+      {% if is_security %}
+      action="{% url 'new_security_script' site.uid %}"
+      {% else %}
+      action="{% url 'new_script' site.uid %}"
+      {% endif %}
+                                                                                                            name="create_script_form"
       id="create_script_form" method="post" enctype="multipart/form-data">
       {% csrf_token %}
       <div class="modal-header">

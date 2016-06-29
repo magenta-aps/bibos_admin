@@ -1,0 +1,159 @@
+{% extends "site_with_navigation.html" %}
+
+{% block specific_title %}
+Sikkerhedsproblemer
+{% endblock %}
+
+{% block specific_documentation_links %}
+<li><a href="{% url 'doc' 'groups' %}"><i class="icon-question-sign icon-white"></i> Definition af sikkerhedsproblemer</a></li>
+{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript" src="/media/js/pcgrouplist.js"></script>
+<script type="text/javascript" src="/media/js/userlist.js"></script>
+
+{% endblock %}
+
+{% block security_problems_active %}
+class="active"
+{% endblock %}
+
+{% block specific_content %}
+<ul class="sublevelnav">
+    <li class="listutils">
+        <a href="#addNewSecProblem" role="button" data-toggle="modal" title="Definér nyt sikkerhedsproblem"><i class="icon-plus icon-white"></i> definér nyt sikkerhedsproblem</a>
+    </li>
+    {% for sp in site.security_problems.all %}
+    <li {% ifequal sp selected_security_problem %}class="active"{% endifequal %}>
+        {% ifequal sp selected_security_problem %}
+        {% if selected_security_problem.is_delete_allowed %}
+        <a class="remove pull-right" href="/site/{{ site.url }}/security_problems/{{ selected_security_problem.uid }}/delete/" title="Slet sikkerhedsproblem" ><i class="icon-remove icon-white"></i></a>
+        {% endif %}
+        {% endifequal %}
+        <a class="list-item" href="/site/{{ site.url }}/security_problems/{{ sp.uid }}/"><i class="icon-exclamation-sign"></i>{{ sp.name }}</a>
+    </li>
+    {% endfor %}
+</ul>
+
+<div class="container-fluid main sublevelmain">
+
+    {% if selected_security_problem %}
+    <h2 class="divideheader">
+        Detaljer om <em>{{ selected_security_problem.name }}</em>
+        {% comment %}
+        TODO later?
+        <a class="pull-right" href="/site/{{ site.url }}/security/problem/{{ selected_security_problem.id }}" title="Se alle advarsler for dette sikkerhedsproblem"><span class="badge badge-important"><icon class="icon-fire icon-white"></icon></span></a>
+        {% endcomment %}
+    </h2>
+    {% include 'notification.html' %}
+
+    <form name="updategroupform" id="updategroupform"
+                                 method="post" class="row-fluid">
+        <p>
+        <button class="btn btn-primary">Gem ændringer</button>
+        <button class="btn" onclick="return BibOS.SecurityProblemList.cancelEditing()">Annuller</button>
+        </p>
+        <div>
+            <div class="row-fluid">
+                <fieldset class="span6">
+                    {% csrf_token %} 
+                    
+                    <!-- Site field -->
+                    <input type="hidden" id="id_site" name="site" value="{{ site.id }}" />
+
+                    <label>Navn:</label>
+                    {{ form.name.errors }}
+                    {{ form.name }}
+                    <label>ID:</label>
+                    {{ form.uid.errors }}
+                    {{ form.uid }}
+                    <label>Problemmeddelelse:</label>
+                    {{ form.description.errors }}
+                    {{ form.description }}
+
+                    <label>Alvorsgrad:</label>
+                    {{ form.level.errors }}
+                    {{ form.level }}
+                </fieldset>
+                <fieldset class="span6">
+                    <label>Script:</label>
+                    {{ form.script.errors }}
+                    {{ form.script }}
+
+                    <label>Overvågede grupper:</label>
+                    {{ form.alert_groups.errors }}
+                    {{ form.alert_groups }}
+                    {# {% include 'system/pcgrouplist/list.html' with submit_name='alert_groups' %} #}
+
+                    <label>Modtager(e) af email-advarsel</label>
+                    {{ form.alert_users.errors }}
+                    {{ form.alert_users }}
+                    {# {% include 'system/userlist/list.html' with submit_name='alert_users' %} #}
+                </fieldset>
+            </div>
+
+        </div>
+
+    </form>
+    {% endif %}
+
+    <div id="addNewSecProblem" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <form action="{% url 'security_problem_new' site.uid %}" 
+              name="new_security_problem_form"
+              id="new_security_problem_form" method="post">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h3>Definér nyt sikkerhedsproblem</h3>
+            </div>
+            <div class="modal-body">
+
+                <div class="row-fluid">
+                    <fieldset class="span6">
+                        {% csrf_token %}
+
+                        <!-- Site field -->
+                        <input type="hidden" id="id_site" name="site" value="{{ site.id }}" />
+
+                        <!-- And now the rest -->
+                        <label>Navn:</label>
+                        {{ newform.name.errors }}
+                        {{ newform.name }}
+                        <label>Id:</label>
+                        {{ newform.uid.errors }}
+                        {{ newform.uid }}
+                        <label>Problemmeddelelse:</label>
+                        {{ newform.description.errors }}
+                        {{ newform.description }}
+
+                        <label>Alvorsgrad:</label>
+                        {{ newform.level.errors }}
+                        {{ newform.level }}
+
+                        <label>Script:</label>
+                        {{ newform.script.errors }}
+                        {{ newform.script }}
+
+                        <label>Overvåg følgende grupper:</label>
+                        {{ newform.alert_groups.errors }}
+                        {{ newform.alert_groups }}
+
+                    </fieldset>
+                    <fieldset class="span6">
+
+                        <label>Modtager(e) af email-advarsel</label>
+                        {{ newform.alert_users.errors }}
+                        {{ newform.alert_users }}
+
+                    </fieldset>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <input type="submit" class="btn btn-primary" value="Gem" />
+                <input type="reset" class="btn" data-dismiss="modal" value="Annuller" />
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

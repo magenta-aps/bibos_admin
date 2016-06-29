@@ -1,15 +1,15 @@
 # This module contains the implementation of the XML-RPC API used by the
 # client.
 
-import datetime
 import system.proxyconf
-from django.db.models import Q
+import system.utils
 
+from datetime import datetime
 from django.conf import settings
 
 from models import PC, Site, Distribution, Configuration, ConfigurationEntry
 from models import PackageList, Package, PackageStatus, CustomPackages
-from job.models import Job, Script
+from models import Job, Script, SecurityProblem, SecurityEvent
 
 
 def register_new_computer(name, uid, distribution, site, configuration):
@@ -80,7 +80,8 @@ def upload_dist_packages(distribution_uid, package_data):
         for pd in package_data:
             # First, assume package & version already exists.
             try:
-                p = Package.objects.get(name=pd['name'], version=pd['version'])
+                p = Package.objects.get(name=pd['name'],
+                                        version=pd['version'])
             except Package.DoesNotExist:
                 p = Package.objects.create(
                     name=pd['name'],
@@ -88,7 +89,7 @@ def upload_dist_packages(distribution_uid, package_data):
                     description=pd['description']
                 )
             finally:
-                status = PackageStatus.objects.create(
+                PackageStatus.objects.create(
                     package=p,
                     package_list=distribution.package_list,
                     status=pd['status']
@@ -110,7 +111,7 @@ def send_status_info(pc_uid, package_data, job_data, update_required):
         # Fail silently
         return 0
 
-    pc.last_seen = datetime.datetime.now()
+    pc.last_seen = datetime.now()
     pc.save()
 
     # 2. Update package lists with package data
@@ -133,7 +134,7 @@ def send_status_info(pc_uid, package_data, job_data, update_required):
                     description=pd['description']
                 )
             finally:
-                status = PackageStatus.objects.create(
+                PackageStatus.objects.create(
                     package=p,
                     package_list=pc.package_list,
                     status=pd['status']
@@ -186,7 +187,7 @@ def get_instructions(pc_uid, update_data):
 
     pc = PC.objects.get(uid=pc_uid)
 
-    pc.last_seen = datetime.datetime.now()
+    pc.last_seen = datetime.now()
     pc.save()
 
     if not pc.is_active:
@@ -269,7 +270,40 @@ def get_instructions(pc_uid, update_data):
         job.save()
         jobs.append(job.as_instruction)
 
+    security_objects = []
+    # First check for security scripts covering the site
+    site_security_problems = (SecurityProblem.objects.
+                              filter(site_id=pc.site).
+                              exclude(alert_groups__isnull=False))
+
+    for security_problem in site_security_problems:
+        security_objects.append(Script.objects.
+                                get(id=security_problem.script_id))
+
+    # Then check for security scripts covering groups the pc is a member of.
+    pc_groups = pc.pc_groups.all()
+    if len(pc_groups) > 0:
+
+        for group in pc_groups:
+            security_problems = (SecurityProblem.objects.
+                                 filter(alert_groups=group.id))
+            if len(security_problems) > 0:
+                for problem in security_problems:
+                    security_objects.append(Script.objects.
+                                            get(id=problem.script_id))
+
+    scripts = []
+
+    for script in security_objects:
+        if script.is_security_script == 1:
+            s = {
+                'name': script.name,
+                'executable_code': script.executable_code.read()
+            }
+            scripts.append(s)
+
     result = {
+        'security_scripts': scripts,
         'jobs': jobs,
         'configuration': pc.get_full_config(),
     }
@@ -317,3 +351,28 @@ def push_config_keys(pc_uid, config_dict):
             pc.configuration.update_entry(key, value)
 
     return True
+
+
+def push_security_events(pc_uid, csv_data):
+    pc = PC.objects.get(uid=pc_uid)
+
+    for data in csv_data:
+        csv_split = data.split(",")
+        try:
+            security_problem = SecurityProblem.objects.get(uid=csv_split[1])
+
+            new_security_event = SecurityEvent(problem=security_problem, pc=pc)
+            new_security_event.ocurred_time = (
+                datetime.strptime(csv_split[0],
+                                  '%Y%m%d%H%M'))
+            new_security_event.reported_time = datetime.now()
+            new_security_event.summary = csv_split[2]
+            new_security_event.complete_log = csv_split[3]
+            new_security_event.save()
+        except IndexError:
+            return False
+
+        # Notify subscribed users
+        system.utils.notify_users(csv_split, security_problem, pc)
+
+    return 0

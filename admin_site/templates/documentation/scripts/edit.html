@@ -3,11 +3,11 @@
 {% block specific_content %}
   <h1>Redigering af script</h1>
   <p>
-    For at redigere et script skal klikke på "Scripts" i venstremenuen og
+    For at redigere et script skal du klikke på "Scripts" i venstremenuen og
     efterfølgende vælge scriptet i listen over scripts til højre for
     venstremenuen. Bemærk at det kan være nødvendigt at skifte mellem
     fanebladenene "Lokale scripts" og "Globale scripts" for at finde scriptet.
-  </p>
+  </p>   
   <p>
     Når du redigerer et script har du mulighed for at ændre scripts navn og
     beskrivelse. Du kan også uploade en ny version af scriptet ved at
@@ -16,8 +16,39 @@
     siden.
   </p>
   <p>
-    I bunden af redigeringsinterfacet har du mulighed for at
+    Hvis det ikke er et Sikkerhedsscript har du i en ekstra fane mulighed for at
     <a href="{% url 'doc' 'scripts/parameters' %}">tilpasse
     input-parametre for scriptet</a>.
+  </p>
+  <p>    
+    Hvis det derimod er et Sikkerhedsscripts, skal du være opmærksom på følgende:
+    <br>
+    Et Sikkerhedsscript er et script, som indsamler <a href="{% url 'doc' 'scripts/securitywarnings' %}"> sikkerhedsadvarsler</a>.
+    <br>
+    <br>    
+	Et Sikkerhedscript tager ikke nogen input parametre, 
+	og det skal følge et bestemt format.<br>
+	Opbygningen af et Sikkerhedscript vil typisk være, at læse en mængde data
+	fra en log fil, søge efter event via et eller flere keywords, og så herefter
+	gemme oplysningerne i bestemt format. Et Sikkerhedsscript kan være et shellscript
+	eller et pythonscript.
+	<br>
+	<br> 
+	Formatet ser således ud: "[Sikkerhedsproblem id, Teknisk referat, De rå data]".<br>	
+  </p>  
+  <ul>
+	  <li>
+	  	Sikkerhedsproblemets id finder du på siden over Sikkerhedsproblemer. Dit sikkerhedsscript
+		tilhører et sikkerhedsproblem og det er dennes id du skal bruge.	
+	  </li>
+	  <li>
+	  	Det tekniske referat kan enten være noget du definere eller en bid af det indsamlede data.		
+	  </li>
+	  <li>
+	  	De rå data er alt den indsamlede data vedrørende sikkerhedseventet.
+	  </li>
+  </ul>
+  <p>
+  	Aflever formatet som et array til modulet csv_writer ved at kalde metoden write.	 	
   </p>
 {% endblock %}

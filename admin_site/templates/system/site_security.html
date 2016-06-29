@@ -1,0 +1,104 @@
+{% extends "site_with_navigation.html" %}
+
+{% block specific_title %}
+Sikkerhedsadvarsler
+{% endblock %}
+
+{% block head_javascripts %}
+  <script type="text/javascript">
+       var bibos_security_event_search_url = '{% url 'securityeventsearch' site.uid %}'
+  </script>
+  <script type="text/javascript" src="/media/js/security_events_list.js"></script>
+{% endblock %}
+
+{% block security_active %}
+class="active"
+{% endblock %}
+
+{% block specific_documentation_links %}
+  <li><a href="{% url 'doc' 'scripts/running' %}"><i class="icon-question-sign icon-white"></i>Hjælp til sikkerhed</a></li>
+{% endblock %}
+
+{% block specific_content %}
+  <div class="template-container">
+   <table>
+    <tbody id="securityeventitem-template">
+      <tr class="click-list--item">
+        <td class="severity-#LEVEL#"><strong>#PROBLEM_NAME#</strong></td>
+        <td>#PC_NAME#</td>
+        <td>#OCCURRED#</td>
+        <td><span class="label #STATUS_LABEL#">#STATUS#</span></td>
+        <td>#ASSIGNED_USER#</td>
+      </tr>
+    </tbody>
+   </table>
+  </div>
+  <div id="securityeventsearchnav" class="sublevelnav sublevelnav-inverted">
+    <form id="securityeventsearch-filterform" name="filterform" action="./" method="post">
+        <input type="hidden" name="orderby" value="-pk">
+        <input class="btn btn-primary pull-right" type="button" onclick="BibOS.SecurityEventList.reset()" value="Nulstil filtre">
+      <h3 class="nav-header">Filtrér:</h3>
+      <hr>
+      <div id="securityeventsearch-level-selectors">
+          <h4 class="nav-header">Alvorsgrad</h4>
+          {% for l in level_choices %}
+          <label class="checkbox">
+              <input type="checkbox" value="{{ l.value }}" name="level" {{ l.checked }}>
+              <span class="severity-checkbox severity-{{ l.label }}">{{ l.name }}</span>
+        </label>
+        {% endfor %}
+      </div>
+      <hr>
+      <div id="securityeventsearch-status-selectors">
+          <h4 class="nav-header">Status</h4>
+          {% for s in status_choices %}
+          <label class="checkbox">
+              <input type="checkbox" value="{{ s.value }}" name="status" {{ s.checked }}>
+              <span class="label {{ s.label }}">{{ s.name }}</span>
+        </label>
+        {% endfor %}
+      </div>
+      <hr>
+      <div>
+          <label>
+            <input type="radio" value="20"  checked="checked" name="do_limit">
+            <span class="label">Første 20</span>
+          </label>
+          <label>
+            <input type="radio" value="50"  name="do_limit">
+            <span class="label">Første 50</span>
+          </label>
+          <label>
+            <input type="radio" value="100"  name="do_limit">
+            <span class="label">Første 100</span>
+          </label>
+          <label>
+            <input type="radio" value="0"  name="do_limit">
+            <span class="label">Alle</span>
+          </label>
+            {% if pc_uid %}
+          <input type="hidden" value="{{ pc_uid }}" name="pc" />
+          {% endif %}
+      </div>
+    </form>
+  </div>
+  <div class="container-fluid main sublevelmain" style="overflow-x: auto;">
+    {% include 'notification.html' %}
+    <table class="table table-hover warn-table" id="#site_securityevents_table">
+      <thead>
+        <tr>
+          <th class="orderby order-problem__name desc" onclick="BibOS.SecurityEventList.orderby('problem__name')">Advarsel <i class="icon icon-chevron-down"></i></th>
+          <th>Maskine</th>
+          <th>Tid</th>
+          <th>Status</th>
+          <th class="orderby order-assigned_user__username desc" onclick="BibOS.SecurityEventList.orderby('assigned_user__username')">Håndteres af <i class="icon icon-chevron-down"></i></th>
+        </tr>
+      </thead>
+      <tbody id="securityevent-list">
+        <tr class="muted">
+          <td colspan="5">Loading data...</td>
+        </tr>
+      </tbody>
+    </table> 
+  </div>
+{% endblock %}

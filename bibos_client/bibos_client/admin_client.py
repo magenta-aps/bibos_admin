@@ -3,8 +3,6 @@ import csv
 import xmlrpclib
 import urllib2
 
-from bibos_utils.bibos_config import BibOSConfig
-
 
 def get_default_admin(verbose=False):
     conf_data = BibOSConfig().get_data()
@@ -25,7 +23,7 @@ class ProxyTransport(xmlrpclib.Transport):
     See checkProxySetting() below.
 
     Written from scratch but inspired by xmlrpc_urllib_transport.py
-    file from http://starship.python.net/crew/jjkunce/ by jjk.
+    file from http://starship.python.net/crew/jjkunce/ byself,  jjk.
 
     A. Ellerton 2006-07-06
     """
@@ -92,6 +90,8 @@ class BibOSAdmin(object):
     def push_config_keys(self, pc_uid, config_dict):
         return self._rpc_srv.push_config_keys(pc_uid, config_dict)
 
+    def push_security_events(self, pc_uid, csv_data):
+        return self._rpc_srv.push_security_events(pc_uid, csv_data)
 
 if __name__ == '__main__':
     """Simple test suite."""
@@ -116,7 +116,7 @@ if __name__ == '__main__':
                                       bibos_config.get_data())
 
     # Find list of all packages for status.
-    #os.system('get_package_data /tmp/packages.csv')
+    # os.system('get_package_data /tmp/packages.csv')
 
     with open('/tmp/packages.csv') as f:
         package_reader = csv.reader(f, delimiter=';')

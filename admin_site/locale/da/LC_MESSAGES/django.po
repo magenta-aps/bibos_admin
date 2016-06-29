@@ -181,7 +181,7 @@ msgstr "oprettelsestidspunkt"
 
 #: system/models.py:407
 msgid "last seen"
-msgstr "sidst set"
+msgstr "senest set"
 
 #: system/views.py:264
 #, python-format
@@ -226,3 +226,24 @@ msgstr "Gruppe %s opdateret"
 #, python-format
 msgid "Group %s deleted"
 msgstr "Gruppe %s slettet"
+        
+
+# SecurityProblem class
+msgid "securitylevel:Normal"
+msgstr "Normal"
+
+msgid "securitylevel:High"
+msgstr "Høj"
+
+msgid "securitylevel:Critical"
+msgstr "Kritisk"
+
+#SecurityEvent class
+msgid "eventstatus:New"
+msgstr "Ny"
+
+msgid "eventstatus:Assigned"
+msgstr "Tildelt"
+
+msgid "eventstatus:Resolved"
+msgstr "Løst"

@@ -1,0 +1,140 @@
+
+Security events - new functionality in BibOS Admin
+==================================================
+
+Aarhus has a desire to register and be able to receive an alert whenever
+a keyboard is disconnected and connected, because some people have done
+this in order to attach keyloggers to the devices. The purpose of that,
+of course, could be to sniff credit card numbers and sensitive
+passwords.
+
+We wish to implement this in BibOS. As it is easy to imagine many other
+kinds of security related threats, we will implement the general concept
+of a Security Event.
+
+A security event basically has a Type (keyboard connected), a time and
+place (date and computer on which it happened), and technical
+information - e.g., the type of keyboard connected or the user
+requesting a sudo operation.
+
+
+Changes to the model
+++++++++++++++++++++
+
+
+A new Django model will be introduced in the Bibos Admin system. This
+model will be called SecurityEvent and will basically have the following
+fields (further analysis or actual implementation may show more fields
+to be needed):
+
+* Type - the kind of security event. Link to SecurityProblem, described
+  below 
+* Time - timestamp including date
+* PC - the afflicted PC. Link to the PC class
+* Technical summary - brand/type of keyboard, user performing login, etc
+* Raw technical data from log.
+
+
+The security event *type* will be another model, which could be called
+SecurityProblem. The SecurityProblem model class will contain
+
+* Code - a machine readable, unique identifier, e.g. "KEYBOARD"
+* Name - e.g. "Keyboard connected"
+* Level - Normal, High or Critical (green, yellow, red)
+* Script - a script which may be run by the Job Manager on each machine
+  to determine if this security event has occurred since we last
+  checked.
+
+SecurityProblems may be site specific or global. Maybe this should be
+achieved by letting the Script field be a link to the existing Script
+class.
+
+The script will normally be a shell script written in Bash, but might in
+fact be any executable, like a Python program or a C program compiled to
+binary code. It will take no parameters, and its output MUST conform to
+the specification hinted at below and developed as a part of the
+completion of this task.
+
+A computer is regularly checked for SecurityEvents, if the corresponding
+SecurityProblem is associated with it. This association is through the
+group and site levels, e.g.
+
+* The Site object may be associated with a list of SecurityProblems,
+  which are always checked for on each of the site's machines.
+* The PCGroup object may be associated with a list of SecurityProblems,
+  which are always checked for on each of the group's machines.
+* The User Profile object will be associated with a list of
+  SecurityProblems, for which this user wishes to receive email alerts.
+  Users should be able to subscribe to these alerts on their profile
+  pages.
+
+On each computer, a check is performed for the security problems listed
+on the site and on any of its groups.
+
+
+Changes in the BibOS Admin GUI
+++++++++++++++++++++++++++++++
+
+Under the menu item "Maskiner" to the left of the current BibOS Admin
+layout, a new point will be introduced, called "Sikkerhedsadvarsler".
+
+This will contain a list of SecurityEvents which have not yet been taken
+care of. It will be possible to indicate that an event will be taken
+care of (and thus make it disappear from the list), and it will be
+possible to filter by Level e.g. to only see the critical events. It
+might also be possible to see events that have been take care of, but
+that will not be the default setting.
+
+Under the menu item "Scripting", a new point will be introduced, called
+"Sikkerhedsproblemer". Here, it will be possible to set up security
+problems, specifying their name, level, code and script.
+
+When the script attached to a SecurityProblem is changed, it will be
+pushed to the clients, next time they contact the admin system.
+
+**Question:** Should the script be a link to the existing "script"
+class? When creating a script we could indicate that this is a
+SecurityProblem script and the programmer promises it obeys the protocol
+for such scripts - meaning, the user will only be allowed to select one
+of those scripts for the SecurityProblems. 
+
+**Note:** Usability and design, and estimates, of these changes should
+come from a designer, most likely Frank. The above is only a suggestion.
+
+
+Changes in the JobManager protocol
+++++++++++++++++++++++++++++++++++
+
+The main part of the JobManager program is currently to be found in the
+function called run_pending_jobs().
+
+Basically, it currently performs these functions: ::
+
+    get_instructions()
+    run_pending_jobs()
+
+It should be modified to also run the new function
+handle_security_events().
+
+This will, in turn, call two new functions, one called
+collect_security_events() and one called send_security_events().
+
+The first of these will collect the security events occured since last
+check and put them in a file. e.g.  /etc/bibos/security_check_YYYYMMDDHHmm.csv
+
+This file will consist of a semicolon separated, properly escaped CSV
+file. 
+
+The scripts for each security event will be responsible for collecting
+returning these data so they can easily be placed in these files. The
+scripts could be run e.g. by running all the scripts in
+/etc/bibos/security/scripts.
+
+The send_security_events() function will collect the security events found
+in this file and send to the server using a new function called
+push_security_events().
+
+This will be an XML-RPC function which will take a list of strings (the
+lines in the CSV file), and on the server side, this function will
+extract the data, create the corresponding SecurityEvents and send out
+alert emails as needed.

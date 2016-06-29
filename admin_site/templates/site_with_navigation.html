@@ -11,12 +11,26 @@ class="detailpage"
 {% block content %}
 
   <ul class="nav nav-list utils utils-global">
-    {% ifequal user.get_profile.type 0 %}
+    {% ifequal user.bibos_profile.type 0 %}
       <li><a href="/sites/"><i class="icon-arrow-left icon-white"></i> Sites</a></li>
       <li class="divider"></li>
     {% endifequal %}
     <li {% block site_active %}{% endblock %}><a href="/site/{{ site.url }}"><i class="icon-eye-open icon-white"></i> Status</a></li>
     <li class="divider"></li>
+    <li class="nav-header">Sikkerhed</li>
+    <li {% block security_active %}{% endblock %}><a href="/site/{{ site.url }}/security/"><i class="icon-fire icon-white"></i>Advarsler
+            {% if sec_events > 0 %}
+            <span class="pull-right badge badge-important
+            sec-warn-blink">{{ sec_events }}{% endif %}</span></a></li>
+    <li {% block security_problems_active %}{% endblock %}><a
+            href="/site/{{ site.url }}/security_problems/"><i
+                class="icon-exclamation-sign icon-white"></i>Regler</a></li>
+    <li {% block security_scripts_active %}{% endblock %}><a
+                href="/site/{{ site.url }}/security/scripts/"><i
+                class="icon-list icon-white"></i>Sikkerhedsscripts</a></li>
+    <li {% block activepcs_active %}{% endblock %}><a
+            href="/site/{{ site.url }}/security/activepcs/"><i
+                class="icon-hdd icon-white"></i>Aktive computere</a></li>
     <li class="nav-header">Maskiner</li>
     <li {% block configuration_active %}{% endblock %}><a href="/site/{{ site.url }}/configuration/"><i class="icon-cog icon-white"></i> Site-konfiguration</a></li>
     <li {% block computers_active %}{% endblock %}><a href="/site/{{ site.url }}/computers/" onclick="spin();"><i class="icon-hdd icon-white"></i> Computere</a></li>
