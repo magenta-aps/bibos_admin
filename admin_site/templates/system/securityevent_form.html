@@ -53,8 +53,11 @@ $(document).ready(function() {
 	$( "#security_update_form" ).submit(function( event ) {
 		var input = $("<input>").attr("type", "hidden").attr("name", $('*:disabled').attr("name")).val($('*:disabled').val());							
 		$('#security_update_form').append($(input));
-		alert("success : " + input);
 	});
+	
+	var html = '<ul class="errorlist" id="id_errorlist"><li>{text}</li></ul>';
+	var onload_status = $("#id_status").val();
+	var onload_assigned_user = $("#id_assigned_user").val(); 
 	
     if ($("#id_status").val() == "RESOLVED") {
         $("#id_assigned_user").attr('disabled', true);
@@ -71,6 +74,7 @@ $(document).ready(function() {
     }
 
     $("#id_assigned_user").change(function() {
+    	$('#id_errorlist').remove();
         var status = $("#id_status").val();
         var auser = $("#id_assigned_user").val();
         if (auser && status == "NEW") {
@@ -78,26 +82,36 @@ $(document).ready(function() {
             $("#id_status").val("ASSIGNED");
             $("#id_status").attr('disabled', false);
         }
-        if (status == "ASSIGNED" && !auser) {
+        else if (status == "ASSIGNED" && !auser && onload_status == "NEW") {
             $("#id_status").val("NEW");
             $("#id_assigned_user").attr('disabled', false);
             $("#id_status").attr('disabled', true);
+        } else {
+        	html = html.replace('{text}', 'Når først en person er blevet tildelt til advarslen, skal en person altid være tildelt.');
+        	$("#id_assigned_user").parent().append(html);
+        	$("#id_assigned_user").val(onload_assigned_user);
         }
 
     });
 
    $("#id_status").change(function() {
+	    $('#id_errorlist').remove();
         var status = $("#id_status").val();        
         if (status == "RESOLVED") {
             $("#id_assigned_user").attr('disabled', true);
         }
-        if (status == "ASSIGNED") {
+        else if (status == "ASSIGNED") {
             $("#id_assigned_user").attr('disabled', false);
         }
-        if (status == "NEW") {
+        else if (status == "NEW" && onload_status == "NEW") {
             $("#id_assigned_user").val('');
             $("#id_status").attr('disabled', true);
             $("#id_assigned_user").attr('disabled', false);
+        }
+        else{        	
+        	html = html.replace('{text}', 'Når først en advarsel er blevet tildelt, kan den ikke sættes tilbage til status Ny.');
+        	$("#id_status").parent().append(html);
+        	$("#id_status").val(onload_status);
         }
 		
    });
