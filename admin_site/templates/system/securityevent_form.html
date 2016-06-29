@@ -55,7 +55,7 @@ $(document).ready(function() {
 		$('#security_update_form').append($(input));
 	});
 	
-	var html = '<ul class="errorlist" id="id_errorlist"><li>{text}</li></ul>';
+	var html = '<ul class="errorlist" id="id_errorlist"><li></li></ul>';
 	var onload_status = $("#id_status").val();
 	var onload_assigned_user = $("#id_assigned_user").val(); 
 	
@@ -87,7 +87,7 @@ $(document).ready(function() {
             $("#id_assigned_user").attr('disabled', false);
             $("#id_status").attr('disabled', true);
         } else {
-        	html = html.replace('{text}', 'Når først en person er blevet tildelt til advarslen, skal en person altid være tildelt.');
+        	var html = '<ul class="errorlist" id="id_errorlist"><li>Når først en person er blevet tildelt til advarslen, skal en person altid være tildelt.</li></ul>';
         	$("#id_assigned_user").parent().append(html);
         	$("#id_assigned_user").val(onload_assigned_user);
         }
@@ -108,8 +108,8 @@ $(document).ready(function() {
             $("#id_status").attr('disabled', true);
             $("#id_assigned_user").attr('disabled', false);
         }
-        else{        	
-        	html = html.replace('{text}', 'Når først en advarsel er blevet tildelt, kan den ikke sættes tilbage til status Ny.');
+        else{   
+        	var html = '<ul class="errorlist" id="id_errorlist"><li>Når først en advarsel er blevet tildelt, kan den ikke sættes tilbage til status Ny.</li></ul>';        	
         	$("#id_status").parent().append(html);
         	$("#id_status").val(onload_status);
         }
