@@ -317,7 +317,7 @@ def insertSecurityProblemUID(securityproblem):
     code = script.executable_code.read()
     code = str(code).replace("%SECURITY_PROBLEM_UID%", securityproblem.uid)
     s = {
-        'name': script.name,
+        'name': securityproblem.uid,
         'executable_code': code,
         'is_security_script': script.is_security_script
     }
