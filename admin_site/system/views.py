@@ -1724,10 +1724,10 @@ class TechDocView(TemplateView):
         image_dir = settings.BIBOS_IMAGE_DIR
 
         def d(f):
-            os.path.join(dir, f)
+            return os.path.join(dir, f)
 
         def i(f):
-            os.path.join(image_dir, f)
+            return os.path.join(image_dir, f)
 
         url_mapping = {
             'install_guide': d('doc/HOWTO_INSTALL_SERVER.txt'),
