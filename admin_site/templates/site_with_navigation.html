@@ -28,9 +28,6 @@ class="detailpage"
     <li {% block security_scripts_active %}{% endblock %}><a
                 href="/site/{{ site.url }}/security/scripts/"><i
                 class="icon-list icon-white"></i>Sikkerhedsscripts</a></li>
-    <li {% block activepcs_active %}{% endblock %}><a
-            href="/site/{{ site.url }}/security/activepcs/"><i
-                class="icon-hdd icon-white"></i>Aktive computere</a></li>
     <li class="nav-header">Maskiner</li>
     <li {% block configuration_active %}{% endblock %}><a href="/site/{{ site.url }}/configuration/"><i class="icon-cog icon-white"></i> Site-konfiguration</a></li>
     <li {% block computers_active %}{% endblock %}><a href="/site/{{ site.url }}/computers/" onclick="spin();"><i class="icon-hdd icon-white"></i> Computere</a></li>

@@ -1,7 +1,11 @@
 {% extends "site_with_navigation.html" %}
 
 {% block specific_title %}
-{% if site %}<span class="muted">({{ site.uid }})</span>{% endif %} Status
+{% if site %}<span class="muted">({{ site.uid }})</span>{% endif %} 
+Aktive computere
+{% if active_pcs > 0 %}
+        ({{ active_pcs }})
+{% endif %}
 {% endblock %}
 
 {% block site_active %}

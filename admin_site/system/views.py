@@ -276,7 +276,7 @@ class JobsView(SiteView):
     def get_context_data(self, **kwargs):
         # First, get basic context from superclass
         context = super(JobsView, self).get_context_data(**kwargs)
-        context['batches'] = self.object.batches.all()[100]
+        context['batches'] = self.object.batches.all()[:100]
         context['pcs'] = self.object.pcs.all()
         context['groups'] = self.object.groups.all()
         preselected = set([
@@ -787,10 +787,6 @@ class PCsView(SelectionMixin, SiteView):
         else:
             return super(PCsView, self).render_to_response(context)
 
-
-class ActivePCsView(SiteView):
-    """All PCs."""
-    template_name = 'system/site_activepcs.html'
 
 
 class PCUpdate(SiteMixin, UpdateView, LoginRequiredMixin):
