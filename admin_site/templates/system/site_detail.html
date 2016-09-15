@@ -10,48 +10,34 @@ class="active"
 
 {% block specific_content %}
 
-  <ul class="sublevelnav">    
-    {% for pc in pcs %}
-    <li><a class="list-item" href="computers/{{ pc.uid }}"><i class="icon-hdd"></i>{% if pc.status.state %} <span class="label label-{{ pc.status.priority }}">{{ pc.status.state }}</span>{% endif %} {{ pc.name }} </a></li>
-    {% endfor %}
-  </ul>
-  
-  <div class="container-fluid main sublevelmain" style="overflow-x: auto;">
-    
-    <table class="table jobtable" id="site_status_jobs_table">
-      <tr>
-        {% include 'widgets/orderby_th.html' with key='batch__script__name' label='Script' %}
-        {% include 'widgets/orderby_th.html' with key='started' label='Startet' %}
-        {% include 'widgets/orderby_th.html' with key='finished' label='Sluttet' %}
-        {% include 'widgets/orderby_th.html' with key='status' label='Status' %}
-        {% include 'widgets/orderby_th.html' with key='pc__name' label='Computer' %}
-        {% include 'widgets/orderby_th.html' with key='batch__name' label='Batch' %}
-        <th></th>
-      </tr>
-      {% if jobs %}
-      {% for job in jobs %}
-      <tr class="muted">
-        <td class="{% ifequal orderby_key 'batch__script__name' %}orderby-highligt{% endifequal %}">{{job.script_name}}</td>
-        <td class="{% ifequal orderby_key 'started' %}orderby-highligt{% endifequal %}>{{job.started}}"</td>
-        <td class="{% ifequal orderby_key 'finished' %}orderby-highligt{% endifequal %}>{{job.finished}}"</td>
-        <td class="{% ifequal orderby_key 'status' %}orderby-highligt{% endifequal %}"><span class="label {{job.label}}">{{job.status}}</span></td>
-        <td class="{% ifequal orderby_key 'pc__name' %}orderby-highligt{% endifequal %}">{{job.pc_name}}</td>
-        <td class="{% ifequal orderby_key 'batch__name' %}orderby-highligt{% endifequal %}">{{job.batch_name}}</td>
-        <td>
-          {% if job.has_info %}
-          <button class="btn jobinfobutton" data-pk="{{ job.pk }}"><i class="icon-info-sign"></i></button>
-          {% endif %}
-        </td>
-      </tr>
-      {% endfor %}
-      {% else %}
-        <tr><td colspan="7">Der blev ikke fundet nogen fejlede jobs</td></tr>
-      {% endif %}
-    </table>
-    <script type="text/javascript"><!--
-    $(function() {
-      BibOS.setupJobInfoButtons($('#site_status_jobs_table'));
-    });
-    //--></script>
+  <div class="container-fluid main">
+
+    <table class="table table-hover warn-table"
+    id="#site_activepcs_table">
+      <thead>
+        <tr>
+          <th><i class="icon-hdd"></i> Navn</th>
+          <th>Beskrivelse</th>
+          <th>Senest set</th>
+          <th>Seneste advarsel set</th>
+        </tr>
+      </thead>
+      <tbody id="activepcs-list">
+          {% for pc in ls_pcs %}
+          {% if pc.is_active %}
+        <tr class="click-list--item" onclick="location.href = '/site/{{ site.uid }}/computers/{{ pc.uid }}'">
+            <td><strong>{{ pc.name }}</strong></td>
+            <td>{{ pc.description }}</td>
+            <td>{% if pc.last_seen %}{{ pc.last_seen|date:'Y-m-d H:i:s' }}{% else %}Aldrig{% endif %}</td>
+            <td>
+            {% for se in security_events %}	            	        
+	        {% if se.pc_id == pc.id %}{{ se.reported_time }}{% endif %}	        							           
+            {% endfor %}
+            </td>         
+        </tr>        
+        {% endif %}
+        {% endfor %}
+      </tbody>
+    </table> 
   </div>
 {% endblock %}
