@@ -20,9 +20,11 @@ from django.conf import settings
 from account.models import UserProfile
 
 from models import Site, PC, PCGroup, ConfigurationEntry, Package
+from models import Job, Script, Input, SecurityProblem, SecurityEvent
+# PC Status codes
+from models import NEW, UPDATE
 from forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
 from forms import UserForm, ParameterForm, PCForm, SecurityProblemForm
-from models import Job, Script, Input, SecurityProblem, SecurityEvent
 
 
 def set_notification_cookie(response, message):
@@ -228,6 +230,11 @@ class SiteDetailView(SiteView):
     # For hver pc skal vi hente seneste security event.
     def get_context_data(self, **kwargs):
         context = super(SiteDetailView, self).get_context_data(**kwargs)
+        # Top level list of new PCs etc.
+        context['pcs'] = self.object.pcs.filter(Q(is_active=False) |
+                                                Q(is_update_required=True))
+        context['pcs'] = sorted(context['pcs'], key=lambda s: s.name.lower())
+
         site = context['site']
         active_pcs = site.pcs.filter(is_active=True)
         context['active_pcs'] = active_pcs.count()

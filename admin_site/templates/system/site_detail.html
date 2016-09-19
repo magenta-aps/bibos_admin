@@ -14,7 +14,16 @@ class="active"
 
 {% block specific_content %}
 
-  <div class="container-fluid main">
+<ul class="sublevelnav">
+    {% for pc in pcs %}
+    <li><a class="list-item" href="computers/{{ pc.uid }}"><i
+            class="icon-hdd"></i>{% if pc.status.state %} <span
+            class="label label-{{ pc.status.priority }}">{{ pc.status.state }}</span>{% endif %} {{ pc.name }}
+    </a></li>
+    {% endfor %}
+</ul>
+
+  <div class="container-fluid main sublevelmain" style="overflow-x: auto;">
 
     <table class="table table-hover warn-table"
     id="#site_activepcs_table">
