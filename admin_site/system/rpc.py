@@ -277,8 +277,7 @@ def get_instructions(pc_uid, update_data):
                               exclude(alert_groups__isnull=False))
 
     for security_problem in site_security_problems:
-        security_objects.append(Script.objects.
-                                get(id=security_problem.script_id))
+        security_objects.append(insertSecurityProblemUID(security_problem))
 
     # Then check for security scripts covering groups the pc is a member of.
     pc_groups = pc.pc_groups.all()
@@ -289,16 +288,15 @@ def get_instructions(pc_uid, update_data):
                                  filter(alert_groups=group.id))
             if len(security_problems) > 0:
                 for problem in security_problems:
-                    security_objects.append(Script.objects.
-                                            get(id=problem.script_id))
+                    security_objects.append(insertSecurityProblemUID(problem))
 
     scripts = []
 
     for script in security_objects:
-        if script.is_security_script == 1:
+        if script['is_security_script'] == 1:
             s = {
-                'name': script.name,
-                'executable_code': script.executable_code.read()
+                'name': script['name'],
+                'executable_code': script['executable_code']
             }
             scripts.append(s)
 
@@ -312,6 +310,18 @@ def get_instructions(pc_uid, update_data):
         result['do_send_package_info'] = True
 
     return result
+
+
+def insertSecurityProblemUID(securityproblem):
+    script = Script.objects.get(id=securityproblem.script_id)
+    code = script.executable_code.read()
+    code = str(code).replace("%SECURITY_PROBLEM_UID%", securityproblem.uid)
+    s = {
+        'name': securityproblem.uid,
+        'executable_code': code,
+        'is_security_script': script.is_security_script
+    }
+    return s
 
 
 def get_proxy_setup(pc_uid):
@@ -358,7 +368,7 @@ def push_security_events(pc_uid, csv_data):
 
     for data in csv_data:
         csv_split = data.split(",")
-        try:
+        try:            
             security_problem = SecurityProblem.objects.get(uid=csv_split[1])
 
             new_security_event = SecurityEvent(problem=security_problem, pc=pc)

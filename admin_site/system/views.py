@@ -20,9 +20,11 @@ from django.conf import settings
 from account.models import UserProfile
 
 from models import Site, PC, PCGroup, ConfigurationEntry, Package
+from models import Job, Script, Input, SecurityProblem, SecurityEvent
+# PC Status codes
+from models import NEW, UPDATE
 from forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
 from forms import UserForm, ParameterForm, PCForm, SecurityProblemForm
-from models import Job, Script, Input, SecurityProblem, SecurityEvent
 
 
 def set_notification_cookie(response, message):
@@ -225,40 +227,23 @@ class SiteView(DetailView,  SuperAdminOrThisSiteMixin):
 class SiteDetailView(SiteView):
     """Class for showing the overview that is displayed when entering a site"""
 
+    # For hver pc skal vi hente seneste security event.
     def get_context_data(self, **kwargs):
         context = super(SiteDetailView, self).get_context_data(**kwargs)
-        # For now, show only not-yet-activated PCs
-        context['pcs'] = self.object.pcs.all()
-        context['pcs'] = [pc for pc in context['pcs'] if pc.status.state != '']
-
-        query = {
-            'batch__site': context['site'],
-            'status': Job.FAILED
-        }
-        params = self.request.GET or self.request.POST
-
-        orderby = params.get('orderby', '-pk')
-        if orderby not in JobSearch.VALID_ORDER_BY:
-            orderby = '-pk'
-        context['orderby'] = orderby
-
-        if orderby.startswith('-'):
-            context['orderby_key'] = orderby[1:]
-            context['orderby_direction'] = 'desc'
-        else:
-            context['orderby_key'] = orderby
-            context['orderby_direction'] = 'asc'
-
-        context['orderby_base_url'] = context['site'].get_absolute_url() + '?'
-
-        jobs = JobSearch.get_jobs_display_data(
-            Job.objects.filter(**query).order_by(orderby, 'pk')
-        )
-        if len(jobs) > 0:
-            context['jobs'] = jobs
-
+        # Top level list of new PCs etc.
+        context['pcs'] = self.object.pcs.filter(Q(is_active=False) |
+                                                Q(is_update_required=True))
         context['pcs'] = sorted(context['pcs'], key=lambda s: s.name.lower())
 
+        site = context['site']
+        active_pcs = site.pcs.filter(is_active=True)
+        context['active_pcs'] = active_pcs.count()
+        context['ls_pcs'] = site.pcs.all().order_by('last_seen')
+        securityevents = []
+        for pc in context['ls_pcs']:
+            securityevents.append(get_latest_security_event(pc))
+
+        context['security_events'] = securityevents
         return context
 
 
@@ -298,7 +283,7 @@ class JobsView(SiteView):
     def get_context_data(self, **kwargs):
         # First, get basic context from superclass
         context = super(JobsView, self).get_context_data(**kwargs)
-        context['batches'] = self.object.batches.all()
+        context['batches'] = self.object.batches.all()[:100]
         context['pcs'] = self.object.pcs.all()
         context['groups'] = self.object.groups.all()
         preselected = set([
@@ -808,25 +793,6 @@ class PCsView(SelectionMixin, SiteView):
             ))
         else:
             return super(PCsView, self).render_to_response(context)
-
-
-class ActivePCsView(SiteView):
-    """All PCs."""
-    template_name = 'system/site_activepcs.html'
-
-    # For hver pc skal vi hente seneste security event.
-    def get_context_data(self, **kwargs):
-        context = super(ActivePCsView, self).get_context_data(**kwargs)
-        site = context['site']
-        active_pcs = site.pcs.filter(is_active=True)
-        context['active_pcs'] = active_pcs.count()
-        context['ls_pcs'] = site.pcs.all().order_by('last_seen')
-        securityevents = []
-        for pc in context['ls_pcs']:
-            securityevents.append(get_latest_security_event(pc))
-
-        context['security_events'] = securityevents
-        return context
 
 
 class PCUpdate(SiteMixin, UpdateView, LoginRequiredMixin):
@@ -1724,10 +1690,10 @@ class TechDocView(TemplateView):
         image_dir = settings.BIBOS_IMAGE_DIR
 
         def d(f):
-            os.path.join(dir, f)
+            return os.path.join(dir, f)
 
         def i(f):
-            os.path.join(image_dir, f)
+            return os.path.join(image_dir, f)
 
         url_mapping = {
             'install_guide': d('doc/HOWTO_INSTALL_SERVER.txt'),
