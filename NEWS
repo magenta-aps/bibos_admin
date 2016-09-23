@@ -1,3 +1,12 @@
+* Version 2.3.1, September 22, 2016
+
+- Backwards compatibility: If security dir is missing, security is ignored.
+- Migrations committed, WSGI script is fixed.
+- Performance improvements (don't load all jobs and batches)
+- Technical documentation was broken after upgrade to Django 1.8.
+- Allow one security script to work with several rules.
+
+
 * Version 2.3.0, June 30, 2016
 
 - Security warnings are added - a whole new subsystem which can generate
