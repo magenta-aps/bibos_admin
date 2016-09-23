@@ -9,7 +9,7 @@ from views import ScriptList, ScriptUpdate, ScriptCreate, ScriptDelete
 from views import ScriptRun, PCUpdate, JobRestarter, MarkPackageUpgrade
 from views import ConfigurationEntryCreate, ConfigurationEntryUpdate
 from views import ConfigurationEntryDelete, JobInfo, TechDocView, DocView
-from views import PackageSearch, PCDelete, ActivePCsView
+from views import PackageSearch, PCDelete
 # SecurityProblem and SecurityEvent related views
 from views import SecurityProblemsView, SecurityProblemCreate
 from views import SecurityProblemUpdate, SecurityProblemDelete
@@ -44,12 +44,6 @@ urlpatterns = patterns(
         name='security_problem'),
     url(r'^site/(?P<slug>[^/]+)/security_problems/$',
         SecurityProblemsView.as_view(), name='security_problems'),
-
-    # Active PCs
-
-    url(r'^site/(?P<slug>[^/]+)/security/activepcs/$',
-        ActivePCsView.as_view(),
-        name='activepcs'),
 
     # Security scripts
     url(r'^site/(?P<slug>[^/]+)/security/scripts/(?P<script_pk>\d+)/delete/',

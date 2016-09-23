@@ -373,19 +373,21 @@ def get_instructions():
             local_job.save()
             local_job.logline("Job imported at %s" % datetime.now())
 
-    # Always remove old security scripts.
-    # Could be pc is moved to another group,
-    # and does not need security scripts any more.	
-    os.popen('rm -f ' + SECURITY_DIR + '/s_*')
+    # if security dir exists
+    if os.path.isdir(SECURITY_DIR):
+        # Always remove old security scripts.
+        # Could be pc is moved to another group,
+        # and does not need security scripts any more.
+        os.popen('rm -f ' + SECURITY_DIR + '/s_*')
 
-    # Import security scripts
-    if 'security_scripts' in instructions:
-        for s in instructions['security_scripts']:
-            fpath = SECURITY_DIR + '/s_' + str(s['name']).replace(' ', '')
-            fh = open(fpath, 'w')
-            fh.write(s['executable_code'].encode("utf8"))
-            fh.close()
-            os.chmod(fpath, stat.S_IRWXU)
+        # Import security scripts
+        if 'security_scripts' in instructions:
+            for s in instructions['security_scripts']:
+                fpath = SECURITY_DIR + '/s_' + str(s['name']).replace(' ', '')
+                fh = open(fpath, 'w')
+                fh.write(s['executable_code'].encode("utf8"))
+                fh.close()
+                os.chmod(fpath, stat.S_IRWXU)
 
     if ('do_send_package_info' in instructions and
             instructions['do_send_package_info']):
@@ -539,9 +541,11 @@ def send_security_events(now):
 
 
 def handle_security_events():
-    now = datetime.now().strftime('%Y%m%d%H%M')
-    collect_security_events(now)
-    send_security_events(now)
+    # if security dir exists
+    if os.path.isdir(SECURITY_DIR):
+        now = datetime.now().strftime('%Y%m%d%H%M')
+        collect_security_events(now)
+        send_security_events(now)
 
 
 def update_and_run():
