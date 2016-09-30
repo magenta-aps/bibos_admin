@@ -31,6 +31,7 @@ class="active"
         <tr>
           <th><i class="icon-hdd"></i> Navn</th>
           <th>Beskrivelse</th>
+          <th>Lokation</th>
           <th>Senest set</th>
           <th>Seneste advarsel set</th>
         </tr>
@@ -41,6 +42,7 @@ class="active"
         <tr class="click-list--item" onclick="location.href = '/site/{{ site.uid }}/computers/{{ pc.uid }}'">
             <td><strong>{{ pc.name }}</strong></td>
             <td>{{ pc.description }}</td>
+            <td>{{ pc.location }}</td>
             <td>{% if pc.last_seen %}{{ pc.last_seen }}{% else %}Aldrig{% endif %}</td>
             <td>
             {% for se in security_events %}	            	        
