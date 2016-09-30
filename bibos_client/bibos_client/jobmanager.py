@@ -1,5 +1,7 @@
 
 import os
+import sys
+import socket
 import os.path
 import stat
 import urllib2
@@ -344,7 +346,8 @@ def get_instructions():
         print >> os.sys.stderr, "Error while getting instructions:" + str(e)
         if tmpfilename:
             subprocess.call(['rm', tmpfilename])
-        return False
+        # No instructions likely = no network. Do not continue.
+        raise
 
     if 'configuration' in instructions:
         # Update configuration
@@ -555,6 +558,11 @@ def update_and_run():
             get_instructions()
             run_pending_jobs()
             handle_security_events()
+        except IOError, socket.error:
+            print "Network error, exiting ..."
+            sys.exit()
+        except Exception:
+            raise
         finally:
             LOCK.release()
     except IOError:
