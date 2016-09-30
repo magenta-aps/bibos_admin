@@ -449,6 +449,8 @@ class PC(models.Model):
     creation_time = models.DateTimeField(_('creation time'),
                                          auto_now_add=True)
     last_seen = models.DateTimeField(_('last seen'), null=True, blank=True)
+    location = models.CharField(_('location'), max_length=1024, blank=True,
+                                default='')
 
     @property
     def current_packages(self):
