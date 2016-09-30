@@ -25,7 +25,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bibos_admin.settings")
 install_dir = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')
 )
-lib_dir = os.path.join(install_dir, 'lib/python2.7/site-packages')
+lib_dir = '/home/bibos/bibos_admin/python-env/lib/python2.7/site-packages'
 
 sys.path[0:0] = [install_dir, lib_dir]
 
