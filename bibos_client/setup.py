@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='bibos_client',
-    version='0.0.3.0',
+    version='0.0.3.1',
     description='Clients for the BibOS system',
     url='https://github.com/magenta-aps/',
     author='C. Agger and J.U.B. Krag, Magenta ApS',
@@ -17,7 +17,8 @@ setup(
         'bin/bibos_upload_dist_packages',
         'bin/bibos_upload_packages',
         'bin/jobmanager',
-        'bin/register_new_bibos_client.sh'
+        'bin/register_new_bibos_client.sh',
+        'bin/admin_connect.sh'
     ],
     zip_safe=False
 )
