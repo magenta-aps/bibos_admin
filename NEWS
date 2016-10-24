@@ -1,3 +1,12 @@
+* Version 2.3.2, October 24, 2016
+
+- If no network connection, lock for jobmanager is released.
+- Documentation has been added, describing that the system is not 
+  showing security events until after the computer package list 
+  has been uploaded.
+- Lokationsfeldt er blevet tilføjet til computerne, og dato format 
+  ændret til dansk.
+
 * Version 2.3.1, September 22, 2016
 
 - Backwards compatibility: If security dir is missing, security is ignored.
@@ -5,6 +14,7 @@
 - Performance improvements (don't load all jobs and batches)
 - Technical documentation was broken after upgrade to Django 1.8.
 - Allow one security script to work with several rules.
+- The version number for the bibos_client is bumped to 0.0.3.1.
 
 
 * Version 2.3.0, June 30, 2016
@@ -18,6 +28,8 @@
   to wrong purposes.
 - Bug in date format is fixed.
 - System is upgraded to Django 1.8.
+- The version number for the bibos_client is bumped to 0.0.3.0. It now 
+  supports the security warning subsystem.
 
 * Version 2.2.5.1,  April 6, 2016
 
