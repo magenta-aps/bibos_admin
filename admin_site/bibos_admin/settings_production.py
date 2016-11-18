@@ -125,6 +125,14 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+# Email settings
+
+DEFAULT_FROM_EMAIL = '(Magenta Bibos Info) info@magenta.dk'
+ADMIN_EMAIL = '(Magenta Bibos Admin) carstena@magenta.dk'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 25
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
 ROOT_URLCONF = 'bibos_admin.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
