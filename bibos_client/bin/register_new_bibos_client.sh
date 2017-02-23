@@ -90,7 +90,9 @@
 		if [[ "$VERSION_ID" = "14.04" ]]; then
 			DISTRO="BIBOS14.04" 
 		elif [[ "$VERSION_ID" = "12.04" ]]; then
-			DISTRO="BIBOS12.04" 
+			DISTRO="BIBOS12.04"
+		elif [[ "$VERSION_ID" = "16.04" ]]; then
+			DISTRO="BIBOS16.04"
 		else
 			echo "Ubuntu versionen er ikke understøttet af BibOS systemet. Du kan alligevel godt forsøge at tilmelde PC'en til admin systemet."
 			echo "Indtast ID for PC'ens distribution:"
