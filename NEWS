@@ -1,3 +1,9 @@
+* Version 2.3.3.1, February 23, 2017
+
+Hotfix. New in this version:
+
+- Bumped bibos_client number to 0.3.2
+
 * Version 2.3.3, February 23, 2017
 
 - Ubuntu 16.04 is added as a closed distribution.
