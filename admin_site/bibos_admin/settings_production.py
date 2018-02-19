@@ -18,6 +18,28 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+# Template settings
+# Added because "TemplateDoesNotExist" error in Django 1.11
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS':
+        [
+            '../templates',
+            '../system/templates',
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors':
+            [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
 SOURCE_DIR = os.path.abspath(os.path.join(install_dir, '..'))
 # TODO: This parameter must be removed when we rename the system and factor out
