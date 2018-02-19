@@ -25,7 +25,6 @@ TEMPLATES = [
         'DIRS':
         [
             '../templates',
-            '../system/templates',
         ],
         'APP_DIRS': True,
         'OPTIONS': {
