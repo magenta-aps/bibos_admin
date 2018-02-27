@@ -1,5 +1,4 @@
 Django==1.11.9
-argparse==1.2.1
+argparse==1.4.0
 django-xmlrpc==0.1.8
-pep8==1.2
-wsgiref==0.1.2
+pep8==1.7.1
