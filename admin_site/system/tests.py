@@ -15,7 +15,7 @@ from django.core.mail import EmailMessage
 from django.contrib.auth.models import User
 from account.models import UserProfile
 
-print "FILE", os.path.dirname(__file__)
+print("FILE", os.path.dirname(__file__))
 
 parent_directory = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')
@@ -55,7 +55,7 @@ class SimpleTest(TestCase):
                                email_list)
 
         self.assertEqual(len(email_list), 2)
-        self.assertEquals(message.send(), 1)
+        self.assertEqual(message.send(), 1)
 
 
 def pep8_test(filepath):

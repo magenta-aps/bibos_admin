@@ -3,8 +3,8 @@ import datetime
 from django import forms
 from django.contrib.auth.models import User
 
-from models import Site, PCGroup, ConfigurationEntry, PC
-from models import Script, Input, SecurityProblem
+from .models import Site, PCGroup, ConfigurationEntry, PC
+from .models import Script, Input, SecurityProblem
 from account.models import UserProfile
 
 from django.utils.translation import ugettext as _
@@ -127,7 +127,7 @@ class UserForm(forms.ModelForm):
     # Sets the choices in the usertype widget depending on the usertype
     # of the user currently filling out the form
     def setup_usertype_choices(self, loginuser_type):
-        print "Usertype: ", loginuser_type
+        print("Usertype: ", loginuser_type)
         if loginuser_type == UserProfile.SUPER_ADMIN:
             # Superadmins can edit everything
             self.fields['usertype'].choices = UserProfile.type_choices

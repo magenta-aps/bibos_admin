@@ -19,12 +19,12 @@ from django.conf import settings
 
 from account.models import UserProfile
 
-from models import Site, PC, PCGroup, ConfigurationEntry, Package
-from models import Job, Script, Input, SecurityProblem, SecurityEvent
+from .models import Site, PC, PCGroup, ConfigurationEntry, Package
+from .models import Job, Script, Input, SecurityProblem, SecurityEvent
 # PC Status codes
-from models import NEW, UPDATE
-from forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
-from forms import UserForm, ParameterForm, PCForm, SecurityProblemForm
+from .models import NEW, UPDATE
+from .forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
+from .forms import UserForm, ParameterForm, PCForm, SecurityProblemForm
 
 
 def set_notification_cookie(response, message):
@@ -640,6 +640,7 @@ class ScriptCreate(ScriptMixin, CreateView, SuperAdminOrThisSiteMixin):
                                                       self.script.pk)
         else:
             return '/site/%s/scripts/%s/' % (self.site.uid, self.script.pk)
+
 
 class ScriptUpdate(ScriptMixin, UpdateView, LoginRequiredMixin):
     template_name = 'system/scripts/update.html'

@@ -280,7 +280,7 @@ class PackageStatus(models.Model):
                                      related_name='statuses')
 
     def __unicode__(self):
-        return self.package.name + u': ' + self.status
+        return self.package.name + ': ' + self.status
 
 
 class Site(models.Model):
@@ -420,7 +420,7 @@ class PCGroup(models.Model):
 
     def get_absolute_url(self):
         site_url = self.site.get_absolute_url()
-        return u'{0}/groups/{1}'.format(site_url, self.url)
+        return '{0}/groups/{1}'.format(site_url, self.url)
 
     class Meta:
         unique_together = ('uid', 'site')
@@ -754,7 +754,7 @@ class Job(models.Model):
     pc = models.ForeignKey(PC, related_name='jobs')
 
     def __unicode__(self):
-        return '_'.join(map(unicode, [self.batch, self.id]))
+        return '_'.join(map(str, [self.batch, self.id]))
 
     @property
     def has_info(self):
@@ -978,4 +978,4 @@ class SecurityEvent(models.Model):
     note = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
-        return u"{0}: {1}".format(self.problem.name, self.id)
+        return "{0}: {1}".format(self.problem.name, self.id)
