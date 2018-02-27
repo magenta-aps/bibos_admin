@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.views.generic import RedirectView
 
 from views import SiteList, SiteCreate, SiteUpdate, SiteDelete
@@ -17,9 +17,7 @@ from views import SecurityEventsView, SecurityEventUpdate
 from views import SecurityEventSearch
 
 
-urlpatterns = patterns(
-    '',
-
+urlpatterns = [
     # Security events UI
     url(r'^site/(?P<site_uid>[^/]+)/security/(?P<pk>\d+)/$',
         SecurityEventUpdate.as_view(), name='security_event_update'),
@@ -146,4 +144,4 @@ urlpatterns = patterns(
         name='tech_doc'),
     url(r'^documentation/(?P<name>[\d\w\/]+)/', DocView.as_view(), name='doc'),
     url(r'^documentation/', DocView.as_view(), name='doc_root'),
-)
+]

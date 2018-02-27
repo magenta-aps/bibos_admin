@@ -594,9 +594,9 @@ class ScriptList(ScriptMixin, SiteView):
             ))
         except IndexError:
             return HttpResponseRedirect(
-                "/site/%s/scripts/new/" % self.site.uid
-                if self.is_security else
                 "/site/%s/security/scripts/new/" % self.site.uid
+                if self.is_security else
+                "/site/%s/scripts/new/" % self.site.uid
             )
 
 
@@ -609,7 +609,9 @@ class ScriptCreate(ScriptMixin, CreateView, SuperAdminOrThisSiteMixin):
         context['type_choices'] = Input.VALUE_CHOICES
         return context
 
-    def get_form(self, form_class):
+    def get_form(self, form_class=None):
+        if form_class is None:
+            form_class = self.get_form_class()
         form = super(ScriptCreate, self).get_form(form_class)
         form.prefix = 'create'
         return form
@@ -638,7 +640,6 @@ class ScriptCreate(ScriptMixin, CreateView, SuperAdminOrThisSiteMixin):
                                                       self.script.pk)
         else:
             return '/site/%s/scripts/%s/' % (self.site.uid, self.script.pk)
-
 
 class ScriptUpdate(ScriptMixin, UpdateView, LoginRequiredMixin):
     template_name = 'system/scripts/update.html'
@@ -984,7 +985,9 @@ class UserCreate(CreateView, UsersMixin, SuperAdminOrThisSiteMixin):
     lookup_field = 'username'
     template_name = 'system/users/create.html'
 
-    def get_form(self, form_class):
+    def get_form(self, form_class=None):
+        if form_class is None:
+            form_class = self.get_form_class()
         form = super(UserCreate, self).get_form(form_class)
         form.prefix = 'create'
         return form
