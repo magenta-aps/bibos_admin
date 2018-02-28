@@ -100,7 +100,7 @@ class Configuration(models.Model):
 
         return result
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -122,7 +122,7 @@ class Package(models.Model):
     version = models.CharField(_('version'), max_length=255)
     description = models.CharField(_('description'), max_length=255)
 
-    def __unicode__(self):
+    def __str__(self):
         return ' '.join([self.name, self.version])
 
     class Meta:
@@ -192,7 +192,7 @@ class CustomPackages(models.Model):
 
         ii.save()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -202,7 +202,7 @@ class PackageInstallInfo(models.Model):
     custom_packages = models.ForeignKey(CustomPackages,
                                         related_name='install_infos')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.package.name
 
 
@@ -248,7 +248,7 @@ class PackageList(models.Model):
         else:
             return 0
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def flag_needs_upgrade(self, package_names):
@@ -279,7 +279,7 @@ class PackageStatus(models.Model):
     package_list = models.ForeignKey(PackageList,
                                      related_name='statuses')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.package.name + ': ' + self.status
 
 
@@ -296,7 +296,7 @@ class Site(models.Model):
     @staticmethod
     def get_system_site():
         try:
-            site = Site.objects.get(uid='system')
+            site = Site.objects.get(uid='system').first()
         except Site.DoesNotExist:
             site = Site.objects.create(
                 name='system',
@@ -327,7 +327,7 @@ class Site(models.Model):
         validation errors from the pre_delete signal."""
         return self.pcs.count() == 0
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
@@ -372,7 +372,7 @@ class Distribution(models.Model):
     # Maybe we'd like one distribution to inherit from another.
     package_list = models.ForeignKey(PackageList)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -396,7 +396,7 @@ class PCGroup(models.Model):
         validation errors from the pre_delete signal."""
         return self.pcs.count() == 0
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
@@ -571,7 +571,7 @@ class PC(models.Model):
     def get_absolute_url(self):
         return reverse('computer', args=(self.site.uid, self.uid))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -596,7 +596,7 @@ class Script(models.Model):
     def is_global(self):
         return self.site is None
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @staticmethod
@@ -699,7 +699,7 @@ class Batch(models.Model):
     script = models.ForeignKey(Script)
     site = models.ForeignKey(Site, related_name='batches')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -753,7 +753,7 @@ class Job(models.Model):
     batch = models.ForeignKey(Batch, related_name='jobs')
     pc = models.ForeignKey(PC, related_name='jobs')
 
-    def __unicode__(self):
+    def __str__(self):
         return '_'.join(map(str, [self.batch, self.id]))
 
     @property
@@ -854,7 +854,7 @@ class Input(models.Model):
     mandatory = models.BooleanField(_('mandatory'), default=True)
     script = models.ForeignKey(Script, related_name='inputs')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -930,7 +930,7 @@ class SecurityProblem(models.Model):
                                          related_name='security_problems',
                                          blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -977,5 +977,5 @@ class SecurityEvent(models.Model):
     assigned_user = models.ForeignKey(User, null=True, blank=True)
     note = models.TextField(null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "{0}: {1}".format(self.problem.name, self.id)
