@@ -459,7 +459,7 @@ class JobInfo(DetailView, LoginRequiredMixin):
 
 class ScriptMixin(object):
     script = None
-    script_inputs = None
+    script_inputs = ''
     is_security = False
 
     def setup_script_editing(self, **kwargs):
@@ -526,7 +526,7 @@ class ScriptMixin(object):
         num_inputs = params.get('script-number-of-inputs', 0)
         inputs = []
         success = True
-        if num_inputs > 0:
+        if int(num_inputs) > 0:
             for i in range(int(num_inputs)):
                 data = {
                     'pk': params.get('script-input-%d-pk' % i, None),
@@ -588,7 +588,7 @@ class ScriptList(ScriptMixin, SiteView):
                         return 1
                     else:
                         return -1
-            script = sorted(self.scripts, cmp=sort_by)[0]
+            script = sorted(self.scripts, key=sort_by)[0]
             return HttpResponseRedirect(script.get_absolute_url(
                 site_uid=self.site.uid
             ))
