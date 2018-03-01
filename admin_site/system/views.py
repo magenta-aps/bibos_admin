@@ -2,6 +2,7 @@
 import os
 import json
 
+from functools import cmp_to_key
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -582,15 +583,17 @@ class ScriptList(ScriptMixin, SiteView):
             # Sort by -site followed by lowercased name
             def sort_by(a, b):
                 if a.site == b.site:
-                    return cmp(a.name.lower(), b.name.lower())
+                    # cmp deprecated: cmp(a, b) has been changed to the ((a > b) - (a < b)) format
+                    return ((a.name.lower() > b.name.lower()) - (a.name.lower() < b.name.lower()))
                 else:
                     if b.site is not None:
                         return 1
                     else:
                         return -1
-            script = sorted(self.scripts, key=sort_by)[0]
+            # cmp deprecated: cmp converted to key function
+            script = sorted(self.scripts, key=cmp_to_key(sort_by))[0]
             return HttpResponseRedirect(script.get_absolute_url(
-                site_uid=self.site.uid
+            site_uid=self.site.uid
             ))
         except IndexError:
             return HttpResponseRedirect(
