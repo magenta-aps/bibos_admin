@@ -4,9 +4,9 @@ import sys
 import socket
 import os.path
 import stat
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import json
-import urlparse
+import urllib.parse
 import glob
 import re
 import subprocess
@@ -16,8 +16,8 @@ from datetime import datetime
 
 from bibos_utils.bibos_config import BibOSConfig
 
-from admin_client import BibOSAdmin
-from utils import upload_packages, filelock
+from .admin_client import BibOSAdmin
+from .utils import upload_packages, filelock
 
 """
 Directory structure for storing BibOS jobs:
@@ -165,7 +165,7 @@ class LocalJob(dict):
             fh.close()
 
     def populate(self, data):
-        for k in data.keys():
+        for k in list(data.keys()):
             self[k] = data[k]
 
     def save(self):
@@ -205,8 +205,8 @@ class LocalJob(dict):
                 basename = value[value.rindex('/') + 1:]
                 filename = self.attachments_path + '/' + basename
                 # TODO this is probably not the right URL
-                full_url = urlparse.urljoin(admin_url, value)
-                remote_file = urllib2.urlopen(full_url)
+                full_url = urllib.parse.urljoin(admin_url, value)
+                remote_file = urllib.request.urlopen(full_url)
                 attachment_fh = open(filename, 'w')
                 attachment_fh.write(remote_file.read())
                 attachment_fh.close()
@@ -261,7 +261,7 @@ class LocalJob(dict):
                 )
             log.close()
         else:
-            print >> os.sys.stderr, "Will not run job without aquired lock"
+            print("Will not run job without aquired lock", file=os.sys.stderr)
 
 
 def get_url_and_uid():
@@ -270,7 +270,7 @@ def get_url_and_uid():
     config_data = config.get_data()
     admin_url = config_data.get('admin_url', 'http://bibos.magenta-aps.dk/')
     xml_rpc_url = config_data.get('xml_rpc_url', '/admin-xml/')
-    rpc_url = urlparse.urljoin(admin_url, xml_rpc_url)
+    rpc_url = urllib.parse.urljoin(admin_url, xml_rpc_url)
     return(rpc_url, uid)
 
 
@@ -314,7 +314,7 @@ def get_local_package_diffs():
     new_packages = get_packages_from_file(tmpfilename)
 
     updated_or_installed = []
-    for name, value in new_packages.items():
+    for name, value in list(new_packages.items()):
         if name in org_packages:
             # Package is upgraded if version is not the same
             if org_packages[name]['version'] != value['version']:
@@ -323,7 +323,7 @@ def get_local_package_diffs():
         else:
             updated_or_installed.append(value)
     # anything left over in org_packages must have been removed
-    removed = org_packages.keys()
+    removed = list(org_packages.keys())
 
     return (tmpfilename, updated_or_installed, removed)
 
@@ -343,7 +343,7 @@ def get_instructions():
         if tmpfilename:
             subprocess.call(['mv', tmpfilename, PACKAGE_LIST_FILE])
     except Exception as e:
-        print >> os.sys.stderr, "Error while getting instructions:" + str(e)
+        print("Error while getting instructions:" + str(e), file=os.sys.stderr)
         if tmpfilename:
             subprocess.call(['rm', tmpfilename])
         # No instructions likely = no network. Do not continue.
@@ -353,18 +353,18 @@ def get_instructions():
         # Update configuration
         bibos_config = BibOSConfig()
         local_config = {}
-        for key, value in bibos_config.get_data().items():
+        for key, value in list(bibos_config.get_data().items()):
             # We only care about string values
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 local_config[key] = value
 
-        for key, value in instructions['configuration'].items():
+        for key, value in list(instructions['configuration'].items()):
             bibos_config.set_value(key, value)
             if key in local_config:
                 del local_config[key]
 
         # Anything left in local_config needs to be removed
-        for key in local_config.keys():
+        for key in list(local_config.keys()):
             bibos_config.remove_key(key)
 
         bibos_config.save()
@@ -398,7 +398,7 @@ def get_instructions():
                     # Send full package info to server.
                     upload_packages()
                 except Exception as e:
-                    print >> os.sys.stderr, "Package upload failed" + str(e)
+                    print("Package upload failed" + str(e), file=os.sys.stderr)
 
 
 def check_outstanding_packages():
@@ -408,10 +408,10 @@ def check_outstanding_packages():
         proc = subprocess.Popen(["/usr/lib/update-notifier/apt-check"],
                                 stderr=subprocess.PIPE, shell=True)
         _, err = proc.communicate()
-        package_updates, security_updates = map(int, err.split(';'))
+        package_updates, security_updates = list(map(int, err.split(';')))
         return (package_updates, security_updates)
     except Exception as e:
-        print >> os.sys.stderr, "apt-check failed" + str(e)
+        print("apt-check failed" + str(e), file=os.sys.stderr)
         return None
 
 
@@ -443,7 +443,7 @@ def run_pending_jobs():
 
         report_job_results(results)
     else:
-        print >> os.sys.stderr, "Aquire the lock before running jobs"
+        print("Aquire the lock before running jobs", file=os.sys.stderr)
 
 
 def run_security_scripts():
@@ -537,7 +537,7 @@ def send_security_events(now):
 
         return result
     except Exception as e:
-        print >> os.sys.stderr, "Error while sending security events:" + str(e)
+        print("Error while sending security events:" + str(e), file=os.sys.stderr)
         return False
     finally:
         os.remove(SECURITY_DIR + "/security_check_" + now + ".csv")
@@ -558,15 +558,16 @@ def update_and_run():
             get_instructions()
             run_pending_jobs()
             handle_security_events()
-        except IOError, socket.error:
-            print "Network error, exiting ..."
+        except IOError as xxx_todo_changeme:
+            socket.error = xxx_todo_changeme
+            print("Network error, exiting ...")
             sys.exit()
         except Exception:
             raise
         finally:
             LOCK.release()
     except IOError:
-        print "Couldn't get lock"
+        print("Couldn't get lock")
 
 
 if __name__ == '__main__':

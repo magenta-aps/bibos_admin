@@ -50,4 +50,4 @@ def find_gateway(timeout=1):
 if(__name__ == '__main__'):
     s = find_gateway()
     if s is not None:
-        print s
+        print(s)
