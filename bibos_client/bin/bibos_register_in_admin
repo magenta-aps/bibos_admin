@@ -25,7 +25,8 @@ urllib.parse.urljoin(admin_url, xml_rpc_url)
 
 admin = BibOSAdmin(urllib.parse.urljoin(admin_url, xml_rpc_url))
 
-if not data.has_key('uid'):
+#if not data.has_key('uid'):
+if 'uid' not in data:
     # Calculate UID and add to configuration
     try:
         addrs = netifaces.ifaddresses('eth0')
