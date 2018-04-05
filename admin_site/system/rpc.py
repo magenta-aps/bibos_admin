@@ -277,7 +277,7 @@ def get_instructions(pc_uid, update_data):
                               exclude(alert_groups__isnull=False))
 
     for security_problem in site_security_problems:
-        security_objects.append(insertSecurityProblemUID(security_problem))
+        security_objects.append(insert_security_problem_uid(security_problem))
 
     # Then check for security scripts covering groups the pc is a member of.
     pc_groups = pc.pc_groups.all()
@@ -288,7 +288,7 @@ def get_instructions(pc_uid, update_data):
                                  filter(alert_groups=group.id))
             if len(security_problems) > 0:
                 for problem in security_problems:
-                    security_objects.append(insertSecurityProblemUID(problem))
+                    security_objects.append(insert_security_problem_uid(problem))
 
     scripts = []
 
@@ -312,9 +312,9 @@ def get_instructions(pc_uid, update_data):
     return result
 
 
-def insertSecurityProblemUID(securityproblem):
+def insert_security_problem_uid(securityproblem):
     script = Script.objects.get(id=securityproblem.script_id)
-    code = script.executable_code.read()
+    code = script.executable_code.read().decode('utf8')
     code = str(code).replace("%SECURITY_PROBLEM_UID%", securityproblem.uid)
     s = {
         'name': securityproblem.uid,
