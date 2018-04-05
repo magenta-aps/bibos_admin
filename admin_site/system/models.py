@@ -386,6 +386,9 @@ class PCGroup(models.Model):
     configuration = models.ForeignKey(Configuration)
     custom_packages = models.ForeignKey(CustomPackages)
 
+    def __str__(self):
+        return self.name
+
     @property
     def url(self):
         return self.uid
@@ -597,6 +600,9 @@ class Script(models.Model):
         return self.site is None
 
     def __unicode__(self):
+        return self.name
+
+    def __str__(self):
         return self.name
 
     @staticmethod
