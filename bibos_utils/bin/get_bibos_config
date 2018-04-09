@@ -8,9 +8,9 @@ DEBUG = True  # TODO: Get from command line option
 
 
 def print_usage():
-    print ""
-    print "Usage: get_bibos_config <key> [<config_file>]"
-    print ""
+    print("")
+    print("Usage: get_bibos_config <key> [<config_file>]")
+    print("")
 
 
 args = len(sys.argv)
@@ -28,12 +28,12 @@ try:
     else:
         print_usage()
 except KeyError as ke:
-    print >> sys.stderr, "No such key: ", str(ke)
+    print("No such key: ", str(ke), file=sys.stderr)
 except Exception as e:
-    print >> sys.stderr, "Error: ", str(e)
+    print("Error: ", str(e), file=sys.stderr)
     if DEBUG:
         raise
 
 if val:
-    print val
+    print(val)
 sys.exit(rc)

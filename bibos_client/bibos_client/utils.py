@@ -5,7 +5,7 @@ system."""
 import os
 import sys
 import csv
-import urlparse
+import urllib.parse
 import re
 import subprocess
 import fcntl
@@ -58,7 +58,7 @@ def upload_packages():
     xml_rpc_url = data.get('xml_rpc_url', '/admin-xml/')
     uid = data['uid']
 
-    admin = BibOSAdmin(urlparse.urljoin(admin_url, xml_rpc_url))
+    admin = BibOSAdmin(urllib.parse.urljoin(admin_url, xml_rpc_url))
 
     # TODO: Make option to turn off/avoid repeating this.
     os.system('get_package_data /tmp/packages.csv')
@@ -79,7 +79,7 @@ def upload_packages():
     try:
         admin.send_status_info(uid, package_data, None)
     except Exception as e:
-        print >> sys.stderr, 'Error:', str(e)
+        print('Error:', str(e), file=sys.stderr)
         sys.exit(1)
 
 
@@ -91,7 +91,7 @@ def upload_dist_packages():
     xml_rpc_url = data.get('xml_rpc_url', '/admin-xml/')
     distribution = data['distribution']
 
-    admin = BibOSAdmin(urlparse.urljoin(admin_url, xml_rpc_url))
+    admin = BibOSAdmin(urllib.parse.urljoin(admin_url, xml_rpc_url))
 
     # TODO: Make option to turn off/avoid repeating this.
     os.system('get_package_data /tmp/packages.csv')
@@ -105,5 +105,5 @@ def upload_dist_packages():
     try:
         admin.upload_dist_packages(distribution, package_data)
     except Exception as e:
-        print >> sys.stderr, 'Error:', str(e)
+        print('Error:', str(e), file=sys.stderr)
         sys.exit(1)

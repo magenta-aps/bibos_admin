@@ -7,9 +7,9 @@ import system.utils
 from datetime import datetime
 from django.conf import settings
 
-from models import PC, Site, Distribution, Configuration, ConfigurationEntry
-from models import PackageList, Package, PackageStatus, CustomPackages
-from models import Job, Script, SecurityProblem, SecurityEvent
+from .models import PC, Site, Distribution, Configuration, ConfigurationEntry
+from .models import PackageList, Package, PackageStatus, CustomPackages
+from .models import Job, Script, SecurityProblem, SecurityEvent
 
 
 def register_new_computer(name, uid, distribution, site, configuration):
@@ -46,7 +46,7 @@ def register_new_computer(name, uid, distribution, site, configuration):
             e.delete()
     my_config.save()
     # And load configuration
-    for k, v in configuration.items():
+    for k, v in list(configuration.items()):
         entry = ConfigurationEntry(key=k, value=v,
                                    owner_configuration=my_config)
         entry.save()
@@ -158,7 +158,7 @@ def send_status_info(pc_uid, package_data, job_data, update_required):
 
     # 4. Check if update is required.
     if update_required is not None:
-        updates, security_updates = map(int, update_required)
+        updates, security_updates = list(map(int, update_required))
         if security_updates > 0:
             pc.is_update_required = True
             # See if things have changed and we need to update the package
@@ -277,7 +277,7 @@ def get_instructions(pc_uid, update_data):
                               exclude(alert_groups__isnull=False))
 
     for security_problem in site_security_problems:
-        security_objects.append(insertSecurityProblemUID(security_problem))
+        security_objects.append(insert_security_problem_uid(security_problem))
 
     # Then check for security scripts covering groups the pc is a member of.
     pc_groups = pc.pc_groups.all()
@@ -288,7 +288,7 @@ def get_instructions(pc_uid, update_data):
                                  filter(alert_groups=group.id))
             if len(security_problems) > 0:
                 for problem in security_problems:
-                    security_objects.append(insertSecurityProblemUID(problem))
+                    security_objects.append(insert_security_problem_uid(problem))
 
     scripts = []
 
@@ -312,9 +312,9 @@ def get_instructions(pc_uid, update_data):
     return result
 
 
-def insertSecurityProblemUID(securityproblem):
+def insert_security_problem_uid(securityproblem):
     script = Script.objects.get(id=securityproblem.script_id)
-    code = script.executable_code.read()
+    code = script.executable_code.read().decode('utf8')
     code = str(code).replace("%SECURITY_PROBLEM_UID%", securityproblem.uid)
     s = {
         'name': securityproblem.uid,
@@ -351,7 +351,7 @@ def push_config_keys(pc_uid, config_dict):
         for entry in conf.entries.all():
             others_config[entry.key] = entry.value
 
-    for key, value in config_dict.items():
+    for key, value in list(config_dict.items()):
         # Special case: If the value we want is in others_config, we just have
         # to remove any pc-specific config:
         if key in others_config and others_config[key] == value:

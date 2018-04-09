@@ -7,8 +7,8 @@ from bibos_utils.bibos_config import set_config
 DEBUG = True
 
 def print_usage():
-    print ""
-    print "Usage: set_bibos_config <key> <value> [<config_file>]"
+    print("")
+    print("Usage: set_bibos_config <key> <value> [<config_file>]")
 
 args = len(sys.argv)
 val = None
@@ -23,7 +23,7 @@ try:
         print_usage()
         sys.exit(1)
 except Exception as e:
-    print str(e)
+    print(str(e))
     if DEBUG: 
         raise
     else:

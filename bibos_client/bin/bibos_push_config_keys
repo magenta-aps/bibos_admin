@@ -12,8 +12,8 @@ try:
     if(to_push):
         admin = get_default_admin()
         admin.push_config_keys(config.get_value('uid'), to_push)
-        print "The following keys were pushed to the admin system:\n\t%s" % (
+        print("The following keys were pushed to the admin system:\n\t%s" % (
             ' '.join(sorted(to_push.keys()))
-        )
+        ))
 except Exception as e:
-    print "Error pushing config keys: ", str(e)
+    print("Error pushing config keys: ", str(e))

@@ -100,6 +100,9 @@ class Configuration(models.Model):
 
         return result
 
+    def __str__(self):
+        return self.name
+
     def __unicode__(self):
         return self.name
 
@@ -121,6 +124,9 @@ class Package(models.Model):
     name = models.CharField(_('name'), max_length=255)
     version = models.CharField(_('version'), max_length=255)
     description = models.CharField(_('description'), max_length=255)
+
+    def __str__(self):
+        return self.name
 
     def __unicode__(self):
         return ' '.join([self.name, self.version])
@@ -192,6 +198,9 @@ class CustomPackages(models.Model):
 
         ii.save()
 
+    def __str__(self):
+        return self.name
+
     def __unicode__(self):
         return self.name
 
@@ -201,6 +210,9 @@ class PackageInstallInfo(models.Model):
     package = models.ForeignKey(Package)
     custom_packages = models.ForeignKey(CustomPackages,
                                         related_name='install_infos')
+
+    def __str__(self):
+        return self.name
 
     def __unicode__(self):
         return self.package.name
@@ -248,6 +260,9 @@ class PackageList(models.Model):
         else:
             return 0
 
+    def __str__(self):
+        return self.name
+
     def __unicode__(self):
         return self.name
 
@@ -279,8 +294,11 @@ class PackageStatus(models.Model):
     package_list = models.ForeignKey(PackageList,
                                      related_name='statuses')
 
+    def __str__(self):
+        return self.name
+
     def __unicode__(self):
-        return self.package.name + u': ' + self.status
+        return self.package.name + ': ' + self.status
 
 
 class Site(models.Model):
@@ -296,7 +314,7 @@ class Site(models.Model):
     @staticmethod
     def get_system_site():
         try:
-            site = Site.objects.get(uid='system')
+            site = Site.objects.get(uid='system').first()
         except Site.DoesNotExist:
             site = Site.objects.create(
                 name='system',
@@ -326,6 +344,9 @@ class Site(models.Model):
         """This should always be checked by the user interface to avoid
         validation errors from the pre_delete signal."""
         return self.pcs.count() == 0
+
+    def __str__(self):
+        return self.name
 
     def __unicode__(self):
         return self.name
@@ -372,6 +393,9 @@ class Distribution(models.Model):
     # Maybe we'd like one distribution to inherit from another.
     package_list = models.ForeignKey(PackageList)
 
+    def __str__(self):
+        return self.name
+
     def __unicode__(self):
         return self.name
 
@@ -385,6 +409,9 @@ class PCGroup(models.Model):
     site = models.ForeignKey(Site, related_name='groups')
     configuration = models.ForeignKey(Configuration)
     custom_packages = models.ForeignKey(CustomPackages)
+
+    def __str__(self):
+        return self.name
 
     @property
     def url(self):
@@ -420,7 +447,7 @@ class PCGroup(models.Model):
 
     def get_absolute_url(self):
         site_url = self.site.get_absolute_url()
-        return u'{0}/groups/{1}'.format(site_url, self.url)
+        return '{0}/groups/{1}'.format(site_url, self.url)
 
     class Meta:
         unique_together = ('uid', 'site')
@@ -571,6 +598,9 @@ class PC(models.Model):
     def get_absolute_url(self):
         return reverse('computer', args=(self.site.uid, self.uid))
 
+    def __str__(self):
+        return self.name
+
     def __unicode__(self):
         return self.name
 
@@ -597,6 +627,9 @@ class Script(models.Model):
         return self.site is None
 
     def __unicode__(self):
+        return self.name
+
+    def __str__(self):
         return self.name
 
     @staticmethod
@@ -699,6 +732,9 @@ class Batch(models.Model):
     script = models.ForeignKey(Script)
     site = models.ForeignKey(Site, related_name='batches')
 
+    def __str__(self):
+        return self.name
+
     def __unicode__(self):
         return self.name
 
@@ -753,8 +789,11 @@ class Job(models.Model):
     batch = models.ForeignKey(Batch, related_name='jobs')
     pc = models.ForeignKey(PC, related_name='jobs')
 
+    def __str__(self):
+        return '_'.join(map(str, [self.batch, self.id]))
+
     def __unicode__(self):
-        return '_'.join(map(unicode, [self.batch, self.id]))
+        return '_'.join(map(str, [self.batch, self.id]))
 
     @property
     def has_info(self):
@@ -792,7 +831,7 @@ class Job(models.Model):
             'id': self.pk,
             'status': self.status,
             'parameters': parameters,
-            'executable_code': self.batch.script.executable_code.read()
+            'executable_code': self.batch.script.executable_code.read().decode('utf8')
         }
 
     def resolve(self):
@@ -853,6 +892,9 @@ class Input(models.Model):
     position = models.IntegerField(_('position'))
     mandatory = models.BooleanField(_('mandatory'), default=True)
     script = models.ForeignKey(Script, related_name='inputs')
+
+    def __str__(self):
+        return self.name
 
     def __unicode__(self):
         return self.name
@@ -930,6 +972,9 @@ class SecurityProblem(models.Model):
                                          related_name='security_problems',
                                          blank=True)
 
+    def __str__(self):
+        return self.name
+
     def __unicode__(self):
         return self.name
 
@@ -977,5 +1022,8 @@ class SecurityEvent(models.Model):
     assigned_user = models.ForeignKey(User, null=True, blank=True)
     note = models.TextField(null=True, blank=True)
 
+    def __str__(self):
+        return "{0}: {1}".format(self.problem.name, self.id)
+
     def __unicode__(self):
-        return u"{0}: {1}".format(self.problem.name, self.id)
+        return "{0}: {1}".format(self.problem.name, self.id)
