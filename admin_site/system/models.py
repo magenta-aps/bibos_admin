@@ -100,6 +100,9 @@ class Configuration(models.Model):
 
         return result
 
+    def __str__(self):
+        return self.name
+
     def __unicode__(self):
         return self.name
 
@@ -121,6 +124,9 @@ class Package(models.Model):
     name = models.CharField(_('name'), max_length=255)
     version = models.CharField(_('version'), max_length=255)
     description = models.CharField(_('description'), max_length=255)
+
+    def __str__(self):
+        return self.name
 
     def __unicode__(self):
         return ' '.join([self.name, self.version])
@@ -192,6 +198,9 @@ class CustomPackages(models.Model):
 
         ii.save()
 
+    def __str__(self):
+        return self.name
+
     def __unicode__(self):
         return self.name
 
@@ -201,6 +210,9 @@ class PackageInstallInfo(models.Model):
     package = models.ForeignKey(Package)
     custom_packages = models.ForeignKey(CustomPackages,
                                         related_name='install_infos')
+
+    def __str__(self):
+        return self.name
 
     def __unicode__(self):
         return self.package.name
@@ -248,6 +260,9 @@ class PackageList(models.Model):
         else:
             return 0
 
+    def __str__(self):
+        return self.name
+
     def __unicode__(self):
         return self.name
 
@@ -278,6 +293,9 @@ class PackageStatus(models.Model):
     package = models.ForeignKey(Package)
     package_list = models.ForeignKey(PackageList,
                                      related_name='statuses')
+
+    def __str__(self):
+        return self.name
 
     def __unicode__(self):
         return self.package.name + ': ' + self.status
@@ -327,6 +345,9 @@ class Site(models.Model):
         validation errors from the pre_delete signal."""
         return self.pcs.count() == 0
 
+    def __str__(self):
+        return self.name
+
     def __unicode__(self):
         return self.name
 
@@ -371,6 +392,9 @@ class Distribution(models.Model):
     # CustomPackages is preferrable here.
     # Maybe we'd like one distribution to inherit from another.
     package_list = models.ForeignKey(PackageList)
+
+    def __str__(self):
+        return self.name
 
     def __unicode__(self):
         return self.name
@@ -574,6 +598,9 @@ class PC(models.Model):
     def get_absolute_url(self):
         return reverse('computer', args=(self.site.uid, self.uid))
 
+    def __str__(self):
+        return self.name
+
     def __unicode__(self):
         return self.name
 
@@ -705,6 +732,9 @@ class Batch(models.Model):
     script = models.ForeignKey(Script)
     site = models.ForeignKey(Site, related_name='batches')
 
+    def __str__(self):
+        return self.name
+
     def __unicode__(self):
         return self.name
 
@@ -758,6 +788,9 @@ class Job(models.Model):
     finished = models.DateTimeField(_('finished'), null=True)
     batch = models.ForeignKey(Batch, related_name='jobs')
     pc = models.ForeignKey(PC, related_name='jobs')
+
+    def __str__(self):
+        return '_'.join(map(str, [self.batch, self.id]))
 
     def __unicode__(self):
         return '_'.join(map(str, [self.batch, self.id]))
@@ -860,6 +893,9 @@ class Input(models.Model):
     mandatory = models.BooleanField(_('mandatory'), default=True)
     script = models.ForeignKey(Script, related_name='inputs')
 
+    def __str__(self):
+        return self.name
+
     def __unicode__(self):
         return self.name
 
@@ -936,6 +972,9 @@ class SecurityProblem(models.Model):
                                          related_name='security_problems',
                                          blank=True)
 
+    def __str__(self):
+        return self.name
+
     def __unicode__(self):
         return self.name
 
@@ -982,6 +1021,9 @@ class SecurityEvent(models.Model):
                               default=NEW)
     assigned_user = models.ForeignKey(User, null=True, blank=True)
     note = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return "{0}: {1}".format(self.problem.name, self.id)
 
     def __unicode__(self):
         return "{0}: {1}".format(self.problem.name, self.id)
