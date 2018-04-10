@@ -8,7 +8,7 @@ install_dir = os.path.abspath(
 )
 
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
