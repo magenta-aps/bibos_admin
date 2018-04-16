@@ -456,7 +456,7 @@ class PCGroup(models.Model):
 
 class PC(models.Model):
     """This class represents one PC, i.e. one client of the admin system."""
-    mac = models.CharField(_('mac'), max_length=255)
+    mac = models.CharField(_('mac'), max_length=255, blank=True)
     name = models.CharField(_('name'), max_length=255)
     uid = models.CharField(_('uid'), max_length=255)
     description = models.CharField(_('description'), max_length=1024,
