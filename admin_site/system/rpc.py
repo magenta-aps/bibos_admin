@@ -3,6 +3,7 @@
 
 import system.proxyconf
 import system.utils
+import hashlib
 
 from datetime import datetime
 from django.conf import settings
@@ -12,9 +13,12 @@ from .models import PackageList, Package, PackageStatus, CustomPackages
 from .models import Job, Script, SecurityProblem, SecurityEvent
 
 
-def register_new_computer(name, uid, distribution, site, configuration):
+def register_new_computer(mac, name, distribution, site, configuration):
     """Register a new computer with the admin system - after registration, the
     computer will be submitted for approval."""
+
+    # Hash our uid
+    uid = hashlib.md5(mac.encode('utf-8')).hexdigest()
 
     try:
         new_pc = PC.objects.get(uid=uid)
@@ -30,6 +34,7 @@ def register_new_computer(name, uid, distribution, site, configuration):
 
     new_pc.distribution = Distribution.objects.get(uid=distribution)
     new_pc.is_active = False
+    new_pc.mac = mac
     # Create new configuration, populate with data from computer's config.
     # If a configuration with the same ID is hanging, reuse.
     config_name = '_'.join([site, name, uid])
@@ -46,6 +51,10 @@ def register_new_computer(name, uid, distribution, site, configuration):
             e.delete()
     my_config.save()
     # And load configuration
+
+    # Update configuration with uid
+    configuration.update({'uid': uid})
+
     for k, v in list(configuration.items()):
         entry = ConfigurationEntry(key=k, value=v,
                                    owner_configuration=my_config)
@@ -59,7 +68,7 @@ def register_new_computer(name, uid, distribution, site, configuration):
     custom_packages.save()
     new_pc.custom_packages = custom_packages
     new_pc.save()
-    return 0
+    return uid
 
 
 def upload_dist_packages(distribution_uid, package_data):
@@ -288,7 +297,8 @@ def get_instructions(pc_uid, update_data):
                                  filter(alert_groups=group.id))
             if len(security_problems) > 0:
                 for problem in security_problems:
-                    security_objects.append(insert_security_problem_uid(problem))
+                    security_objects.append(insert_security_problem_uid
+                                            (problem))
 
     scripts = []
 
