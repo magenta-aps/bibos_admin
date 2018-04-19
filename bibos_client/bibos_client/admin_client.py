@@ -66,10 +66,10 @@ class BibOSAdmin(object):
 
         self._rpc_srv = xmlrpc.client.ServerProxy(self._url, **rpc_args)
 
-    def register_new_computer(self, name, uid, distribution, site,
+    def register_new_computer(self, mac, name, distribution, site,
                               configuration):
         return self._rpc_srv.register_new_computer(
-            name, uid, distribution, site, configuration
+            mac, name, distribution, site, configuration
         )
 
     def upload_dist_packages(self, distribution_uid, package_data):
@@ -92,6 +92,7 @@ class BibOSAdmin(object):
 
     def push_security_events(self, pc_uid, csv_data):
         return self._rpc_srv.push_security_events(pc_uid, csv_data)
+
 
 if __name__ == '__main__':
     """Simple test suite."""
