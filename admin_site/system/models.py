@@ -688,7 +688,7 @@ class Script(models.Model):
                 script = None
         return script
 
-    def run_on(self, site, pc_list, *args, user=None):
+    def run_on(self, site, pc_list, *args, user):
         now_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         batch = Batch(site=site, script=self,
                       name=' '.join([self.name, now_str]))
@@ -787,7 +787,7 @@ class Job(models.Model):
                                   blank=True)
     started = models.DateTimeField(_('started'), null=True)
     finished = models.DateTimeField(_('finished'), null=True)
-    user = models.ForeignKey(User, null=True)
+    user = models.ForeignKey(User)
     batch = models.ForeignKey(Batch, related_name='jobs')
     pc = models.ForeignKey(PC, related_name='jobs')
 
