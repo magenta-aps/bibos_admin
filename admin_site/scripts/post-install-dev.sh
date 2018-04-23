@@ -8,16 +8,23 @@ port=$4
 project_dir=$(dirname `pwd`)
 admin_dir=$project_dir/bibos_admin
 managepy="python $project_dir/manage.py"
-user="createsuperuser --username $username --email $email"
-commands=( "makemigrations" "migrate" $user "migrate --run-syncdb")
+managepy_cmds=( 
+"makemigrations"
+"migrate"
+"createsuperuser --username $username --email $email"
+"migrate --run-syncdb"
+)
 
-$admin_dir/settings_development.py | sed '/ALLOWED_HOSTS/ s/\[.*]/['"'$domain']"'/'
-ln -s $admin_dir/settings_development.py $admin_dir/settings.py
 
-for command in "${commands[@]}"
+source $project_dir/python-env/bin/activate
+for commands in "${managepy_cmds[@]}"
 do
-    $managepy $command
+    $managepy $commands
 done
+
+cd $admin_dir
+sed -i '/ALLOWED_HOSTS/ s/\[.*]/['"'$domain']"'/' settings_development.py
+ln -s settings_development.py settings.py
 
 printf "\n\n######\n\nhttp://$domain:$port/admin\n\n#####\n\n\n"
 $managepy runserver 0:$port
