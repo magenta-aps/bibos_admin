@@ -15,16 +15,15 @@ managepy_cmds=(
 "migrate --run-syncdb"
 )
 
+cd $admin_dir
+sed -i '/ALLOWED_HOSTS/ s/\[.*]/['"'$domain']"'/' settings_development.py
+ln -s settings_development.py settings.py
 
 source $project_dir/python-env/bin/activate
 for commands in "${managepy_cmds[@]}"
 do
     $managepy $commands
 done
-
-cd $admin_dir
-sed -i '/ALLOWED_HOSTS/ s/\[.*]/['"'$domain']"'/' settings_development.py
-ln -s settings_development.py settings.py
 
 printf "\n\n######\n\nhttp://$domain:$port/admin\n\n#####\n\n\n"
 $managepy runserver 0:$port
