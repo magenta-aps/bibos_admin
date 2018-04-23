@@ -265,14 +265,6 @@ def get_instructions(pc_uid, update_data):
             pc.custom_packages.update_package_status(name, False)
             to_install.remove(name)
 
-    if len(to_remove):
-        sc = Script.get_system_script('remove_packages.sh')
-        sc.run_on_pc(pc, ','.join(to_remove))
-
-    if len(to_install):
-        sc = Script.get_system_script('install_or_upgrade_packages.sh')
-        sc.run_on_pc(pc, ','.join(to_install))
-
     jobs = []
     for job in pc.jobs.filter(status=Job.NEW):
         job.status = Job.SUBMITTED
