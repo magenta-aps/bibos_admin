@@ -247,6 +247,11 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(related_name='jobs', to='system.PC'),
         ),
         migrations.AddField(
+            model_name='job',
+            name='user',
+            field=models.ForeignKey(related_name='job', to=settings.AUTH_USER_MODEL),
+        ),
+        migrations.AddField(
             model_name='input',
             name='script',
             field=models.ForeignKey(related_name='inputs', to='system.Script'),
