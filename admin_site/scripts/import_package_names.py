@@ -3,7 +3,7 @@
 import os
 import os.path
 import sys
-import urllib.request, urllib.error, urllib.parse
+import urllib2
 import gzip
 import re
 
@@ -13,7 +13,7 @@ from bibos_admin import settings
 from system.models import Package
 
 def import_packages(url):
-    f = urllib.request.urlopen(url)
+    f = urllib2.urlopen(url)
     fh = open('/tmp/bibos_import_packages.gz', 'w+');
     fh.write(f.read())
     fh.close()
@@ -30,7 +30,7 @@ def import_packages(url):
                     version=m.group(2),
                     description=m.group(4)
                 )
-                print("Creating %s (%s)" % (m.group(1), m.group(2)))
+                print "Creating %s (%s)" % (m.group(1), m.group(2))
                 p.save()
     
 
@@ -43,7 +43,7 @@ Usage:
   http://packages.ubuntu.com/precise/allpackages?format=txt.gz
 
 """
-    print(usage % __file__, file=os.sys.stderr)
+    print >>os.sys.stderr, usage % __file__
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
