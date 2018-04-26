@@ -165,7 +165,11 @@ class="active"
             opfyldt indtil admin-systemet modtager pakke-listen.
           </p>
         {% else %}
-          <div><strong>Tilpasning af pakker kun på denne maskine</strong></div>
+          <div>
+            <strong>Tilpasning af pakker kun på denne maskine</strong>
+            <br />
+            <i><span class="icon-info-sign"></span>OBS: Denne funktion udgår til fordel for tilsvarende scripts</i>
+          </div>
           {% include 'system/package_lists/list.html' with packages=package_infos pl_id='pc_packages'%}
           {% if pending_packages_add %}
           <div><strong>Pakker der venter på at blive installeret på maskinen</strong></div>
