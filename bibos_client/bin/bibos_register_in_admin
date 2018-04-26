@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-import urllib
+import urlparse
 
 from bibos_utils.bibos_config import BibOSConfig
 from bibos_client.admin_client import BibOSAdmin
@@ -16,9 +16,9 @@ site = data['site']
 distribution = data['distribution']
 admin_url = data.get('admin_url', 'http://bibos.magenta-aps.dk/')
 xml_rpc_url = data.get('xml_rpc_url', '/admin-xml/')
-urllib.parse.urljoin(admin_url, xml_rpc_url)
+urlparse.urljoin(admin_url, xml_rpc_url)
 
-admin = BibOSAdmin(urllib.parse.urljoin(admin_url, xml_rpc_url))
+admin = BibOSAdmin(urlparse.urljoin(admin_url, xml_rpc_url))
 
 # Data collected, now register computer.
 
