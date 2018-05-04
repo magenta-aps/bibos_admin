@@ -12,8 +12,8 @@ DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('Carsten Agger', 'agger@magenta-aps.dk'),
-    ('Jørgen Ulrik B. Krag', 'jubk@magenta-aps.dk'),
+    ('Andreas N. Nielsen', 'ann@magenta-aps.dk'),
+    ('Danni Als', 'danni@magenta-aps.dk'),
 )
 
 MANAGERS = ADMINS
@@ -25,8 +25,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS':
         [
-            '../',
-            'templates/'
+             os.path.join(install_dir, 'templates/')
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -52,11 +51,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'bibos_admin',
+        'NAME': '',
         # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
-        'USER': 'bibos_admin',
-        # 'PASSWORD': '',
+        'USER': '',
+        'PASSWORD': '',
         'HOST': '',
         'PORT': '',                      # Set to empty string for default.
     }
@@ -160,11 +159,6 @@ ROOT_URLCONF = 'bibos_admin.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'bibos_admin.wsgi.application'
 
-TEMPLATE_DIRS = (
-    # Don't forget to use absolute paths, not relative paths.
-    os.path.join(install_dir, 'templates'),
-)
-
 LOCAL_APPS = (
     'system',
     'account',
@@ -207,6 +201,14 @@ XMLRPC_METHODS = (
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
@@ -217,11 +219,22 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': install_dir + '/var/debug.log',
+            'formatter': 'verbose'
+        },
     },
     'loggers': {
         'django.request': {
             'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'system': {
+            'handlers': ['file'],
             'level': 'ERROR',
             'propagate': True,
         },
@@ -260,7 +273,8 @@ DEFAULT_ALLOWED_PROXY_HOSTS = [
 DEFAULT_DIRECT_PROXY_HOSTS = [
     '.archive.ubuntu.com',
     'bibos-admin.magenta-aps.dk',
-    'bibos-admin.ventiltest.dk'
+    'bibos-admin.ventiltest.dk',
+    'os2borgerpc-xmlrpc.magenta-aps.dk',
 ]
 
 CLOSED_DISTRIBUTIONS = ['BIBOS', 'BIBOS12.04', 'BIBOS14.04', 'BIBOS16.04']
