@@ -15,6 +15,7 @@ else
 
     project_dir=$(dirname `pwd`)
     admin_dir=$project_dir/bibos_admin
+    managepy="python manage.py"
     managepy_cmds=( 
         "makemigrations"
         "migrate"
@@ -56,7 +57,7 @@ ENV
     source python-env/bin/activate
     for commands in "${managepy_cmds[@]}"
     do
-        python manage.py $commands
+        $managepy $commands
     done
 
     printf "\n\n######\n\nhttp://$domain:$port/admin\n\n#####\n\n\n"
