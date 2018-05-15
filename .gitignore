@@ -19,5 +19,4 @@
 .vim
 .ropeproject
 *.egg-info
-
-admin_site/bibos_admin/settings.py
+.env
