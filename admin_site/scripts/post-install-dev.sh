@@ -9,6 +9,9 @@ else
     email=$2
     domain=$3
     port=$4
+    timezone=`cat /etc/timezone`
+    language=`echo "${LANG%%.*}"`
+    secret_key=`openssl rand -base64 34 | head -c 50`
 
     project_dir=$(dirname `pwd`)
     admin_dir=$project_dir/bibos_admin
@@ -20,9 +23,32 @@ else
         "migrate --run-syncdb"
     )
 
-    cd $admin_dir
-    sed -i '/ALLOWED_HOSTS/ s/\[.*]/['"'$domain']"'/' settings_development.py
-    ln -s settings_development.py settings.py
+cat <<ENV > $admin_dir/.env
+# Django
+ALLOWED_HOSTS = ['$domain']
+DEBUG = True
+SECRET_KEY = '$secret_key'
+ADMINS = ('$username', '$email')
+
+# Database
+DB_ENGINE = 'django.db.backends.sqlite3'
+
+# Email
+DEFAULT_FROM_EMAIL = ''
+ADMIN_EMAIL = ''
+EMAIL_HOST = ''
+EMAIL_PORT =
+
+# Timezone/Language
+TIME_ZONE = '$timezone'
+LANGUAGE_CODE = '$language'
+
+# Proxy
+DEFAULT_ALLOWED_PROXY_HOSTS = []
+DEFAULT_DIRECT_PROXY_HOSTS = []
+
+CLOSED_DISTRIBUTIONS = ['BIBOS', 'BIBOS14.04', 'BIBOS16.04']
+ENV
 
     source $project_dir/python-env/bin/activate
     for commands in "${managepy_cmds[@]}"
