@@ -15,7 +15,6 @@ else
 
     project_dir=$(dirname `pwd`)
     admin_dir=$project_dir/bibos_admin
-    managepy="python $project_dir/manage.py"
     managepy_cmds=( 
         "makemigrations"
         "migrate"
@@ -32,6 +31,9 @@ ADMINS = ('$username', '$email')
 
 # Database
 DB_ENGINE = 'django.db.backends.sqlite3'
+DB_NAME = '.database.db'
+DB_USER = ''
+DB_PASSWORD = ''
 
 # Email
 DEFAULT_FROM_EMAIL = ''
@@ -50,10 +52,11 @@ DEFAULT_DIRECT_PROXY_HOSTS = []
 CLOSED_DISTRIBUTIONS = ['BIBOS', 'BIBOS14.04', 'BIBOS16.04']
 ENV
 
-    source $project_dir/python-env/bin/activate
+    cd $project_dir
+    source python-env/bin/activate
     for commands in "${managepy_cmds[@]}"
     do
-        $managepy $commands
+        python manage.py $commands
     done
 
     printf "\n\n######\n\nhttp://$domain:$port/admin\n\n#####\n\n\n"
