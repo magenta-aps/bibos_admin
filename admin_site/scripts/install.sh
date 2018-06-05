@@ -6,6 +6,13 @@
 
 if [ -z $BIBOS_VIRTUAL_ENV ]
 then
+
+    if [ -z `which virtualenv` ]
+    then
+        sudo apt-get update
+        sudo apt-get install -y virtualenv
+    fi
+
     DIR=$(pwd)
     DIR=$(dirname "${DIR}")
     echo $DIR
@@ -19,7 +26,7 @@ then
 fi
 
 rm -rf $BIBOS_VIRTUAL_ENV
-virtualenv $BIBOS_VIRTUAL_ENV
+virtualenv -p python3 $BIBOS_VIRTUAL_ENV
 source $BIBOS_VIRTUAL_ENV/bin/activate
 
 DIR=$(dirname ${BASH_SOURCE[0]})
@@ -39,5 +46,3 @@ do
         exit -1
     fi
 done
-
-

@@ -2,6 +2,7 @@
 import os
 import json
 
+from functools import cmp_to_key
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -19,12 +20,12 @@ from django.conf import settings
 
 from account.models import UserProfile
 
-from models import Site, PC, PCGroup, ConfigurationEntry, Package
-from models import Job, Script, Input, SecurityProblem, SecurityEvent
+from .models import Site, PC, PCGroup, ConfigurationEntry, Package
+from .models import Job, Script, Input, SecurityProblem, SecurityEvent
 # PC Status codes
-from models import NEW, UPDATE
-from forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
-from forms import UserForm, ParameterForm, PCForm, SecurityProblemForm
+from .models import NEW, UPDATE
+from .forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
+from .forms import UserForm, ParameterForm, PCForm, SecurityProblemForm
 
 
 def set_notification_cookie(response, message):
@@ -146,17 +147,17 @@ class SelectionMixin(View):
 
 class JSONResponseMixin(object):
     def render_to_response(self, context):
-        "Returns a JSON response containing 'context' as payload"
+        """Returns a JSON response containing 'context' as payload"""
         return self.get_json_response(self.convert_context_to_json(context))
 
     def get_json_response(self, content, **httpresponse_kwargs):
-        "Construct an `HttpResponse` object."
+        """Construct an `HttpResponse` object."""
         return HttpResponse(content,
                             content_type='application/json',
                             **httpresponse_kwargs)
 
     def convert_context_to_json(self, context):
-        "Convert the context dictionary into a JSON object"
+        """Convert the context dictionary into a JSON object"""
         # Note: This is *EXTREMELY* naive; in reality, you'll need
         # to do much more complex handling to ensure that arbitrary
         # objects -- such as Django model instances or querysets
@@ -428,7 +429,7 @@ class JobRestarter(DetailView, SuperAdminOrThisSiteMixin):
         if self.object.status != Job.FAILED:
             return self.status_fail_response()
 
-        new_job = self.object.restart()
+        new_job = self.object.restart(user=self.request.user)
         response = HttpResponseRedirect(self.get_success_url())
         set_notification_cookie(
             response,
@@ -459,7 +460,7 @@ class JobInfo(DetailView, LoginRequiredMixin):
 
 class ScriptMixin(object):
     script = None
-    script_inputs = None
+    script_inputs = ''
     is_security = False
 
     def setup_script_editing(self, **kwargs):
@@ -526,7 +527,7 @@ class ScriptMixin(object):
         num_inputs = params.get('script-number-of-inputs', 0)
         inputs = []
         success = True
-        if num_inputs > 0:
+        if int(num_inputs) > 0:
             for i in range(int(num_inputs)):
                 data = {
                     'pk': params.get('script-input-%d-pk' % i, None),
@@ -582,21 +583,23 @@ class ScriptList(ScriptMixin, SiteView):
             # Sort by -site followed by lowercased name
             def sort_by(a, b):
                 if a.site == b.site:
-                    return cmp(a.name.lower(), b.name.lower())
+                    # cmp deprecated: cmp(a, b) has been changed to the ((a > b) - (a < b)) format
+                    return ((a.name.lower() > b.name.lower()) - (a.name.lower() < b.name.lower()))
                 else:
                     if b.site is not None:
                         return 1
                     else:
                         return -1
-            script = sorted(self.scripts, cmp=sort_by)[0]
+            # cmp deprecated: cmp converted to key function
+            script = sorted(self.scripts, key=cmp_to_key(sort_by))[0]
             return HttpResponseRedirect(script.get_absolute_url(
-                site_uid=self.site.uid
+            site_uid=self.site.uid
             ))
         except IndexError:
             return HttpResponseRedirect(
-                "/site/%s/scripts/new/" % self.site.uid
-                if self.is_security else
                 "/site/%s/security/scripts/new/" % self.site.uid
+                if self.is_security else
+                "/site/%s/scripts/new/" % self.site.uid
             )
 
 
@@ -609,7 +612,9 @@ class ScriptCreate(ScriptMixin, CreateView, SuperAdminOrThisSiteMixin):
         context['type_choices'] = Input.VALUE_CHOICES
         return context
 
-    def get_form(self, form_class):
+    def get_form(self, form_class=None):
+        if form_class is None:
+            form_class = self.get_form_class()
         form = super(ScriptCreate, self).get_form(form_class)
         form.prefix = 'create'
         return form
@@ -748,7 +753,8 @@ class ScriptRun(SiteView):
             context['batch'] = context['script'].run_on(
                 context['site'],
                 PC.objects.filter(pk__in=pcs),
-                *args
+                *args,
+                user=self.request.user
             )
 
     def get_context_data(self, **kwargs):
@@ -984,7 +990,9 @@ class UserCreate(CreateView, UsersMixin, SuperAdminOrThisSiteMixin):
     lookup_field = 'username'
     template_name = 'system/users/create.html'
 
-    def get_form(self, form_class):
+    def get_form(self, form_class=None):
+        if form_class is None:
+            form_class = self.get_form_class()
         form = super(UserCreate, self).get_form(form_class)
         form.prefix = 'create'
         return form
@@ -1253,7 +1261,7 @@ class SecurityProblemsView(SelectionMixin, SiteView):
         ).order_by('lower_name')
 
     def render_to_response(self, context):
-        if('selected_security_problem' in context):
+        if 'selected_security_problem' in context:
             return HttpResponseRedirect('/site/%s/security_problems/%s/' % (
                 context['site'].uid,
                 context['selected_security_problem'].uid

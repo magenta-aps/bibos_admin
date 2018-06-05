@@ -1,3 +1,12 @@
+* Version 3.0.0, Juni 5, 2018
+
+- Python 3 and Django 1.11 compatible code (admin-site)
+- “Removal” of the upgrade management
+- Jobs are now associated with a user
+- UID is generated on the admin side
+- settings.py uses an environment-file to differentiate dev/prod
+- Post install script added for development
+
 * Version 2.3.3.1, February 23, 2017
 
 Hotfix. New in this version:

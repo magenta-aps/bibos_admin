@@ -2,7 +2,7 @@ from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
 from django.core.exceptions import ValidationError
 
-from models import Site, PCGroup
+from .models import Site, PCGroup
 
 
 @receiver(pre_delete, sender=Site)

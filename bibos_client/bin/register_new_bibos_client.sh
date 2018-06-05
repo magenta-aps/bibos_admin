@@ -58,6 +58,8 @@
     else
         sudo set_bibos_config hostname $HOSTNAME
     fi
+
+
     # - site
     #   TODO: Get site from gateway, if none present prompt user
     if [[ -n "$HAS_GATEWAY" ]]
@@ -79,6 +81,7 @@
         echo "Computeren kan ikke registreres uden site - prøv igen."
         exit 1
     fi
+
 
     # - distribution
     # Detect OS version and prompt user for verification	
@@ -118,6 +121,12 @@
     echo "Distributions ID: "$DISTRO
 
     sudo set_bibos_config distribution $DISTRO
+
+
+    # - mac
+    #   Get the mac-address
+    sudo set_bibos_config mac `ip addr | grep link/ether | awk 'FNR==1{print $2}'`
+
 
     # - admin_url
     #   Get from gateway, otherwise prompt user.
