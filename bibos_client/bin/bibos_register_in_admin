@@ -1,13 +1,7 @@
 #!/usr/bin/env python
 
-import hashlib
-import uuid
-import netifaces
-import os
 import sys
-import csv
-import urllib
-from urllib.parse import urljoin
+import urlparse
 
 from bibos_utils.bibos_config import BibOSConfig
 from bibos_client.admin_client import BibOSAdmin
@@ -16,37 +10,25 @@ from bibos_client.admin_client import BibOSAdmin
 config = BibOSConfig()
 data = config.get_data()
 
+mac = data['mac']
 hostname = data['hostname']
 site = data['site']
 distribution = data['distribution']
 admin_url = data.get('admin_url', 'http://bibos.magenta-aps.dk/')
 xml_rpc_url = data.get('xml_rpc_url', '/admin-xml/')
-urllib.parse.urljoin(admin_url, xml_rpc_url)
+urlparse.urljoin(admin_url, xml_rpc_url)
 
-admin = BibOSAdmin(urllib.parse.urljoin(admin_url, xml_rpc_url))
-
-#if not data.has_key('uid'):
-if 'uid' not in data:
-    # Calculate UID and add to configuration
-    try:
-        addrs = netifaces.ifaddresses('eth0')
-        mac = netifaces.ifaddresses('eth0')[netifaces.AF_LINK][0]['addr']
-        uid = mac
-    except:
-        # Don't use mac address, generate random number instead
-        uid = str(uuid.uuid1())
-    uid = hashlib.md5(uid.encode("utf8")).hexdigest()
-    config.set_value('uid', uid)
-    config.save()
-else:
-    uid = data['uid']
+admin = BibOSAdmin(urlparse.urljoin(admin_url, xml_rpc_url))
 
 # Data collected, now register computer.
 
 try:
-    admin.register_new_computer(hostname, uid, distribution, site, data)
+    uid = admin.register_new_computer(mac, hostname, distribution, site, data)
+    config.set_value('uid', uid)
+    config.save()
+
 except Exception as e:
-    print('Error:', str(e), file=sys.stderr)
+    print >> sys.stderr, 'Error:', str(e)
     sys.exit(1)
 
 # Computer created, now upload package data.
@@ -65,5 +47,3 @@ except Exception as e:
     print >> sys.stderr, 'Error:', str(e)
     sys.exit(1)
 """
-
-# ALLO2

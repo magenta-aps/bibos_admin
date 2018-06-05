@@ -6,6 +6,13 @@
 
 if [ -z $BIBOS_VIRTUAL_ENV ]
 then
+
+    if [ -z `which virtualenv` ]
+    then
+        sudo apt-get update
+        sudo apt-get install -y virtualenv
+    fi
+
     DIR=$(pwd)
     DIR=$(dirname "${DIR}")
     echo $DIR
@@ -39,5 +46,3 @@ do
         exit -1
     fi
 done
-
-

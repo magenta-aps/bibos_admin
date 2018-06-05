@@ -1,21 +1,20 @@
-# -*- coding: utf-8 -*-
 # Django settings for bibos_admin project.
 
 import os
+from getenv import env
 
 install_dir = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')
 )
 
-DEBUG = True
+
+DEBUG = env('DEBUG')
 TEMPLATE_DEBUG = DEBUG
 
-ADMINS = (
-    ('Carsten Agger', 'agger@magenta-aps.dk'),
-    ('Jørgen Ulrik B. Krag', 'jubk@magenta-aps.dk'),
-)
+ADMINS = env('ADMINS')
 
 MANAGERS = ADMINS
+
 
 # Template settings
 # Added because "TemplateDoesNotExist" error in Django 1.11
@@ -24,8 +23,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS':
         [
-            '../',
-            'templates/'
+            os.path.join(install_dir, 'templates/')
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -40,6 +38,7 @@ TEMPLATES = [
     },
 ]
 
+
 SOURCE_DIR = os.path.abspath(os.path.join(install_dir, '..'))
 # TODO: This parameter must be removed when we rename the system and factor out
 # BibOS-related stuff.
@@ -47,18 +46,15 @@ BIBOS_IMAGE_DIR = os.path.join(
     os.path.abspath(os.path.join(SOURCE_DIR, '..')),
     'bibos_image')
 
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = '-se@l&$nrn)m=e^q^gsadasdasdasd7-j!)ul!mxe&ar@3^2%kpnor_lj2%ybe'
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': env('DB_ENGINE'),
         # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': os.path.join(install_dir, '.database.db'),
+        'NAME': env('DB_NAME'),
         # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
-        'USER': '',
-        'PASSWORD': '',
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
         'HOST': '',
         'PORT': '',                      # Set to empty string for default.
     }
@@ -66,17 +62,17 @@ DATABASES = {
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
-TIME_ZONE = 'Europe/Copenhagen'
+TIME_ZONE = env('TIME_ZONE')
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'da-DK'
+LANGUAGE_CODE = env('LANGUAGE_CODE')
 
 LOCALE_PATHS = [
     os.path.join(install_dir, 'locale')
@@ -94,8 +90,6 @@ USE_L10N = True
 
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = False
-
-TIME_ZONE = 'Europe/Copenhagen'
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
@@ -130,6 +124,9 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
 
+# Make this unique, and don't share it with anybody.
+SECRET_KEY = env('SECRET_KEY')
+
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
@@ -148,10 +145,10 @@ MIDDLEWARE_CLASSES = (
 
 # Email settings
 
-DEFAULT_FROM_EMAIL = '(Magenta Bibos Info) info@magenta.dk'
-ADMIN_EMAIL = '(Magenta Bibos Admin) carstena@magenta.dk'
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 25
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+ADMIN_EMAIL = env('ADMIN_EMAIL')
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_PORT = env('EMAIL_PORT')
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 ROOT_URLCONF = 'bibos_admin.urls'
@@ -159,10 +156,10 @@ ROOT_URLCONF = 'bibos_admin.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'bibos_admin.wsgi.application'
 
-TEMPLATE_DIRS = (
-    # Don't forget to use absolute paths, not relative paths.
-    os.path.join(install_dir, 'templates'),
-)
+#TEMPLATE_DIRS = (
+#    # Don't forget to use absolute paths, not relative paths.
+#    os.path.join(install_dir, 'templates'),
+#)
 
 LOCAL_APPS = (
     'system',
@@ -233,33 +230,10 @@ ETC_DIR = os.path.join(install_dir, 'etc')
 PROXY_HTPASSWD_FILE = os.path.join(ETC_DIR, 'bibos-proxy.htpasswd')
 
 # List of hosts that should be allowed through BibOS gateway proxies
-DEFAULT_ALLOWED_PROXY_HOSTS = [
-    # Ubuntu sources
-    '.archive.ubuntu.com',
-    'ports.ubuntu.com',
-    'security.ubuntu.com',
-    'ddebs.ubuntu.com',
-    'mirror.ubuntu.com',
-    '.archive.canonical.com',
-    'extras.ubuntu.com',
-    'changelogs.ubuntu.com',
-
-    # BibOS sites
-    'bibos-admin.magenta-aps.dk',
-    'bibos-admin.ventiltest.dk',
-    'bibos.web06.magenta-aps.dk',
-
-    # Extra application sources
-    'dl.google.com',
-    'downloads.sourcefourge.net',
-]
+DEFAULT_ALLOWED_PROXY_HOSTS = env('DEFAULT_ALLOWED_PROXY_HOSTS')
 
 # List of hosts that should be proxied directly from the gateway and
 # not through the central server
-DEFAULT_DIRECT_PROXY_HOSTS = [
-    '.archive.ubuntu.com',
-    'bibos-admin.magenta-aps.dk',
-    'bibos-admin.ventiltest.dk'
-]
+DEFAULT_DIRECT_PROXY_HOSTS = env('DEFAULT_DIRECT_PROXY_HOSTS')
 
-CLOSED_DISTRIBUTIONS = ['BIBOS', 'BIBOS12.04', 'BIBOS14.04', 'BIBOS16.04']
+CLOSED_DISTRIBUTIONS = env('CLOSED_DISTRIBUTIONS')

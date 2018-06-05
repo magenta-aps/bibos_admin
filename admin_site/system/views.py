@@ -429,7 +429,7 @@ class JobRestarter(DetailView, SuperAdminOrThisSiteMixin):
         if self.object.status != Job.FAILED:
             return self.status_fail_response()
 
-        new_job = self.object.restart()
+        new_job = self.object.restart(user=self.request.user)
         response = HttpResponseRedirect(self.get_success_url())
         set_notification_cookie(
             response,
@@ -753,7 +753,8 @@ class ScriptRun(SiteView):
             context['batch'] = context['script'].run_on(
                 context['site'],
                 PC.objects.filter(pk__in=pcs),
-                *args
+                *args,
+                user=self.request.user
             )
 
     def get_context_data(self, **kwargs):

@@ -456,6 +456,7 @@ class PCGroup(models.Model):
 
 class PC(models.Model):
     """This class represents one PC, i.e. one client of the admin system."""
+    mac = models.CharField(_('mac'), max_length=255, blank=True)
     name = models.CharField(_('name'), max_length=255)
     uid = models.CharField(_('uid'), max_length=255)
     description = models.CharField(_('description'), max_length=1024,
@@ -687,7 +688,7 @@ class Script(models.Model):
                 script = None
         return script
 
-    def run_on(self, site, pc_list, *args):
+    def run_on(self, site, pc_list, *args, user):
         now_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         batch = Batch(site=site, script=self,
                       name=' '.join([self.name, now_str]))
@@ -704,7 +705,7 @@ class Script(models.Model):
                 p.save()
 
         for pc in pc_list:
-            job = Job(batch=batch, pc=pc)
+            job = Job(batch=batch, pc=pc, user=user)
             job.save()
 
         return batch
@@ -786,6 +787,7 @@ class Job(models.Model):
                                   blank=True)
     started = models.DateTimeField(_('started'), null=True)
     finished = models.DateTimeField(_('finished'), null=True)
+    user = models.ForeignKey(User)
     batch = models.ForeignKey(Batch, related_name='jobs')
     pc = models.ForeignKey(PC, related_name='jobs')
 
@@ -844,7 +846,7 @@ class Job(models.Model):
                 Job.RESOLVED
             ))
 
-    def restart(self):
+    def restart(self, user=user):
         if not self.failed:
             raise Exception(_('Can only restart jobs with status %s') % (
                 Job.FAILED
@@ -863,7 +865,8 @@ class Job(models.Model):
                 string_value=p.string_value
             )
             new_p.save()
-        new_job = Job(batch=new_batch, pc=self.pc)
+
+        new_job = Job(batch=new_batch, pc=self.pc, user=user)
         new_job.save()
         self.resolve()
 
