@@ -9,7 +9,7 @@ setup(
     author_email='carstena@magenta-aps.dk',
     license='GPLv3',
     packages=['bibos_client'],
-    install_requires=['netifaces', 'bibos_utils'],
+    install_requires=['bibos_utils'],
     scripts=[
         'bin/bibos_find_gateway',
         'bin/bibos_register_in_admin',

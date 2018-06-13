@@ -8,9 +8,9 @@ sudo apt-get upgrade --assume-yes
 sudo apt-get install curl --assume-yes
 sudo apt-get install python-dev --assume-yes
 sudo apt-get install python-pip --assume-yes
-sudo pip install netifaces
+sudo pip uninstall netifaces -y
 sudo pip install lockfile
-sudo pip install bibos-client
+sudo pip install --upgrade bibos-client
 sudo mkdir -p /var/lib/bibos/jobs/
 sudo mkdir -p /etc/bibos/security/
 sudo set_bibos_config admin_connect_version $VERSION
