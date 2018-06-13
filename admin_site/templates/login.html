@@ -6,7 +6,7 @@
 
 {% block content %}
 <div class="container">
-      <form method="post" action="{% url 'django.contrib.auth.views.login' %}">
+      <form method="post" action="">
           {% csrf_token %}
           <label>Brugernavn:</label>
           {{ form.username }}
