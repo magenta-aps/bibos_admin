@@ -1,10 +1,14 @@
+* Version 3.0.0.2, Juni 28, 2018
+
+ - Make the input-fields work again in script parameters
+
 * Version 3.0.0.1, Juni 13, 2018
 
- Hotfix. New in this version:
+Hotfix. New in this version:
 
  - Fix error in login
- - Corrent the var path
- - Make bibos_client upgrade and remove netifaces requirment
+ - Correct the var path
+ - Make bibos_client upgrade and remove netifaces requirement
 
 * Version 3.0.0, Juni 5, 2018
 
