@@ -502,17 +502,17 @@ class ScriptMixin(object):
             context['script_url'] = 'script'
 
         # If we selected a script add it to context
-        if self.script is not None:
+        if self.script is not '':
             context['selected_script'] = self.script
-            if self.script.site is None:
+            if self.script.site is '':
                 context['global_selected'] = True
-            if context['script_inputs'] is None:
+            if context['script_inputs'] is '':
                 context['script_inputs'] = [{
                     'pk': input.pk,
                     'name': input.name,
                     'value_type': input.value_type
                 } for input in self.script.inputs.all()]
-        elif context['script_inputs'] is None:
+        elif context['script_inputs'] is '':
             context['script_inputs'] = []
 
         context['script_inputs_json'] = json.dumps(context['script_inputs'])
