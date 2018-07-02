@@ -502,9 +502,9 @@ class ScriptMixin(object):
             context['script_url'] = 'script'
 
         # If we selected a script add it to context
-        if self.script is not '':
+        if self.script is not None:
             context['selected_script'] = self.script
-            if self.script.site is '':
+            if self.script.site is None:
                 context['global_selected'] = True
             if context['script_inputs'] is '':
                 context['script_inputs'] = [{
