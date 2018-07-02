@@ -1,4 +1,12 @@
+* Version 3.0.0.3, Juli 02, 2018
+
+Hotfix. New in this version:
+
+ - Empty strings should only be used when checking input-fields
+
 * Version 3.0.0.2, Juni 28, 2018
+
+Hotfix. New in this version:
 
  - Make the input-fields work again in script parameters
 
