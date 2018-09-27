@@ -29,7 +29,7 @@ install_dir = os.path.abspath(
 )
 
 lib_dir = ''
-var_dir = install_dir + 'var'
+var_dir = install_dir + '/var'
 env = dotenv.load_dotenv(install_dir + '/bibos_admin/.env')
 
 sys.path[0:0] = [install_dir, lib_dir, var_dir, env]

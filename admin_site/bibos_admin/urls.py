@@ -19,20 +19,13 @@ admin.autodiscover()
 urlpatterns = [
     # Examples:
     # url(r'^$', 'bibos_admin.views.home', name='home'),
-    #ipdb.set_trace(),
-#path('accounts/login/', auth_views.LoginView.as_view(template_name='myapp/login.html')),
-    #url('accounts/login/', auth_views.LoginView.as_view(template_name='bibos_admin/login.html')),
-    url('accounts/login/', auth_views.LoginView,
-        {'template_name': 'login.html'}, name='login'),
+    url('accounts/login/', auth_views.LoginView.as_view(template_name='login.html')),
     url(r'^xmlrpc/$', handle_xmlrpc, name='xmlrpc'),
-    url(r'^accounts/logout/', auth_views.LogoutView,
-        {'template_name': 'logout.html'}, name='logout'),
+    url('accounts/logout/', auth_views.LoginView.as_view(template_name='logout.html')),
     url(r'^', include('system.urls')),
     url(r'^admin-xml/$', handle_xmlrpc),
     # Uncomment the admin/doc line below to enable admin documentation:
-    #ipdb.set_trace(),
     url('admin/doc/', include('django.contrib.admindocs.urls')),
-#    url(r'^admin/doc/', django.contrib.admindocs.urls),
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
