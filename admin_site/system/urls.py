@@ -9,7 +9,7 @@ from .views import ScriptList, ScriptUpdate, ScriptCreate, ScriptDelete
 from .views import ScriptRun, PCUpdate, JobRestarter, MarkPackageUpgrade
 from .views import ConfigurationEntryCreate, ConfigurationEntryUpdate
 from .views import ConfigurationEntryDelete, JobInfo, TechDocView, DocView
-from .views import PackageSearch, PCDelete
+from .views import PackageSearch, PCDelete, JSONSiteSummary
 # SecurityProblem and SecurityEvent related views
 from .views import SecurityProblemsView, SecurityProblemCreate
 from .views import SecurityProblemUpdate, SecurityProblemDelete
@@ -82,6 +82,8 @@ urlpatterns = [
         (r'^site/(?P<site_uid>[^/]+)/' +
          r'computers/(?P<uid>\w+)/upgrade_packages/$'),
         MarkPackageUpgrade.as_view(), name='mark_upgrade_packages'),
+    url(r'^site/(?P<slug>[^/]+)/computers/json/$',
+        JSONSiteSummary.as_view(), name='json_site_summary'),
     url(r'^site/(?P<site_uid>[^/]+)/computers/(?P<pc_uid>[^/]+)/$',
         PCUpdate.as_view(), name='computer'),
     url(r'^site/(?P<site_uid>[^/]+)/computers/(?P<pc_uid>[^/]+)/delete/$',
