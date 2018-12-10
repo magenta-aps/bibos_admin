@@ -1742,28 +1742,33 @@ class TechDocView(TemplateView):
         return context
 
 class JSONSiteSummary(JSONResponseMixin, SiteView):
-        interesting_properties = [
-                'id', 'name', 'uid', 'description', 'distribution_id',
-                'configuration_id', 'package_list_id', 'custom_packages_id',
-                'site_id', 'is_active', 'is_update_required',
-                'do_send_package_info', 'creation_time', 'last_seen',
-                'location']
+    """Produce a JSON document summarising the state of all of the computers in
+    a site."""
 
-        def get_context_data(self, **kwargs):
-                pcs = []
-                for p in self.object.pcs.all():
-                        pc = {}
-                        for pn in JSONSiteSummary.interesting_properties:
-                                pv = getattr(p, pn)
-                                if pv == None \
-                                    or isinstance(pv, bool) \
-                                    or isinstance(pv, float) \
-                                    or isinstance(pv, int):
-                                        pass
-                                elif isinstance(pv, datetime):
-                                        pv = pv.isoformat()
-                                else:
-                                        pv = str(pv)
-                                pc[pn] = pv
-                        pcs.append(pc)
-                return pcs
+    interesting_properties = [
+        'id', 'name', 'uid', 'description', 'distribution_id',
+        'configuration_id', 'package_list_id', 'custom_packages_id', 'site_id',
+        'is_active', 'is_update_required', 'do_send_package_info',
+        'creation_time', 'last_seen', 'location']
+
+    def get_context_data(self, **kwargs):
+        pcs = []
+        for p in self.object.pcs.all():
+            pc = {}
+            for pn in JSONSiteSummary.interesting_properties:
+                pv = getattr(p, pn)
+                # Don't convert these types to string representations...
+                if pv == None \
+                        or isinstance(pv, bool) \
+                        or isinstance(pv, float) \
+                        or isinstance(pv, int):
+                    pass
+                # ... use the right date format for datetimes...
+                elif isinstance(pv, datetime):
+                    pv = pv.isoformat()
+                # ... and use simple string representations for everything else
+                else:
+                    pv = str(pv)
+                pc[pn] = pv
+            pcs.append(pc)
+        return pcs
