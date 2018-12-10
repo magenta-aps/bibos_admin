@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import json
+from datetime import datetime
 
 from functools import cmp_to_key
 from django.http import HttpResponse, HttpResponseRedirect, Http404
@@ -1739,3 +1740,30 @@ class TechDocView(TemplateView):
         context['url_list'] = overview_items[category]
 
         return context
+
+class JSONSiteSummary(JSONResponseMixin, SiteView):
+        interesting_properties = [
+                'id', 'name', 'uid', 'description', 'distribution_id',
+                'configuration_id', 'package_list_id', 'custom_packages_id',
+                'site_id', 'is_active', 'is_update_required',
+                'do_send_package_info', 'creation_time', 'last_seen',
+                'location']
+
+        def get_context_data(self, **kwargs):
+                pcs = []
+                for p in self.object.pcs.all():
+                        pc = {}
+                        for pn in JSONSiteSummary.interesting_properties:
+                                pv = getattr(p, pn)
+                                if pv == None \
+                                    or isinstance(pv, bool) \
+                                    or isinstance(pv, float) \
+                                    or isinstance(pv, int):
+                                        pass
+                                elif isinstance(pv, datetime):
+                                        pv = pv.isoformat()
+                                else:
+                                        pv = str(pv)
+                                pc[pn] = pv
+                        pcs.append(pc)
+                return pcs
