@@ -1746,10 +1746,10 @@ class JSONSiteSummary(JSONResponseMixin, SiteView):
     a site."""
 
     interesting_properties = [
-        'id', 'name', 'uid', 'description', 'distribution_id',
-        'configuration_id', 'package_list_id', 'custom_packages_id', 'site_id',
-        'is_active', 'is_update_required', 'do_send_package_info',
-        'creation_time', 'last_seen', 'location']
+        'id', 'name', 'description', 'distribution_id', 'configuration_id',
+        'package_list_id', 'custom_packages_id', 'site_id', 'is_active',
+        'is_update_required', 'do_send_package_info', 'creation_time',
+        'last_seen', 'location']
 
     def get_context_data(self, **kwargs):
         pcs = []
