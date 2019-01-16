@@ -1,3 +1,7 @@
+* Version 3.0.1, January 16, 2019
+
+- json data exposing existing computers on a given site can now be reached from %domain%/%site_id%/computers/json/ 
+
 * Version 3.0.0.3, Juli 02, 2018
 
 Hotfix. New in this version:

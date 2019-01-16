@@ -46,14 +46,14 @@ platform.
 GRAB THE CODE
 +++++++++++++
 
-git clone https://github.com/magenta-aps/bibos_admin.git
-
+    git clone https://github.com/magenta-aps/bibos_admin.git
 
 GET THE RIGHT BRANCH
 ++++++++++++++++++++
 
-cd bibos_admin
-git checkout <development>
+    cd bibos_admin
+
+    git checkout <development>
 
 This only applies if you're not working directly on the master branch
 (which you probably shouldn't). For <development> substitute the branch
@@ -63,60 +63,34 @@ you want to work on.
 INSTALL DJANGO AND OTHER COMPONENTS
 +++++++++++++++++++++++++++++++++++
 
-cd admin_site
 
-scripts/install.sh
+    cd admin_site
+
+    scripts/install.sh
 
 This requires an Internet connection. It should run its course with a
 number of warnings but no errors.
 
 
-SOFT-LINK THE SETTINGS FILE
-+++++++++++++++++++++++++++
+SET UP AND RUN THE DEVELOPMENT SERVER
++++++++++++++++++++++++++++++++++++++
 
-pushd bibos_admin/
-ln -s settings_development.py settings.py
-popd
+    scripts/post-install-dev.sh USERNAME EMAIL HOSTNAME/IP PORT
 
-This gives you the development settings. Most importantly, this features an
-SQLite database.
-
-
-RUN THE TEST SUITE
-++++++++++++++++++
-
-source bin/virtualenv  # To set up paths for Django etc.
-
-python manage.py test
-
-This is mainly a sanity check. The test should always pass.
-
-
-CREATE THE DATABASE
-+++++++++++++++++++
-
-python manage.py syncdb
-
-Answer "yes" when prompted to create a superuser and enter details.
-
-
-RUN THE SERVER
-++++++++++++++
-
-python manage.py runserver 8080
-
-"8080" is just an example, you can run it on whatever port you prefer.
-
+This sets up and runs the development version of the admin system (using a
+local SQLite database). You'll be prompted for a password for the
+new administrative user `USERNAME`.
 
 PATCH THE USER
 ++++++++++++++
 
-Log on to the admin site's user section:
+Log on to the admin site's user section, using the hostname, port, username and
+password you specified:
 
 http://localhost:8080/admin/auth/user/
 
 Edit the user you just created. Scroll to the bottom of the screen and choose
-"Super admin" as the user profile type.
+"Super admin" as the user profile type. Click Save.
 
 
 
