@@ -12,6 +12,7 @@ Computere
 <script type="text/javascript" src="/media/js/pcgrouplist.js"></script>
 <script type="text/javascript" src="/media/js/configlist.js"></script>
 <script type="text/javascript" src="/media/js/package_lists.js"></script>
+<script type="text/javascript" src="/media/js/policy_list.js"></script>
 {% endblock %}
 
 
@@ -26,7 +27,7 @@ class="active"
       var el = document.getElementById("{{ selected_pc.uid }}");
       el.scrollIntoView(true);
     });
-  
+
     $(function(){
       var hash = window.location.hash;
       if (hash) {
@@ -56,10 +57,10 @@ class="active"
       </li>
     {% endfor %}
   </ul>
-  
+
   <div class="container-fluid main sublevelmain">
-    
-    <h2 class="divideheader">Detaljer om <em>{{ selected_pc.name }}</em> 
+
+    <h2 class="divideheader">Detaljer om <em>{{ selected_pc.name }}</em>
       {% if selected_pc.is_update_required %}
         <span class="label label-warning">Opdateringer tilgængelige</span>
       {% endif %}
@@ -71,21 +72,21 @@ class="active"
 {% endif %}
     </h2>
     {% include 'notification.html' %}
-    
+
     {% if selected_pc.last_seen %}
       <p class="" style="float:right;"><span class="muted"> &nbsp;Senest
           set:</span> <strong>{{ selected_pc.last_seen|date:'Y-m-d H:i:s' }} </strong></p>
     {% endif %}
     {% if security_event != "Ingen advarsler"%}
       <p style="float:right; clear:right;"><span class="muted"> &nbsp;Seneste advarsel set:</span> <strong>{{ security_event.reported_time|date }} </strong> {{ security_event.reported_time|time }}</p>
-    {% endif %}    
-    
+    {% endif %}
+
     <form name="pc_update_form" id="pc_update_form" action="{% url 'computer' site.uid selected_pc.uid %}" method="post">
       {% csrf_token %}
 
       <button class="btn btn-primary">Gem ændringer</button>
       <button class="btn" onclick="return ((location.href = '{% url 'computer' site.uid selected_pc.uid %}') && false)">Annuller</button>
-      
+
       <ul class="nav nav-tabs">
         <li class="active">
           <a href="#pc-details" data-toggle="tab">Detaljer</a>
@@ -107,15 +108,15 @@ class="active"
             <label for="id_name">Navn:</label>
             {{ form.name.errors }}
             {{ form.name }}
-            
+
             <label for="id_description">Beskrivelse:</label>
             {{ form.description.errors }}
             {{ form.description }}
-            
+
             <label for="id_location">Lokation:</label>
             {{ form.location.errors }}
             {{ form.location }}
-            
+
             <label for="id_distribution">Distribution:</label>
             {{ form.distribution.errors }}
             {{ form.distribution }}
@@ -124,14 +125,14 @@ class="active"
               {{ form.is_active.errors }}
               {{ form.is_active }} Aktiv
             </label>
-            
+
           </fieldset>
           <fieldset class="span6">
             {% if waiting_for_package_list %}
               <p>
                 Det er ikke muligt at redigere grupper for denne
                 computer, da den ikke har uploadet sin pakkeliste endnu.
-                </p><p> 
+                </p><p>
                 Klik på fanebladet "Pakker" for yderligere information.
               </p>
             {% else %}
@@ -192,7 +193,7 @@ class="active"
           <ul id="needs_upgrade_packages">
                <input type="checkbox" onClick="toggle_package_selection(this)" />
                <strong>Markér alle</strong></br>
-              
+
             {% for package in selected_pc.package_list.needs_upgrade_packages %}
               <li>
                 <label for="upgrade_package-{{ package.pk }}">
@@ -241,15 +242,15 @@ class="active"
           </tr>
           {% endfor %}
         </table>
-        
+
         <script type="text/javascript"><!--
           $(function() {
             BibOS.setupJobInfoButtons($('#computer_jobs_table'));
           });
         //--></script>
-        
+
       </div>
-        
+
     </form>
 
     <form name="upgrade_packages_form" id="upgrade_packages_form"
@@ -259,5 +260,6 @@ class="active"
     </form>
     {% include 'system/package_lists/templates.html' %}
     {% include 'system/configlist/templates.html' %}
+    {% include 'system/policy_list/templates.html' %}
   </p>
 {% endblock %}

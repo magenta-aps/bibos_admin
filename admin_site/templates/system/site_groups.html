@@ -34,19 +34,19 @@ class="active"
         </li>
       {% endfor %}
   </ul>
-  
+
   <div class="container-fluid main sublevelmain">
-    
+
     <h2 class="divideheader">Detaljer om <em>{{ selected_group.name }}</em></h2>
     {% include 'notification.html' %}
-    
+
     <form name="updategroupform" id="updategroupform"
       action="{% url 'group' site.uid selected_group.url %}"
       method="post" class="row-fluid">
-    
+
       <button class="btn btn-primary">Gem ændringer</button>
       <button class="btn" onclick="return BibOS.PackageList.cancelEditing()">Annuller</button>
-      
+
       <ul class="nav nav-tabs">
         <li class="active">
           <a href="#group-details" data-toggle="tab">Detaljer</a>
@@ -57,8 +57,10 @@ class="active"
         <li>
           <a href="#group-packages" data-toggle="tab">Pakker</a>
         </li>
+        <li>
+          <a href="#group-policies" data-toggle="tab">Scripts</a>
       </ul>
-      
+
       <div id="group-details" class="tabcontent active">
         <div class="row-fluid">
           <fieldset class="span6">
@@ -86,10 +88,13 @@ class="active"
       <div id="group-configs" class="tabcontent">
         {% include 'system/configlist/list.html' with entries=selected_group.configuration.entries.all cnf_id='group_configuration' %}
       </div>
-  
-        
+
       <div id="group-packages" class="tabcontent">
-        {% include 'system/package_lists/list.html' with packages=package_infos pl_id='group_packages'%}
+        {% include 'system/package_lists/list.html' with packages=package_infos pl_id='group_packages' %}
+      </div>
+
+      <div id="group-policies" class="tabcontent">
+        {% include 'system/policy_list/list.html' %}
       </div>
 
     </form>
