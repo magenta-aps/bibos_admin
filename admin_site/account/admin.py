@@ -6,6 +6,16 @@ from django.contrib.auth.admin import UserAdmin
 from .models import UserProfile
 
 
+def _check_privilege(user):
+    if user.is_superuser:
+        return True
+    else:
+        try:
+            return user.bibos_profile.type == UserProfile.SUPER_ADMIN
+        except UserProfile.DoesNotExist:
+            return False
+
+
 class UserInline(admin.TabularInline):
     model = UserProfile
     extra = 1
