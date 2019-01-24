@@ -22,6 +22,14 @@ class UserInline(admin.TabularInline):
 
 
 class MyUserAdmin(UserAdmin):
+    def get_queryset(self, request):
+        all_users = super(MyUserAdmin, self).get_queryset(request)
+        if _check_privilege(request.user):
+            return all_users
+        else:
+            return all_users.filter(
+                bibos_profile__site=request.user.bibos_profile.site)
+
     inlines = [UserInline]
     can_delete = False
 
