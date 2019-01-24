@@ -30,6 +30,27 @@ class MyUserAdmin(UserAdmin):
             return all_users.filter(
                 bibos_profile__site=request.user.bibos_profile.site)
 
+    limited_fieldsets = (
+        (None, {
+            'fields': ('username', 'password')
+        }),
+        ('Personal info', {
+            'fields': ('first_name', 'last_name', 'email')
+        }),
+        ('Permissions', {
+            'fields': ('is_active',)
+        }),
+        ('Important dates', {
+            'fields': ('last_login', 'date_joined')
+        }),
+    )
+
+    def get_fieldsets(self, request, obj=None):
+        if _check_privilege(request.user):
+            return super(MyUserAdmin, self).get_fieldsets(request, obj)
+        else:
+            return MyUserAdmin.limited_fieldsets
+
     inlines = [UserInline]
     can_delete = False
 
