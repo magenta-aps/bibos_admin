@@ -26,6 +26,15 @@ class MyUserAdmin(UserAdmin):
     can_delete = False
 
 
+class MyUserProfileAdmin(admin.ModelAdmin):
+    def get_queryset(self, request):
+        all_profiles = super(MyUserProfileAdmin, self).get_queryset(request)
+        if _check_privilege(request.user):
+            return all_profiles
+        else:
+            return all_profiles.filter(site=request.user.bibos_profile.site)
+
+
 admin.site.unregister(User)
 admin.site.register(User, MyUserAdmin)
-admin.site.register(UserProfile)
+admin.site.register(UserProfile, MyUserProfileAdmin)
