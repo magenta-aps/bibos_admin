@@ -12,6 +12,7 @@ Grupper
 <script type="text/javascript" src="/media/js/package_lists.js"></script>
 <script type="text/javascript" src="/media/js/configlist.js"></script>
 <script type="text/javascript" src="/media/js/pclist.js"></script>
+<script type="text/javascript" src="/media/js/policy_list.js"></script>
 {% endblock %}
 
 {% block groups_active %}
@@ -94,7 +95,7 @@ class="active"
       </div>
 
       <div id="group-policies" class="tabcontent">
-        {% include 'system/policy_list/list.html' %}
+        {% include 'system/policy_list/list.html' with entries=selected_group.configuration.entries.all policy_id='group_policies' %}
       </div>
 
     </form>
@@ -118,6 +119,7 @@ class="active"
 
     {% include 'system/package_lists/templates.html' %}
     {% include 'system/configlist/templates.html' %}
+    {% include 'system/policy_list/templates.html' %}
 
   </div>
 {% endblock %}

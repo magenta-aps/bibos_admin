@@ -1,0 +1,19 @@
+{# Remember that this templates must be able to be called both from templates.html and from list.html #}
+<tr class="muted">
+  <td class="policy-print-key">{{ key }}</td>
+  <td>
+    <div class="btn-group profile dark">
+      <input class="policy-pk" type="hidden" name="{{ submit_name|default:'policy' }}" value="{{ pk }}" />
+      <!-- TODO: Some loop over script arguments here -->
+      <input class="policy-key" type="hidden" name="{{ submit_name|default:'policy' }}_{{ pk }}_key" value="{{ key }}" />
+      <input class="policy-value" type="hidden" name="{{ submit_name|default:'policy' }}_{{ pk }}_value" value="{{ value }}" />
+      <!-- end TODO -->
+      <a class="dropdown-toggle btn policy-print-value" data-toggle="dropdown"
+          href="javascript:void(0)">{{ value }}</a>
+      <ul class="dropdown-menu">
+        <li><a href="javascript:void(0)" onclick="BibOS.PolicyList.editScript(this, '{{ submit_name }}')"><i class="icon-edit"></i> Redigér</a></li>
+        <li><a href="javascript:void(0)" onclick="BibOS.PolicyList.removeItem(this)"><i class="icon-remove"></i> Slet konfiguration</a></li>
+      </ul>
+    </div>
+  </td>
+</tr>

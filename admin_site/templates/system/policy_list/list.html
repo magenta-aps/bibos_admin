@@ -1,22 +1,25 @@
-{ # % if policy_id % # }
+<!-- {% if policy_id %} -->
 <div class="well" id="{{ policy_id }}">
-  TODO: Hav nummereret liste, så vi kan se at der er en eksekutionsrækkefølge
+  <!-- TODO: Hav nummereret liste, så vi kan se at der er en eksekutionsrækkefølge -->
   <table class="table table-condensed table-hover">
     <tr>
-      <th>Nøgle</th>
-      <th>Værdi</th>
+      <th>Script</th>
+      <th>Parametre</th>
     </tr>
     <tr>
-      {% include 'system/policy_list/item.html' %}
+      <!-- {% for entry in entries %} -->
+      <!-- TODO: Vi skal sende hele array'et af key/value pairs ind i komponenten -->
+      {% include 'system/policy_list/item.html' with pk=entry.pk key=entry.key value=entry.value submit_name=policy_id %}
+      <!-- {% endfor %} -->
     </tr>
     <tr>
       <td colspan="2">
         <input type="hidden" name="{{ policy_id }}_new_entries" id="{{ policy_id }}_new_entries" value="0" />
-        <a href="javascript:void(0)" onclick="BibOS.PolicyList.startAdd('{{ policy_id }}')" title="Tilføj script"><i class="icon-plus"></i> tilføj script</a>
+        <a href="javascript:void(0)" onclick="BibOS.PolicyList.addScript('{{ policy_id }}')" title="Tilføj script"><i class="icon-plus"></i> tilføj script</a>
       </td>
     </tr>
   </table>
 </div>
-{ # % else % # }
+<!-- {% else %} -->
 <p>You must specify a <em>policy_id</em> when inserting a policy list</p>
-{ # % endif % # }
+<!-- {% endif %} -->

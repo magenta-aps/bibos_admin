@@ -1,159 +1,136 @@
 (function(BibOS, $) {
     tr = BibOS.translate;
-    if(!document.getElementById('packagelist-templates')) {
+    if(!document.getElementById('policylist-templates')) {
         alert(
-            'package_list.js loaded without templates present' + "\n" +
-            'Did you forget to include system/package_lists/templates.html?'
+            'policy_list.js loaded without templates present' + "\n" +
+            'Did you forget to include system/policy_list/templates.html?'
         );
         return;
     }
 
-    BibOS.addTemplate('packagelist-item', '#packagelist_item');
-    $('#packagelist_item input').attr('disabled', 'disabled');
-    var PackageList = function() {
-        this.activeList = null
-        this.currentPackages = {}
+    var PolicyList = function() {
+        // Member variables?
     };
-
-    function addPackageToList(id, label, submit_name) {
-        var input = $('#' + id + "_addremovepackagename"),
-            list = $('#' + id + ' ul.packagelist');
-
-        var val = input.val()
-        if (!val)
-            return;
-
-        var existing = null;
-        list.find('li.packagemarker').each(function() {
-            if ($(this).attr('data-packagename') == val) {
-                existing = $(this);
-                return false;
-            }
-            return true;
-        });
-
-        if (existing) {
-            if (existing.find("a").first().hasClass(label)) {
-                input.val('');
-                return;
-            }
-        }
-
-        var errorhandler = function() {
-            alert(tr('Could not find a package with name %s', val));
-        };
-
-        $.ajax({
-            'dataType': "json",
-            'url': '/packages/',
-            'data': {'get_by_name': val},
-            'success': function(data) {
-                if (!data[0]) {
-                    errorhandler();
-                    return;
-                }
-                var item = $(BibOS.expandTemplate(
-                    'packagelist-item',
-                    $.extend(data[0], {
-                        'label': label,
-                        'submit_name': submit_name
-                    })
-                ));
-                if (existing) {
-                    existing.remove();
-                }
-                // Insert in correct place in list
-                var inserted = false;
-                list.find('li.packagemarker').each(function() {
-                    li = $(this)
-                    if (li.attr('data-packagename') > val &&
-                        li.find('span.' + label).length) {
-                        item.insertBefore(li)
-                        input.val('');
-                        inserted = true;
-                        return false;
-                    }
-                    return true;
-                });
-                if (!inserted) {
-                    if(label == 'label-success') {
-                        var anchor = list.find('span.label-important');
-                        if(anchor.length)
-                            item.insertBefore(anchor.first().parents('li.packagemarker'))
-                        else
-                            item.appendTo(list);
-                    } else {
-                        item.appendTo(list);
-                    }
-                }
-                input.val('');
-            },
-            'error': errorhandler
-        })
-    }
 
     $.extend(PolicyList.prototype, {
         init: function() {
-            $(".addpackagecontrol input[type=text]").typeahead({
-                source: function(q, cb) {
-                    $.getJSON(
-                        '/packages/?distinct_by_name=1&q=' + escape(q),
-                        function(data) {
-                            var arr = [];
-                            $.each(data, function() {
-                                arr.push(this.name + " | " + this.description)
-                            })
-                            cb(arr);
-                        }
-                    );
-                },
-                // Matching and sorting is handled by the query
-                matcher: function() { return true },
-                sorter: function(items) { return items },
-                updater: function (item) {
-                    return item.substr(0, item.indexOf('|') - 1)
+            BibOS.addTemplate(
+                'policylist-item',
+                '#policy-item-template'
+            );
+            $('#policy-item-template input').attr(
+                'disabled', 'disabled'
+            );
+            $('#editpolicyscriptdialog input').attr('disabled', 'disabled');
+            $('#editpolicyscriptdialog').on('shown', function() {
+                $(".editpolicyscript-field").first().focus();
+            })
+        },
+        addToPolicy: function(id, key, value) {
+            var num_new = $('#' + id + '_new_entries').val()
+            // TODO: Here we probably need to loop over script arguments
+            var item = $(BibOS.expandTemplate('policylist-item', {
+                pk: 'new_' + num_new,
+                key: key,
+                value: value,
+                submit_name: id
+            }));
+            // end TODO
+            item.insertBefore($('#' + id + '_new_entries').parent().parent())
+            this.updateNew(id)
+        },
+        updateNew: function(id) {
+            var num = 0;
+            $('#' + id + ' input.policy-pk').each(function() {
+                var t =  $(this), p = t.parent;
+
+                if (t.val().match(/new_^/)) {
+                    parent.find('input.policy-key').attr(
+                        'name',
+                        id + '_' + num + '_key'
+                    )
+                    parent.find('input.policy-value').attr(
+                        'name',
+                        id + '_' + num + '_value'
+                    )
+                    $(this).val('new_' + num);
+                    num++
                 }
+
+                $('#' + id + '_new_entries').val(num);
             });
         },
-        addPackage: function(id) {
-            addPackageToList(id, 'label-success', id + '_add')
-            return false;
+        removeItem: function(clickElem) {
+            var e = $(clickElem).parent();
+            while (e && e.length && !e.is('tr')) {
+                e = e.parent()
+            }
+            if (e)
+                e.remove()
+            this.updateNew();
         },
-        removePackage: function(id) {
-            addPackageToList(id, 'label-important', id + '_remove')
-            return false;
+        addScript: function(id) {
+            $('#editpolicyscriptdialog input').removeAttr('disabled');
+            $('#editpolicyscript_script_id').val(id);
+            $('#editpolicyscript_script_pk').val('new');
+            $('.editpolicyscript-field').val('');
+            $('#editpolicyscriptdialog').modal('show');
         },
-        setActiveLists: function(id) {
-            this.removeList = $('#' + id + ' ul.removedpackages')
+        editScript: function(clickElem, id) {
+            var c = $(clickElem).parent();
+            while (c && c.length && !c.is('div.btn-group')) {
+                c = c.parent();
+            }
+            $('#editpolicyscriptdialog input').removeAttr('disabled');
+            $('#editpolicyscript_script_id').val(id);
+            $('#editpolicyscript_script_pk').val(c.find('input.policy-pk').val());
+            // TODO: Here we need to loop over script arguments
+            var e = $('#editpolicyscript_name').val(c.find('input.policy-key').val());
+            e.attr('disabled', 'disabled');
+            $('#editpolicyscript_value').val(c.find('input.policy-value').val());
+            // end TODO
+            $('#editpolicyscriptdialog').modal('show');
         },
-        cancelEditing: function() {
-            location.href=location.href;
-            return false;
-        },
-        markUpgradePackages: function(container_id, form_id) {
-            var form = $(form_id);
-            form.find('input[name=packages]').remove();
-            $(container_id).find('input[name=upgrade_package]:checked').each(
-                function() {
-                    if($(this).attr('name') == 'upgrade_package') {
-                        $('<input>').attr(
-                            { 'type': 'hidden', 'name': 'packages'}
-                        ).val($(this).val()).appendTo(form)
-                    }
+        submitEditDialog: function() {
+            var id = $('#editpolicyscript_script_id').val(),
+                pk = $('#editpolicyscript_script_pk').val(),
+                // TODO: Here we need to loop over script arguments
+                name = $('#editpolicyscript_name').val(),
+                value = $('#editpolicyscript_value').val();
+                // end TODO
+
+            if (pk == 'new') {
+                if (! name) {
+                    alert(tr("Du skal angive et navn"));
+                    return false;
                 }
-            )
-            form.submit()
+                existing = $('#' + id).find(
+                    'input.policy-key[value=' + name + ']'
+                );
+                if (existing.length) {
+                    alert(tr("Policy-navnet %s findes allerede", name))
+                    $('#editpolicyscript_name').focus().select();
+                    return false;
+                }
+                this.addToPolicy(id, name, value);
+            } else {
+                p = $('#' + id).find(
+                    'input.policy-pk[value=' + pk + ']'
+                );
+                while (p && p.length && !p.is('tr')) {
+                    p = p.parent();
+                }
+                if (p && p.length) {
+                    p.find('input.policy-value').val(value)
+                    p.find('.policy-print-value').html(value)
+                }
+            }
+            $('#editpolicyscriptdialog input').attr('disabled', 'disabled');
+            $('#editpolicyscriptdialog').modal('hide');
+            return false;
         }
     });
 
     BibOS.PolicyList = new PolicyList()
     $(function() { BibOS.PolicyList.init() })
 })(BibOS, $);
-
-function toggle_package_selection(source) {
-        var element_name = "upgrade_package";
-        var checkboxes = document.getElementsByName(element_name);
-        for(var i=0, n=checkboxes.length;i<n;i++) {
-            checkboxes[i].checked = source.checked;
-	}
-    }
