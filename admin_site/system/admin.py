@@ -6,7 +6,8 @@ from .models import Site, Distribution, PCGroup, PC, CustomPackages
 from .models import PackageInstallInfo, PackageStatus
 from .models import SecurityEvent, SecurityProblem
 # Job-related stuff
-from .models import Script, Batch, Job, Input, Parameter
+from .models import Script, Batch, Job, Input, BatchParameter
+from .models import AssociatedScript, AssociatedScriptParameter
 ar = admin.site.register
 
 
@@ -53,14 +54,19 @@ class JobInline(admin.TabularInline):
     extra = 1
 
 
-class ParameterInline(admin.TabularInline):
-    model = Parameter
+class BatchParameterInline(admin.TabularInline):
+    model = BatchParameter
     extra = 1
 
 
 class BatchAdmin(admin.ModelAdmin):
     fields = ['site', 'name', 'script']
-    inlines = [JobInline, ParameterInline]
+    inlines = [JobInline, BatchParameterInline]
+
+
+class AssociatedScriptParameterInline(admin.TabularInline):
+    model = AssociatedScriptParameter
+    extra = 1
 
 
 class InputInline(admin.TabularInline):
@@ -84,6 +90,8 @@ ar(Package)
 ar(Script, ScriptAdmin)
 ar(Batch, BatchAdmin)
 ar(Job)
-ar(Parameter)
+ar(BatchParameter)
+ar(AssociatedScript)
+ar(AssociatedScriptParameter)
 ar(SecurityEvent)
 ar(SecurityProblem)

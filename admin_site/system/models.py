@@ -445,6 +445,12 @@ class PCGroup(models.Model):
         # After save
         pass
 
+    def run_associated_scripts_on(self, user, pc):
+        batches = []
+        for asc in self.scripts.all().order_by('position'):
+            batches.append(asc.run_on(user, [pc]))
+        return batches
+
     def get_absolute_url(self):
         site_url = self.site.get_absolute_url()
         return '{0}/groups/{1}'.format(site_url, self.url)
@@ -699,9 +705,11 @@ class Script(models.Model):
             if i < len(args):
                 value = args[i]
                 if(inp.value_type == Input.FILE):
-                    p = Parameter(input=inp, batch=batch, file_value=value)
+                    p = BatchParameter(
+                        input=inp, batch=batch, file_value=value)
                 else:
-                    p = Parameter(input=inp, batch=batch, string_value=value)
+                    p = BatchParameter(
+                        input=inp, batch=batch, string_value=value)
                 p.save()
 
         for pc in pc_list:
@@ -739,6 +747,52 @@ class Batch(models.Model):
     def __unicode__(self):
         return self.name
 
+
+class AssociatedScript(models.Model):
+    """A script associated with a group. Adding a script to a group causes it
+    to be run on all computers in the group; adding a computer to a group with
+    scripts will cause all of those scripts to be run on the new member."""
+
+    group = models.ForeignKey(PCGroup, related_name='scripts')
+    script = models.ForeignKey(Script, related_name='associations')
+    position = models.IntegerField(_('position'))
+
+    def make_batch(self):
+        now_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        return Batch(site=self.group.site, script=self.script,
+                     name=', '.join([self.group.name, self.script.name, now_str]))
+
+    def make_parameters(self, batch):
+        params = []
+        for i in self.script.inputs.all():
+            try:
+                asp = AssociatedScriptParameter.objects.get(
+                    script=self, input=i)
+                params.append(asp.make_batch_parameter(batch))
+            except AssociatedScriptParameter.DoesNotExist:
+                # XXX
+                raise
+        return params
+
+    def run_on(self, user, pcs):
+        """\
+Runs this script on several PCs, returning a batch representing this task."""
+        batch = self.make_batch()
+        batch.save()
+        params = self.make_parameters(batch)
+
+        for p in params:
+            p.save()
+        for pc in pcs:
+            job = Job(batch=batch, pc=pc, user=user)
+            job.save()
+
+        return batch
+
+    def __str__(self):
+        return "{0}, {1}: {2}".format(self.group, self.position, self.script)
+    def __unicode__(self):
+        return __str__(self)
 
 class Job(models.Model):
     """A Job or task to be performed on a single computer."""
@@ -858,7 +912,7 @@ class Job(models.Model):
                           name=' '.join([script.name, now_str]))
         new_batch.save()
         for p in self.batch.parameters.all():
-            new_p = Parameter(
+            new_p = BatchParameter(
                 input=p.input,
                 batch=new_batch,
                 file_value=p.file_value,
@@ -897,10 +951,10 @@ class Input(models.Model):
     script = models.ForeignKey(Script, related_name='inputs')
 
     def __str__(self):
-        return self.name
+        return self.script.name + "/" + self.name
 
     def __unicode__(self):
-        return self.name
+        return self.__str__()
 
 
 def upload_file_name(instance, filename):
@@ -914,7 +968,7 @@ def upload_file_name(instance, filename):
 
 
 class Parameter(models.Model):
-    """An input parameter for a job, a script, etc."""
+    """A concrete value for the Input of a Script."""
 
     string_value = models.CharField(max_length=4096, null=True, blank=True)
     file_value = models.FileField(upload_to=upload_file_name,
@@ -922,8 +976,6 @@ class Parameter(models.Model):
                                   blank=True)
     # which input does this belong to?
     input = models.ForeignKey(Input)
-    # and which batch are we running?
-    batch = models.ForeignKey(Batch, related_name='parameters')
 
     @property
     def transfer_value(self):
@@ -932,6 +984,37 @@ class Parameter(models.Model):
             return self.file_value.url
         else:
             return self.string_value
+
+    class Meta:
+        abstract = True
+
+class BatchParameter(Parameter):
+    # Which batch is this parameter associated with?
+    batch = models.ForeignKey(Batch, related_name='parameters')
+
+    def __str__(self):
+        return "{0}: {1}".format(self.input, self.transfer_value)
+    def __unicode__(self):
+        return self.__str__()
+
+
+class AssociatedScriptParameter(Parameter):
+    # Which associated script is this parameter, er, associated with?
+    script = models.ForeignKey(AssociatedScript, related_name='parameters')
+
+    def make_batch_parameter(self, batch):
+        if self.input.value_type == Input.FILE:
+            return BatchParameter(
+                batch=batch, input=self.input, file_value=self.file_value)
+        else:
+            return BatchParameter(
+                batch=batch, input=self.input, string_value=self.string_value)
+
+    def __str__(self):
+        return "{0} - {1}: {2}".format(
+            self.script, self.input, self.transfer_value)
+    def __unicode__(self):
+        return self.__str__()
 
 
 class SecurityProblem(models.Model):
