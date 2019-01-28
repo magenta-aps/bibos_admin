@@ -801,6 +801,9 @@ Runs this script on several PCs, returning a batch representing this task."""
     def __unicode__(self):
         return __str__(self)
 
+    class Meta:
+        unique_together = ('position', 'group')
+
 class Job(models.Model):
     """A Job or task to be performed on a single computer."""
 
@@ -962,6 +965,9 @@ class Input(models.Model):
 
     def __unicode__(self):
         return self.__str__()
+
+    class Meta:
+        unique_together = ('position', 'script')
 
 
 def upload_file_name(instance, filename):
