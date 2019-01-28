@@ -70,11 +70,11 @@
             this.updateNew();
         },
         addScript: function(id) {
-            $('#editpolicyscriptdialog input').removeAttr('disabled');
-            $('#editpolicyscript_script_id').val(id);
-            $('#editpolicyscript_script_pk').val('new');
-            $('.editpolicyscript-field').val('');
-            $('#editpolicyscriptdialog').modal('show');
+            $('#addpolicyscriptdialog input').removeAttr('disabled');
+            $('#addpolicyscript_script_id').val(id);
+            $('#addpolicyscript_script_pk').val('new');
+            $('.addpolicyscript-field').val('');
+            $('#addpolicyscriptdialog').modal('show');
         },
         editScript: function(clickElem, id) {
             var c = $(clickElem).parent();
