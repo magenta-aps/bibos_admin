@@ -6,12 +6,9 @@
       <th>Script</th>
       <th>Parametre</th>
     </tr>
-    <tr>
-      <!-- {% for entry in entries %} -->
-      <!-- TODO: Vi skal sende hele array'et af key/value pairs ind i komponenten -->
-      {% include 'system/policy_list/item.html' with pk=entry.pk key=entry.key value=entry.value submit_name=policy_id %}
-      <!-- {% endfor %} -->
-    </tr>
+    {% for ps in selected_group.ordered_policy %}
+      {% include 'system/policy_list/item.html' with policy_script=ps %}
+    {% endfor %}
     <tr>
       <td colspan="2">
         <input type="hidden" name="{{ policy_id }}_new_entries" id="{{ policy_id }}_new_entries" value="0" />

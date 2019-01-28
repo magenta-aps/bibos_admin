@@ -31,8 +31,23 @@
 <div id="addpolicyscriptdialog" class="modal hide fade" tabindex="-1" role="dialog" aria-label="Tilføj script til gruppe" aria-hidden="true">
   <div class="modal-header">
     <button type="buttopn" class="close" data-dismiss="modal">×</button>
+    <h3>Tilføj script</h3>
   </div>
   <div class="modal-body">
+    <ul>
+    {% for script in all_scripts %}
+      <li>
+        {{ script.id }} {{ script.name }}
+        <ul>
+        {% for input in script.inputs.all %}
+          <li>
+            {{ input.name }}: {{ input.value_type }} {{ input.position }}
+          </li>
+        {% endfor %}
+        </ul>
+      </li>
+    {% endfor %}
+    </ul>
     <form action="" method="post">
       <!-- Here we set the value of "editpolicyscript_script_pk" and "editpolicyscript_script_id" -->
   </div>
