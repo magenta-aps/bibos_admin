@@ -1210,6 +1210,13 @@ class GroupUpdate(SiteMixin, SuperAdminOrThisSiteMixin, UpdateView):
         context['newform'] = GroupForm()
         del context['newform'].fields['pcs']
 
+        context['all_scripts'] = Script.objects.filter(
+            Q(site=site) | Q(site=None),
+            is_security_script=False
+        ).exclude(
+            site__name='system'
+        )
+
         return context
 
     def form_valid(self, form):
