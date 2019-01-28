@@ -447,9 +447,13 @@ class PCGroup(models.Model):
 
     def run_associated_scripts_on(self, user, pc):
         batches = []
-        for asc in self.scripts.all().order_by('position'):
+        for asc in self.ordered_policy:
             batches.append(asc.run_on(user, [pc]))
         return batches
+
+    @property
+    def ordered_policy(self):
+        return self.policy.all().order_by('position')
 
     def get_absolute_url(self):
         site_url = self.site.get_absolute_url()
@@ -753,7 +757,7 @@ class AssociatedScript(models.Model):
     to be run on all computers in the group; adding a computer to a group with
     scripts will cause all of those scripts to be run on the new member."""
 
-    group = models.ForeignKey(PCGroup, related_name='scripts')
+    group = models.ForeignKey(PCGroup, related_name='policy')
     script = models.ForeignKey(Script, related_name='associations')
     position = models.IntegerField(_('position'))
 
@@ -766,13 +770,16 @@ class AssociatedScript(models.Model):
         params = []
         for i in self.script.inputs.all():
             try:
-                asp = AssociatedScriptParameter.objects.get(
-                    script=self, input=i)
+                asp = self.parameters.get(input=i)
                 params.append(asp.make_batch_parameter(batch))
             except AssociatedScriptParameter.DoesNotExist:
                 # XXX
                 raise
         return params
+
+    @property
+    def ordered_parameters(self):
+        return self.parameters.all().order_by('input__position')
 
     def run_on(self, user, pcs):
         """\
