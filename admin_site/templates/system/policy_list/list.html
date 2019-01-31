@@ -1,4 +1,4 @@
-<!-- {% if policy_id %} -->
+{% if policy_id %}
 <div class="well" id="{{ policy_id }}">
   <!-- TODO: Hav nummereret liste, så vi kan se at der er en eksekutionsrækkefølge -->
   <table class="table table-condensed table-hover">
@@ -6,8 +6,8 @@
       <th>Script</th>
       <th>Parametre</th>
     </tr>
-    {% for ps in selected_group.ordered_policy %}
-      {% include 'system/policy_list/item.html' with policy_script=ps %}
+    {% for ps in entries %}
+      {% include 'system/policy_list/item.html' with position=ps.position name=ps.script.name params=ps.ordered_params submit_name=policy_id %}
     {% endfor %}
     <tr>
       <td colspan="2">
@@ -17,6 +17,6 @@
     </tr>
   </table>
 </div>
-<!-- {% else %} -->
+{% else %}
 <p>You must specify a <em>policy_id</em> when inserting a policy list</p>
-<!-- {% endif %} -->
+{% endif %}

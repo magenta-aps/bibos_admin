@@ -34,9 +34,9 @@ var BibOS;
       $.each(this.cssToLoad, function() {
         t.loadStylesheet(this)
       })
-	
+
       $('#editconfig_value').attr('maxlength', 4096)
-	
+
       var m = document.cookie.match(/\bbibos-notification\s*=\s*([^;]+)/)
       if(m) {
         var msg = unescape(m[1]);
@@ -127,7 +127,7 @@ var BibOS;
     loadScript: function(src) {
       this.loadResource('script', src);
     },
-    
+
     loadStylesheet: function(src) {
       this.loadResource('css', src);
     },
@@ -137,13 +137,13 @@ var BibOS;
       var args = arguments, arg_idx = 1, key = arguments[0] || '';
       if (arguments.length > 1) {
         key = key.replace(/\%s/g, function(m) {
-          var v = args[arg_idx++]; 
+          var v = args[arg_idx++];
           return v == undefined ? '' : v;
         })
       }
       return key
     },
-    
+
     // Load a template from innerHTML of element specified by id
     addTemplate: function(name, id) {
       this.templates[name] = $(id).html()

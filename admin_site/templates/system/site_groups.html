@@ -95,7 +95,7 @@ class="active"
       </div>
 
       <div id="group-policies" class="tabcontent">
-        {% include 'system/policy_list/list.html' with entries=selected_group.configuration.entries.all policy_id='group_policies' %}
+        {% include 'system/policy_list/list.html' with entries=selected_group.ordered_policy policy_id='group_policies' %}
       </div>
 
     </form>
@@ -119,7 +119,7 @@ class="active"
 
     {% include 'system/package_lists/templates.html' %}
     {% include 'system/configlist/templates.html' %}
-    {% include 'system/policy_list/templates.html' %}
+    {% include 'system/policy_list/templates.html' with policy_id='group_policies' %}
 
   </div>
 {% endblock %}

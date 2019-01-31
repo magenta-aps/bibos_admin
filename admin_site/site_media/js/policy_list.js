@@ -9,7 +9,28 @@
     }
 
     var PolicyList = function() {
-        // Member variables?
+        this.scriptInputs = []
+        // These two snippets of HTML should match what's inside item.html
+        this.hiddenParamField = function (name, type) {
+          return '<input class="policy-script-param" type="hidden" name="' + name + '" value="" data-inputtype="' + type + '"/>';
+        }
+        this.visibleParamField = function (name) {
+          return '<div class="policy-script-print"><span class="policy-script-print-name">' + name + ': </span><span class="policy-script-print-value"></span></div>'
+        }
+        this.getFieldType = function(type) {
+          switch(type) {
+            case 'INT':
+              return 'number';
+            case 'STRING':
+              return 'text';
+            case 'FILE':
+              return 'file';
+            case 'DATE':
+              return 'date';
+            default:
+              return 'text';
+          }
+        }
     };
 
     $.extend(PolicyList.prototype, {
@@ -26,32 +47,31 @@
                 $(".editpolicyscript-field").first().focus();
             })
         },
-        addToPolicy: function(id, key, value) {
+        addToPolicy: function(id, scriptId, scriptName, scriptInputs) {
             var num_new = $('#' + id + '_new_entries').val()
-            // TODO: Here we probably need to loop over script arguments
             var item = $(BibOS.expandTemplate('policylist-item', {
-                pk: 'new_' + num_new,
-                key: key,
-                value: value,
+                position: 'new_' + num_new,
+                name: scriptName,
+                // params: scriptInputs,
                 submit_name: id
             }));
-            // end TODO
+            this.scriptInputs = scriptInputs
             item.insertBefore($('#' + id + '_new_entries').parent().parent())
             this.updateNew(id)
         },
         updateNew: function(id) {
             var num = 0;
-            $('#' + id + ' input.policy-pk').each(function() {
+            $('#' + id + ' input.policy-script-pos').each(function() {
                 var t =  $(this), p = t.parent;
 
                 if (t.val().match(/new_^/)) {
-                    parent.find('input.policy-key').attr(
+                    parent.find('input.policy-script-name').attr(
                         'name',
-                        id + '_' + num + '_key'
+                        id + '_' + num + '_name'
                     )
-                    parent.find('input.policy-value').attr(
+                    parent.find('input.policy-script-param').attr(
                         'name',
-                        id + '_' + num + '_value'
+                        id + '_' + num + '_params'
                     )
                     $(this).val('new_' + num);
                     num++
@@ -77,60 +97,101 @@
             $('#addpolicyscriptdialog').modal('show');
         },
         editScript: function(clickElem, id) {
-            var c = $(clickElem).parent();
-            while (c && c.length && !c.is('div.btn-group')) {
-                c = c.parent();
-            }
-            $('#editpolicyscriptdialog input').removeAttr('disabled');
-            $('#editpolicyscript_script_id').val(id);
-            $('#editpolicyscript_script_pk').val(c.find('input.policy-pk').val());
-            // TODO: Here we need to loop over script arguments
-            var e = $('#editpolicyscript_name').val(c.find('input.policy-key').val());
-            e.attr('disabled', 'disabled');
-            $('#editpolicyscript_value').val(c.find('input.policy-value').val());
-            // end TODO
-            $('#editpolicyscriptdialog').modal('show');
+          // loop over all input fields in the list view, and render fields for them in the modal
+          var inputWrapper = $(clickElem).closest('div.btn-group');
+          var inputFields = $([]); // make an empty jQuery object we can add to later
+          $.each(inputWrapper.find('.policy-script-param'), function(idx, elm) {
+            var t = $(elm);
+            var label = t.next('.policy-script-print').find('.policy-script-print-name');
+            inputFields = inputFields.add($('<label/>', {
+              for: t.attr('name'),
+              text: label.text()
+            })).add($('<input/>', {
+              type: BibOS.PolicyList.getFieldType(t.attr('data-inputtype')),
+              value: t.val(),
+              name: t.attr('name'),
+              id: t.attr('name')
+            }))
+          });
+          $("#editpolicyscriptdialog .modal-body").append(inputFields);
+          // var c = $(clickElem).parent();
+          // while (c && c.length && !c.is('div.btn-group')) {
+          //     c = c.parent();
+          // }
+          // $('#editpolicyscriptdialog input').removeAttr('disabled');
+          // $('#editpolicyscript_script_id').val(id);
+          // $('#editpolicyscript_script_pk').val(c.find('input.policy-script-pos').val());
+          // // TODO: Here we need to loop over script arguments
+          // var e = $('#editpolicyscript_name').val(c.find('input.policy-script-name').val());
+          // e.attr('disabled', 'disabled');
+          // $('#editpolicyscript_value').val(c.find('input.policy-script-param').val());
+          // // end TODO
+          $('#editpolicyscriptdialog').modal('show');
         },
-        submitEditDialog: function() {
-            var id = $('#editpolicyscript_script_id').val(),
-                pk = $('#editpolicyscript_script_pk').val(),
-                // TODO: Here we need to loop over script arguments
-                name = $('#editpolicyscript_name').val(),
-                value = $('#editpolicyscript_value').val();
-                // end TODO
+        renderScriptFields: function(name, submitName) {
+          // If we come directly from adding a new script, django template variable "params" will only be #PARAMS#, so we need to render the fields dynamically
+          var param_fields = ''
 
-            if (pk == 'new') {
-                if (! name) {
-                    alert(tr("Du skal angive et navn"));
-                    return false;
-                }
-                existing = $('#' + id).find(
-                    'input.policy-key[value=' + name + ']'
-                );
-                if (existing.length) {
-                    alert(tr("Policy-navnet %s findes allerede", name))
-                    $('#editpolicyscript_name').focus().select();
-                    return false;
-                }
-                this.addToPolicy(id, name, value);
-            } else {
-                p = $('#' + id).find(
-                    'input.policy-pk[value=' + pk + ']'
-                );
-                while (p && p.length && !p.is('tr')) {
-                    p = p.parent();
-                }
-                if (p && p.length) {
-                    p.find('input.policy-value').val(value)
-                    p.find('.policy-print-value').html(value)
-                }
-            }
-            $('#editpolicyscriptdialog input').attr('disabled', 'disabled');
-            $('#editpolicyscriptdialog').modal('hide');
-            return false;
+          // generate the hidden input fields and divs to render the parameters for the selected script
+          for(var i = 0; i < BibOS.PolicyList.scriptInputs.length; i++) {
+            paramName = submitName + '_' + name + '_param_' + BibOS.PolicyList.scriptInputs[i].name;
+            param_fields += this.hiddenParamField(paramName, BibOS.PolicyList.scriptInputs[i].type)
+            param_fields += this.visibleParamField(BibOS.PolicyList.scriptInputs[i].name);
+          }
+
+          // output the fields
+          $('[data-name="policy-script-' + name + '"]').last().append(param_fields)
+        },
+        submitEditDialog: function(policy_id) {
+          // var id = $('#editpolicyscript_script_id').val(),
+          //     pk = $('#editpolicyscript_script_pk').val(),
+          //     // TODO: Here we need to loop over script arguments
+          //     name = $('#editpolicyscript_name').val(),
+          //     value = $('#editpolicyscript_value').val();
+          //     // end TODO
+          //
+          // if (pk == 'new') {
+          //     if (! name) {
+          //         alert(tr("Du skal angive et navn"));
+          //         return false;
+          //     }
+          //     existing = $('#' + id).find(
+          //         'input.policy-script-name[value=' + name + ']'
+          //     );
+          //     if (existing.length) {
+          //         alert(tr("Policy-navnet %s findes allerede", name))
+          //         $('#editpolicyscript_name').focus().select();
+          //         return false;
+          //     }
+          //     this.addToPolicy(id, name, value);
+          // } else {
+          //     p = $('#' + id).find(
+          //         'input.policy-script-pos[value=' + pk + ']'
+          //     );
+          //     while (p && p.length && !p.is('tr')) {
+          //         p = p.parent();
+          //     }
+          //     if (p && p.length) {
+          //         p.find('input.policy-script-param').val(value)
+          //         p.find('.policy-print-value').html(value)
+          //     }
+          // }
+          // loop over inputs inside the modal, and set their corresponding hidden input fields in the group form
+          var wrapper = $("#" + policy_id);
+          $("#editpolicyscriptdialog .modal-body input").each(function(){
+            var t = $(this);
+            var inputField = wrapper.find('input[name="' + t.attr('name') + '"]');
+            var visibleValueField = inputField.next('.policy-script-print').find('.policy-script-print-value')
+            console.log(t.val());
+            inputField.val(t.val());
+            visibleValueField.text(t.val());
+          });
+          $("#editpolicyscriptdialog .modal-body").html(''); // delete old inputs
+          $('#editpolicyscriptdialog').modal('hide');
+          return false;
         }
     });
 
     BibOS.PolicyList = new PolicyList()
-    $(function() { BibOS.PolicyList.init() })
+    $(function() { BibOS.PolicyList.init(); })
 })(BibOS, $);

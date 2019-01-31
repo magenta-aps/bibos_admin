@@ -1,7 +1,7 @@
 <div id="policylist-templates">
   <table>
     <tbody id="policy-item-template" class="template-container">
-      {% include 'system/policy_list/item.html' with pk='#PK#' key='#KEY#' value='#VALUE#' submit_name='#SUBMIT_NAME#' %}
+      {% include 'system/policy_list/item.html' with position='#POSITION#' name='#NAME#' params='#PARAMS#' submit_name='#SUBMIT_NAME#' %}
     </tbody>
   </table>
 </div>
@@ -12,18 +12,18 @@
     <h3>Redigér script</h3>
   </div>
   <div class="modal-body">
-    <form action="" method="post">
+    <!-- <form action="" method="post">
       <input type="hidden" name="editpolicyscript_script_pk" id="editpolicyscript_script_pk" value="new" />
       <input type="hidden" name="editpolicyscript_script_id" id="editpolicyscript_script_id" value="" />
       <fieldset>
-        <!-- TODO: Some logic here that loops over script parameters
-             Nice to have: if script has no arguments, print a message saying so -->
+        TODO: Some logic here that loops over script parameters
+             Nice to have: if script has no arguments, print a message saying so
         <p><label for="editpolicyscript_param_value">&#123;&#123; editpolicyscript_param_key or something &#125;&#125;</label> <input class="editpolicyscript-field" id="editpolicyscript_param_value" maxlength="255" name="editpolicyscript_param_value" type="text" value="" /></p>
       </fieldset>
-    </form>
+    </form> -->
   </div>
   <div class="modal-footer">
-    <button onclick="BibOS.PolicyList.submitEditDialog()" class="btn btn-primary">Gem</button>
+    <button onclick="BibOS.PolicyList.submitEditDialog('{{ policy_id }}')" class="btn btn-primary">Gem</button>
     <button class="btn" data-dismiss="modal">Annuller</button>
   </div>
 </div>
@@ -36,7 +36,13 @@
   <div class="modal-body">
     <ul>
     {% for script in all_scripts %}
-      <li>
+      <li onclick="BibOS.PolicyList.addToPolicy('{{ policy_id }}', '{{ script.id }}', '{{ script.name }}', [{% for input in script.inputs.all %}
+        {
+          name: '{{ input.name }}',
+          type: '{{ input.value_type }}',
+          position: '{{ input.position }}'
+        },
+      {% endfor %}])">
         {{ script.id }} {{ script.name }}
         <ul>
         {% for input in script.inputs.all %}
@@ -48,7 +54,5 @@
       </li>
     {% endfor %}
     </ul>
-    <form action="" method="post">
-      <!-- Here we set the value of "editpolicyscript_script_pk" and "editpolicyscript_script_id" -->
   </div>
 </div>
