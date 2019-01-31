@@ -58,6 +58,7 @@
             this.scriptInputs = scriptInputs
             item.insertBefore($('#' + id + '_new_entries').parent().parent())
             this.updateNew(id)
+            $("#addpolicyscriptdialog").modal('hide');
         },
         updateNew: function(id) {
             var num = 0;
@@ -182,7 +183,6 @@
             var t = $(this);
             var inputField = wrapper.find('input[name="' + t.attr('name') + '"]');
             var visibleValueField = inputField.next('.policy-script-print').find('.policy-script-print-value')
-            console.log(t.val());
             inputField.val(t.val());
             visibleValueField.text(t.val());
           });

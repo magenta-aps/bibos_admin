@@ -34,7 +34,7 @@
     <h3>Tilføj script</h3>
   </div>
   <div class="modal-body">
-    <ul>
+    <ul class="script-list">
     {% for script in all_scripts %}
       <li onclick="BibOS.PolicyList.addToPolicy('{{ policy_id }}', '{{ script.id }}', '{{ script.name }}', [{% for input in script.inputs.all %}
         {
@@ -43,14 +43,7 @@
           position: '{{ input.position }}'
         },
       {% endfor %}])">
-        {{ script.id }} {{ script.name }}
-        <ul>
-        {% for input in script.inputs.all %}
-          <li>
-            {{ input.name }}: {{ input.value_type }} {{ input.position }}
-          </li>
-        {% endfor %}
-        </ul>
+        {{ script.name }} ({% for input in script.inputs.all %}<span>{% if forloop.counter0 != 0 %}, {% endif %}{{ input.name }}</span>{% endfor %})
       </li>
     {% endfor %}
     </ul>
