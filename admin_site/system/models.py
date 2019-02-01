@@ -41,28 +41,30 @@ class Configuration(models.Model):
 
         existing_set = set(cnf.pk for cnf in self.entries.all())
 
-        for pk in req_params.getlist(submit_name, []):
+        unique_names = set(req_params.getlist(submit_name, []))
+        for pk in unique_names:
             key_param = "%s_%s_key" % (submit_name, pk)
             value_param = "%s_%s_value" % (submit_name, pk)
 
-            key = req_params.get(key_param, '')
-            value = req_params.get(value_param, '')
+            key = req_params.getlist(key_param, '')
+            value = req_params.getlist(value_param, '')
 
             if pk.startswith("new_"):
-                # Create new entry
-                cnf = ConfigurationEntry(
-                    key=key,
-                    value=value,
-                    owner_configuration=self
-                )
+                # Create one or more new entries
+                for k, v in zip(key, value):
+                    cnf = ConfigurationEntry(
+                        key=k,
+                        value=v,
+                        owner_configuration=self
+                    )
+                    cnf.save()
             else:
                 # Update submitted entry
                 cnf = ConfigurationEntry.objects.get(pk=pk)
-                cnf.key = key
-                cnf.value = value
+                cnf.key = key[0]
+                cnf.value = value[0]
                 seen_set.add(cnf.pk)
-
-            cnf.save()
+                cnf.save()
 
         # Delete entries that were not in the submitted data
         for pk in existing_set - seen_set:
