@@ -727,6 +727,10 @@ class Script(models.Model):
     def run_on_pc(self, pc, *args):
         return self.run_on(pc.site, [pc], *args)
 
+    @property
+    def ordered_inputs(self):
+        return self.inputs.all().order_by('position')
+
     def get_absolute_url(self, **kwargs):
         if 'site_uid' in kwargs:
             site_uid = kwargs['site_uid']
