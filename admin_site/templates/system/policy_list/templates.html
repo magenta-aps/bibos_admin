@@ -1,7 +1,7 @@
 <div id="policylist-templates">
   <table>
     <tbody id="policy-item-template" class="template-container">
-      {% include 'system/policy_list/item.html' with position='#POSITION#' name='#NAME#' params='#PARAMS#' submit_name='#SUBMIT_NAME#' %}
+      {% include 'system/policy_list/item.html' with pk='#PK#' position='#POSITION#' name='#NAME#' params='#PARAMS#' submit_name='#SUBMIT_NAME#' %}
     </tbody>
   </table>
 </div>
@@ -36,14 +36,15 @@
   <div class="modal-body">
     <ul class="script-list">
     {% for script in all_scripts %}
-      <li onclick="BibOS.PolicyList.addToPolicy('{{ policy_id }}', '{{ script.id }}', '{{ script.name }}', [{% for input in script.inputs.all %}
+      <li onclick="BibOS.PolicyList.addToPolicy('{{ policy_id }}', '{{ script.id }}', '{{ script.name }}', '{{ script.pk }}', [{% for input in script.inputs.all %}
         {
           name: '{{ input.name }}',
           type: '{{ input.value_type }}',
-          position: '{{ input.position }}'
+          position: '{{ input.position }}',
+          required: '{{ input.mandatory }}'
         },
       {% endfor %}])">
-        {{ script.name }} ({% for input in script.inputs.all %}<span>{% if forloop.counter0 != 0 %}, {% endif %}{{ input.name }}</span>{% endfor %})
+        <strong>{{ script.name }}</strong> ({% for input in script.inputs.all %}<span>{% if forloop.counter0 != 0 %}, {% endif %}{{ input.name }}</span>{% endfor %})
       </li>
     {% endfor %}
     </ul>

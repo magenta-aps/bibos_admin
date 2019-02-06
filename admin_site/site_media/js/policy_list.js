@@ -11,11 +11,11 @@
     var PolicyList = function() {
         this.scriptInputs = []
         // These two snippets of HTML should match what's inside item.html
-        this.hiddenParamField = function (name, type) {
-          return '<input class="policy-script-param" type="hidden" name="' + name + '" value="" data-inputtype="' + type + '"/>';
+        this.hiddenParamField = function (name, type, mandatory) {
+          return '<input class="policy-script-param" type="hidden" name="' + name + '" value="" data-inputtype="' + type + '"' + (mandatory ? ' required="required"' : '') + '/>';
         }
         this.visibleParamField = function (name) {
-          return '<div class="policy-script-print"><span class="policy-script-print-name">' + name + ': </span><span class="policy-script-print-value"></span></div>'
+          return '<div class="policy-script-print"><strong class="policy-script-print-name">' + name + ': </strong><span class="policy-script-print-value"></span></div>'
         }
         this.getFieldType = function(type) {
           switch(type) {
@@ -47,12 +47,12 @@
                 $(".editpolicyscript-field").first().focus();
             })
         },
-        addToPolicy: function(id, scriptId, scriptName, scriptInputs) {
+        addToPolicy: function(id, scriptId, scriptName, scriptPk, scriptInputs) {
             var num_new = $('#' + id + '_new_entries').val()
             var item = $(BibOS.expandTemplate('policylist-item', {
-                position: 'new_' + num_new,
+                pk: scriptPk,
                 name: scriptName,
-                // params: scriptInputs,
+                position: 'new_' + num_new,
                 submit_name: id
             }));
             this.scriptInputs = scriptInputs
@@ -63,41 +63,43 @@
         updateNew: function(id) {
             var num = 0;
             $('#' + id + ' input.policy-script-pos').each(function() {
-                var t =  $(this), p = t.parent;
+                var t =  $(this), p = t.parent();
 
-                if (t.val().match(/new_^/)) {
-                    parent.find('input.policy-script-name').attr(
+                if (t.val().match(/^new_/)) {
+                    p.find('input.policy-script-name').attr(
                         'name',
-                        id + '_' + num + '_name'
+                        id + '_new_' + num
                     )
-                    parent.find('input.policy-script-param').attr(
+                    p.find('input.policy-script-param').attr(
                         'name',
-                        id + '_' + num + '_params'
+                        id + '_new_' + num + '_params'
                     )
-                    $(this).val('new_' + num);
+                    t.val('new_' + num);
                     num++
                 }
 
                 $('#' + id + '_new_entries').val(num);
             });
         },
-        removeItem: function(clickElem) {
+        removeItem: function(clickElem, id) {
             var e = $(clickElem).parent();
             while (e && e.length && !e.is('tr')) {
                 e = e.parent()
             }
             if (e)
                 e.remove()
-            this.updateNew();
+            this.updateNew(id);
         },
         addScript: function(id) {
             $('#addpolicyscriptdialog input').removeAttr('disabled');
-            $('#addpolicyscript_script_id').val(id);
-            $('#addpolicyscript_script_pk').val('new');
-            $('.addpolicyscript-field').val('');
+            // $('#addpolicyscript_script_id').val(id);
+            // $('#addpolicyscript_script_pk').val('new');
+            // $('.addpolicyscript-field').val('');
             $('#addpolicyscriptdialog').modal('show');
         },
         editScript: function(clickElem, id) {
+          $("#editpolicyscriptdialog .modal-body").html(''); // delete old inputs
+
           // loop over all input fields in the list view, and render fields for them in the modal
           var inputWrapper = $(clickElem).closest('div.btn-group');
           var inputFields = $([]); // make an empty jQuery object we can add to later
@@ -129,14 +131,14 @@
           // // end TODO
           $('#editpolicyscriptdialog').modal('show');
         },
-        renderScriptFields: function(name, submitName) {
+        renderScriptFields: function(name, scriptPk, submitName) {
           // If we come directly from adding a new script, django template variable "params" will only be #PARAMS#, so we need to render the fields dynamically
           var param_fields = ''
 
           // generate the hidden input fields and divs to render the parameters for the selected script
           for(var i = 0; i < BibOS.PolicyList.scriptInputs.length; i++) {
-            paramName = submitName + '_' + name + '_param_' + BibOS.PolicyList.scriptInputs[i].name;
-            param_fields += this.hiddenParamField(paramName, BibOS.PolicyList.scriptInputs[i].type)
+            paramName = submitName + '_' + scriptPk + '_params';
+            param_fields += this.hiddenParamField(paramName, BibOS.PolicyList.scriptInputs[i].type, BibOS.PolicyList.scriptInputs[i].mandatory)
             param_fields += this.visibleParamField(BibOS.PolicyList.scriptInputs[i].name);
           }
 
@@ -179,14 +181,14 @@
           // }
           // loop over inputs inside the modal, and set their corresponding hidden input fields in the group form
           var wrapper = $("#" + policy_id);
-          $("#editpolicyscriptdialog .modal-body input").each(function(){
+          $("#editpolicyscriptdialog .modal-body input").each(function(idx){
             var t = $(this);
-            var inputField = wrapper.find('input[name="' + t.attr('name') + '"]');
+            var inputField = wrapper.find('input[name="' + t.attr('name') + '"]').eq(idx);
+            console.log(idx, inputField)
             var visibleValueField = inputField.next('.policy-script-print').find('.policy-script-print-value')
             inputField.val(t.val());
             visibleValueField.text(t.val());
           });
-          $("#editpolicyscriptdialog .modal-body").html(''); // delete old inputs
           $('#editpolicyscriptdialog').modal('hide');
           return false;
         }

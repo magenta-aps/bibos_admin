@@ -5,15 +5,15 @@
     <div class="btn-group profile dark">
       <p data-name="policy-script-{{ name }}">
         <input class="policy-script-pos" type="hidden" name="{{ submit_name|default:'policy' }}" value="{{ position }}" />
-        <input class="policy-script-name" type="hidden" name="{{ submit_name|default:'policy' }}_{{ position }}_name" value="{{ name }}" />
+        <input class="policy-script-name" type="hidden" name="{{ submit_name|default:'policy' }}_{{ position }}" value="{{ pk }}" />
         {% if params != '#PARAMS#' %}
           {% for param in params %}
-            <!-- TODO: add data-inputtype on the hidden input field! -->
-            <input class="policy-script-param" type="hidden" name="{{ submit_name|default:'policy' }}_{{ name }}_param_{{ param.input.name }}" value="{{ param.string_value }}{{ param.file_value }}" />
+            <!-- TODO: add data-inputtype on the hidden input field when the fields come from Django! -->
+            <input class="policy-script-param" type="hidden" name="{{ submit_name|default:'policy' }}_{{ position }}_params" value="{{ param.string_value }}{{ param.file_value }}" />
             <div class="policy-script-print">
-              <span class="policy-script-print-name">
+              <strong class="policy-script-print-name">
                 {{ param.input.name }}:
-              </span>
+              </strong>
               <span class="policy-script-print-value">
                 {{ param.string_value }}{{ param.file_value }}
               </span>
@@ -22,13 +22,13 @@
         {% else %}
           <script>
             $(function(){
-              BibOS.PolicyList.renderScriptFields('{{ name }}', '{{ submit_name|default:'policy' }}');
+              BibOS.PolicyList.renderScriptFields('{{ name }}', '{{ pk }}', '{{ submit_name|default:'policy' }}');
             });
           </script>
         {% endif %}
       </p>
       <div><a href="javascript:void(0)" onclick="BibOS.PolicyList.editScript(this, '{{ submit_name }}')"><i class="icon-edit"></i> Redigér</a></div>
-      <div><a href="javascript:void(0)" onclick="BibOS.PolicyList.removeItem(this)"><i class="icon-remove"></i> Slet script</a></div>
+      <div><a href="javascript:void(0)" onclick="BibOS.PolicyList.removeItem(this, '{{ submit_name }}')"><i class="icon-remove"></i> Slet script</a></div>
     </div>
   </td>
 </tr>
