@@ -453,6 +453,46 @@ class PCGroup(models.Model):
             batches.append(asc.run_on(user, [pc]))
         return batches
 
+    def update_policy_from_request(self, req_params, submit_name):
+        seen_set = set()
+        existing_set = set(asc.pk for asc in self.policy.all())
+
+        for idx, pk in enumerate(req_params.getlist(submit_name, [])):
+            script_param = "%s_%s" % (submit_name, pk)
+            # No, there were no more ways I could reasonably have included the
+            # word "param" in the next line
+            params_param = "%s_params" % (script_param, )
+
+            script_pk = int(req_params.get(script_param, None))
+            script = Script.objects.get(pk=script_pk)
+
+            if pk.startswith("new_"):
+                asc = AssociatedScript(group=self, script=script, position=idx)
+                asc.save()
+                pk = asc.pk
+            else:
+                pk = int(pk)
+                asc = AssociatedScript.objects.get(
+                        pk=pk, group=self, script=script, position=idx)
+
+            params = req_params.getlist(params_param, [])
+            for inp, parV in zip(script.ordered_inputs, params):
+                try:
+                    par = AssociatedScriptParameter.objects.get(
+                            script=asc, input=inp)
+                except AssociatedScriptParameter.DoesNotExist:
+                    par = AssociatedScriptParameter(script=asc, input=inp)
+                if inp.value_type == Input.FILE:
+                    par.file_value = parV
+                else:
+                    par.string_value = parV
+                par.save()
+            seen_set.add(pk)
+
+        # Delete entries that were not in the submitted data
+        for pk in existing_set - seen_set:
+            asc = AssociatedScript.objects.get(pk=pk)
+            asc.delete()
     @property
     def ordered_policy(self):
         return self.policy.all().order_by('position')

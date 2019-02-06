@@ -1227,6 +1227,9 @@ class GroupUpdate(SiteMixin, SuperAdminOrThisSiteMixin, UpdateView):
         self.object.configuration.update_from_request(
             self.request.POST, 'group_configuration'
         )
+        self.object.update_policy_from_request(
+            self.request.POST, 'group_policies'
+        )
         response = super(GroupUpdate, self).form_valid(form)
         set_notification_cookie(
             response,
