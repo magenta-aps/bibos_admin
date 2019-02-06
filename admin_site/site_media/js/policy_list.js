@@ -50,7 +50,8 @@
         addToPolicy: function(id, scriptId, scriptName, scriptPk, scriptInputs) {
             var num_new = $('#' + id + '_new_entries').val()
             var item = $(BibOS.expandTemplate('policylist-item', {
-                pk: scriptPk,
+                ps_pk: 'new_' + num_new,
+                script_pk: scriptPk,
                 name: scriptName,
                 position: 'new_' + num_new,
                 submit_name: id

@@ -4,12 +4,12 @@
   <td>
     <div class="btn-group profile dark">
       <p data-name="policy-script-{{ name }}">
-        <input class="policy-script-pos" type="hidden" name="{{ submit_name|default:'policy' }}" value="{{ position }}" />
-        <input class="policy-script-name" type="hidden" name="{{ submit_name|default:'policy' }}_{{ position }}" value="{{ pk }}" />
+        <input class="policy-script-pos" type="hidden" name="{{ submit_name|default:'policy' }}" value="{{ ps_pk }}" />
+        <input class="policy-script-name" type="hidden" name="{{ submit_name|default:'policy' }}_{{ ps_pk }}" value="{{ script_pk }}" />
         {% if params != '#PARAMS#' %}
           {% for param in params %}
             <!-- TODO: add data-inputtype on the hidden input field when the fields come from Django! -->
-            <input class="policy-script-param" type="hidden" name="{{ submit_name|default:'policy' }}_{{ position }}_params" value="{{ param.string_value }}{{ param.file_value }}" />
+            <input class="policy-script-param" type="hidden" name="{{ submit_name|default:'policy' }}_{{ ps_pk }}_params" value="{{ param.string_value }}{{ param.file_value }}" />
             <div class="policy-script-print">
               <strong class="policy-script-print-name">
                 {{ param.input.name }}:
@@ -22,7 +22,7 @@
         {% else %}
           <script>
             $(function(){
-              BibOS.PolicyList.renderScriptFields('{{ name }}', '{{ pk }}', '{{ submit_name|default:'policy' }}');
+              BibOS.PolicyList.renderScriptFields('{{ name }}', '{{ ps_pk }}', '{{ submit_name|default:'policy' }}');
             });
           </script>
         {% endif %}

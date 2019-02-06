@@ -7,7 +7,7 @@
       <th>Parametre</th>
     </tr>
     {% for ps in entries %}
-      {% include 'system/policy_list/item.html' with pk=ps.pk position=ps.position name=ps.script.name params=ps.ordered_params submit_name=policy_id %}
+      {% include 'system/policy_list/item.html' with ps_pk=ps.pk script_pk=ps.script.pk name=ps.script.name params=ps.ordered_parameters submit_name=policy_id %}
     {% endfor %}
     <tr>
       <td colspan="2">
