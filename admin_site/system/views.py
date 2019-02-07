@@ -1220,6 +1220,11 @@ class GroupUpdate(SiteMixin, SuperAdminOrThisSiteMixin, UpdateView):
         return context
 
     def form_valid(self, form):
+        # Capture a view of the group's PCs and policy scripts before the
+        # update
+        members_pre = set(self.object.pcs.all())
+        policy_pre = set(self.object.policy.all())
+
         self.object.custom_packages.update_by_package_names(
             self.request.POST.getlist('group_packages_add'),
             self.request.POST.getlist('group_packages_remove')
@@ -1231,6 +1236,23 @@ class GroupUpdate(SiteMixin, SuperAdminOrThisSiteMixin, UpdateView):
             self.request.POST, 'group_policies'
         )
         response = super(GroupUpdate, self).form_valid(form)
+
+        members_post = set(self.object.pcs.all())
+        policy_post = set(self.object.policy.all())
+
+        # Work out which PCs and policy scripts have come and gone
+        surviving_members = members_post.intersection(members_pre)
+        new_members = members_post.difference(members_pre)
+        new_policy = policy_post.difference(policy_pre)
+
+        # Run all policy scripts on new PCs...
+        for pc in new_members:
+            self.object.run_associated_scripts_on(self.request.user, pc)
+
+        # ... and run new policy scripts on old PCs
+        for asc in new_policy:
+            asc.run_on(self.request.user, surviving_members)
+
         set_notification_cookie(
             response,
             _('Group %s updated') % self.object.name
