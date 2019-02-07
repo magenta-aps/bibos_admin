@@ -457,7 +457,8 @@ class PCGroup(models.Model):
         seen_set = set()
         existing_set = set(asc.pk for asc in self.policy.all())
 
-        for idx, pk in enumerate(req_params.getlist(submit_name, [])):
+        position = 0
+        for pk in req_params.getlist(submit_name, []):
             script_param = "%s_%s" % (submit_name, pk)
             # No, there were no more ways I could reasonably have included the
             # word "param" in the next line
@@ -467,13 +468,28 @@ class PCGroup(models.Model):
             script = Script.objects.get(pk=script_pk)
 
             if pk.startswith("new_"):
-                asc = AssociatedScript(group=self, script=script, position=idx)
+                # If the model already has a script at this position in the
+                # list, then the user must have deleted it in the UI; remove it
+                # from the database as well
+                try:
+                    existing = AssociatedScript.objects.get(
+                            group=self, position=position)
+                    # (... although we shouldn't try to remove it twice!)
+                    existing_set.remove(existing.pk)
+                    existing.delete()
+                except AssociatedScript.DoesNotExist:
+                    pass
+
+                asc = AssociatedScript(
+                        group=self, script=script, position=position)
                 asc.save()
                 pk = asc.pk
+                position += 1
             else:
                 pk = int(pk)
                 asc = AssociatedScript.objects.get(
-                        pk=pk, group=self, script=script, position=idx)
+                        pk=pk, group=self, script=script)
+                position = asc.position + 1
 
             params = req_params.getlist(params_param, [])
             for inp, parV in zip(script.ordered_inputs, params):
@@ -493,6 +509,7 @@ class PCGroup(models.Model):
         for pk in existing_set - seen_set:
             asc = AssociatedScript.objects.get(pk=pk)
             asc.delete()
+
     @property
     def ordered_policy(self):
         return self.policy.all().order_by('position')
