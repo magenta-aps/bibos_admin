@@ -1249,6 +1249,8 @@ class GroupUpdate(SiteMixin, SuperAdminOrThisSiteMixin, UpdateView):
         for pc in new_members:
             self.object.run_associated_scripts_on(self.request.user, pc)
 
+        new_policy = list(new_policy)
+        new_policy.sort(key=lambda asc: asc.position)
         # ... and run new policy scripts on old PCs
         for asc in new_policy:
             asc.run_on(self.request.user, surviving_members)

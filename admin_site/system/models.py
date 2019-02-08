@@ -781,9 +781,6 @@ class Script(models.Model):
 
         return batch
 
-    def run_on_pc(self, pc, *args):
-        return self.run_on(pc.site, [pc], *args)
-
     @property
     def ordered_inputs(self):
         return self.inputs.all().order_by('position')
