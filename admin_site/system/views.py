@@ -15,6 +15,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import View, ListView, DetailView, RedirectView
 from django.views.generic import TemplateView
 
+from django.db import transaction
 from django.db.models import Q
 from django.db.models import Count
 from django.conf import settings
@@ -1169,6 +1170,14 @@ class GroupCreate(SiteMixin, CreateView, SuperAdminOrThisSiteMixin):
         return super(GroupCreate, self).form_valid(form)
 
 
+class Error(Exception):
+    pass
+
+
+class OutdatedClientError(Error):
+    pass
+
+
 class GroupUpdate(SiteMixin, SuperAdminOrThisSiteMixin, UpdateView):
     template_name = 'system/site_groups.html'
     form_class = GroupForm
@@ -1220,41 +1229,57 @@ class GroupUpdate(SiteMixin, SuperAdminOrThisSiteMixin, UpdateView):
         members_pre = set(self.object.pcs.all())
         policy_pre = set(self.object.policy.all())
 
-        self.object.custom_packages.update_by_package_names(
-            self.request.POST.getlist('group_packages_add'),
-            self.request.POST.getlist('group_packages_remove')
-        )
-        self.object.configuration.update_from_request(
-            self.request.POST, 'group_configuration'
-        )
-        self.object.update_policy_from_request(
-            self.request.POST, 'group_policies'
-        )
-        response = super(GroupUpdate, self).form_valid(form)
+        try:
+            with transaction.atomic():
+                self.object.custom_packages.update_by_package_names(
+                    self.request.POST.getlist('group_packages_add'),
+                    self.request.POST.getlist('group_packages_remove')
+                )
+                self.object.configuration.update_from_request(
+                    self.request.POST, 'group_configuration'
+                )
+                self.object.update_policy_from_request(
+                    self.request.POST, 'group_policies'
+                )
 
-        members_post = set(self.object.pcs.all())
-        policy_post = set(self.object.policy.all())
+                response = super(GroupUpdate, self).form_valid(form)
 
-        # Work out which PCs and policy scripts have come and gone
-        surviving_members = members_post.intersection(members_pre)
-        new_members = members_post.difference(members_pre)
-        new_policy = policy_post.difference(policy_pre)
+                members_post = set(self.object.pcs.all())
+                policy_post = set(self.object.policy.all())
 
-        # Run all policy scripts on new PCs...
-        for pc in new_members:
-            self.object.run_associated_scripts_on(self.request.user, pc)
+                # Work out which PCs and policy scripts have come and gone
+                surviving_members = members_post.intersection(members_pre)
+                new_members = members_post.difference(members_pre)
+                new_policy = policy_post.difference(policy_pre)
 
-        new_policy = list(new_policy)
-        new_policy.sort(key=lambda asc: asc.position)
-        # ... and run new policy scripts on old PCs
-        for asc in new_policy:
-            asc.run_on(self.request.user, surviving_members)
+                # If we have a policy, make sure all group members actually
+                # support ordered job execution
+                if len(policy_post) > 0:
+                    for g in members_post:
+                        if not g.supports_ordered_job_execution():
+                            raise OutdatedClientError(g)
 
-        set_notification_cookie(
-            response,
-            _('Group %s updated') % self.object.name
-        )
-        return response
+                # Run all policy scripts on new PCs...
+                for pc in new_members:
+                    self.object.run_associated_scripts_on(self.request.user, pc)
+
+                new_policy = list(new_policy)
+                new_policy.sort(key=lambda asc: asc.position)
+                # ... and run new policy scripts on old PCs
+                for asc in new_policy:
+                    asc.run_on(self.request.user, surviving_members)
+
+                set_notification_cookie(
+                    response,
+                    _('Group %s updated') % self.object.name
+                )
+                return response
+        except OutdatedClientError as e:
+            set_notification_cookie(
+                response,
+                _('Group computer {0} must be upgraded to use policies').format(e),
+                error=True)
+            return response
 
     def form_invalid(self, form):
         return super(GroupUpdate, self).form_invalid(form)
