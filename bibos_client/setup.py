@@ -2,7 +2,8 @@ from setuptools import setup
 
 setup(
     name='bibos_client',
-    version='0.0.3.2',
+    # Keep this in sync with bibos_client/jobmanager.py
+    version='0.0.5.0',
     description='Clients for the BibOS system',
     url='https://github.com/magenta-aps/',
     author='C. Agger and J.U.B. Krag, Magenta ApS',
