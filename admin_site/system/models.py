@@ -11,7 +11,7 @@ import random
 import string
 import re
 import os.path
-
+from distutils.version import LooseVersion
 
 """The following variables define states of objects like jobs or PCs. It is
 used for labeling in the GUI."""
@@ -667,6 +667,13 @@ class PC(models.Model):
 
     def get_absolute_url(self):
         return reverse('computer', args=(self.site.uid, self.uid))
+
+    def supports_ordered_job_execution(self):
+        v = self.get_config_value("_os2borgerpc.client_version")
+        if v:
+            return LooseVersion("0.0.5.0") <= LooseVersion(v)
+        else:
+            return False
 
     def __str__(self):
         return self.name
