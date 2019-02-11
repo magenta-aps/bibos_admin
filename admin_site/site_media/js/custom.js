@@ -39,10 +39,13 @@ var BibOS;
 
       var m = document.cookie.match(/\bbibos-notification\s*=\s*([^;]+)/)
       if(m) {
-        var msg = unescape(m[1]);
-        msg = msg.replace(/^\"(.*)\"$/, '$1');
+        console.log(m[1]);
+        var descriptor = JSON.parse(decodeURIComponent(m[1]));
+        console.log(descriptor);
         notification = $('.bibos-notification').first()
-        notification.html(msg).fadeIn()
+        if (descriptor["type"] == "error")
+          notification.addClass("errorlist")
+        notification.html(descriptor["message"]).fadeIn()
         document.cookie = 'bibos-notification=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
       }
 

@@ -28,21 +28,16 @@ from .models import NEW, UPDATE
 from .forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
 from .forms import UserForm, ParameterForm, PCForm, SecurityProblemForm
 
+from urllib.parse import quote
 
-def set_notification_cookie(response, message):
-    def js_escape(c):
-        i = ord(c)
-        if i < 128:
-            return c
-        elif i < 256:
-            return '%%%X' % i
-        else:
-            return '%%u%X' % i
 
-    response.set_cookie(
-        'bibos-notification',
-        ''.join([js_escape(c) for c in message])
-    )
+def set_notification_cookie(response, message, error=False):
+    descriptor = {
+        "message": message,
+        "type": "success" if not error else "error"
+    }
+    response.set_cookie('bibos-notification',
+            quote(json.dumps(descriptor)))
 
 
 def get_no_of_sec_events(site):
