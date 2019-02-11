@@ -422,12 +422,33 @@ def report_job_results(joblist):
                             update_required=check_outstanding_packages())
 
 
+def flat_map(iterable, function):
+    for i in iterable:
+        v = function(i)
+        if v:
+            yield v
+
+
 def get_pending_job_dirs():
     result = []
-    for filename in glob.glob(JOBS_DIR + '/*/status'):
-        fh = open(filename, 'r')
-        if fh.read() == 'SUBMITTED':
-            result.append(filename[:filename.rindex('/')])
+    # Return job directories sorted by job ID, to make sure they get executed
+    # in a predictable order
+    def _numbered_dir(item):
+        try:
+            dirpath = os.path.join(JOBS_DIR, item)
+            if os.path.isdir(dirpath):
+                return int(item)
+        except ValueError:
+            pass
+        return None
+    job_ids = sorted(flat_map(os.listdir(JOBS_DIR), _numbered_dir))
+    for job_id in job_ids:
+        dirpath = os.path.join(JOBS_DIR, str(job_id))
+        filename = os.path.join(dirpath, 'status')
+        if os.path.exists(filename):
+            with open(filename, 'r') as fh:
+                if fh.read() == 'SUBMITTED':
+                    result.append(dirpath)
     return result
 
 
