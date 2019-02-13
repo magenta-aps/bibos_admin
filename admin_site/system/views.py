@@ -1280,7 +1280,7 @@ class GroupUpdate(SiteMixin, SuperAdminOrThisSiteMixin, UpdateView):
         except OutdatedClientError as e:
             set_notification_cookie(
                 response,
-                _('Group computer {0} must be upgraded to use policies').format(e),
+                _('Computer {0} must be upgraded in order to join a group with scripts attached').format(e),
                 error=True)
             return response
 
