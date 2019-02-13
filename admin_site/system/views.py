@@ -1260,8 +1260,11 @@ class GroupUpdate(SiteMixin, SuperAdminOrThisSiteMixin, UpdateView):
                             raise OutdatedClientError(g)
 
                 # Run all policy scripts on new PCs...
-                for pc in new_members:
-                    self.object.run_associated_scripts_on(self.request.user, pc)
+                if new_members:
+                    ordered_policy = list(policy_post)
+                    ordered_policy.sort(key=lambda asc: asc.position)
+                    for asc in ordered_policy:
+                        asc.run_on(self.request.user, new_members)
 
                 new_policy = list(new_policy)
                 new_policy.sort(key=lambda asc: asc.position)

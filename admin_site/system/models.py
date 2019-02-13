@@ -447,12 +447,6 @@ class PCGroup(models.Model):
         # After save
         pass
 
-    def run_associated_scripts_on(self, user, pc):
-        batches = []
-        for asc in self.ordered_policy:
-            batches.append(asc.run_on(user, [pc]))
-        return batches
-
     def update_policy_from_request(self, req_params, submit_name):
         seen_set = set()
         existing_set = set(asc.pk for asc in self.policy.all())
