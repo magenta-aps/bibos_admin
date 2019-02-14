@@ -107,15 +107,20 @@
           $.each(inputWrapper.find('.policy-script-param'), function(idx, elm) {
             var t = $(elm);
             var label = t.next('.policy-script-print').find('.policy-script-print-name');
+            var newElement = $('<input/>', {
+              type: BibOS.PolicyList.getFieldType(t.attr('data-inputtype')),
+              name: t.attr('name'),
+              id: t.attr('name')
+            })
+            if (newElement.attr('type') == "file") {
+              newElement[0].files = t[0].files
+            } else {
+              newElement[0].value = t.val()
+            }
             inputFields = inputFields.add($('<label/>', {
               for: t.attr('name'),
               text: label.text()
-            })).add($('<input/>', {
-              type: BibOS.PolicyList.getFieldType(t.attr('data-inputtype')),
-              value: t.val(),
-              name: t.attr('name'),
-              id: t.attr('name')
-            }))
+            })).add(newElement)
           });
           $("#editpolicyscriptdialog .modal-body").append(inputFields);
           // var c = $(clickElem).parent();
@@ -187,8 +192,15 @@
             var inputField = wrapper.find('input[name="' + t.attr('name') + '"]').eq(idx);
             console.log(idx, inputField)
             var visibleValueField = inputField.next('.policy-script-print').find('.policy-script-print-value')
-            inputField.val(t.val());
-            visibleValueField.text(t.val());
+            if (t.attr('type') == 'file') {
+              inputField.addClass('phantom')
+              inputField.attr('type', 'file')
+              inputField[0].files = t[0].files
+              visibleValueField.text(t[0].files[0].name)
+            } else {
+              inputField.val(t.val());
+              visibleValueField.text(t.val());
+            }
           });
           $('#editpolicyscriptdialog').modal('hide');
           return false;

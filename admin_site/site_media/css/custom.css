@@ -126,6 +126,7 @@ textarea {
 }
 .sublevelnav-inverted > form {padding: 20px;}
 
+input.phantom { display: none; }
 
 /* Lists */
 
