@@ -3,7 +3,7 @@
   <td>{{ name }}</td>
   <td>
     <div class="btn-group profile dark">
-      <p data-name="policy-script-{{ name }}">
+      <div data-name="policy-script-{{ name }}">
         <input class="policy-script-pos" type="hidden" name="{{ submit_name|default:'policy' }}" value="{{ ps_pk }}" />
         <input class="policy-script-name" type="hidden" name="{{ submit_name|default:'policy' }}_{{ ps_pk }}" value="{{ script_pk }}" />
         {% if params != '#PARAMS#' %}
@@ -33,7 +33,7 @@
             });
           </script>
         {% endif %}
-      </p>
+      </div>
       <div><a href="javascript:void(0)" onclick="BibOS.PolicyList.editScript(this, '{{ submit_name }}')"><i class="icon-edit"></i> Redigér</a></div>
       <div><a href="javascript:void(0)" onclick="BibOS.PolicyList.removeItem(this, '{{ submit_name }}')"><i class="icon-remove"></i> Slet script</a></div>
     </div>
