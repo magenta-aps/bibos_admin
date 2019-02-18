@@ -71,10 +71,10 @@
                         'name',
                         id + '_new_' + num
                     )
-                    p.find('input.policy-script-param').attr(
-                        'name',
-                        id + '_new_' + num + '_params'
-                    )
+                    p.find('input.policy-script-param').each(function(i) {
+                        $(this).attr('name',
+                                id + '_new_' + num + '_param_' + i)
+                    })
                     t.val('new_' + num);
                     num++
                 }
@@ -143,7 +143,7 @@
 
           // generate the hidden input fields and divs to render the parameters for the selected script
           for(var i = 0; i < BibOS.PolicyList.scriptInputs.length; i++) {
-            paramName = submitName + '_' + scriptPk + '_params';
+            paramName = submitName + '_' + scriptPk + '_param_' + i;
             param_fields += this.hiddenParamField(paramName, BibOS.PolicyList.scriptInputs[i].type, BibOS.PolicyList.scriptInputs[i].mandatory)
             param_fields += this.visibleParamField(BibOS.PolicyList.scriptInputs[i].name);
           }
@@ -187,9 +187,9 @@
           // }
           // loop over inputs inside the modal, and set their corresponding hidden input fields in the group form
           var wrapper = $("#" + policy_id);
-          $("#editpolicyscriptdialog .modal-body input").each(function(idx){
+          $("#editpolicyscriptdialog .modal-body input").each(function(){
             var t = $(this);
-            var inputField = wrapper.find('input[name="' + t.attr('name').substring(5) + '"]').eq(idx);
+            var inputField = wrapper.find('input[name="' + t.attr('name').substring(5) + '"]');
             var visibleValueField = inputField.next('.policy-script-print').find('.policy-script-print-value')
             if (t.attr('type') == 'file') {
               inputField.addClass('phantom')

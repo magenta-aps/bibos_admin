@@ -457,9 +457,6 @@ class PCGroup(models.Model):
         position = 0
         for pk in req_params.getlist(submit_name, []):
             script_param = "%s_%s" % (submit_name, pk)
-            # No, there were no more ways I could reasonably have included the
-            # word "param" in the next line
-            params_param = "%s_params" % (script_param, )
 
             script_pk = int(req_params.get(script_param, None))
             script = Script.objects.get(pk=script_pk)
@@ -488,29 +485,23 @@ class PCGroup(models.Model):
                         pk=pk, group=self, script=script)
                 position = asc.position + 1
 
-            params = req_params.getlist(params_param, [])
-            files = req_files.getlist(params_param, [])
-            ordered_inputs = script.ordered_inputs
-
-            assert len(ordered_inputs) == (len(params) + len(files))
-            params_it = iter(params)
-            files_it = iter(files)
             for inp in script.ordered_inputs:
                 try:
                     par = AssociatedScriptParameter.objects.get(
                             script=asc, input=inp)
                 except AssociatedScriptParameter.DoesNotExist:
                     par = AssociatedScriptParameter(script=asc, input=inp)
+                param_name = "{0}_param_{1}".format(script_param, inp.position)
                 if inp.value_type == Input.FILE:
-                    f = next(files_it)
-                    if par.id and not f: # Don't blank existing values
+                    if param_name not in req_files:
+                        # Don't blank existing values
                         continue
-                    par.file_value = f
+                    par.file_value = req_files[param_name]
                 else:
-                    v = next(params_it)
-                    if par.id and not v: # Don't blank existing values
+                    if param_name not in req_params:
+                        # Don't blank existing values
                         continue
-                    par.string_value = v
+                    par.string_value = req_params[param_name]
                 par.save()
             seen_set.add(pk)
 
