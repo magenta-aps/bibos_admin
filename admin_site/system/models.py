@@ -402,6 +402,14 @@ class Distribution(models.Model):
         return self.name
 
 
+class Error(Exception):
+    pass
+
+
+class MandatoryParameterMissingError(Error):
+    pass
+
+
 class PCGroup(models.Model):
     """Groups of PCs. Each PC may be in zero or many groups."""
     name = models.CharField(_('name'), max_length=255)
@@ -494,14 +502,26 @@ class PCGroup(models.Model):
                 param_name = "{0}_param_{1}".format(script_param, inp.position)
                 if inp.value_type == Input.FILE:
                     if param_name not in req_files:
-                        # Don't blank existing values
-                        continue
-                    par.file_value = req_files[param_name]
+                        if par.pk is not None:
+                            # Don't blank existing values
+                            continue
+                        elif inp.mandatory:
+                            raise MandatoryParameterMissingError(inp)
+                        else:
+                            pass
+                    else:
+                        par.file_value = req_files[param_name]
                 else:
                     if param_name not in req_params:
-                        # Don't blank existing values
-                        continue
-                    par.string_value = req_params[param_name]
+                        if par.pk is not None:
+                            # Don't blank existing values
+                            continue
+                        elif inp.mandatory:
+                            raise MandatoryParameterMissingError(inp)
+                        else:
+                            pass
+                    else:
+                        par.string_value = req_params[param_name]
                 par.save()
             seen_set.add(pk)
 
