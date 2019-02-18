@@ -83,7 +83,9 @@ class MyUserAdmin(UserAdmin):
     )
 
     def get_fieldsets(self, request, obj=None):
-        if _check_privilege(request.user):
+        # The super implementation returns a different (and more limited) set
+        # of fields when creating a user
+        if _check_privilege(request.user) or not obj:
             return super(MyUserAdmin, self).get_fieldsets(request, obj)
         else:
             return MyUserAdmin.limited_fieldsets
