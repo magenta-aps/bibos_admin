@@ -12,7 +12,11 @@
         this.scriptInputs = []
         // These two snippets of HTML should match what's inside item.html
         this.hiddenParamField = function (name, type, mandatory) {
-          return '<input class="policy-script-param" type="hidden" name="' + name + '" value="" data-inputtype="' + type + '"' + (mandatory ? ' required="required"' : '') + '/>';
+          return '<input class="policy-script-param'
+                  + (type == 'FILE' ? ' phantom' : '')
+                  + '" type="' + (type == 'FILE' ? 'file' : 'hidden')
+                  + '" name="' + name + '" value="" data-inputtype="' + type +
+                  '"' + (mandatory ? ' required="required"' : '') + '/>';
         }
         this.visibleParamField = function (name) {
           return '<div class="policy-script-print"><strong class="policy-script-print-name">' + name + ': </strong><span class="policy-script-print-value"></span></div>'
@@ -192,8 +196,6 @@
             var inputField = wrapper.find('input[name="' + t.attr('name').substring(5) + '"]');
             var visibleValueField = inputField.next('.policy-script-print').find('.policy-script-print-value')
             if (t.attr('type') == 'file') {
-              inputField.addClass('phantom')
-              inputField.attr('type', 'file')
               if (t[0].files.length != 0) {
                 inputField[0].files = t[0].files
                 visibleValueField.text(t[0].files[0].name)
