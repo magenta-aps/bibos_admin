@@ -109,8 +109,8 @@
             var label = t.next('.policy-script-print').find('.policy-script-print-name');
             var newElement = $('<input/>', {
               type: BibOS.PolicyList.getFieldType(t.attr('data-inputtype')),
-              name: t.attr('name'),
-              id: t.attr('name')
+              name: "edit_" + t.attr('name'),
+              id: "edit_" + t.attr('name')
             })
             if (newElement.attr('type') == "file") {
               newElement[0].files = t[0].files
@@ -189,8 +189,7 @@
           var wrapper = $("#" + policy_id);
           $("#editpolicyscriptdialog .modal-body input").each(function(idx){
             var t = $(this);
-            var inputField = wrapper.find('input[name="' + t.attr('name') + '"]').eq(idx);
-            console.log(idx, inputField)
+            var inputField = wrapper.find('input[name="' + t.attr('name').substring(5) + '"]').eq(idx);
             var visibleValueField = inputField.next('.policy-script-print').find('.policy-script-print-value')
             if (t.attr('type') == 'file') {
               inputField.addClass('phantom')
