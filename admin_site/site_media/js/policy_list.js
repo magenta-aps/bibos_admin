@@ -117,7 +117,11 @@
               id: "edit_" + t.attr('name')
             })
             if (newElement.attr('type') == "file") {
-              newElement[0].files = t[0].files
+              /* In principle, it'd be nice (for display purposes) to copy the
+                 FileList from the hidden input into the modal dialog -- but
+                 this confuses Firefox 65 enormously, and when we try to copy
+                 the FileList back again, it gets cleared! */
+//              newElement[0].files = t[0].files
             } else {
               newElement[0].value = t.val()
             }
