@@ -195,8 +195,10 @@
             if (t.attr('type') == 'file') {
               inputField.addClass('phantom')
               inputField.attr('type', 'file')
-              inputField[0].files = t[0].files
-              visibleValueField.text(t[0].files[0].name)
+              if (t[0].files.length != 0) {
+                inputField[0].files = t[0].files
+                visibleValueField.text(t[0].files[0].name)
+              }
             } else {
               inputField.val(t.val());
               visibleValueField.text(t.val());

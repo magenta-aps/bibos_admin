@@ -487,9 +487,14 @@ class PCGroup(models.Model):
 
             params = req_params.getlist(params_param, [])
             for inp, parV in zip(script.ordered_inputs, params):
+                print(inp, parV)
                 try:
                     par = AssociatedScriptParameter.objects.get(
                             script=asc, input=inp)
+                    if not parV:
+                        # It seems that the database already has a parameter
+                        # for this input, so don't overwrite it with emptiness
+                        continue
                 except AssociatedScriptParameter.DoesNotExist:
                     par = AssociatedScriptParameter(script=asc, input=inp)
                 if inp.value_type == Input.FILE:
