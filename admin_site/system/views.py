@@ -1239,7 +1239,7 @@ class GroupUpdate(SiteMixin, SuperAdminOrThisSiteMixin, UpdateView):
                     self.request.POST, 'group_configuration'
                 )
                 self.object.update_policy_from_request(
-                    self.request.POST, 'group_policies'
+                    self.request, 'group_policies'
                 )
 
                 response = super(GroupUpdate, self).form_valid(form)

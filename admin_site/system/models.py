@@ -447,7 +447,10 @@ class PCGroup(models.Model):
         # After save
         pass
 
-    def update_policy_from_request(self, req_params, submit_name):
+    def update_policy_from_request(self, request, submit_name):
+        req_params = request.POST
+        req_files = request.FILES
+
         seen_set = set()
         existing_set = set(asc.pk for asc in self.policy.all())
 
@@ -486,21 +489,28 @@ class PCGroup(models.Model):
                 position = asc.position + 1
 
             params = req_params.getlist(params_param, [])
-            for inp, parV in zip(script.ordered_inputs, params):
-                print(inp, parV)
+            files = req_files.getlist(params_param, [])
+            ordered_inputs = script.ordered_inputs
+
+            assert len(ordered_inputs) == (len(params) + len(files))
+            params_it = iter(params)
+            files_it = iter(files)
+            for inp in script.ordered_inputs:
                 try:
                     par = AssociatedScriptParameter.objects.get(
                             script=asc, input=inp)
-                    if not parV:
-                        # It seems that the database already has a parameter
-                        # for this input, so don't overwrite it with emptiness
-                        continue
                 except AssociatedScriptParameter.DoesNotExist:
                     par = AssociatedScriptParameter(script=asc, input=inp)
                 if inp.value_type == Input.FILE:
-                    par.file_value = parV
+                    f = next(files_it)
+                    if par.id and not f: # Don't blank existing values
+                        continue
+                    par.file_value = f
                 else:
-                    par.string_value = parV
+                    v = next(params_it)
+                    if par.id and not v: # Don't blank existing values
+                        continue
+                    par.string_value = v
                 par.save()
             seen_set.add(pk)
 

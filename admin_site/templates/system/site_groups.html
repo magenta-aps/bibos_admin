@@ -43,7 +43,7 @@ class="active"
 
     <form name="updategroupform" id="updategroupform"
       action="{% url 'group' site.uid selected_group.url %}"
-      method="post" class="row-fluid">
+      method="post" enctype="multipart/form-data" class="row-fluid">
 
       <button class="btn btn-primary">Gem ændringer</button>
       <button class="btn" onclick="return BibOS.PackageList.cancelEditing()">Annuller</button>
