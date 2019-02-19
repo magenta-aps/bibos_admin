@@ -97,9 +97,6 @@
         },
         addScript: function(id) {
             $('#addpolicyscriptdialog input').removeAttr('disabled');
-            // $('#addpolicyscript_script_id').val(id);
-            // $('#addpolicyscript_script_pk').val('new');
-            // $('.addpolicyscript-field').val('');
             $('#addpolicyscriptdialog').modal('show');
         },
         editScript: function(clickElem, id) {
@@ -131,18 +128,6 @@
             })).add(newElement)
           });
           $("#editpolicyscriptdialog .modal-body").append(inputFields);
-          // var c = $(clickElem).parent();
-          // while (c && c.length && !c.is('div.btn-group')) {
-          //     c = c.parent();
-          // }
-          // $('#editpolicyscriptdialog input').removeAttr('disabled');
-          // $('#editpolicyscript_script_id').val(id);
-          // $('#editpolicyscript_script_pk').val(c.find('input.policy-script-pos').val());
-          // // TODO: Here we need to loop over script arguments
-          // var e = $('#editpolicyscript_name').val(c.find('input.policy-script-name').val());
-          // e.attr('disabled', 'disabled');
-          // $('#editpolicyscript_value').val(c.find('input.policy-script-param').val());
-          // // end TODO
           $('#editpolicyscriptdialog').modal('show');
         },
         renderScriptFields: function(name, scriptPk, submitName) {
@@ -160,39 +145,6 @@
           $('[data-name="policy-script-' + name + '"]').last().append(param_fields)
         },
         submitEditDialog: function(policy_id) {
-          // var id = $('#editpolicyscript_script_id').val(),
-          //     pk = $('#editpolicyscript_script_pk').val(),
-          //     // TODO: Here we need to loop over script arguments
-          //     name = $('#editpolicyscript_name').val(),
-          //     value = $('#editpolicyscript_value').val();
-          //     // end TODO
-          //
-          // if (pk == 'new') {
-          //     if (! name) {
-          //         alert(tr("Du skal angive et navn"));
-          //         return false;
-          //     }
-          //     existing = $('#' + id).find(
-          //         'input.policy-script-name[value=' + name + ']'
-          //     );
-          //     if (existing.length) {
-          //         alert(tr("Policy-navnet %s findes allerede", name))
-          //         $('#editpolicyscript_name').focus().select();
-          //         return false;
-          //     }
-          //     this.addToPolicy(id, name, value);
-          // } else {
-          //     p = $('#' + id).find(
-          //         'input.policy-script-pos[value=' + pk + ']'
-          //     );
-          //     while (p && p.length && !p.is('tr')) {
-          //         p = p.parent();
-          //     }
-          //     if (p && p.length) {
-          //         p.find('input.policy-script-param').val(value)
-          //         p.find('.policy-print-value').html(value)
-          //     }
-          // }
           // loop over inputs inside the modal, and set their corresponding hidden input fields in the group form
           var wrapper = $("#" + policy_id);
           $("#editpolicyscriptdialog .modal-body input").each(function(){
