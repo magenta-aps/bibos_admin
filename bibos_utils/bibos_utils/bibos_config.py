@@ -84,8 +84,11 @@ class BibOSConfig():
                     s = os.stat(d)
                     os.chmod(d, s.st_mode & ~BibOSConfig.MASK)
 
-            with open(self.filename, "w") as stream:
+            # Make sure we overwrite the settings file atomically -- a failed
+            # write operation here would essentially unregister this client
+            with open(self.filename + ".new", "w") as stream:
                 yaml.dump(self.yamldata, stream, default_flow_style=False)
+            os.rename(self.filename + ".new", self.filename)
         except IOError as e:
             print "Error opening BibOSConfig file for writing: ", str(e)
             raise
