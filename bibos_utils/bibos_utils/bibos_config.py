@@ -101,13 +101,17 @@ class BibOSConfig():
             subkey = key[:i]
             try:
                 current = current[subkey]
-            except KeyError:
+            except (KeyError, TypeError):
                 current[subkey] = {}
                 current = current[subkey]
             key = key[i + 1:]
             i = key.find(".")
 
-        current[key] = value
+        try:
+            current[key] = value
+        except TypeError:
+            current = {}
+            current[key] = value
 
     def get_value(self, key):
         current = self.yamldata
