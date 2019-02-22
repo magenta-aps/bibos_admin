@@ -9,9 +9,9 @@
         {% if params != '#PARAMS#' %}
           {% for param in params %}
             {% if param.input.value_type != 'FILE' %}
-            <input class="policy-script-param" type="hidden" name="{{ submit_name|default:'policy' }}_{{ ps_pk }}_param_{{ param.input.position }}" value="{{ param.string_value }}{{ param.file_value }}" data-inputtype="{{ param.input.value_type }}" />
+            <input class="policy-script-param" type="hidden" name="{{ submit_name|default:'policy' }}_{{ ps_pk }}_param_{{ param.input.position }}" value="{{ param.string_value }}{{ param.file_value }}" data-inputtype="{{ param.input.value_type }}" {% if param.input.mandatory %} required="required" {% endif %} />
             {% else %}
-            <input class="policy-script-param phantom" type="file" name="{{ submit_name|default:'policy' }}_{{ ps_pk }}_param_{{ param.input.position }}" data-inputtype="FILE" />
+            <input class="policy-script-param phantom" type="file" name="{{ submit_name|default:'policy' }}_{{ ps_pk }}_param_{{ param.input.position }}" data-inputtype="FILE" {% if param.input.mandatory %} required="required" {% endif %} />
             {% endif %}
             <div class="policy-script-print">
               <strong class="policy-script-print-name">
