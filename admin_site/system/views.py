@@ -24,6 +24,7 @@ from account.models import UserProfile
 
 from .models import Site, PC, PCGroup, ConfigurationEntry, Package
 from .models import Job, Script, Input, SecurityProblem, SecurityEvent
+from .models import MandatoryParameterMissingError
 # PC Status codes
 from .models import NEW, UPDATE
 from .forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
@@ -1281,6 +1282,17 @@ class GroupUpdate(SiteMixin, SuperAdminOrThisSiteMixin, UpdateView):
             set_notification_cookie(
                 response,
                 _('Computer {0} must be upgraded in order to join a group with scripts attached').format(e),
+                error=True)
+            return response
+        except MandatoryParameterMissingError as e:
+            # If this happens, it happens *before* we have a valid
+            # HttpResponse, so make one with form_invalid()
+            response = self.form_invalid(form)
+            parameter = e.args[0]
+            set_notification_cookie(
+                response,
+                _('No value was specified for the mandatory input "{0}" of script "{1}"').format(
+                        parameter.name, parameter.script.name),
                 error=True)
             return response
 
