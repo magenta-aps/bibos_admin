@@ -254,3 +254,6 @@ div.docscontainer .nav-list>li>a:hover {background: #666; text-decoration: none;
 .clearright {clear: right}
 .clearboth {clear: both}
 .inline {display: inline}
+
+/* */
+input.invalid { border: 1px solid red; }

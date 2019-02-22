@@ -145,9 +145,39 @@
           $('[data-name="policy-script-' + name + '"]').last().append(param_fields)
         },
         submitEditDialog: function(policy_id) {
-          // loop over inputs inside the modal, and set their corresponding hidden input fields in the group form
           var wrapper = $("#" + policy_id);
-          $("#editpolicyscriptdialog .modal-body input").each(function(){
+
+          var modalInputs = $("#editpolicyscriptdialog .modal-body input");
+          /* Check that each of our mandatory inputs has a value (or that its
+             corresponding hidden input field already has a value) */
+          var count = 0;
+          modalInputs.each(function(){
+            var t = $(this);
+            var inputField = wrapper.find('input[name="' + t.attr('name').substring(5) + '"]');
+            if (inputField.prop("required", true)) {
+              if (t.attr('type') == 'file') {
+                /* If the hidden input field has a value, then it's fine if
+                   this one doesn't -- we won't overwrite it */
+                if (t[0].files.length == 0 && inputField[0].files.length == 0) {
+                  t.addClass("invalid")
+                  return false;
+                }
+              } else {
+                if (t.val().trim().length == 0) {
+                  t.addClass("invalid")
+                  return false;
+                }
+              }
+            }
+            t.removeClass("invalid")
+            count += 1;
+          });
+          console.log(count, modalInputs.length);
+          if (count != modalInputs.length)
+            return false;
+
+          // loop over inputs inside the modal, and set their corresponding hidden input fields in the group form
+          modalInputs.each(function(){
             var t = $(this);
             var inputField = wrapper.find('input[name="' + t.attr('name').substring(5) + '"]');
             var visibleValueField = inputField.next('.policy-script-print').find('.policy-script-print-value')
