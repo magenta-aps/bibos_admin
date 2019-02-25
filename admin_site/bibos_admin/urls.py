@@ -21,7 +21,7 @@ urlpatterns = [
     # url(r'^$', 'bibos_admin.views.home', name='home'),
     url('accounts/login/', auth_views.LoginView.as_view(template_name='login.html')),
     url(r'^xmlrpc/$', handle_xmlrpc, name='xmlrpc'),
-    url('accounts/logout/', auth_views.LoginView.as_view(template_name='logout.html')),
+    url('accounts/logout/', auth_views.LogoutView.as_view(template_name='logout.html')),
     url(r'^', include('system.urls')),
     url(r'^admin-xml/$', handle_xmlrpc),
     # Uncomment the admin/doc line below to enable admin documentation:

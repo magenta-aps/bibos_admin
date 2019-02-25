@@ -11,7 +11,7 @@ import random
 import string
 import re
 import os.path
-
+from distutils.version import LooseVersion
 
 """The following variables define states of objects like jobs or PCs. It is
 used for labeling in the GUI."""
@@ -41,28 +41,30 @@ class Configuration(models.Model):
 
         existing_set = set(cnf.pk for cnf in self.entries.all())
 
-        for pk in req_params.getlist(submit_name, []):
+        unique_names = set(req_params.getlist(submit_name, []))
+        for pk in unique_names:
             key_param = "%s_%s_key" % (submit_name, pk)
             value_param = "%s_%s_value" % (submit_name, pk)
 
-            key = req_params.get(key_param, '')
-            value = req_params.get(value_param, '')
+            key = req_params.getlist(key_param, '')
+            value = req_params.getlist(value_param, '')
 
             if pk.startswith("new_"):
-                # Create new entry
-                cnf = ConfigurationEntry(
-                    key=key,
-                    value=value,
-                    owner_configuration=self
-                )
+                # Create one or more new entries
+                for k, v in zip(key, value):
+                    cnf = ConfigurationEntry(
+                        key=k,
+                        value=v,
+                        owner_configuration=self
+                    )
+                    cnf.save()
             else:
                 # Update submitted entry
                 cnf = ConfigurationEntry.objects.get(pk=pk)
-                cnf.key = key
-                cnf.value = value
+                cnf.key = key[0]
+                cnf.value = value[0]
                 seen_set.add(cnf.pk)
-
-            cnf.save()
+                cnf.save()
 
         # Delete entries that were not in the submitted data
         for pk in existing_set - seen_set:
@@ -400,6 +402,14 @@ class Distribution(models.Model):
         return self.name
 
 
+class Error(Exception):
+    pass
+
+
+class MandatoryParameterMissingError(Error):
+    pass
+
+
 class PCGroup(models.Model):
     """Groups of PCs. Each PC may be in zero or many groups."""
     name = models.CharField(_('name'), max_length=255)
@@ -444,6 +454,87 @@ class PCGroup(models.Model):
 
         # After save
         pass
+
+    def update_policy_from_request(self, request, submit_name):
+        req_params = request.POST
+        req_files = request.FILES
+
+        seen_set = set()
+        existing_set = set(asc.pk for asc in self.policy.all())
+
+        position = 0
+        for pk in req_params.getlist(submit_name, []):
+            script_param = "%s_%s" % (submit_name, pk)
+
+            script_pk = int(req_params.get(script_param, None))
+            script = Script.objects.get(pk=script_pk)
+
+            if pk.startswith("new_"):
+                # If the model already has a script at this position in the
+                # list, then the user must have deleted it in the UI; remove it
+                # from the database as well
+                try:
+                    existing = AssociatedScript.objects.get(
+                            group=self, position=position)
+                    # (... although we shouldn't try to remove it twice!)
+                    existing_set.remove(existing.pk)
+                    existing.delete()
+                except AssociatedScript.DoesNotExist:
+                    pass
+
+                asc = AssociatedScript(
+                        group=self, script=script, position=position)
+                asc.save()
+                pk = asc.pk
+                position += 1
+            else:
+                pk = int(pk)
+                asc = AssociatedScript.objects.get(
+                        pk=pk, group=self, script=script)
+                position = asc.position + 1
+
+            for inp in script.ordered_inputs:
+                try:
+                    par = AssociatedScriptParameter.objects.get(
+                            script=asc, input=inp)
+                except AssociatedScriptParameter.DoesNotExist:
+                    par = AssociatedScriptParameter(script=asc, input=inp)
+                param_name = "{0}_param_{1}".format(script_param, inp.position)
+                if inp.value_type == Input.FILE:
+                    if param_name not in req_files \
+                            or not req_files[param_name]:
+                        if par.pk is not None:
+                            # Don't blank existing values
+                            continue
+                        elif inp.mandatory:
+                            raise MandatoryParameterMissingError(inp)
+                        else:
+                            pass
+                    else:
+                        par.file_value = req_files[param_name]
+                else:
+                    if param_name not in req_params \
+                            or not req_params[param_name]:
+                        if par.pk is not None:
+                            # Don't blank existing values
+                            continue
+                        elif inp.mandatory:
+                            raise MandatoryParameterMissingError(inp)
+                        else:
+                            pass
+                    else:
+                        par.string_value = req_params[param_name]
+                par.save()
+            seen_set.add(pk)
+
+        # Delete entries that were not in the submitted data
+        for pk in existing_set - seen_set:
+            asc = AssociatedScript.objects.get(pk=pk)
+            asc.delete()
+
+    @property
+    def ordered_policy(self):
+        return self.policy.all().order_by('position')
 
     def get_absolute_url(self):
         site_url = self.site.get_absolute_url()
@@ -599,6 +690,13 @@ class PC(models.Model):
     def get_absolute_url(self):
         return reverse('computer', args=(self.site.uid, self.uid))
 
+    def supports_ordered_job_execution(self):
+        v = self.get_config_value("_os2borgerpc.client_version")
+        if v:
+            return LooseVersion("0.0.5.0") <= LooseVersion(v)
+        else:
+            return False
+
     def __str__(self):
         return self.name
 
@@ -699,9 +797,11 @@ class Script(models.Model):
             if i < len(args):
                 value = args[i]
                 if(inp.value_type == Input.FILE):
-                    p = Parameter(input=inp, batch=batch, file_value=value)
+                    p = BatchParameter(
+                        input=inp, batch=batch, file_value=value)
                 else:
-                    p = Parameter(input=inp, batch=batch, string_value=value)
+                    p = BatchParameter(
+                        input=inp, batch=batch, string_value=value)
                 p.save()
 
         for pc in pc_list:
@@ -710,8 +810,9 @@ class Script(models.Model):
 
         return batch
 
-    def run_on_pc(self, pc, *args):
-        return self.run_on(pc.site, [pc], *args)
+    @property
+    def ordered_inputs(self):
+        return self.inputs.all().order_by('position')
 
     def get_absolute_url(self, **kwargs):
         if 'site_uid' in kwargs:
@@ -739,6 +840,58 @@ class Batch(models.Model):
     def __unicode__(self):
         return self.name
 
+
+class AssociatedScript(models.Model):
+    """A script associated with a group. Adding a script to a group causes it
+    to be run on all computers in the group; adding a computer to a group with
+    scripts will cause all of those scripts to be run on the new member."""
+
+    group = models.ForeignKey(PCGroup, related_name='policy')
+    script = models.ForeignKey(Script, related_name='associations')
+    position = models.IntegerField(_('position'))
+
+    def make_batch(self):
+        now_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        return Batch(site=self.group.site, script=self.script,
+                     name=', '.join([self.group.name, self.script.name, now_str]))
+
+    def make_parameters(self, batch):
+        params = []
+        for i in self.script.inputs.all():
+            try:
+                asp = self.parameters.get(input=i)
+                params.append(asp.make_batch_parameter(batch))
+            except AssociatedScriptParameter.DoesNotExist:
+                # XXX
+                raise
+        return params
+
+    @property
+    def ordered_parameters(self):
+        return self.parameters.all().order_by('input__position')
+
+    def run_on(self, user, pcs):
+        """\
+Runs this script on several PCs, returning a batch representing this task."""
+        batch = self.make_batch()
+        batch.save()
+        params = self.make_parameters(batch)
+
+        for p in params:
+            p.save()
+        for pc in pcs:
+            job = Job(batch=batch, pc=pc, user=user)
+            job.save()
+
+        return batch
+
+    def __str__(self):
+        return "{0}, {1}: {2}".format(self.group, self.position, self.script)
+    def __unicode__(self):
+        return __str__(self)
+
+    class Meta:
+        unique_together = ('position', 'group')
 
 class Job(models.Model):
     """A Job or task to be performed on a single computer."""
@@ -858,7 +1011,7 @@ class Job(models.Model):
                           name=' '.join([script.name, now_str]))
         new_batch.save()
         for p in self.batch.parameters.all():
-            new_p = Parameter(
+            new_p = BatchParameter(
                 input=p.input,
                 batch=new_batch,
                 file_value=p.file_value,
@@ -897,10 +1050,13 @@ class Input(models.Model):
     script = models.ForeignKey(Script, related_name='inputs')
 
     def __str__(self):
-        return self.name
+        return self.script.name + "/" + self.name
 
     def __unicode__(self):
-        return self.name
+        return self.__str__()
+
+    class Meta:
+        unique_together = ('position', 'script')
 
 
 def upload_file_name(instance, filename):
@@ -914,7 +1070,7 @@ def upload_file_name(instance, filename):
 
 
 class Parameter(models.Model):
-    """An input parameter for a job, a script, etc."""
+    """A concrete value for the Input of a Script."""
 
     string_value = models.CharField(max_length=4096, null=True, blank=True)
     file_value = models.FileField(upload_to=upload_file_name,
@@ -922,8 +1078,6 @@ class Parameter(models.Model):
                                   blank=True)
     # which input does this belong to?
     input = models.ForeignKey(Input)
-    # and which batch are we running?
-    batch = models.ForeignKey(Batch, related_name='parameters')
 
     @property
     def transfer_value(self):
@@ -932,6 +1086,37 @@ class Parameter(models.Model):
             return self.file_value.url
         else:
             return self.string_value
+
+    class Meta:
+        abstract = True
+
+class BatchParameter(Parameter):
+    # Which batch is this parameter associated with?
+    batch = models.ForeignKey(Batch, related_name='parameters')
+
+    def __str__(self):
+        return "{0}: {1}".format(self.input, self.transfer_value)
+    def __unicode__(self):
+        return self.__str__()
+
+
+class AssociatedScriptParameter(Parameter):
+    # Which associated script is this parameter, er, associated with?
+    script = models.ForeignKey(AssociatedScript, related_name='parameters')
+
+    def make_batch_parameter(self, batch):
+        if self.input.value_type == Input.FILE:
+            return BatchParameter(
+                batch=batch, input=self.input, file_value=self.file_value)
+        else:
+            return BatchParameter(
+                batch=batch, input=self.input, string_value=self.string_value)
+
+    def __str__(self):
+        return "{0} - {1}: {2}".format(
+            self.script, self.input, self.transfer_value)
+    def __unicode__(self):
+        return self.__str__()
 
 
 class SecurityProblem(models.Model):

@@ -1,0 +1,22 @@
+{% if policy_id %}
+<div class="well" id="{{ policy_id }}">
+  <!-- TODO: Hav nummereret liste, så vi kan se at der er en eksekutionsrækkefølge -->
+  <table class="table table-condensed table-hover">
+    <tr>
+      <th>Script</th>
+      <th>Parametre</th>
+    </tr>
+    {% for ps in entries %}
+      {% include 'system/policy_list/item.html' with ps_pk=ps.pk script_pk=ps.script.pk name=ps.script.name params=ps.ordered_parameters submit_name=policy_id %}
+    {% endfor %}
+    <tr>
+      <td colspan="2">
+        <input type="hidden" name="{{ policy_id }}_new_entries" id="{{ policy_id }}_new_entries" value="0" />
+        <a href="javascript:void(0)" onclick="BibOS.PolicyList.addScript('{{ policy_id }}')" title="Tilføj script"><i class="icon-plus"></i> tilføj script</a>
+      </td>
+    </tr>
+  </table>
+</div>
+{% else %}
+<p>You must specify a <em>policy_id</em> when inserting a policy list</p>
+{% endif %}

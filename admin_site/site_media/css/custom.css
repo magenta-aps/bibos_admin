@@ -91,7 +91,14 @@ ul.nav li ul li.active { font-style: italic; }
 .scriptDescription textarea {width: 95%; min-height: 20em;}
 .addsitetrigger {padding-bottom: 0.5em;}
 #group_configuration, #pc_config {margin-bottom: 0;}
-
+.script-list {
+  list-style-type:none;
+  margin-left:0;
+}
+.script-list li:hover {
+  cursor:pointer;
+  background-color:#eee;
+}
 
 /* Tables */
 
@@ -119,10 +126,11 @@ textarea {
 }
 .sublevelnav-inverted > form {padding: 20px;}
 
+input.phantom { display: none; }
 
 /* Lists */
 
-.itemlist .btn-group {margin: 0 10px 10px 0;} 
+.itemlist .btn-group {margin: 0 10px 10px 0;}
 .actionlist {padding: 5px;}
 .actionlist a {border-top: solid 1px #ddd; padding: 10px; display: block;}
 .actionlist > li:first-child a {border: none;}
@@ -223,12 +231,12 @@ div.docscontainer .nav-list>li>a:hover {background: #666; text-decoration: none;
 }
 
 @media (min-width: 1200px) {
-    
+
     .popup-page {
         max-width: 960px;
         margin: 0 auto;
     }
-    
+
 }
 
 
@@ -246,3 +254,6 @@ div.docscontainer .nav-list>li>a:hover {background: #666; text-decoration: none;
 .clearright {clear: right}
 .clearboth {clear: both}
 .inline {display: inline}
+
+/* */
+input.invalid { border: 1px solid red; }

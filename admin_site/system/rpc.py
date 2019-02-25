@@ -266,7 +266,7 @@ def get_instructions(pc_uid, update_data):
             to_install.remove(name)
 
     jobs = []
-    for job in pc.jobs.filter(status=Job.NEW):
+    for job in pc.jobs.filter(status=Job.NEW).order_by('pk'):
         job.status = Job.SUBMITTED
         job.save()
         jobs.append(job.as_instruction)
