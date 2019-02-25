@@ -1,3 +1,14 @@
+* Version 3.1.0, February 25, 2019
+
+- Support for associating scripts with groups (policies)
+- Logging out of the admin system now works more reliably
+- Users with staff access no longer have access to other sites' user information
+- Bumped the bibos_client version to 0.0.5.0:
+  - To support policies, clients now run scripts in a predictable order
+  - Clients now send their bibos_client version to the administration system
+- Bumped the bibos_utils version to 0.0.3.1:
+  - A bug that could occasionally clear client configuration files has been fixed
+
 * Version 3.0.1, January 16, 2019
 
 - json data exposing existing computers on a given site can now be reached from %domain%/%site_id%/computers/json/ 
