@@ -19,6 +19,9 @@ from bibos_utils.bibos_config import BibOSConfig
 from admin_client import BibOSAdmin
 from utils import upload_packages, filelock
 
+# Keep this in sync with setup.py
+BIBOS_CLIENT_VERSION = "0.0.5.0"
+
 """
 Directory structure for storing BibOS jobs:
 /var/lib/bibos/jobs/<id> - Files related to job with id <id>
@@ -422,12 +425,33 @@ def report_job_results(joblist):
                             update_required=check_outstanding_packages())
 
 
+def flat_map(iterable, function):
+    for i in iterable:
+        v = function(i)
+        if v:
+            yield v
+
+
 def get_pending_job_dirs():
     result = []
-    for filename in glob.glob(JOBS_DIR + '/*/status'):
-        fh = open(filename, 'r')
-        if fh.read() == 'SUBMITTED':
-            result.append(filename[:filename.rindex('/')])
+    # Return job directories sorted by job ID, to make sure they get executed
+    # in a predictable order
+    def _numbered_dir(item):
+        try:
+            dirpath = os.path.join(JOBS_DIR, item)
+            if os.path.isdir(dirpath):
+                return int(item)
+        except ValueError:
+            pass
+        return None
+    job_ids = sorted(flat_map(os.listdir(JOBS_DIR), _numbered_dir))
+    for job_id in job_ids:
+        dirpath = os.path.join(JOBS_DIR, str(job_id))
+        filename = os.path.join(dirpath, 'status')
+        if os.path.exists(filename):
+            with open(filename, 'r') as fh:
+                if fh.read() == 'SUBMITTED':
+                    result.append(dirpath)
     return result
 
 
@@ -551,10 +575,20 @@ def handle_security_events():
         send_security_events(now)
 
 
+def send_special_data():
+    (remote_url, uid) = get_url_and_uid()
+    remote = BibOSAdmin(remote_url)
+
+    remote.push_config_keys(uid, {
+        "_os2borgerpc.client_version": BIBOS_CLIENT_VERSION
+    })
+
+
 def update_and_run():
     try:
         LOCK.acquire()
         try:
+            send_special_data()
             get_instructions()
             run_pending_jobs()
             handle_security_events()

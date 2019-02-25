@@ -101,13 +101,17 @@ class BibOSConfig():
             subkey = key[:i]
             try:
                 current = current[subkey]
-            except KeyError:
+            except (KeyError, TypeError):
                 current[subkey] = {}
                 current = current[subkey]
             key = key[i + 1:]
             i = key.find(".")
 
-        current[key] = value
+        try:
+            current[key] = value
+        except TypeError:
+            current = {}
+            current[key] = value
 
     def get_value(self, key):
         current = self.yamldata
@@ -139,4 +143,12 @@ class BibOSConfig():
             del current[key]
 
     def get_data(self):
-        return self.yamldata
+        def _get_at(node, prefix):
+            for k, v in node.items():
+                here = prefix + [k]
+                if isinstance(v, dict):
+                    for i in _get_at(v, here):
+                        yield i
+                else:
+                    yield (".".join(here), v)
+        return dict(_get_at(self.yamldata, []))

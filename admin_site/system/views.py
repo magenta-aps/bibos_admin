@@ -15,6 +15,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import View, ListView, DetailView, RedirectView
 from django.views.generic import TemplateView
 
+from django.db import transaction
 from django.db.models import Q
 from django.db.models import Count
 from django.conf import settings
@@ -23,26 +24,22 @@ from account.models import UserProfile
 
 from .models import Site, PC, PCGroup, ConfigurationEntry, Package
 from .models import Job, Script, Input, SecurityProblem, SecurityEvent
+from .models import MandatoryParameterMissingError
 # PC Status codes
 from .models import NEW, UPDATE
 from .forms import SiteForm, GroupForm, ConfigurationEntryForm, ScriptForm
 from .forms import UserForm, ParameterForm, PCForm, SecurityProblemForm
 
+from urllib.parse import quote
 
-def set_notification_cookie(response, message):
-    def js_escape(c):
-        i = ord(c)
-        if i < 128:
-            return c
-        elif i < 256:
-            return '%%%X' % i
-        else:
-            return '%%u%X' % i
 
-    response.set_cookie(
-        'bibos-notification',
-        ''.join([js_escape(c) for c in message])
-    )
+def set_notification_cookie(response, message, error=False):
+    descriptor = {
+        "message": message,
+        "type": "success" if not error else "error"
+    }
+    response.set_cookie('bibos-notification',
+            quote(json.dumps(descriptor)))
 
 
 def get_no_of_sec_events(site):
@@ -1174,6 +1171,14 @@ class GroupCreate(SiteMixin, CreateView, SuperAdminOrThisSiteMixin):
         return super(GroupCreate, self).form_valid(form)
 
 
+class Error(Exception):
+    pass
+
+
+class OutdatedClientError(Error):
+    pass
+
+
 class GroupUpdate(SiteMixin, SuperAdminOrThisSiteMixin, UpdateView):
     template_name = 'system/site_groups.html'
     form_class = GroupForm
@@ -1210,22 +1215,86 @@ class GroupUpdate(SiteMixin, SuperAdminOrThisSiteMixin, UpdateView):
         context['newform'] = GroupForm()
         del context['newform'].fields['pcs']
 
+        context['all_scripts'] = Script.objects.filter(
+            Q(site=site) | Q(site=None),
+            is_security_script=False
+        ).exclude(
+            site__name='system'
+        )
+
         return context
 
     def form_valid(self, form):
-        self.object.custom_packages.update_by_package_names(
-            self.request.POST.getlist('group_packages_add'),
-            self.request.POST.getlist('group_packages_remove')
-        )
-        self.object.configuration.update_from_request(
-            self.request.POST, 'group_configuration'
-        )
-        response = super(GroupUpdate, self).form_valid(form)
-        set_notification_cookie(
-            response,
-            _('Group %s updated') % self.object.name
-        )
-        return response
+        # Capture a view of the group's PCs and policy scripts before the
+        # update
+        members_pre = set(self.object.pcs.all())
+        policy_pre = set(self.object.policy.all())
+
+        try:
+            with transaction.atomic():
+                self.object.custom_packages.update_by_package_names(
+                    self.request.POST.getlist('group_packages_add'),
+                    self.request.POST.getlist('group_packages_remove')
+                )
+                self.object.configuration.update_from_request(
+                    self.request.POST, 'group_configuration'
+                )
+                self.object.update_policy_from_request(
+                    self.request, 'group_policies'
+                )
+
+                response = super(GroupUpdate, self).form_valid(form)
+
+                members_post = set(self.object.pcs.all())
+                policy_post = set(self.object.policy.all())
+
+                # Work out which PCs and policy scripts have come and gone
+                surviving_members = members_post.intersection(members_pre)
+                new_members = members_post.difference(members_pre)
+                new_policy = policy_post.difference(policy_pre)
+
+                # If we have a policy, make sure all group members actually
+                # support ordered job execution
+                if len(policy_post) > 0:
+                    for g in members_post:
+                        if not g.supports_ordered_job_execution():
+                            raise OutdatedClientError(g)
+
+                # Run all policy scripts on new PCs...
+                if new_members:
+                    ordered_policy = list(policy_post)
+                    ordered_policy.sort(key=lambda asc: asc.position)
+                    for asc in ordered_policy:
+                        asc.run_on(self.request.user, new_members)
+
+                new_policy = list(new_policy)
+                new_policy.sort(key=lambda asc: asc.position)
+                # ... and run new policy scripts on old PCs
+                for asc in new_policy:
+                    asc.run_on(self.request.user, surviving_members)
+
+                set_notification_cookie(
+                    response,
+                    _('Group %s updated') % self.object.name
+                )
+                return response
+        except OutdatedClientError as e:
+            set_notification_cookie(
+                response,
+                _('Computer {0} must be upgraded in order to join a group with scripts attached').format(e),
+                error=True)
+            return response
+        except MandatoryParameterMissingError as e:
+            # If this happens, it happens *before* we have a valid
+            # HttpResponse, so make one with form_invalid()
+            response = self.form_invalid(form)
+            parameter = e.args[0]
+            set_notification_cookie(
+                response,
+                _('No value was specified for the mandatory input "{0}" of script "{1}"').format(
+                        parameter.name, parameter.script.name),
+                error=True)
+            return response
 
     def form_invalid(self, form):
         return super(GroupUpdate, self).form_invalid(form)

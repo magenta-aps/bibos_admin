@@ -1,0 +1,41 @@
+{# Remember that this templates must be able to be called both from templates.html and from list.html #}
+<tr class="muted">
+  <td>{{ name }}</td>
+  <td>
+    <div class="btn-group profile dark">
+      <div data-name="policy-script-{{ name }}">
+        <input class="policy-script-pos" type="hidden" name="{{ submit_name|default:'policy' }}" value="{{ ps_pk }}" />
+        <input class="policy-script-name" type="hidden" name="{{ submit_name|default:'policy' }}_{{ ps_pk }}" value="{{ script_pk }}" />
+        {% if params != '#PARAMS#' %}
+          {% for param in params %}
+            {% if param.input.value_type != 'FILE' %}
+            <input class="policy-script-param" type="hidden" name="{{ submit_name|default:'policy' }}_{{ ps_pk }}_param_{{ param.input.position }}" value="{{ param.string_value }}{{ param.file_value }}" data-inputtype="{{ param.input.value_type }}" {% if param.input.mandatory %} required="required" {% endif %} />
+            {% else %}
+            <input class="policy-script-param phantom" type="file" name="{{ submit_name|default:'policy' }}_{{ ps_pk }}_param_{{ param.input.position }}" data-inputtype="FILE" {% if param.input.mandatory %} required="required" {% endif %} />
+            {% endif %}
+            <div class="policy-script-print">
+              <strong class="policy-script-print-name">
+                {{ param.input.name }}:
+              </strong>
+              <span class="policy-script-print-value">
+                {% if param.input.value_type != 'FILE' %}
+                {{ param.string_value }}
+                {% else %}
+                {{ param.file_value }}
+                {% endif %}
+              </span>
+            </div>
+          {% endfor %}
+        {% else %}
+          <script>
+            $(function(){
+              BibOS.PolicyList.renderScriptFields('{{ name }}', '{{ ps_pk }}', '{{ submit_name|default:'policy' }}');
+            });
+          </script>
+        {% endif %}
+      </div>
+      <div><a href="javascript:void(0)" onclick="BibOS.PolicyList.editScript(this, '{{ submit_name }}')"><i class="icon-edit"></i> Redigér</a></div>
+      <div><a href="javascript:void(0)" onclick="BibOS.PolicyList.removeItem(this, '{{ submit_name }}')"><i class="icon-remove"></i> Slet script</a></div>
+    </div>
+  </td>
+</tr>

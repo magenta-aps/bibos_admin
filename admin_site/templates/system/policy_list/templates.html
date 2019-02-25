@@ -1,0 +1,43 @@
+<div id="policylist-templates">
+  <table>
+    <tbody id="policy-item-template" class="template-container">
+      {% include 'system/policy_list/item.html' with ps_pk='#PS_PK#' script_pk='#SCRIPT_PK#' name='#NAME#' params='#PARAMS#' submit_name='#SUBMIT_NAME#' %}
+    </tbody>
+  </table>
+</div>
+
+<div id="editpolicyscriptdialog" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">×</button>
+    <h3>Redigér script</h3>
+  </div>
+  <div class="modal-body">
+  </div>
+  <div class="modal-footer">
+    <button onclick="BibOS.PolicyList.submitEditDialog('{{ policy_id }}')" class="btn btn-primary">Gem</button>
+    <button class="btn" data-dismiss="modal">Annuller</button>
+  </div>
+</div>
+
+<div id="addpolicyscriptdialog" class="modal hide fade" tabindex="-1" role="dialog" aria-label="Tilføj script til gruppe" aria-hidden="true">
+  <div class="modal-header">
+    <button type="buttopn" class="close" data-dismiss="modal">×</button>
+    <h3>Tilføj script</h3>
+  </div>
+  <div class="modal-body">
+    <ul class="script-list">
+    {% for script in all_scripts %}
+      <li onclick="BibOS.PolicyList.addToPolicy('{{ policy_id }}', '{{ script.id }}', '{{ script.name }}', '{{ script.pk }}', [{% for input in script.inputs.all %}
+        {
+          name: '{{ input.name }}',
+          type: '{{ input.value_type }}',
+          position: '{{ input.position }}',
+          required: '{{ input.mandatory }}'
+        },
+      {% endfor %}])">
+        <strong>{{ script.name }}</strong> ({% for input in script.inputs.all %}<span>{% if forloop.counter0 != 0 %}, {% endif %}{{ input.name }}</span>{% endfor %})
+      </li>
+    {% endfor %}
+    </ul>
+  </div>
+</div>
