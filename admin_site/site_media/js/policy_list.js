@@ -154,7 +154,7 @@
           modalInputs.each(function(){
             var t = $(this);
             var inputField = wrapper.find('input[name="' + t.attr('name').substring(5) + '"]');
-            if (inputField.prop("required", true)) {
+            if (inputField.prop("required") == true) {
               if (t.attr('type') == 'file') {
                 /* If the hidden input field has a value, then it's fine if
                    this one doesn't -- we won't overwrite it */
