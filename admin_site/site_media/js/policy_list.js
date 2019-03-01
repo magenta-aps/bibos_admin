@@ -186,7 +186,7 @@
                 inputField[0].files = t[0].files
                 visibleValueField.text(t[0].files[0].name)
               }
-            } else {
+            } else if (t.val().trim().length != 0) {
               inputField.val(t.val());
               visibleValueField.text(t.val());
             }
