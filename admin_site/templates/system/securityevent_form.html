@@ -74,46 +74,63 @@ $(document).ready(function() {
     }
 
     $("#id_assigned_user").change(function() {
-    	$('#id_errorlist').remove();
+        $('#id_errorlist').remove();
         var status = $("#id_status").val();
         var auser = $("#id_assigned_user").val();
-        if (auser && status == "NEW") {
 
-            $("#id_status").val("ASSIGNED");
-            $("#id_status").attr('disabled', false);
-        }
-        else if (status == "ASSIGNED" && !auser && onload_status == "NEW") {
-            $("#id_status").val("NEW");
-            $("#id_assigned_user").attr('disabled', false);
-            $("#id_status").attr('disabled', true);
+        if (!auser) {
+            /* No user is set... */
+            if (onload_assigned_user) {
+                /* ... but one was when we loaded the page -- forbidden */
+                var html = '<ul class="errorlist" id="id_errorlist"><li>Når først en person er blevet tildelt til advarslen, skal en person altid være tildelt.</li></ul>';
+                $("#id_assigned_user").parent().append(html);
+                $("#id_assigned_user").val(onload_assigned_user);
+            } else {
+                /* ... and no user was ever set in the database -- fine */
+                $("#id_status").val("NEW");
+                $("#id_status").attr("disabled", true);
+            }
         } else {
-        	var html = '<ul class="errorlist" id="id_errorlist"><li>Når først en person er blevet tildelt til advarslen, skal en person altid være tildelt.</li></ul>';
-        	$("#id_assigned_user").parent().append(html);
-        	$("#id_assigned_user").val(onload_assigned_user);
+            /* A user is now set... */
+            if (status == "NEW") {
+                /* ... and one wasn't before -- fine */
+                $("#id_status").val("ASSIGNED")
+                $("#id_status").attr("disabled", false)
+            } else if (status == "ASSIGNED") {
+                /* ... and one was before as well -- fine, take no action */
+            } else if (status == "RESOLVED") {
+                /* ... and the case was resolved, so the user list should have
+                   been disabled. How did we get here? */
+            }
         }
-
     });
 
    $("#id_status").change(function() {
-	    $('#id_errorlist').remove();
-        var status = $("#id_status").val();        
-        if (status == "RESOLVED") {
-            $("#id_assigned_user").attr('disabled', true);
+        $('#id_errorlist').remove();
+        var status = $("#id_status").val();
+
+        if (status == "NEW") {
+            /* The status is now NEW... */
+            if (onload_status == "NEW") {
+                /* ... and it was when the page was loaded -- fine */
+                $("#id_status").attr("disabled", true)
+                $("#id_assigned_user").val("")
+                $("#id_assigned_user").attr("disabled", false)
+            } else {
+                /* ... and it wasn't when the page was loaded -- forbidden */
+                var html = '<ul class="errorlist" id="id_errorlist"><li>Når først en advarsel har fået en status, kan den ikke sættes tilbage til status Ny.</li></ul>';
+                $("#id_status").parent().append(html);
+                $("#id_status").val(onload_status);
+                $("#id_assigned_user").attr(
+                        "disabled", onload_status == "RESOLVED");
+            }
+        } else if (status == "ASSIGNED") {
+            /* The case is now assigned -- fine */
+            $("#id_assigned_user").attr("disabled", false);
+        } else if (status == "RESOLVED") {
+            /* The status is now resolved -- fine */
+            $("#id_assigned_user").attr("disabled", true);
         }
-        else if (status == "ASSIGNED") {
-            $("#id_assigned_user").attr('disabled', false);
-        }
-        else if (status == "NEW" && onload_status == "NEW") {
-            $("#id_assigned_user").val('');
-            $("#id_status").attr('disabled', true);
-            $("#id_assigned_user").attr('disabled', false);
-        }
-        else{   
-        	var html = '<ul class="errorlist" id="id_errorlist"><li>Når først en advarsel er blevet tildelt, kan den ikke sættes tilbage til status Ny.</li></ul>';        	
-        	$("#id_status").parent().append(html);
-        	$("#id_status").val(onload_status);
-        }
-		
    });
 
 });
