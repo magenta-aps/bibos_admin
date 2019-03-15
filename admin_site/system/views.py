@@ -1215,12 +1215,13 @@ class GroupUpdate(SiteMixin, SuperAdminOrThisSiteMixin, UpdateView):
         context['newform'] = GroupForm()
         del context['newform'].fields['pcs']
 
-        context['all_scripts'] = Script.objects.filter(
-            Q(site=site) | Q(site=None),
-            is_security_script=False
-        ).exclude(
-            site__name='system'
-        )
+        context['all_scripts'] = sorted(
+            Script.objects.filter(
+                Q(site=site) | Q(site=None),
+                is_security_script=False
+            ).exclude(
+                site__name='system'
+            ), key=lambda s: s.name.lower())
 
         return context
 
