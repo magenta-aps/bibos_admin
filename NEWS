@@ -1,3 +1,11 @@
+* Version 3.1.1, March 25, 2019
+
+Minor bugfix release. Fixed in this version:
+
+- #23873: The assignee list for security warnings is now a list of site users rather than system users
+- #27408: The script list used when constructing a group policy is now in alphabetical order
+- #27432: Policy script file parameter validation no longer demands that files be re-uploaded
+
 * Version 3.1.0, February 25, 2019
 
 - Support for associating scripts with groups (policies)
