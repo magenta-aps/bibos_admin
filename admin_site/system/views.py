@@ -1215,12 +1215,13 @@ class GroupUpdate(SiteMixin, SuperAdminOrThisSiteMixin, UpdateView):
         context['newform'] = GroupForm()
         del context['newform'].fields['pcs']
 
-        context['all_scripts'] = Script.objects.filter(
-            Q(site=site) | Q(site=None),
-            is_security_script=False
-        ).exclude(
-            site__name='system'
-        )
+        context['all_scripts'] = sorted(
+            Script.objects.filter(
+                Q(site=site) | Q(site=None),
+                is_security_script=False
+            ).exclude(
+                site__name='system'
+            ), key=lambda s: s.name.lower())
 
         return context
 
@@ -1562,8 +1563,13 @@ class SecurityEventUpdate(SiteMixin, UpdateView, SuperAdminOrThisSiteMixin):
         return SecurityEvent.objects.get(id=self.kwargs['pk'])
 
     def get_context_data(self, **kwargs):
-
         context = super(SecurityEventUpdate, self).get_context_data(**kwargs)
+
+        qs = context["form"].fields["assigned_user"].queryset
+        qs = qs.filter(
+                Q(bibos_profile__site=self.get_object().pc.site) |
+                Q(bibos_profile__type=UserProfile.SUPER_ADMIN))
+        context["form"].fields["assigned_user"].queryset = qs
 
         # Set fields to read-only
         return context

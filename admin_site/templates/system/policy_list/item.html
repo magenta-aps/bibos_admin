@@ -9,9 +9,10 @@
         {% if params != '#PARAMS#' %}
           {% for param in params %}
             {% if param.input.value_type != 'FILE' %}
-            <input class="policy-script-param" type="hidden" name="{{ submit_name|default:'policy' }}_{{ ps_pk }}_param_{{ param.input.position }}" value="{{ param.string_value }}{{ param.file_value }}" data-inputtype="{{ param.input.value_type }}" {% if param.input.mandatory %} required="required" {% endif %} />
+            {# Even though it looks complicated, the logic for mandatory parameters is simple enough: the server won't overwrite a parameter that already has a value with an empty value, so the browser doesn't need to enforce the non-emptiness check (and, indeed, it shouldn't for files!) #}
+            <input class="policy-script-param" type="hidden" name="{{ submit_name|default:'policy' }}_{{ ps_pk }}_param_{{ param.input.position }}" value="{{ param.string_value }}{{ param.file_value }}" data-inputtype="{{ param.input.value_type }}" {% if not param.string_value and not param.file_value and param.input.mandatory %} required="required" {% endif %} />
             {% else %}
-            <input class="policy-script-param phantom" type="file" name="{{ submit_name|default:'policy' }}_{{ ps_pk }}_param_{{ param.input.position }}" data-inputtype="FILE" {% if param.input.mandatory %} required="required" {% endif %} />
+            <input class="policy-script-param phantom" type="file" name="{{ submit_name|default:'policy' }}_{{ ps_pk }}_param_{{ param.input.position }}" data-inputtype="FILE" {% if not param.string_value and not param.file_value and param.input.mandatory %} required="required" {% endif %} />
             {% endif %}
             <div class="policy-script-print">
               <strong class="policy-script-print-name">
