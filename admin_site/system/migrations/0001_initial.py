@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from __future__ import unicode_literals
 
 from django.db import migrations, models
 from django.conf import settings
@@ -245,11 +245,6 @@ class Migration(migrations.Migration):
             model_name='job',
             name='pc',
             field=models.ForeignKey(related_name='jobs', to='system.PC'),
-        ),
-        migrations.AddField(
-            model_name='job',
-            name='user',
-            field=models.ForeignKey(related_name='job', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='input',
