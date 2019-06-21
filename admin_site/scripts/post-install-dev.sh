@@ -16,12 +16,6 @@ else
     project_dir=$(dirname "$0")/..
     admin_dir=$project_dir/bibos_admin
     managepy="python manage.py"
-    managepy_cmds=( 
-        "makemigrations"
-        "migrate"
-        "createsuperuser --username $username --email $email"
-        "migrate --run-syncdb"
-    )
 
 cat <<ENV > $admin_dir/.env
 # Django
@@ -53,12 +47,10 @@ DEFAULT_DIRECT_PROXY_HOSTS = []
 CLOSED_DISTRIBUTIONS = ['BIBOS', 'BIBOS14.04', 'BIBOS16.04']
 ENV
 
-    cd $project_dir
+    cd "$project_dir"
     source ../python-env/bin/activate
-    for commands in "${managepy_cmds[@]}"
-    do
-        $managepy $commands
-    done
+    $managepy migrate
+    $managepy createsuperuser --username "$username" --email "$email"
 
     printf "\n\n######\n\nhttp://$domain:$port/admin\n\n#####\n\n\n"
     $managepy runserver 0:$port
