@@ -1,3 +1,9 @@
+* Version 3.1.2, June 27, 2019
+
+Infrastructural release. Fixed in this version:
+
+- #27325: Deploying new versions should no longer result in migration conflicts
+
 * Version 3.1.1, March 25, 2019
 
 Minor bugfix release. Fixed in this version:
