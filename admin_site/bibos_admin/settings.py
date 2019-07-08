@@ -40,11 +40,6 @@ TEMPLATES = [
 
 
 SOURCE_DIR = os.path.abspath(os.path.join(install_dir, '..'))
-# TODO: This parameter must be removed when we rename the system and factor out
-# BibOS-related stuff.
-BIBOS_IMAGE_DIR = os.path.join(
-    os.path.abspath(os.path.join(SOURCE_DIR, '..')),
-    'bibos_image')
 
 DATABASES = {
     'default': {
@@ -156,10 +151,9 @@ ROOT_URLCONF = 'bibos_admin.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'bibos_admin.wsgi.application'
 
-#TEMPLATE_DIRS = (
-#    # Don't forget to use absolute paths, not relative paths.
-#    os.path.join(install_dir, 'templates'),
-#)
+# Don't forget to use absolute paths, not relative paths.
+DOCUMENTATION_DIR =  os.path.join(install_dir, 'templates')
+
 
 LOCAL_APPS = (
     'system',

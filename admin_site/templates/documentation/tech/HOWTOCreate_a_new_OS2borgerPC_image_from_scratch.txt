@@ -1,0 +1,43 @@
+Creating a new BibOS image from scratch
+
+    Start installing a vanilla Ubuntu system - Ubuntu 12.04 in the
+    present example. Install on a virtual or physical machine 
+    (BibOS also supports Ubuntu 14.04).
+
+    Select the correct target language for installation - Danish if your
+    users want to work in Danish.
+
+    Create the initial user as Superuser - specify BibOS2 as host name.
+    This is by convention, the initial user (sudo user) and host name
+    can be whatever you want
+
+    Enter the standard BibOS2 password (if you don't know it, ask
+    someone or choose your own)
+
+    Think about whether to select the option to encrypt the superuser's
+    $HOME directory (current recommendation: Do NOT do this)
+
+    To install bibos you need bibos_installation.sh file. Copy it to
+    the superusers /home folder.
+
+    If this installation is for a clonezilla image open the 
+    bibos_installation.sh and remove the reboot command at line 59.
+
+    Open a terminal,
+
+    # Change execution rigths for the installation file. 
+    
+    sudo chmod +x bibos_installation.sh
+
+    # Start the installation:
+ 
+    ./bibos_installation.sh	
+
+    Now the system is ready to be cloned as a Clonezilla image or 
+    to be connected to the admin system.
+
+    When the system is rebooted the system will log in as superuser so
+    the "Færdiggør bibos installation" can be executed. 	 
+
+    If it is for a CloneZilla image, boot up the system with a CloneZilla
+    live CD and clone an image, e.g. to your own /home/partimag using SSHFS.
