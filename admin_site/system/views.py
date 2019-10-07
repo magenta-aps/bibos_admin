@@ -39,7 +39,7 @@ def set_notification_cookie(response, message, error=False):
         "type": "success" if not error else "error"
     }
     response.set_cookie('bibos-notification',
-            quote(json.dumps(descriptor)))
+            quote(json.dumps(descriptor), safe=''))
 
 
 def get_no_of_sec_events(site):
