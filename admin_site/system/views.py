@@ -509,7 +509,7 @@ class ScriptMixin(object):
                     'pk': input.pk,
                     'name': input.name,
                     'value_type': input.value_type
-                } for input in self.script.inputs.all()]
+                } for input in self.script.ordered_inputs]
         elif context['script_inputs'] is '':
             context['script_inputs'] = []
 
