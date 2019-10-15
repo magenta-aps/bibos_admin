@@ -878,17 +878,45 @@ class PCUpdate(SiteMixin, UpdateView, LoginRequiredMixin):
         return context
 
     def form_valid(self, form):
-        self.object.custom_packages.update_by_package_names(
-            self.request.POST.getlist('pc_packages_add'),
-            self.request.POST.getlist('pc_packages_remove')
-        )
-        self.object.configuration.update_from_request(
-            self.request.POST, 'pc_config'
-        )
-        response = super(PCUpdate, self).form_valid(form)
+        pc = self.object
+        groups_pre = set(pc.pc_groups.all())
+        try:
+            with transaction.atomic():
+                pc.custom_packages.update_by_package_names(
+                    self.request.POST.getlist('pc_packages_add'),
+                    self.request.POST.getlist('pc_packages_remove')
+                )
+                pc.configuration.update_from_request(
+                    self.request.POST, 'pc_config'
+                )
+                response = super(PCUpdate, self).form_valid(form)
+
+                # If this PC has joined any groups that have policies attached
+                # to them, then run their scripts (first making sure that this
+                # PC is capable of doing so!)
+                groups_post = set(pc.pc_groups.all())
+                new_groups = groups_post.difference(groups_pre)
+                supported = False
+                for g in new_groups:
+                    policy = g.ordered_policy
+                    if policy:
+                        if not supported:
+                            if not pc.supports_ordered_job_execution():
+                                raise OutdatedClientError(pc)
+                            supported = True
+                        for asc in policy:
+                            asc.run_on(self.request.user, [pc])
+
+        except OutdatedClientError as e:
+            set_notification_cookie(
+                response,
+                _('Computer {0} must be upgraded in order to join a group with scripts attached').format(e),
+                error=True)
+            return response
+
         set_notification_cookie(
             response,
-            _('Computer %s updated') % self.object.name
+            _('Computer %s updated') % pc.name
         )
         return response
 
