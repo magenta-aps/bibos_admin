@@ -27,7 +27,7 @@
   <div class="modal-body">
     <ul class="script-list">
     {% for script in all_scripts %}
-      <li onclick="BibOS.PolicyList.addToPolicy('{{ policy_id }}', '{{ script.id }}', '{{ script.name }}', '{{ script.pk }}', [{% for input in script.inputs.all %}
+      <li onclick="BibOS.PolicyList.addToPolicy('{{ policy_id }}', '{{ script.id }}', '{{ script.name }}', '{{ script.pk }}', [{% for input in script.ordered_inputs %}
         {
           name: '{{ input.name }}',
           type: '{{ input.value_type }}',
@@ -35,7 +35,7 @@
           required: '{{ input.mandatory }}'
         },
       {% endfor %}])">
-        <strong>{{ script.name }}</strong> ({% for input in script.inputs.all %}<span>{% if forloop.counter0 != 0 %}, {% endif %}{{ input.name }}</span>{% endfor %})
+        <strong>{{ script.name }}</strong> ({% for input in script.ordered_inputs %}<span>{% if forloop.counter0 != 0 %}, {% endif %}{{ input.name }}</span>{% endfor %})
       </li>
     {% endfor %}
     </ul>

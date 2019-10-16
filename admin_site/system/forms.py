@@ -166,7 +166,7 @@ class ParameterForm(forms.Form):
         script = kwargs.pop('script')
         super(ParameterForm, self).__init__(*args, **kwargs)
 
-        for i, inp in enumerate(script.inputs.all().order_by('position')):
+        for i, inp in enumerate(script.ordered_inputs):
             name = 'parameter_%s' % i
             field_data = {
                 'label': inp.name,
