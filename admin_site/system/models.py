@@ -793,7 +793,7 @@ class Script(models.Model):
         batch.save()
 
         # Add parameters
-        for i, inp in enumerate(self.inputs.all().order_by('position')):
+        for i, inp in enumerate(self.ordered_inputs):
             if i < len(args):
                 value = args[i]
                 if(inp.value_type == Input.FILE):
