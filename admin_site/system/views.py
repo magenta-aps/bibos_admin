@@ -39,7 +39,7 @@ def set_notification_cookie(response, message, error=False):
         "type": "success" if not error else "error"
     }
     response.set_cookie('bibos-notification',
-            quote(json.dumps(descriptor)))
+            quote(json.dumps(descriptor), safe=''))
 
 
 def get_no_of_sec_events(site):
@@ -509,7 +509,7 @@ class ScriptMixin(object):
                     'pk': input.pk,
                     'name': input.name,
                     'value_type': input.value_type
-                } for input in self.script.inputs.all()]
+                } for input in self.script.ordered_inputs]
         elif context['script_inputs'] is '':
             context['script_inputs'] = []
 
@@ -878,17 +878,45 @@ class PCUpdate(SiteMixin, UpdateView, LoginRequiredMixin):
         return context
 
     def form_valid(self, form):
-        self.object.custom_packages.update_by_package_names(
-            self.request.POST.getlist('pc_packages_add'),
-            self.request.POST.getlist('pc_packages_remove')
-        )
-        self.object.configuration.update_from_request(
-            self.request.POST, 'pc_config'
-        )
-        response = super(PCUpdate, self).form_valid(form)
+        pc = self.object
+        groups_pre = set(pc.pc_groups.all())
+        try:
+            with transaction.atomic():
+                pc.custom_packages.update_by_package_names(
+                    self.request.POST.getlist('pc_packages_add'),
+                    self.request.POST.getlist('pc_packages_remove')
+                )
+                pc.configuration.update_from_request(
+                    self.request.POST, 'pc_config'
+                )
+                response = super(PCUpdate, self).form_valid(form)
+
+                # If this PC has joined any groups that have policies attached
+                # to them, then run their scripts (first making sure that this
+                # PC is capable of doing so!)
+                groups_post = set(pc.pc_groups.all())
+                new_groups = groups_post.difference(groups_pre)
+                supported = False
+                for g in new_groups:
+                    policy = g.ordered_policy
+                    if policy:
+                        if not supported:
+                            if not pc.supports_ordered_job_execution():
+                                raise OutdatedClientError(pc)
+                            supported = True
+                        for asc in policy:
+                            asc.run_on(self.request.user, [pc])
+
+        except OutdatedClientError as e:
+            set_notification_cookie(
+                response,
+                _('Computer {0} must be upgraded in order to join a group with scripts attached').format(e),
+                error=True)
+            return response
+
         set_notification_cookie(
             response,
-            _('Computer %s updated') % self.object.name
+            _('Computer %s updated') % pc.name
         )
         return response
 
@@ -1633,7 +1661,7 @@ class PackageSearch(JSONResponseMixin, ListView):
 
 
 documentation_menu_items = [
-    ('', 'BibOS Administration'),
+    ('', 'OS2borgerPC Administration'),
     ('status', 'Status'),
     ('site_configuration', 'Site-konfiguration'),
     ('computers', 'Computere'),
@@ -1642,23 +1670,22 @@ documentation_menu_items = [
     ('scripts', 'Scripts'),
     ('users', 'Brugere'),
 
-    ('', 'Installation af BibOS'),
+    ('', 'Installation af OS2borgerPC'),
     ('install_dvd', 'Installation via DVD'),
     ('install_usb', 'Installation via USB'),
     ('install_network', 'Installation via netværk'),
-    ('postinstall', 'Postinstall-script'),
     ('pdf_guide', 'Brugervenlig installationsguide (PDF)'),
 
-    ('', 'BibOS-gateway'),
-    ('gateway_install', 'Installation af BibOS-gateway'),
+    ('', 'OS2borgerPC-gateway'),
+    ('gateway_install', 'Installation af OS2borgerPC-gateway'),
     ('gateway_admin', 'Administration af gateway'),
-    ('gateway_use', 'Anvendelse af gateway på BibOS-maskiner'),
-    ('', 'Om'),
-    ('om_bibos_admin', 'Om BibOS-Admin'),
+    ('gateway_use', 'Anvendelse af gateway på OS2borgerPC-maskiner'),
+    ('', 'Om OS2borgerPC-Admin'),
+    ('om_os2borgerpc_admin', 'Om OS2borgerPC-Admin'),
 
     ('', 'Teknisk dokumentation'),
-    ('tech/bibos', 'BibOS teknisk dokumentation'),
-    ('tech/admin', 'BibOS Admin teknisk dokumentation'),
+    ('tech/os2borgerpc', 'OS2borgerPC teknisk dokumentation'),
+    ('tech/admin', 'OS2borgerPC Admin teknisk dokumentation'),
 
 ]
 
@@ -1667,7 +1694,7 @@ class DocView(TemplateView):
     docname = 'status'
 
     def template_exists(self, subpath):
-        fullpath = os.path.join(settings.TEMPLATE_DIRS[0], subpath)
+        fullpath = os.path.join(settings.DOCUMENTATION_DIR, subpath)
         return os.path.isfile(fullpath)
 
     def get_context_data(self, **kwargs):  # noqa
@@ -1743,9 +1770,10 @@ class TechDocView(TemplateView):
         if 'name' in kwargs:
             self.docname = kwargs['name']
             name = self.docname
+
         context = super(TechDocView, self).get_context_data(**kwargs)
         context['docmenuitems'] = documentation_menu_items
-        overview_urls = {'bibos': 'BibOS Desktop', 'admin': 'BibOS Admin'}
+        overview_urls = {'os2borgerpc': 'OS2borgerPC Desktop', 'admin': 'OS2borgerPC Admin'}
 
         overview_items = {
             'admin': [
@@ -1753,11 +1781,11 @@ class TechDocView(TemplateView):
                 ('tech/developer_guide', 'Udviklerdokumentation'),
                 ('tech/release_notes', 'Release notes'),
             ],
-            'bibos': [
-                ('tech/create_bibos_image', 'Lav nyt BibOS-image'),
+            'os2borgerpc': [
+                ('tech/create_bibos_image', 'Lav nyt OS2borgerPC-image'),
                 ('tech/save_harddisk_image',
                  'Gem harddisk-image med Clonezilla'),
-                ('tech/build_bibos_cd', 'Byg BibOS-CD fra Clonezilla-image'),
+                ('tech/build_bibos_cd', 'Byg OS2borgerPC-CD fra Clonezilla-image'),
                 ('tech/image_release_notes', 'Release notes'),
             ]
         }
@@ -1770,29 +1798,28 @@ class TechDocView(TemplateView):
                     break
             return c
 
-        dir = settings.SOURCE_DIR
-        image_dir = settings.BIBOS_IMAGE_DIR
-
-        def d(f):
-            return os.path.join(dir, f)
-
-        def i(f):
-            return os.path.join(image_dir, f)
+        tech_path = os.path.join(os.path.join(settings.DOCUMENTATION_DIR,
+                                              'documentation/tech'))
 
         url_mapping = {
-            'install_guide': d('doc/HOWTO_INSTALL_SERVER.txt'),
-            'developer_guide': d('doc/DEVELOPMENT_HOWTO.txt'),
-            'release_notes': d('NEWS'),
-            'create_bibos_image': i(
-                'doc/HOWTOCreate_a_new_BibOS_image_from_scratch.txt'
-            ),
-            'save_harddisk_image': i(
-                'doc/HOWTO_save_a_bibos_harddisk_image.txt'
-            ),
-            'build_bibos_cd': i(
-                'doc/HOWTOBuild_BibOS_CD_from_clonezilla_image.txt'
-            ),
-            'image_release_notes': i('NEWS'),
+            'install_guide': os.path.join(settings.SOURCE_DIR,
+                                          'doc/HOWTO_INSTALL_SERVER.txt'),
+            'developer_guide': os.path.join(settings.SOURCE_DIR,
+                                            'doc/DEVELOPMENT_HOWTO.txt'),
+            'release_notes': os.path.join(settings.SOURCE_DIR,
+                                          'NEWS'),
+            'create_bibos_image':os.path.join(tech_path,
+                             'HOWTOCreate_a_new_OS2borgerPC_image_from_scratch.txt')
+            ,
+            'save_harddisk_image':os.path.join(tech_path,
+                              'HOWTO_save_a_OS2borgerPC_harddisk_image.txt')
+            ,
+            'build_bibos_cd': os.path.join(tech_path,
+                'HOWTOBuild_OS2borgerPC_CD_from_clonezilla_image.md'
+            )
+            ,
+            'image_release_notes': os.path.join(tech_path,
+                                                'OS2borgerPC_image_NEWS')
         }
 
         if name in overview_urls:

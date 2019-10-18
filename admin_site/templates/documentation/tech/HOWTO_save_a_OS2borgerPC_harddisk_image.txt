@@ -1,0 +1,17 @@
+Guide to saving an image of a hard disk prepared for OS2borgerPC installation
+
+To save a hard disk image for use in creating an OS2borgerPC installation disk,
+download a Clonezilla iso from http://clonezilla.org/ and boot it on the
+machine with the hard disk.
+Then follow the guide at
+
+https://clonezilla.org/show-live-doc-content.php?topic=clonezilla-live/doc/01_Save_disk_image
+
+but choose to save a single partition instead of the whole disk. The partition
+you want to save is the main partition you installed Ubuntu on and is probably
+called sda1.
+
+Once the disk image has been saved, it can be used to create an installation
+disk. See the files HOWTOBuild_BibOS_CD_from_clonezilla_image.txt and
+How-to-build-an-OS2borgerPC-installation-USB-stick-from-an-existing-Clonezilla-image.md
+in this directory for more information.
