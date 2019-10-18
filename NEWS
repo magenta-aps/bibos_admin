@@ -1,3 +1,12 @@
+* Version 3.1.3, October 18, 2019
+
+Bugfix release. Fixed in this version:
+
+- #27486: Policy scripts are now executed when a borgerpc is added to a group through the computer-view.
+- #30173: Scripts parameters are now being saved in the right order, to avoid integrityerror.
+- #30520: All documentation pages are accessible again.
+- #31066: Forward slashes in group names are now supported. 
+
 * Version 3.1.2.1, June 27, 2019
 
 Infrastructural release. Fixed in this version:
